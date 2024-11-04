@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             BindingContext="{vm:ImageViewModel}"
+             mc:Ignorable="d"
+             x:Class="DivisiBill.Views.ImagePage"
+             Title="Image"
+             x:DataType="vm:ImageViewModel">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{Binding LightGlyph}" Command="{Binding ChangeLightModeCommand}" x:Name="FlashlightTbi"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphCamera}" Command="{Binding TakePictureCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphOCR}" Command="{Binding OcrCommand}"/>
+        <ToolbarItem Text = "Delete" Command="{Binding DeleteCommand}" Order="Secondary"/>
+        <ToolbarItem Text = "Camera" Command="{Binding TakePictureCommand}" Order="Secondary"/>
+        <ToolbarItem Text = "Browse" Command="{Binding BrowseCommand}" Order="Secondary"/>
+    </ContentPage.ToolbarItems>
+    <Grid RowDefinitions="Auto,Auto,*">
+        <VerticalStackLayout IsVisible="{Binding IsBusy,Converter={StaticResource Not}}">
+            <Label Text="No Image loaded" HorizontalOptions="Center" FontSize="Large" IsVisible="{Binding HasImage,Converter={StaticResource Not}}"/>
+        </VerticalStackLayout>
+        <VerticalStackLayout IsVisible="{Binding IsBusy}" Grid.Row="1">
+            <Label Text="Processing Image" HorizontalOptions="Center" FontSize="Large"/>
+            <ActivityIndicator Color="Red" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" IsRunning="True"/>
+        </VerticalStackLayout>
+        <services:PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasImage}">
+            <services:PinchToZoomContainer.Content>
+                <Image x:Name="previewImage" 
+                       Source="{Binding PreviewImageSource,Mode=OneWay}"
+                       Scale="{Binding ImageScale}"
+                       TranslationX="{Binding ImageTranslationX}"
+                       TranslationY="{Binding ImageTranslationY}"/>
+            </services:PinchToZoomContainer.Content>
+        </services:PinchToZoomContainer>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+<head>
+    <title>DivisiBill</title>
+    <link rel="stylesheet" href="divisibill/styles.css">
+</head>
+<body>
+    <h1 id="divisibill">DivisiBill</h1>
+<p align=center>by AutoPlus Software</p>
+<p align=center> <img alt="Logo" height="200" src="divisibill/divisibill_scalable_red.svg" style="width:20%"/></p>
+<p>If you are tired of paying an unfair amount at a restaurant when the bill is just split evenly,
+DivisiBill is your answer.</p>
+<p>DivisiBill lets you define each item on a bill and indicate how it should be divided among guests.Then it calculates how much each guest owes, including tax and tip, or, if you enter the tax or tip amount you want to use,
+it will share that amount proportionally and calculate the corresponding rate.</p>
+<p>It handles dark mode, orientation switching and multiple currencies correctly but has text only in English.</p>
+<p>It lets you indicate who pays for each item on a bill. For items that were shared,
+you can indicate who shared them, and, if appropriate, split the cost unevenly between them.</p>
+<p>A bill may be entered by taking a picture of it and having the program list the items automatically, by typing in each item on the bill manually,  or a combination of the two.</p>
+<p>Once DivisiBill has the list of bill items and knows who had what, it calculates how much each guest owes, including tax and tip. It can handle restaurant discounts (split evenly or unevenly), deal with tax calculations that are off by a few cents (surprisingly common), and cope with a variety of other complex situations. The program is intended to handle more or less any common scenario.</p>
+<p>You can email the results to attendees, including an image of the bill if you wish.</p>
+<p>DivisiBill can also remember and reuse past bills, and if you choose to share your location will make a pretty good guess at which prior bill to use based on your location.</p>
+<p>DivisiBill is intended to handle complex bills where you want each person to pay their share.
+If all you want to do is split the bill evenly and maybe calculate a tip or tax, there are
+lots of free programs available to do that. DivisiBill does not contain advertising but it does
+have a couple of optional features that are chargeable, OCR scans of printed bills and cloud based data storage.</p>
+<p>For general information about DivisiBill, click <a href="divisibill/index.html">here</a>. There is also specific policy information about <a href="divisibill/index.html#privacy-policy">privacy</a> or <a href="divisibill/index.html#data-deletion-policy">data deletion</a>.</p>
+<h2 id="more-information">More Information</h2>
+<p>The Android version of DivisiBill is available in the Play Store <a href="https://play.google.com/store/apps/details?id=com.autoplus.divisibill">here</a>.</p>
+<p>To contact support or sales, click <a href="mailto:support@autopl.us?subject=DivisiBill%20Mail%20from%20AutoPlus%20web%20page">here</a>.</p>
+<h2 id="what-is-autoplus-software">What is AutoPlus Software?</h2>
+<p>AutoPlus Software is a company originally formed to market a body shop management tool
+called AutoPlus. That product went out of support years ago, but the name lives on.</p>
+<h2 id="whats-with-the-logo">What's With the Logo?</h2>
+<p>It's meant to represent a bill being torn (split, get it?) into multiple pieces, clearly
+the work of a programmer, not an artist...</p>
+
+    <script>
+        let li = window.location.href.lastIndexOf("#");
+        var s;
+        if (li >= 0) {
+            s = window.location.href.substring(li + 1);
+        }
+
+        if (s != null && s.length > 0) {
+            let e = document.getElementById(s);
+            if (e != null) {
+                let h = e.innerHTML;
+                e.innerHTML = "<mark>" + h + "</mark>";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:model="clr-namespace:DivisiBill.Models"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             Shell.FlyoutBehavior="Disabled"
+             Title="{Binding ItemTypePlural, StringFormat='Backed Up {0}'}"
+             x:DataType="vm:FileListViewModel"
+             x:Class="DivisiBill.Views.FileListPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{StaticResource GlyphList}" Command="{Binding ChangeListCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Resources>
+        <!--TODO MAUI DETOUR SwipeView bug means Add and scroll will fail on Windows until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed-->
+        <!--UI for non-Windows-->
+        <DataTemplate x:Key="WithSwipe" x:DataType="services:RemoteItemInfo">
+            <Grid ColumnDefinitions="*,*,*">
+                <SwipeView Grid.Column="0" Grid.ColumnSpan="3">
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
+                                       CommandParameter="{Binding}"
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=UseCommand, x:DataType=vm:FileListViewModel}"/>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+                    <SwipeView.RightItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
+                                       CommandParameter="{Binding}"
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=vm:FileListViewModel}"/>
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+                    <VerticalStackLayout Padding="10,0">
+                        <Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto, auto">
+                            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CreatedDateTimeString}" FontSize="Medium"/>
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Name}" LineBreakMode="TailTruncation" FontSize="Medium"/>
+                            <Label Grid.Row="1" Grid.Column="2" Text="{Binding SizeText}" FontSize="Medium"/>
+                        </Grid>
+                        <BoxView HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
+                    </VerticalStackLayout>
+                </SwipeView>
+                <!--Click to toggle item select without triggering swipe action-->
+                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+            </Grid>
+        </DataTemplate>
+
+        <!--Alternate UI for Windows-->
+        <DataTemplate x:Key="NoSwipe" x:DataType="services:RemoteItemInfo">
+            <Grid ColumnDefinitions="2*,*,2*">
+                <VerticalStackLayout Grid.Column="0" Grid.ColumnSpan="3" Padding="10,0">
+                    <Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto, auto">
+                        <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CreatedDateTimeString}" FontSize="Medium"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding Name}" LineBreakMode="TailTruncation" FontSize="Medium"/>
+                        <Label Grid.Row="1" Grid.Column="2" Text="{Binding SizeText}" FontSize="Medium"/>
+                    </Grid>
+                    <BoxView HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
+                </VerticalStackLayout>
+                <!--Click to Use (Windows only)-->
+                <ImageButton Grid.Column="0" BackgroundColor="{StaticResource TransparentGreen}"
+                                        IsVisible="{OnPlatform false, WinUI = true}"
+                                        CommandParameter="{Binding}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=UseCommand, x:DataType=vm:FileListViewModel}"/>
+                <!--Click to toggle item select-->
+                <ImageButton Grid.Column="1" BackgroundColor="Transparent"
+                                CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}"/>
+                <!--Click to Use (Windows only)-->
+                <ImageButton Grid.Column="2" BackgroundColor="{StaticResource TransparentRed}" 
+                                        IsVisible="{OnPlatform false, WinUI = true}"
+                                        CommandParameter="{Binding}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=vm:FileListViewModel}"/>
+            </Grid>
+        </DataTemplate>
+        
+        <!--UI for multi-select case-->
+        <DataTemplate x:Key="SelectableListView" x:DataType="services:RemoteItemInfo">
+            <VerticalStackLayout Padding="10,0">
+                <Grid ColumnDefinitions="40, *, auto" RowDefinitions="auto, auto">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}"/>
+                    </Grid.GestureRecognizers>
+                    <Image Grid.Column="0" Grid.RowSpan="2" BackgroundColor="Transparent" Source="{StaticResource ListGlyphSelected}"
+                           IsVisible="{Binding Selected}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Image Grid.Column="0" Grid.RowSpan="2" BackgroundColor="Transparent" Source="{StaticResource ListGlyphUnselected}"
+                           IsVisible="{Binding Selected, Converter={StaticResource Not}}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding CreatedDateTimeString}" FontSize="Medium"/>
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Name}" LineBreakMode="TailTruncation" FontSize="Medium"/>
+                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding SizeText}" FontSize="Medium"/>
+                </Grid>
+                <BoxView HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
+            </VerticalStackLayout>
+        </DataTemplate>
+        
+        <!--UI Selector for CollectionView-->
+        <Style TargetType="CollectionView">
+            <Style.Triggers>
+                <DataTrigger TargetType="CollectionView" Binding="{Binding ShowAsSelectableList, x:DataType=vm:FileListViewModel}" Value="false">
+                    <Setter Property="ItemTemplate" Value="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"/>
+                    <Setter Property="SelectionMode" Value="Single"/>
+                </DataTrigger>
+                <DataTrigger TargetType="CollectionView" Binding="{Binding ShowAsSelectableList, x:DataType=vm:FileListViewModel}" Value="true">
+                    <Setter Property="ItemTemplate" Value="{StaticResource SelectableListView}"/>
+                    <Setter Property="SelectionMode" Value="Multiple"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ContentPage.Resources>
+
+    <CollectionView 
+        ItemsSource="{Binding FileList}"
+        SelectedItem="{Binding SelectedItem}"
+        SelectedItems="{Binding SelectedItems}">
+        <CollectionView.Header>
+            <VerticalStackLayout>
+                <VerticalStackLayout  IsVisible="{Binding ItemsFound}">
+                    <Label Text="{Binding FileListCount, StringFormat='{0} lists, tap to select'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ShowAsSelectableList}"/>
+                    <Label Text="{Binding FileListCount, StringFormat='{0} lists, swipe or tap'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ShowAsSelectableList, Converter={StaticResource Not}}"/>
+                </VerticalStackLayout>
+                <Label Text="{Binding ItemTypePlural, StringFormat='No {0} Found'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ItemsFound, Converter={StaticResource Not}}"/>
+                <BoxView HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
+            </VerticalStackLayout>
+        </CollectionView.Header>
+    </CollectionView>
+</ContentPage>

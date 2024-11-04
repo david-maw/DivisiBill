@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:DivisiBill.Models"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:DivisiBill="clr-namespace:DivisiBill"
+             x:Class="DivisiBill.Views.MealSummaryPage"
+             Shell.FlyoutBehavior="Disabled"
+             Title="Bill Summary">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Clicked="OnLoadItem" IconImageSource="{StaticResource GlyphImport}"/>
+        <ToolbarItem Clicked="OnDelItem" IconImageSource="{StaticResource GlyphDel}"/>
+    </ContentPage.ToolbarItems>
+
+    <services:ColumnLayout Spacing="2" Padding="5" x:DataType="vm:MealSummaryViewModel">
+        <Label Text="{Binding VenueName}" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnVenueNameTapped"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <Label HorizontalTextAlignment="Center" FontSize="Small">
+            <Label.FormattedText>
+                <FormattedString >
+                    <Span Text="{Binding CreationTime, StringFormat='Created {0:g}'}"/>
+                    <Span Text=" "/>
+                    <Span Text="{Binding ApproximateAge}"/>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+        <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsLastChangeTimeDifferent}"
+               Text="{Binding LastChangeTimeText, StringFormat='Last Updated {0}'}"/>
+        <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsForCurrentMeal}"
+               Text="This is the current meal"/>
+        <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding Source={x:Static DivisiBill:App.IsDebug}}"
+               Text="{Binding Id, StringFormat='Id: {0}'}"/>
+        <Label FontSize="Large" Text="{Binding RoundedAmount, StringFormat='Rounded total {0:C0}'}"
+               HorizontalTextAlignment="Center"/>
+        <Label FontSize="Large" Text="{Binding UnallocatedAmount, StringFormat='Unallocated {0:C0}'}" 
+               HorizontalTextAlignment="Center" IsVisible="{Binding Path=IsAnyUnallocated}"/>
+        <Label Text="This bill has a corresponding stored image" IsVisible="{Binding Path=HasImage}"  HorizontalTextAlignment="Center"/>
+        <VerticalStackLayout IsVisible="{Binding ShowStorage}">
+            <Label Text="This bill is stored locally" IsVisible="{Binding Path=IsLocal}" HorizontalTextAlignment="Center"/>
+            <Label Text="This bill is stored remotely" IsVisible="{Binding Path=IsRemote}" HorizontalTextAlignment="Center"/>
+            <Label Text="This bill is not stored anywhere" IsVisible="{Binding Path=IsFake}" HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+        <Label TextColor="{AppThemeBinding Light={StaticResource DarkRed}, Dark={StaticResource LightRed}}" IsVisible="{Binding Path=IsBad}">
+            <Label.FormattedText>
+                <FormattedString >
+                    <Span Text="This bill has an error: " FontSize="Medium"/>
+                    <Span Text="{Binding ErrorMessage}" FontSize="Medium"/>
+                    <Span Text="&#10;"/> <!--Newline-->
+                    <Span Text="Probably in file: " FontSize="Medium"/>
+                    <Span Text="{Binding FileName}" FontSize="Medium"/>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+        <Label Text="Participants" FontSize="Large" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+        <CollectionView
+                ItemsSource="{Binding Costs}"
+                VerticalOptions="Start">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PersonCost">
+                    <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions="*,Auto">
+                        <Label x:Name="NicknameLabel" Text="{Binding Nickname} " Grid.Column="0"
+                                LineBreakMode="NoWrap" 
+                                FontSize="Large" />
+
+                        <Label Grid.Column="1" Text="{Binding AmountText}" Margin="0,0,10,0"
+                                LineBreakMode="NoWrap"
+                                FontSize="Large" IsEnabled="True" HorizontalTextAlignment="End"  />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </services:ColumnLayout>
+</ContentPage>

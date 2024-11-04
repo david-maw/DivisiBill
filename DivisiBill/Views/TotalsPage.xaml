@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:models="clr-namespace:DivisiBill.Models"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             Title="Totals"
+             x:Class="DivisiBill.Views.TotalsPage"
+             x:DataType="vm:MealViewModel"
+             BindingContext="{DynamicResource MealViewModel}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{StaticResource GlyphFilterOn}" Command="{Binding FilterItemsCommand}"     CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphAdd}"      Clicked="OnAddItem"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}"      Command="{Binding DeleteCostCommand}"      CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text="Clear Filter" Order="Secondary"            Command="{Binding ClearFilteringCommand}"/>
+        <ToolbarItem Text ="Mail"        Order="Secondary"            Command="{Binding MailCommand}"            CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text ="Replace"     Order="Secondary"            Clicked="OnReplaceItem"                    CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text ="Payments"    Order="Secondary"            Command="{Binding DisplayPaymentsCommand}" CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text ="Person"      Order="Secondary"            Command="{Binding ShowPersonCommand}"      CommandParameter="{Binding SelectedCost}"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="labelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="Large"/>
+                <Setter Property="HorizontalTextAlignment" Value="End"/>
+                <Setter Property="VerticalTextAlignment" Value="Center"/>
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+            <Style x:Key="UnequalLabelStyle" TargetType="Label" BasedOn="{StaticResource labelStyle}">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Yellow100Accent}}" />
+            </Style>
+            <Style x:Key="ValidLabelStyle" TargetType="Label" BasedOn="{StaticResource labelStyle}">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+        </ResourceDictionary>
+        <DataTemplate x:Key="WithSwipe" x:DataType="models:PersonCost">
+            <!--TODO MAUI BUG SwipeView bug means Add and scroll will fail here on Windows until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed-->
+            <Grid ColumnDefinitions="*,80,*">
+                <SwipeView Grid.ColumnSpan="3">
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphFilterOn}"
+                                   CommandParameter="{Binding}"
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"/>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+                    <SwipeView.RightItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
+                                   CommandParameter="{Binding}"
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}}"/>
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+                    <!--#region PersonCost display -->
+                    <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions= "*,Auto">
+                        <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="Large" />
+                        <Label Grid.Column="1" Text="{Binding AmountText}"
+                                LineBreakMode="NoWrap"
+                                FontSize="Large" IsEnabled="True" HorizontalTextAlignment="End"  />
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                CommandParameter="{Binding}" 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}}" />
+                            <TapGestureRecognizer NumberOfTapsRequired="2"
+                                CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}" />
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                    <!--#endregion-->
+                </SwipeView>
+                <!--#region Select Button -->
+                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}}"/>
+                        <TapGestureRecognizer NumberOfTapsRequired="2" 
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+                <!--#endregion-->
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="NoSwipe" x:DataType="models:PersonCost">
+            <Grid ColumnDefinitions="*,80,*">
+                <!--#region PersonCost display -->
+                <Grid Grid.ColumnSpan="3" Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions= "*,Auto">
+                    <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="Large" />
+                    <Label Grid.Column="1" Text="{Binding AmountText}"
+                                    LineBreakMode="NoWrap"
+                                    FontSize="Large" IsEnabled="True" HorizontalTextAlignment="End"  />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer 
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}}"/>
+                        <TapGestureRecognizer NumberOfTapsRequired="2" 
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                    </Grid.GestureRecognizers>
+                </Grid>
+                <!--#endregion-->
+                <!--#region Select Button -->
+                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}}"/>
+                        <TapGestureRecognizer NumberOfTapsRequired="2" 
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+                <!--#endregion-->
+                <!--#region Context Menu to Replace Swipe -->
+                <FlyoutBase.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem
+                                Text="Person Details"
+                                CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                        <MenuFlyoutItem
+                                Text="Filter"
+                                CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}}"/>
+                        <MenuFlyoutItem
+                                Text="Delete"
+                                CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}}"/>
+                        <MenuFlyoutItem
+                                Text="Change Selection"
+                                CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}}"/>
+                    </MenuFlyout>
+                </FlyoutBase.ContextFlyout>
+                <!--#endregion-->
+            </Grid>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <services:ColumnLayout Margin="10">
+        <services:ColumnLayout.GestureRecognizers>
+            <!--Swipes are intercepted by the CollectionView below, so these take effect only outside that view-->
+            <!--In practice swipes pass through to this on Windows but not on Android-->
+            <SwipeGestureRecognizer Direction="Right"  Command="{Binding GoToItemsCommand}"/>
+        </services:ColumnLayout.GestureRecognizers>
+        <!--#region Heading -->
+        <!--This is the heading for the page-->
+        <Border Margin="5" Padding="5" 
+                Stroke="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding PushPropertiesCommand}"/>
+                    <TapGestureRecognizer Command="{Binding PushVenueListCommand}" NumberOfTapsRequired="1"  Buttons="Secondary"/>
+                    <TapGestureRecognizer Command="{Binding PushVenueListCommand}" NumberOfTapsRequired="2" />
+                    <SwipeGestureRecognizer Direction="Right" Command="{Binding GoToItemsCommand}"/>
+                </Border.GestureRecognizers>
+            <Label Text="{Binding VenueName}" FontSize="Title" HorizontalOptions="Center">
+            </Label>
+        </Border>
+        <Label  IsVisible="{Binding IsFiltered}"
+                Text="{Binding FilteredSharerName, StringFormat='Filtering Items for {0}'}" 
+                FontSize="Title" HorizontalOptions="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=GoToItemsCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <!--#endregion-->
+        <!--#region Cost List (the list of people and amounts) -->
+        <CollectionView x:Name="CostsListView"
+            ItemsSource="{Binding Costs}"
+            ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedCost}"
+            ItemSizingStrategy="MeasureAllItems"
+            EmptyView="No costs defined">
+            <CollectionView.GestureRecognizers>
+                <!--GestureRecognizer on a CollectionView Inhibits Scrolling, but there are never enough costs to scroll-->
+                <SwipeGestureRecognizer Direction="Right"  Command="{Binding GoToItemsCommand}"/>
+                <TapGestureRecognizer Command="{Binding DeselectCostCommand}" />
+                <TapGestureRecognizer NumberOfTapsRequired="2" 
+                    Command="{Binding DisplayPaymentsCommand}"
+                    CommandParameter="{Binding SelectedCost}" />
+            </CollectionView.GestureRecognizers>
+        </CollectionView>
+        <!--#endregion-->
+        <!--#region Hint -->
+        <Border IsVisible="{Binding ShowTotalsHint}" Style="{StaticResource HintStyle}">
+            <VerticalStackLayout>
+                <Label Text="Swipe person or page" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="Double tap changes Title" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="See Help for more info" FontSize="Large" HorizontalOptions="Center"/>
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <CheckBox IsChecked="{Binding ShowTotalsHint, Converter={StaticResource Not}}"/>
+                    <Label Text="Hide this hint" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+        <!--#endregion-->
+        <!--#region Undelete -->
+        <HorizontalStackLayout HorizontalOptions="Center" IsVisible="{Binding IsAnyDeletedCost}" Spacing="10">
+            <Button Text="UnDelete" Command="{Binding UndeleteCostCommand}"/>
+            <Button Text="UnDelete All" Command="{Binding UndeleteAllCostsCommand}" IsVisible="{Binding IsManyDeletedCosts}"/>
+        </HorizontalStackLayout>
+        <!--#endregion-->
+        <!--#region Total Amounts -->
+        <!--#region Unshared amount (if suspiciously large) -->
+        <Label IsVisible="{Binding IsUnsharedAmountSignificant}"
+                Text="{Binding RoundingErrorAmount, StringFormat='Oops, rounding error {0:C}'}"
+                FontSize="Large" HorizontalTextAlignment="Center">
+        </Label>
+        <!--#endregion-->
+        <!--#region Unallocated amount (if any nonzero item has not been allocated) -->
+        <Label IsVisible="{Binding Path=IsAnyUnallocated}"
+                Text="{Binding Path=UnallocatedAmount, StringFormat='Unallocated Amount {0:C}'}"
+                FontSize="Large" HorizontalTextAlignment="Center">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowUnallocatedCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <!--#endregion-->
+        <!--#region Sum of Rounded Amounts -->
+        <Label Style="{StaticResource labelStyle}" FontAttributes="Bold" HorizontalOptions="Center" IsVisible="{Binding Path=IsAnyUnallocated,Converter={StaticResource Not}}">
+            <Label.FormattedText>
+                <FormattedString>
+                    <FormattedString.Spans>
+                        <Span Text="Total of Rounded"/>
+                        <Span Text="{Binding Path = RoundedAmount, StringFormat='~{0:C0}'}"/>
+                    </FormattedString.Spans>
+                </FormattedString>
+            </Label.FormattedText>
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand}"/>
+            </Label.GestureRecognizers>
+        </Label>
+        <!--#endregion-->
+        <!--#endregion-->
+        <!--#region Number Block (Subtotal, Tax, Tip, Total) -->
+        <!--This is the block of numbers at the bottom of the page-->
+        <Border Margin="3" Padding="5" 
+                Stroke="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}">
+            <Grid ColumnSpacing="0" RowSpacing="0" ColumnDefinitions ="6*,Auto,*,Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto">
+                <Grid.GestureRecognizers>
+                    <SwipeGestureRecognizer Direction="Right" Command="{Binding GoToItemsCommand}"/>
+                    <TapGestureRecognizer Command="{Binding PushPropertiesCommand}"/>
+                </Grid.GestureRecognizers>
+                <!--Column Descriptions 
+                    First Column contains the line descriptions
+                    Second Column, only a couple of rows have text (tax and tip Rates)
+                    Third column is blank, it's just used for spacing
+                    Fourth column has all the amounts in it-->
+                <!--#region Subtotal -->
+                <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="Large" LineBreakMode="TailTruncation" Text="Bill Subtotal"/>
+                <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubTotal, StringFormat='{0:C}'}" Style="{StaticResource labelStyle}">
+                    <Label.Behaviors>
+                        <services:CurrencyLabelBehavior
+                        ValidStyle="{StaticResource ValidLabelStyle}"
+                        UnequalStyle="{StaticResource UnequalLabelStyle}"
+                        EqualValue="{Binding ScannedSubTotal}"
+                        TestEquality="{Binding ScannedSubTotal, Converter={services:IsNonZeroConverter}}"
+                    />
+                    </Label.Behaviors>
+                </Label>
+                <!--#endregion-->
+                <!--#region Tax -->
+                <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Tax"/>
+                            <Span Text="{Binding IsDefaultTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Padding="0,0,18,0">
+                    <Label Style="{StaticResource labelStyle}" Text="~" IsVisible="{Binding TaxDelta, Converter={services:IsNonZeroConverter}}"/>
+                    <Label Style="{StaticResource labelStyle}" Text="{Binding TaxRate, StringFormat='{0:0.00}%'}"/>
+                </HorizontalStackLayout>
+                <Label Grid.Row="1" Grid.Column="3" 
+                    Text="{Binding Tax, StringFormat='{0:C}'}">
+                    <Label.Behaviors>
+                        <services:CurrencyLabelBehavior
+                        ValidStyle="{StaticResource ValidLabelStyle}"
+                        UnequalStyle="{StaticResource UnequalLabelStyle}"
+                        EqualValue="{Binding ScannedTax}"
+                        TestEquality="{Binding ScannedTax, Converter={services:IsNonZeroConverter}}"
+                    />
+                    </Label.Behaviors>
+                </Label>
+                <!--#endregion-->
+                <!--#region Coupon after Tax-->
+                <Label Grid.Row="2" Grid.ColumnSpan="2" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax"
+                        IsVisible="{Binding CouponAmountAfterTax, Converter={services:IsNonZeroConverter}}"/>
+                <Label Grid.Row="2" Grid.Column="3" FontSize="Large" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}"
+                    Text="{Binding Path = CouponAmountAfterTax, StringFormat='{0:C}'}" IsVisible="{Binding CouponAmountAfterTax, Converter={services:IsNonZeroConverter}}"/>
+                <!--#endregion-->
+                <!--#region Tip -->
+                <Label Grid.Row="3" FontSize="Large" LineBreakMode="TailTruncation">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Tip"/>
+                            <Span Text="{Binding IsDefaultTip, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Padding="0,0,18,0">
+                    <Label Style="{StaticResource labelStyle}" Text="~" IsVisible="{Binding TipDelta, Converter={services:IsNonZeroConverter}}"/>
+                    <Label Style="{StaticResource labelStyle}" Text="{Binding TipRate, Converter={StaticResource Percent}}"/>
+                </HorizontalStackLayout>
+                <Label Grid.Row="3" Grid.Column="3" Style="{StaticResource labelStyle}" 
+                    Text="{Binding Path = Tip, StringFormat='{0:C}'}"/>
+                <!--#endregion-->
+                <!--#region Total -->
+                <Label Grid.Row="4" FontSize="Large" LineBreakMode="TailTruncation">Total</Label>
+                <Label Grid.Row="4" Grid.Column="3" Style="{StaticResource labelStyle}"
+                    Text="{Binding Path = TotalAmount, StringFormat='{0:C}'}"/>
+                <!--#endregion-->
+            </Grid>
+        </Border>
+        <!--#endregion-->
+    </services:ColumnLayout>
+</ContentPage>

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Tutorial"
+             xmlns:views="clr-namespace:DivisiBill.Views"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:TutorialPage}"
+             x:DataType="views:TutorialPage"
+             x:Class="DivisiBill.Views.TutorialPage">
+    <ScrollView>
+        <VerticalStackLayout Margin="20,0">
+            <Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto, auto, auto" >
+                <Label Grid.Row="0" Grid.ColumnSpan="3">
+                    <Label.Text xml:space="preserve">
+This page will lead you through the creation of a bill step by step.
+
+Some steps, like creating a person, are optional, or might only be done once.
+                </Label.Text>
+                </Label>
+                <CheckBox Grid.Row="1" Grid.Column="0" CheckedChanged="OnAddPeopleChanged"/>
+                <Label Grid.Row="1" Grid.Column="1" Text="Add people for later use in bills (optional)" VerticalOptions="Center"/>
+                <CheckBox Grid.Row="2" Grid.Column="0" CheckedChanged="OnAddVenueChanged"/>
+                <Label Grid.Row="2" Grid.Column="1" Text="Add venues for later use in Bills (optional)" VerticalOptions="Center"/>
+                <CheckBox Grid.Row="3" Grid.Column="0" CheckedChanged="OnLineItemsChanged"/>
+                <Label Grid.Row="3" Grid.Column="1" Text="Edit the list of purchased items" VerticalOptions="Center"/>
+                <CheckBox Grid.Row="4" Grid.Column="0" CheckedChanged="OnParticipantsChanged"/>
+                <Label Grid.Row="4" Grid.Column="1" Text="Edit the list of participants" VerticalOptions="Center"/>
+                <CheckBox Grid.Row="5" Grid.Column="0" CheckedChanged="OnBillPropertiesChanged"/>
+                <Label Grid.Row="5" Grid.Column="1" Text="Change the bill properties (optional)" VerticalOptions="Center"/>
+                <CheckBox Grid.Row="6" Grid.Column="0" CheckedChanged="OnTakePictureChanged"/>
+                <Label Grid.Row="6" Grid.Column="1" Text="Take a picture of the bill (optional) and scan it (requires an OCR scan license)" VerticalOptions="Center"/>
+                <CheckBox Grid.Row="7" Grid.Column="0" CheckedChanged="OnBuyChanged" IsVisible="{Binding IsNotLicensed}"/>
+                <Label Grid.Row="7" Grid.Column="1" Text="Buy an OCR scan license" VerticalOptions="Center" IsVisible="{Binding IsNotLicensed}"/>
+                <CheckBox Grid.Row="9" Grid.Column="0" IsChecked="{Binding ShowTutorial}"/>
+                <Label Grid.Row="9" Grid.Column="1" Text="Show this page automatically at startup" VerticalOptions="Center"/>
+            </Grid>
+            <Button Text="Exit to Full Application" Clicked="OnDone" HorizontalOptions="Center"/>
+            <Label Text="You can always return to this tutorial page" HorizontalOptions="Center"/>
+            <Label Text="by selecting 'Tutorial' from the flyout list" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

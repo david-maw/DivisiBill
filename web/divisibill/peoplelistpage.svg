@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="1080"
+   height="1054"
+   viewBox="0 0 1080 1054"
+   sodipodi:docname="peoplelistpage.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="1.3289991"
+     inkscape:cx="539.50375"
+     inkscape:cy="156.88498"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="1192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g8"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g8">
+    <image
+       width="1080"
+       height="2220"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       xlink:href="peoplelistpage.png"
+       id="image918"
+       x="-2.5019746"
+       y="-1.4103488" />
+    <a
+       id="a1292"
+       xlink:href="peoplelistglossary.html#flyout"
+       target="_parent"
+       xlink:title="Open/Close Flyout"
+       transform="matrix(0.99390409,0,0,0.8541763,0.76489099,3.204499)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect936"
+         width="94.871796"
+         height="90.708664"
+         x="27.599068"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1348"
+       xlink:href="peoplelistglossary.html#use"
+       target="_parent"
+       xlink:title="Use the selected person"
+       transform="matrix(1.0745036,0,0,1.0244928,-215.05007,-6.0074451)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect940"
+         width="132.82056"
+         height="90.708664"
+         x="691.97437"
+         y="27.144581" />
+    </a>
+    <a
+       id="a1354"
+       xlink:href="peoplelistglossary.html#add"
+       target="_parent"
+       xlink:title="Add a Person"
+       transform="matrix(1.2390119,0,0,1.0244928,-511.65217,-10.007445)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.5464;stroke-linecap:round"
+         id="rect944"
+         width="119.021"
+         height="90.708664"
+         x="953.89276"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1348-0"
+       xlink:href="peoplelistglossary.html#delete"
+       target="_parent"
+       xlink:title="Delete the selected person"
+       transform="matrix(1.1693504,0,0,1.0244928,13.312086,-10.007445)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect940-4"
+         width="132.82056"
+         height="90.708664"
+         x="688.25171"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1354-9"
+       xlink:href="peoplelistglossary.html#ellipsis"
+       target="_parent"
+       xlink:title="Open menu"
+       transform="matrix(0.79001542,0,0,1.0244928,220.56306,-10.007445)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.5464;stroke-linecap:round"
+         id="rect944-4"
+         width="119.021"
+         height="90.708664"
+         x="953.89276"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1185"
+       xlink:href="peoplelistglossary.html#person"
+       target="_Parent"
+       xlink:title="Individual Person"
+       transform="matrix(3.8389302,0,0,7.9343262,143.15373,-715.41679)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
+         id="rect1098"
+         width="281.22311"
+         height="20.904383"
+         x="-37.958656"
+         y="117.01543" />
+    </a>
+  </g>
+</svg>

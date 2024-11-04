@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="DivisiBill.Views.AboutPage"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             BindingContext="{vm:SettingsViewModel}"
+             x:DataType="vm:SettingsViewModel"
+             Title="About">
+
+    <Grid x:DataType="vm:SettingsViewModel" RowDefinitions="*, Auto,*, Auto">
+        <ContentView Padding="10" BackgroundColor="Red">
+            <Image Source="divisibillfg.png"/>
+        </ContentView>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,10,16,20">
+                <Label FontSize="22" HorizontalOptions="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="DivisiBill " />
+                                <Span Text="{x:Static services:Utilities.VersionName}" />
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label FontSize="22" HorizontalOptions="Center" Text="by Autoplus Software"/>
+                <!--Note that only one of the next two lines is visible-->
+                <Label FontSize="22" HorizontalOptions="Center" Text="Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
+                <Label FontSize="22" HorizontalOptions="Center" Text="Professional Edition" IsVisible="{Binding Path=IsLimited, Converter={StaticResource Not}}"/>
+                <Label HorizontalOptions="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Build "/>
+                                <Span Text="{x:Static services:Utilities.BuildName}"/>
+                                <Span Text=" at "/>
+                                <Span Text="{x:Static services:Utilities.BuildTime}"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Button Margin="0,20,0,0" Text="Learn more about AutoPlus Software"
+                        Command="{Binding OpenAutoPlusCommand}"
+                        BackgroundColor="Red"
+                        TextColor="White" />
+            </VerticalStackLayout>
+        </ScrollView>
+        <ContentView Grid.Row="2" Padding="10" BackgroundColor="Blue">
+            <Image Source="dotnet.png"/>
+        </ContentView>
+        <VerticalStackLayout Grid.Row="3" Padding="16,10,16,10">
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span Text="This app is written in C# and native APIs using the " />
+                            <Span Text=".NET MAUI Platform" FontAttributes="Bold" />
+                            <Span Text="." />
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Button Margin="0,20,0,0" Text="Learn more about .NET MAUI"
+                    Command="{Binding OpenWebCommand}"
+                    BackgroundColor="Blue"
+                    TextColor="White" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

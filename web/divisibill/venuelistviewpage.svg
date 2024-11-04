@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="285.75mm"
+   height="169.06876mm"
+   viewBox="0 0 285.75 169.06876"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="venuelistviewpage.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="0.67081229"
+     inkscape:cx="599.27346"
+     inkscape:cy="373.42786"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="1192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(39.536346,-49.56921)">
+    <image
+       width="285.75"
+       height="169.06876"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       xlink:href="venuelistviewpage.png"
+       id="image832"
+       x="-39.536346"
+       y="49.56921"
+       inkscape:label="Bills Image" />
+    <a
+       id="a1292"
+       xlink:href="venuelistviewglossary.html#flyout"
+       target="_parent"
+       xlink:title="Open/Close Flyout"
+       transform="matrix(0.26829332,0,0,0.26080057,-39.21879,67.673498)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect936"
+         width="94.871796"
+         height="90.708664"
+         x="27.599068"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1348"
+       xlink:href="venuelistviewglossary.html#use"
+       target="_parent"
+       xlink:title="Use the selected venue"
+       transform="matrix(0.26728168,0,0,0.28688996,-71.903893,64.891337)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.8328;stroke-linecap:round"
+         id="rect940"
+         width="146.7023"
+         height="90.708664"
+         x="640.0968"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1351"
+       xlink:href="venuelistviewglossary.html#add"
+       target="_parent"
+       xlink:title="Add a Venue"
+       transform="matrix(0.30761053,0,0,0.28688996,-114.06094,64.891337)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect942"
+         width="132.82051"
+         height="90.708664"
+         x="821.07227"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1354"
+       xlink:href="venuelistviewglossary.html#delete"
+       target="_parent"
+       xlink:title="Delete Selected or All Venues"
+       transform="matrix(0.30761053,0,0,0.28688996,-113.66652,64.891337)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.5464;stroke-linecap:round"
+         id="rect944"
+         width="119.021"
+         height="90.708664"
+         x="953.89276"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1404"
+       xlink:href="venuelistviewglossary.html#ellipsis"
+       target="_parent"
+       xlink:title="Open secondary menu"
+       transform="matrix(0.19328136,0,0,0.28688996,31.193073,64.891337)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
+         id="rect938"
+         width="141.44522"
+         height="90.708664"
+         x="960"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1185"
+       xlink:href="venuelistviewglossary.html#venue"
+       target="_Parent"
+       xlink:title="Individual Venue"
+       transform="translate(0,13.758336)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
+         id="rect1098"
+         width="281.22311"
+         height="20.904383"
+         x="-37.958656"
+         y="117.01543" />
+    </a>
+    <a
+       id="a1182"
+       xlink:href="venuelistviewglossary.html#heading"
+       target="_parent"
+       xlink:title="Venue List Title"
+       transform="translate(0,17.991672)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
+         id="rect1100"
+         width="150.66933"
+         height="15.776893"
+         x="25.543333"
+         y="92.955666" />
+    </a>
+  </g>
+</svg>

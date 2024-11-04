@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="svg836"
+   width="1080"
+   height="2220"
+   viewBox="0 0 1080 2220"
+   sodipodi:docname="datamanagementpage.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata31">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs840" />
+  <sodipodi:namedview
+     id="namedview838"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="0.51316815"
+     inkscape:cx="539.78408"
+     inkscape:cy="1228.6421"
+     inkscape:window-width="1066"
+     inkscape:window-height="1377"
+     inkscape:window-x="31"
+     inkscape:window-y="39"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g842"
+     inkscape:document-rotation="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g842">
+    <image
+       xlink:href="datamanagementpage.png"
+       inkscape:label="manage data page"
+       id="image844"
+       style="fill:#00ff00;fill-opacity:0.25;image-rendering:optimizeQuality"
+       preserveAspectRatio="none"
+       height="2220"
+       width="1080" />
+    <a
+       xlink:href="datamanagementglossary.html#limit-bills-switch"
+       transform="matrix(0.8921546,0,0,0.89459829,45.841445,-436.28427)"
+       inkscape:label="wifi"
+       xlink:title="Limit Range of Bills Used"
+       target="_parent"
+       id="a938-8-36">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-7"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#archive-button"
+       transform="matrix(0.23879972,0,0,2.7633308,103.29799,-3730.492)"
+       inkscape:label="wifi"
+       xlink:title="Create an archive"
+       target="_parent"
+       id="a938-8-9">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#download-bills-button"
+       transform="matrix(0.49279487,0,0,1.4454978,270.494,-994.06568)"
+       inkscape:label="wifi"
+       xlink:title="Download missing bills"
+       target="_parent"
+       id="a938-8-9-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-9"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#overwrite-option"
+       transform="matrix(0.56430199,0,0,0.90720311,366.57396,-610.20161)"
+       inkscape:label="wifi"
+       xlink:title="Overwrite existing items"
+       target="_parent"
+       id="a938-8-9-5">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-1"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1450.4404" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#delete-option"
+       transform="matrix(0.56430199,0,0,0.90720311,366.57396,-722.17538)"
+       inkscape:label="wifi"
+       xlink:title="Delete all items before restore"
+       target="_parent"
+       id="a938-8-9-5-9">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-1-0"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1450.4404" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#archive-to-disk"
+       transform="matrix(0.23948204,0,0,0.90720311,378.0656,-845.0448)"
+       inkscape:label="wifi"
+       xlink:title="Store Archive on Disk"
+       target="_parent"
+       id="a938-8-9-5-6">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-1-1"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1450.4404" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#share-archive"
+       transform="matrix(0.56430199,0,0,0.90720311,368.57396,-957.91422)"
+       inkscape:label="wifi"
+       xlink:title="Share an archive in mail etc."
+       target="_parent"
+       id="a938-8-9-5-61">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:14.773;stroke-linecap:round"
+         id="rect846-9-1-1-17"
+         width="437.9126"
+         height="88.446213"
+         x="35.378487"
+         y="1450.4404" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#restore-button"
+       transform="matrix(0.23948204,0,0,2.603695,103.40602,-3196.3943)"
+       inkscape:label="wifi"
+       xlink:title="Restore an archive"
+       target="_parent"
+       id="a938-8-9-5-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-1-6"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1450.4404" />
+    </a>
+    <a
+       xlink:href="datamanagementglossary.html#select-bills-button"
+       transform="matrix(0.81831522,0,0,0.53039369,102.00997,503.31888)"
+       inkscape:label="scans"
+       xlink:title="Select older bills"
+       target="_parent"
+       id="a941-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+  </g>
+</svg>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="1080"
+   height="430"
+   viewBox="0 0 1080 430"
+   sodipodi:docname="imagepage.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="0.55"
+     inkscape:cx="540"
+     inkscape:cy="217.27273"
+     inkscape:window-width="1054"
+     inkscape:window-height="575"
+     inkscape:window-x="59"
+     inkscape:window-y="294"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g8"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g8">
+    <image
+       width="1080"
+       height="430"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       xlink:href="imagepage.png"
+       id="image10"
+       inkscape:label="Items Page" />
+    <a
+       id="a1292"
+       xlink:href="imageglossary.html#flyout"
+       target="_parent"
+       xlink:title="Open/Close Flyout"
+       transform="matrix(1,0,0,1.0630454,0,62.042508)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect936"
+         width="94.871796"
+         height="90.708664"
+         x="27.599068"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1345"
+       xlink:href="imageglossary.html#camera"
+       target="_parent"
+       xlink:title="Take a picture of the bill"
+       transform="matrix(1.0093203,0,0,1.0630454,121.16259,59.128839)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
+         id="rect938"
+         width="141.44522"
+         height="90.708664"
+         x="546.80652"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1348"
+       xlink:href="imageglossary.html#light"
+       target="_parent"
+       xlink:title="Turn on/off the light"
+       transform="matrix(1.132916,0,0,1.0630454,-257.2117,58.157616)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect940"
+         width="132.82056"
+         height="90.708664"
+         x="688.25171"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1351"
+       xlink:href="imageglossary.html#ocr"
+       target="_parent"
+       xlink:title="Scan the image for text"
+       transform="matrix(1.0159192,0,0,1.0309242,-18.379121,63.039837)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect942"
+         width="132.82051"
+         height="90.708664"
+         x="821.07227"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1354"
+       xlink:href="imageglossary.html#ellipsis"
+       target="_parent"
+       xlink:title="Open secondary menu"
+       transform="matrix(0.77387169,0,0,1.0630454,230.96153,62.042508)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.5464;stroke-linecap:round"
+         id="rect944"
+         width="119.021"
+         height="90.708664"
+         x="953.89276"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1177"
+       xlink:href="imageglossary.html#image-area"
+       target="_parent"
+       xlink:title="Image Area"
+       transform="matrix(2.1895645,0,0,1.8007605,-638.47143,-61.391496)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect1048"
+         width="474.35898"
+         height="74.172493"
+         x="296.68997"
+         y="167.31935" />
+    </a>
+  </g>
+</svg>

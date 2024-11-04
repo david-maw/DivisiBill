@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+<head>
+    <title>Items Glossary</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1 id="items-glossary">Items Glossary</h1>
+<p>This is a list of the important areas on the Items page as seen from left to right, top to bottom. You can see an image of the page itself <a href="meallistpage.html">here</a>. If you reached this page by tapping one of the active areas in the page image, the relevant heading should be highlighted below.</p>
+<h2 id="icons">Icons</h2>
+<p>These appear in the tool bar at the top of the page or in the area revealed when you swipe on a participant line.</p>
+<h3 id="flyout">Flyout (<u>󰍜</u>)</h3>
+<p>This icon, in the top left corner of the screen, allows you to show or collapse the flyout menu to navigate to other pages.</p>
+<h3 id="selection-mode">Selection Mode (<u>󰉹</u>)</h3>
+<p>Determines whether a single bill or multiple bills may be selected.</p>
+<h3 id="delete">Delete (<u>󰩺</u>)</h3>
+<p>Deletes the selected item or items (you can Undo this if you do it by mistake). To delete a single item, you can also swipe left on that item.</p>
+<h3 id="ellipsis">Ellipsis (<u>󰇙</u>)</h3>
+<p>Tap on the ellipsis to open a secondary menu containing additional commands:</p>
+<pre><code>- Use and Show Details - This duplicate the swipe right or 
+  double tap actions (single tap now selects or deselects a bill)
+- Download - This duplicates the effect of a single tap to the 
+  right of an item.
+- Show All / Show Latest - Restrict the bills shown to only 
+  the latest per venue.
+- Show Bills / Show Venues - Allows you to show all bills 
+  or just the latest one for each venue.
+- Show/Hide Local/Remote which allows you to limit the display of 
+  bills to only those stored locally or remotely or both. 
+  Bills which are hidden are deselected.
+- Select None, Select All and Invert Selection allowing manipulation
+  of the list of selected bills. Note that Select All actually selects all except the current bill.
+</code></pre>
+<h2 id="filter-indicator">Filter Indicator</h2>
+<p>This tells you whether &quot;Show Bills&quot; or &quot;Show Venues&quot; are currently selected, this is also indicated by the Location icon (see <a href="#location">Location</a>).</p>
+<h2 id="selected">Selected</h2>
+<p>This column is only visible if the selection mode has been used to choose multiple selection. It indicates whether a given item has been selected.</p>
+<h2 id="bill">Bill</h2>
+<p>Each entry in this list represents a single bill. You can swipe it left to delete a copy of the bill (if both local and remote ones are shown it will delete the local one), or swipe right to make it the current bill (which may save the bill you were using previously if it has been changed). The current bill never shows in this list.</p>
+<p>Tapping on the center of a bill will select or deselect it, double tapping will show a quick summary of it.</p>
+<h2 id="location">Location</h2>
+<p>This column shows where the bill is stored, either locally (<u>󰉖</u>/<u>󰉋</u>), in the cloud (<u>󰅣</u>/<u>󰅟</u>), or both. If it stored in the cloud, tapping in this column will download it.</p>
+<p>If cloud access is allowed but you are not currently showing remote (cloud resident) bills, local bills will still show the cloud icon if they are also stored in the cloud. If either local or remote bills are not being shown an outline icon will be used instead of a filled-in one (also see the <a href="#filter-indicator">Filter Indicator</a>).</p>
+<p>For a remote-only bill, tapping on this column will download it, use the <a href="datamanagementpage.html">Manage Data</a> page to select all such bills. Note that there is no Upload selection on this page because all local bills are uploaded automatically if cloud storage is available and enabled.</p>
+
+<script src="script.js"></script>
+</body>
+</html>

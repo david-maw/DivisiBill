@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:viewModels="clr-namespace:DivisiBill.ViewModels"
+             xmlns:local="clr-namespace:DivisiBill"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+             android:Application.WindowSoftInputModeAdjust="Resize"
+             x:Class="DivisiBill.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <services:TrueToStringConverter x:Key="TrueToString" />
+            <services:CurrencyConverter x:Key="Currency" />
+            <services:PercentConverter x:Key="Percent" />
+            <services:InvertBoolConverter x:Key="Not"/>
+            <services:DistanceConverter x:Key="Distance"/>
+            <services:LocationConverter x:Key="Location"/>
+
+            <viewModels:CloudViewModel x:Key="CloudViewModel"/>
+            <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> <!--This is defined in code-->
+
+            <Color x:Key="PrimaryColor">#512bdf</Color>
+            <Color x:Key="SecondaryColor">White</Color>
+            <Color x:Key="TitlebarColor">#2196f3</Color>
+            <Color x:Key="DarkText">#141414</Color>
+            <Color x:Key="TransparentGreen">#14008000</Color>
+            <Color x:Key="TransparentRed">#14FF0000</Color>
+            <Color x:Key="LightRed">#F9C</Color>
+            <Color x:Key="DarkRed">#900</Color>
+            <Color x:Key="SelectedBackGroundColor">#f17b01</Color> <!--Same color that Android uses by default-->
+            <!-- ICON NAME -->
+            <FontImageSource x:Key="FileGlyphLocalDarkOutline"   Color="Blue"          Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
+            <FontImageSource x:Key="FileGlyphRemoteDarkOutline"  Color="Blue"          Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
+            <FontImageSource x:Key="FileGlyphLocalLightOutline"  Color="LightSkyBlue"  Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
+            <FontImageSource x:Key="FileGlyphRemoteLightOutline" Color="LightSkyBlue"  Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
+            <FontImageSource x:Key="FileGlyphLocalDark"          Color="Blue"          Glyph="&#xF024B;" FontFamily="mdicons"/><!--folder-->
+            <FontImageSource x:Key="FileGlyphRemoteDark"         Color="Blue"          Glyph="&#xF015F;" FontFamily="mdicons"/><!--cloud-->
+            <FontImageSource x:Key="FileGlyphLocalLight"         Color="LightSkyBlue"  Glyph="&#xF024B;" FontFamily="mdicons"/><!--folder-->
+            <FontImageSource x:Key="FileGlyphRemoteLight"        Color="LightSkyBlue"  Glyph="&#xF015F;" FontFamily="mdicons"/><!--cloud-->
+
+            <FontImageSource x:Key="ListGlyphUnselected"        Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0130;" FontFamily="mdicons"/> <!--checkbox-blank-circle-outline-->
+            <FontImageSource x:Key="ListGlyphSelected"          Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0134;" FontFamily="mdicons"/> <!--checkbox-marked-circle-outline-->
+
+            <FontImageSource x:Key="GlyphAdd"                   Color="White" Glyph="&#xF0419;" FontFamily="mdicons"/> <!--plus-circle-outline-->
+            <FontImageSource x:Key="GlyphCamera"                Color="White" Glyph="&#xF0D5D;" FontFamily="mdicons"/> <!--camera-outline-->
+            <FontImageSource x:Key="GlyphCancel"                Color="White" Glyph="&#xF073A;" FontFamily="mdicons"/> <!--cancel-->
+            <FontImageSource x:Key="GlyphCheck"                 Color="White" Glyph="&#xF012C;" FontFamily="mdicons"/> <!--check-->
+            <FontImageSource x:Key="GlyphClose"                 Color="White" Glyph="&#xF0156;" FontFamily="mdicons"/> <!--close-->
+            <FontImageSource x:Key="GlyphCloud"                 Color="White" Glyph="&#xF015F;" FontFamily="mdicons"/> <!--cloud-->
+            <FontImageSource x:Key="GlyphCloudDownload"         Color="White" Glyph="&#xF0162;" FontFamily="mdicons"/> <!--cloud-download-->
+            <FontImageSource x:Key="GlyphCloudDownloadOutline"  Color="White" Glyph="&#xF0B7D;" FontFamily="mdicons"/> <!--cloud-download-outline-->
+            <FontImageSource x:Key="GlyphCloudOffOutline"       Color="White" Glyph="&#xF0164;" FontFamily="mdicons"/> <!--cloud-off-outline-->
+            <FontImageSource x:Key="GlyphCloudOutline"          Color="White" Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
+            <FontImageSource x:Key="GlyphCrop"                  Color="White" Glyph="&#xF019E;" FontFamily="mdicons"/> <!--crop-->
+            <FontImageSource x:Key="GlyphDecrement"             Color="White" Glyph="&#xF0377;" FontFamily="mdicons"/> <!--minus-circle-outline-->
+            <FontImageSource x:Key="GlyphDel"                   Color="White" Glyph="&#xF0A7A;" FontFamily="mdicons"/> <!--trash-can-->
+            <FontImageSource x:Key="GlyphEdit"                  Color="White" Glyph="&#xF1A7D;" FontFamily="mdicons"/> <!--text-box-edit-outline-->
+            <FontImageSource x:Key="GlyphExit"                  Color="White" Glyph="&#xF0206;" FontFamily="mdicons"/> <!--exit-to-app-->
+            <FontImageSource x:Key="GlyphFile"                  Color="White" Glyph="&#xF0224;" FontFamily="mdicons"/> <!--file-outline-->
+            <FontImageSource x:Key="GlyphFileEdit"              Color="White" Glyph="&#xF11E8;" FontFamily="mdicons"/> <!--file-edit-outline-->
+            <FontImageSource x:Key="GlyphFilterOff"             Color="White" Glyph="&#xF14F0;" FontFamily="mdicons"/> <!--filter-off-outline-->
+            <FontImageSource x:Key="GlyphFilterOn"              Color="White" Glyph="&#xF0233;" FontFamily="mdicons"/> <!--filter-outline-->
+            <FontImageSource x:Key="GlyphFlashOff"              Color="White" Glyph="&#xF0243;" FontFamily="mdicons"/> <!--flash-off-->
+            <FontImageSource x:Key="GlyphFlashOn"               Color="White" Glyph="&#xF0241;" FontFamily="mdicons"/> <!--flash-->
+            <FontImageSource x:Key="GlyphFlashlightOff"         Color="White" Glyph="&#xF0245;" FontFamily="mdicons"/> <!--flashlight-off-->
+            <FontImageSource x:Key="GlyphFlashlightOn"          Color="White" Glyph="&#xF0244;" FontFamily="mdicons"/> <!--flashlight-->
+            <FontImageSource x:Key="GlyphFolder"                Color="White" Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-outline-->
+            <FontImageSource x:Key="GlyphFolderOff"             Color="White" Glyph="&#xF19F9;" FontFamily="mdicons"/> <!--folder-off-outline-->
+            <FontImageSource x:Key="GlyphImages"                Color="White" Glyph="&#xF0978;" FontFamily="mdicons"/> <!--image-search-outline-->
+            <FontImageSource x:Key="GlyphImport"                Color="White" Glyph="&#xF02FA;" FontFamily="mdicons"/> <!--import-->
+            <FontImageSource x:Key="GlyphIncrement"             Color="White" Glyph="&#xF0419;" FontFamily="mdicons"/> <!--plus-circle-outline-->
+            <FontImageSource x:Key="GlyphList"                  Color="White" Glyph="&#xF0279;" FontFamily="mdicons"/> <!--format-list-bulleted-->
+            <FontImageSource x:Key="GlyphLoad"                  Color="White" Glyph="&#xF02FA;" FontFamily="mdicons"/> <!--import-->
+            <FontImageSource x:Key="GlyphMail"                  Color="White" Glyph="&#xF01F0;" FontFamily="mdicons"/> <!--email-outline-->
+            <FontImageSource x:Key="GlyphMap"                   Color="White" Glyph="&#xF0982;" FontFamily="mdicons"/> <!--map-outline-->
+            <FontImageSource x:Key="GlyphNull"                  Color="White" Glyph="&#xF07E2;" FontFamily="mdicons"/> <!--null-->
+            <FontImageSource x:Key="GlyphOCR"                   Color="White" Glyph="&#xF113A;" FontFamily="mdicons"/> <!--ocr-->
+            <FontImageSource x:Key="GlyphPersonEdit"            Color="White" Glyph="&#xF0FFB;" FontFamily="mdicons"/> <!--account-edit-outline-->
+            <FontImageSource x:Key="GlyphReplace"               Color="White" Glyph="&#xF0B33;" FontFamily="mdicons"/> <!--file-replace-outline-->
+            <FontImageSource x:Key="GlyphMapMarker"             Color="White" Glyph="&#xF07D9;" FontFamily="mdicons"/> <!--map-marker-outline-->
+            <FontImageSource x:Key="GlyphMapMarkerRemove"       Color="White" Glyph="&#xF12FA;" FontFamily="mdicons"/> <!--map-marker-remove-outline-->
+            <FontImageSource x:Key="GlyphRestore"               Color="White" Glyph="&#xF099B;" FontFamily="mdicons"/> <!--restore-->
+            <FontImageSource x:Key="GlyphSave"                  Color="White" Glyph="&#xF0818;" FontFamily="mdicons"/> <!--content-save-outline-->
+            <FontImageSource x:Key="GlyphShare"                 Color="White" Glyph="&#xF0041;" FontFamily="mdicons"/> <!--arrow-all-->
+            <FontImageSource x:Key="GlyphSort"                  Color="White" Glyph="&#xF04BA;" FontFamily="mdicons"/> <!--sort-->
+            <FontImageSource x:Key="GlyphToc"                   Color="White" Glyph="&#xF0836;" FontFamily="mdicons"/> <!--table-of-contents-->
+            <FontImageSource x:Key="GlyphUndo"                  Color="White" Glyph="&#xF054C;" FontFamily="mdicons"/> <!--undo-->
+
+            <Style x:Key="HintStyle" TargetType="Border">
+                <Setter Property="Padding" Value="5"/>
+                <Setter Property="Margin" Value="5"/>
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Blue100Accent}}"/>
+                <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+            </Style>
+
+            <Style x:Key="RedLabelTextStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="Red" />
+            </Style>
+
+            <Style x:Key="UnequalEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Yellow100Accent}}" />
+            </Style>
+            <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightRed}, Dark={StaticResource DarkRed}}" />
+            </Style>
+            <Style x:Key="ValidEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

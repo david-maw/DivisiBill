@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DivisiBill"
+             xmlns:views="clr-namespace:DivisiBill.Views"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             BindingContext="{vm:DataManagementViewModel}"
+             x:DataType="vm:DataManagementViewModel"
+             Title="Manage Data"
+             x:Class="DivisiBill.Views.DataManagementPage">
+    <VerticalStackLayout Spacing="10">
+        <!--#region Archive / Restore -->
+        <Label Text="Archive and Restore" HorizontalOptions="Center" FontSize="Medium"/>
+        <Grid RowDefinitions="auto, auto, auto, auto"  ColumnDefinitions="auto, auto" ColumnSpacing="10" Margin="10" HorizontalOptions="Center">
+            <Button      Grid.Row="0" Grid.RowSpan="2" Text="Archive" Command="{Binding ArchiveCommand}" Margin="5"/>
+            <RadioButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding ArchiveShare}" Content="Share" GroupName="ArchiveGroup"/>
+            <RadioButton Grid.Row="1" Grid.Column="1" IsChecked="{Binding ArchiveToDisk}" Content="To Disk" GroupName="ArchiveGroup"/>
+
+            <Button Grid.Row="2" Grid.RowSpan="2" Text="Restore" LineBreakMode="WordWrap" Command="{Binding RestoreArchiveCommand}" Margin="5"/>
+            <HorizontalStackLayout  Grid.Row="2" Grid.Column="1">
+                <CheckBox IsChecked="{Binding DeleteBeforeRestore}"/>
+                <Label Text="Delete Everything First" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="3" Grid.Column="1" IsEnabled="{Binding DeleteBeforeRestore,Converter={StaticResource Not}}">
+                <CheckBox IsChecked="{Binding OverwriteDuplicates}"/>
+                <Label Text="Overwrite Duplicate Items" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+        </Grid>
+        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+            <Label Text="Limit Bills" VerticalOptions="Center"/>
+            <CheckBox IsChecked="{Binding FilterByDate}"/>
+            <DatePicker  MinimumDate="1/1/2000" MaximumDate="{Binding FinishDate}" Date="{Binding StartDate}"/>
+            <Label Text="thru" VerticalOptions="Center"/>
+            <DatePicker MinimumDate="{Binding StartDate}" MaximumDate="1/1/3000" Date="{Binding FinishDate}"/>
+        </HorizontalStackLayout>
+        <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="30,0"/>
+        <!--#endregion-->
+        <!--#region Bill Management -->
+        <Label Text="Bill Management" HorizontalOptions="Center" FontSize="Medium"/>
+        <Button Text="Select Downloadable Bills" Command ="{Binding SelectDownloadableCommand}" HorizontalOptions="Center"/>
+        <Button Text="Select All But Latest Bill Per Venue" Command = "{Binding SelectOlderCommand}" HorizontalOptions="Center"/>
+        <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="30,0"/>
+        <!--#endregion-->
+        <!--#region Progress Reporting -->
+        <ActivityIndicator IsRunning="True" IsVisible="{Binding IsBusy}" HeightRequest="50" HorizontalOptions="Center"/>
+        <!--#endregion-->
+    </VerticalStackLayout>
+</ContentPage>

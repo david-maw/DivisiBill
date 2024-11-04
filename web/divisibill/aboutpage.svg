@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg836"
+   width="1080"
+   height="2220"
+   viewBox="0 0 1080 2220"
+   sodipodi:docname="aboutpage.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs840" />
+  <sodipodi:namedview
+     id="namedview838"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="0.33918919"
+     inkscape:cx="399.48207"
+     inkscape:cy="1112.9482"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="1192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g842"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g842">
+    <image
+       width="1080"
+       height="2220"
+       preserveAspectRatio="none"
+       style="fill:#00ff00;fill-opacity:0.25;image-rendering:optimizeQuality"
+       xlink:href="aboutpage.png"
+       id="image844"
+       inkscape:label="about page" />
+    <a
+       id="a989-7"
+       xlink:href="aboutglossary.html#information"
+       target="_parent"
+       xlink:title="Program Information"
+       transform="matrix(3.4204545,0,0,1.2439024,-2686.7032,-222.96572)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect985-9"
+         width="259.44223"
+         height="241.75299"
+         x="810.75696"
+         y="751.79285" />
+    </a>
+    <a
+       id="a989-7-8"
+       xlink:href="aboutglossary.html#about-autoplus"
+       target="_parent"
+       xlink:title="More Information About AutoPlus"
+       transform="matrix(4.0340909,0,0,0.6341463,-3251.5039,553.85096)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect985-9-6"
+         width="259.44223"
+         height="241.75299"
+         x="810.75696"
+         y="751.79285" />
+    </a>
+    <a
+       id="a989-7-8-2"
+       xlink:href="aboutglossary.html#about-xamarin"
+       target="_parent"
+       xlink:title="More Information About Xamarin"
+       transform="matrix(4.0340909,0,0,0.6341463,-3248.5557,1362.2812)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect985-9-6-5"
+         width="259.44223"
+         height="241.75299"
+         x="810.75696"
+         y="751.79285" />
+    </a>
+    <a
+       id="a989-7-3"
+       xlink:href="aboutglossary.html#selectable-options"
+       target="_parent"
+       xlink:title="Selectable Options"
+       transform="matrix(3.7954545,0,0,0.41463416,-3011.3745,1754.3208)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect985-9-5"
+         width="259.44223"
+         height="241.75299"
+         x="810.75696"
+         y="751.79285" />
+    </a>
+  </g>
+</svg>

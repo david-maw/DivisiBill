@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DivisiBill.Views.HelpPage"
+             xmlns:views="clr-namespace:DivisiBill.Views"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:HelpPage}"
+             x:DataType="views:HelpPage"
+             Shell.TabBarIsVisible="False"
+             Shell.FlyoutBehavior="Disabled"
+             Title="Help">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Clicked="OnIndexIconClicked" IconImageSource="{StaticResource GlyphToc}"/>
+        <ToolbarItem Clicked="OnExitIconClicked" IconImageSource="{StaticResource GlyphExit}"/>
+    </ContentPage.ToolbarItems>
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackCommand}"/>
+    </Shell.BackButtonBehavior>
+    <Grid>
+        <WebView x:Name="webView"/>
+    </Grid>
+</ContentPage>

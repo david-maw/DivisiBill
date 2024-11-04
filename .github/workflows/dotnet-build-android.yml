@@ -1,0 +1,72 @@
+name: .NET MAUI Build Android
+on:
+  push:
+    branches: [ "alpha" ]
+  workflow_dispatch:
+    
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+      App_Name: DivisiBill
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Restore keystore
+      run: $b64Decoded = [Convert]::FromBase64String("${{ secrets.KEYSTORE_B64 }}");
+        [IO.File]::WriteAllBytes("$PWD/DivisiBill/keystore",$b64Decoded);
+        Dir DivisiBill;
+  
+    # Install the .NET Core workload
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    # Install the .NET MAUI workload
+    - name: Install .NET MAUI
+      run: dotnet workload install maui --ignore-failed-sources
+
+    - name: Restore Dependencies
+      run: dotnet restore DivisiBill/DivisiBill.csproj
+        
+    # Test the release
+    - name: Test
+      run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net8.0-windows10.0.19041.0
+      
+    # Build to apk and aab
+    - name: Build
+      env:
+        DIVISIBILL_WS_URI: ${{ secrets.DIVISIBILL_WS_URI }}
+        DIVISIBILL_WS_KEY: ${{ secrets.DIVISIBILL_WS_KEY }}
+        DIVISIBILL_SENTRY_DSN: ${{ secrets.DIVISIBILL_SENTRY_DSN }}
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      run: dotnet build DivisiBill/DivisiBill.csproj -c Release -f net8.0-android --no-restore /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=keystore /p:AndroidSigningkeyAlias="DivisiBill Upload" /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}"
+
+    # Upload Just the Signed Artifacts (apk and aab)
+    - name: Upload Android Artifact
+      uses: actions/upload-artifact@v4
+      with:
+          path: DivisiBill/bin/Release/net8.0-android/*Signed.a*
+
+    # Deploy to the Play Store
+    - name: Deploy Android Artifact
+      uses: r0adkll/upload-google-play@v1 
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        packageName: com.autoplus.divisibill
+        releaseFiles: DivisiBill/bin/Release/net8.0-android/*Signed.aab
+        track: alpha
+        changesNotSentForReview: false

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:appmodel ="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
+             xmlns:views="clr-namespace:DivisiBill.Views"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:SplashPage}"
+             x:DataType="views:SplashPage"
+             Title="Starting Divisibill, please wait"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="Red"
+             x:Class="DivisiBill.Views.SplashPage">
+    <Shell.TitleView>
+        <Label FontSize="Title" HorizontalTextAlignment="Center"
+               Text="{Binding Title, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}" 
+               BackgroundColor="{Binding BackgroundColor, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"/>
+    </Shell.TitleView>
+    <ContentPage.Content>
+        <Grid RowDefinitions="1*,2.5*,auto,auto,3*" >
+            <ActivityIndicator Color="Black"
+                               IsRunning="{Binding IsPaused, Converter={StaticResource Not}}"
+                               Margin="10"/>
+            <Label Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="22" HorizontalOptions="Center" VerticalOptions="End"/>
+            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10">
+                <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnStatusTapped"/>
+                </Image.GestureRecognizers>
+            </Image>
+            <Label Grid.Row="2" FontSize="22" HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span Text="DivisiBill " FontSize="22" />
+                            <Span Text="{x:Static services:Utilities.VersionName}" FontSize="22" FontAttributes="Bold" />
+                            <Span x:Name="editionSpan" FontSize="22" />
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Label Grid.Row="3" HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span Text="Build "/>
+                            <Span Text="{x:Static appmodel:AppInfo.BuildString}"/>
+                            <Span Text=" at "/>
+                            <Span x:Name="buildTimeDisplay" Text="{x:Static services:Utilities.BuildTime}"/>
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <ScrollView Grid.Row="4" x:Name="statusScrollView"  VerticalOptions="Start" Margin="10">
+                <Label x:Name="statusLabel" Text="Starting DivisiBill" HorizontalOptions="Start" VerticalOptions="Start" VerticalTextAlignment="Start"/>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

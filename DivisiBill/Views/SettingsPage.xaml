@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:DivisiBill="clr-namespace:DivisiBill"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             BindingContext="{vm:SettingsViewModel}" 
+             x:DataType="vm:SettingsViewModel"
+             Title="Program Settings"
+             x:Class="DivisiBill.Views.SettingsPage">
+    <ScrollView Margin="20,0,10,0">
+        <VerticalStackLayout>
+            <!--#region Heading -->
+            <!--Note that only one of the next two lines is visible-->
+            <Label FontSize="22" HorizontalOptions="Center" Text="DivisiBill Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
+            <Label FontSize="22" HorizontalOptions="Center" Text="DivisiBill Pro Edition" IsVisible="{Binding Path=IsLimited, Converter={StaticResource Not}}"/>
+            <!--Show the current location of the device the app is running on -->
+            <Label Text="{Binding Path=AppLocation, StringFormat='Current Location={0}', Converter={StaticResource Location}, TargetNullValue='Location Unknown'}" HorizontalOptions="Center" IsVisible="{Binding UseLocation}"/>
+            <!--#endregion-->
+            <!--#region License Error Reporting -->
+            <VerticalStackLayout IsVisible="{Binding Path=LicenseChecked, Converter={StaticResource Not}}">
+                <Label Text="Pro Edition Verification Incomplete" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <!--#endregion-->
+            <!--#region Regular Application Settings -->
+            <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <!--Everything in this Grid is in the current meal data context-->
+            <Grid ColumnDefinitions ="*, auto, *, auto, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto" ColumnSpacing="{OnPlatform 10, Android=0}}" x:Name="MealSection"
+                   x:DataType="vm:MealViewModel">
+                <Label Grid.Row="1" Grid.Column="0" Text="Tip on Tax" VerticalOptions="Center" HorizontalOptions="End"/>
+                <Switch Grid.Row="1" Grid.Column="1" IsToggled="{Binding DefaultTipOnTax}" HorizontalOptions="End"/>
+                <Label Grid.Row="1" Grid.Column="2" Text="Tip Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
+                <Entry Grid.Row="1" Grid.Column="3" Text="{Binding DefaultTipRate}" MaxLength="2" Keyboard="Numeric" HorizontalTextAlignment="End">
+                    <Entry.Behaviors>
+                        <services:CurrencyValidationBehavior 
+                        InvalidStyle="{StaticResource InvalidEntryStyle}"
+                        ValidStyle="{StaticResource ValidEntryStyle}"
+                        MinimumValue="0"
+                        MaximumValue="99" />
+                    </Entry.Behaviors>
+                </Entry>
+                <Label Grid.Row="1" Grid.Column="4" Text="%" VerticalOptions="Center"/>
+                <Label Grid.Row="2" Text="Coupon After Tax" VerticalOptions="Center" HorizontalOptions="End"/>
+                <Switch Grid.Row="2" Grid.Column="1" IsToggled="{Binding IsCouponAfterTax}"/>
+                <Label Grid.Row="2" Grid.Column="2" Text="Tax Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
+                <Entry Grid.Row="2" Grid.Column="3" Text="{Binding DefaultTaxRateString}"
+                       Keyboard="Numeric" HorizontalTextAlignment="End" WidthRequest="80">
+                    <Entry.Behaviors>
+                        <services:CurrencyValidationBehavior 
+                        InvalidStyle="{StaticResource InvalidEntryStyle}"
+                        ValidStyle="{StaticResource ValidEntryStyle}"
+                        IsValid="{Binding IsDefaultTaxRateStringValid}"
+                        MinimumValue="0"
+                        MaximumValue="99.99" />
+                        <toolkit:UserStoppedTypingBehavior
+                        Command="{Binding UnloadDefaultTaxRateStringCommand}">
+                        </toolkit:UserStoppedTypingBehavior>
+                    </Entry.Behaviors>
+                </Entry>
+                <Label Grid.Row="2" Grid.Column="4" Text="%" VerticalOptions="Center"/>
+            </Grid>
+            <!--#endregion-->
+            <!--#region Hint, CheckBoxes and Dark Mode-->
+            <Grid ColumnDefinitions="*,*" RowDefinitions="auto, auto" ColumnSpacing="10" RowSpacing="10" Margin="30,10,30,10">
+                <Button Text="Restore Hints" LineBreakMode="WordWrap" Command="{Binding EnableHintsCommand}"/>
+                <Button Grid.Column="1" Text="Clear CheckBoxes" LineBreakMode="WordWrap" Command="{Binding ResetCheckBoxesCommand}"/>
+                <Button Grid.Row="1" Text="System Settings" LineBreakMode="WordWrap" Command="{Binding SystemSettingsCommand}"/>
+                <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*, auto" ColumnSpacing="{OnPlatform 10, Android=0}}">
+                    <Label Text="Dark UI" VerticalOptions="Center" HorizontalOptions="End"/>
+                    <Switch Grid.Column="1" IsToggled="{Binding Dark}" HorizontalOptions="End"/>
+                </Grid>
+            </Grid>
+            <!--#endregion-->
+            <!--#region Cloud UI -->
+            <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <!--#region Basic Edition or Internet Inaccessible -->
+            <Label Text="Pro subscription backup is unavailable" HorizontalOptions="Center" x:DataType="vm:CloudViewModel"
+                   BindingContext="{StaticResource CloudViewModel}" IsVisible="{Binding InternetEnabledAndLicensed, Converter={StaticResource Not}}"/>
+            <!--#endregion-->
+            <!--#region Pro Subscription and Internet Accessible -->
+            <VerticalStackLayout x:DataType="vm:CloudViewModel" BindingContext="{StaticResource CloudViewModel}" IsVisible="{Binding InternetEnabledAndLicensed}">
+                <Label Text="{Binding Path=WiFiStatus,StringFormat='Internet Enabled ({0})'}" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                <Grid ColumnDefinitions ="*, auto, *, auto" RowDefinitions="auto, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}}">
+                    <Label Grid.Row="0" Text="Allow Cloud Backup" VerticalOptions="Center" HorizontalOptions="End"/>
+                    <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding IsCloudAccessAllowed}"/>
+                    <Label Grid.Row="0" Grid.Column="2" Text="Only with WiFi" VerticalOptions="Center" HorizontalOptions="End"/>
+                    <Switch Grid.Row="0" Grid.Column="3" IsToggled="{Binding WiFiOnly}" IsEnabled="{Binding IsCloudAccessAllowed}"/>
+                </Grid>
+            </VerticalStackLayout>
+            <!--#endregion-->
+            <!--#endregion-->
+            <!--#region In App Purchases -->
+            <BoxView HeightRequest="2" HorizontalOptions="Fill" Margin="0, 5, 0, 0" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <Label Text="Pro subscription and OCR feature not available" IsVisible="{Binding WsAllowed, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
+            <Label Text="Program built without web services" IsVisible="{Binding WsAllowed, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
+            <Grid IsVisible="{Binding WsAllowed}">
+                <VerticalStackLayout IsVisible="{Binding LicenseChecked}">
+                    <!--#region Pro Subscription -->
+                    <VerticalStackLayout IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}">
+                        <Label Text="Purchase Pro Subscription" HorizontalOptions="Center"/>
+                        <Button Text="Subscribe" Command="{Binding PurchaseUpgradeCommand}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout IsVisible="{Binding Path=HasProSubscription}">
+                        <Label Text="Remove or Change Pro Subscription" HorizontalOptions="Center"/>
+                        <Button Text="Modify Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{OnPlatform Default=false,Android=true}"/>
+                    </VerticalStackLayout>
+                    <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
+                    <Label Text="{Binding ProSubscriptionId, StringFormat='Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
+                    <!--#endregion-->
+                    <!--#region OCR Scan License -->
+                    <BoxView HeightRequest="2" HorizontalOptions="Fill" Margin="0, 5, 0, 0" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+                    <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" Margin="0, 5, 0, 5" HorizontalOptions="Center"/>
+                    <Button Text="Purchase additional OCR Scans" Command="{Binding PurchaseOcrScansCommand}" 
+                            HorizontalOptions="Center" IsVisible="{Binding Path=IsOcrPurchaseAllowed}"/>
+                    <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
+                    <Label Text="{Binding OcrLicenseId, StringFormat='Latest Order# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
+                    <!--#endregion-->
+                </VerticalStackLayout>
+                <Label Text="No license information is available" IsVisible="{Binding LicenseChecked, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
+                <ActivityIndicator  HorizontalOptions="Center" VerticalOptions="Fill" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
+            </Grid>
+            <!--#endregion-->
+            <!--#region Telemetry -->
+            <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <Grid ColumnDefinitions="*, auto, *, auto" HorizontalOptions="Center">
+                <Label Grid.Column="0" Text="Send Data on Crash" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                <Switch Grid.Column="1" IsToggled="{Binding SendCrashYes}"/>
+                <Label Grid.Column="2" Text="Ask After Restart" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
+                <Switch Grid.Column="3" IsToggled="{Binding SendCrashAsk}"/>
+            </Grid>
+            <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <!--#endregion-->
+            <!--#region Diagnostic and Developer stuff -->
+            <!--#region Debug Builds Only -->
+            <VerticalStackLayout IsVisible="{Binding Source={x:Static DivisiBill:App.IsDebug}}">
+                <!--Large blank space-->
+                <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 350, 0, 0" />
+                <Label HorizontalOptions="Center" FontSize="Large" Text="Debug"/>
+                <!--#region Show Base Folder Path -->
+                <Label HorizontalOptions="Center" FontSize="Small" Text="{x:Static DivisiBill:App.BaseFolderPath}"/>
+                <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding BaseAddress}"/>
+                <!--#endregion-->
+                <!--#region Show Last Use -->
+                <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
+                <!--#endregion-->
+                <!--#region Scan Options -->
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Label Text="Scan Option Digit" VerticalOptions="Center"/>
+                    <Entry Text="{Binding ScanOption}" MaxLength="1" VerticalOptions="Center" WidthRequest="15">
+                        <Entry.Behaviors>
+                        <services:CurrencyValidationBehavior 
+                                InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                ValidStyle="{StaticResource ValidEntryStyle}"
+                                MinimumValue="0"
+                                MaximumValue="3"/>
+                    </Entry.Behaviors>
+                    </Entry>
+                    <Label Text="{Binding ScanOptionText}" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <!--#endregion-->
+                <Button Text="Set Fake Location" Clicked="OnSetLocation" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <!--#endregion-->
+            <!--#endregion-->
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

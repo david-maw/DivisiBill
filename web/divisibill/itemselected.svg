@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg824"
+   width="1080"
+   height="1345"
+   viewBox="0 0 1080 1345"
+   sodipodi:docname="itemselected.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs828" />
+  <sodipodi:namedview
+     id="namedview826"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="0.58781078"
+     inkscape:cx="177.7783"
+     inkscape:cy="839.55589"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="1192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g830"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g830">
+    <image
+       width="1080"
+       height="1345"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       xlink:href="itemselected.png"
+       id="image832"
+       inkscape:label="page"
+       x="0"
+       y="0" />
+    <a
+       id="a1073"
+       target="_parent"
+       xlink:href="itemselectedglossary.html#participant-1"
+       xlink:title="Participant 1"
+       transform="matrix(1.0244648,0,0,1,3.926125,112.30354)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect936"
+         width="341.7366"
+         height="105.55165"
+         x="11.495728"
+         y="970.86633"
+         inkscape:label="diner1" />
+    </a>
+    <a
+       id="a828"
+       xlink:href="itemselectedglossary.html#participant-2"
+       target="_parent"
+       xlink:title="Participant 2"
+       transform="matrix(1.0566038,0,0,1,-28.732256,114.39366)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect938"
+         width="332.33102"
+         height="105.55158"
+         x="375.17871"
+         y="968.77625"
+         inkscape:label="diner2" />
+    </a>
+    <a
+       id="a828-7"
+       xlink:href="itemselectedglossary.html#share-information"
+       target="_parent"
+       xlink:title="Share Information"
+       transform="matrix(1.2138365,0,0,0.80198003,-117.93943,88.43031)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect938-5"
+         width="332.33102"
+         height="105.55158"
+         x="375.17871"
+         y="968.77625"
+         inkscape:label="diner2" />
+    </a>
+    <a
+       id="a828-8"
+       xlink:href="itemselectedglossary.html#share-selector"
+       target="_parent"
+       xlink:title="Shares Selector"
+       transform="matrix(2.9622641,0,0,1,-1056.7646,-2.900127)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect938-6"
+         width="332.33102"
+         height="105.55158"
+         x="375.17871"
+         y="968.77625"
+         inkscape:label="diner2" />
+    </a>
+    <a
+       id="a831"
+       xlink:href="itemselectedglossary.html#participant-3"
+       target="_parent"
+       xlink:title="Participant 3"
+       transform="matrix(1.0470219,0,0,1,-44.57398,111.25846)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect940"
+         width="333.37607"
+         height="105.55159"
+         x="729.45612"
+         y="971.91144"
+         inkscape:label="diner3" />
+    </a>
+    <a
+       id="a834"
+       xlink:href="itemselectedglossary.html#description"
+       target="_parent"
+       xlink:title="Description"
+       transform="translate(-3.4024555,157.10369)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect942"
+         width="332.33099"
+         height="83.605286"
+         x="21.856255"
+         y="1047.2657"
+         inkscape:label="description" />
+    </a>
+    <a
+       id="a837"
+       xlink:href="itemselectedglossary.html#cost"
+       target="_parent"
+       xlink:title="Cost"
+       transform="translate(-3.4024554,90.755802)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect944"
+         width="184.97668"
+         height="70.019424"
+         x="868.44989"
+         y="1119.2657"
+         inkscape:label="amount" />
+    </a>
+  </g>
+</svg>

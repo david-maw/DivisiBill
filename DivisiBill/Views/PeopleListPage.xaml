@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:DivisiBill.Models"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             x:Class="DivisiBill.Views.PeopleListPage"
+             x:DataType="vm:PeopleListViewModel"
+             Title="People List">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding UseCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Command="{Binding AddCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}"/>
+        <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"         Order="Secondary"/>
+        <ToolbarItem Text="Download"  Command="{Binding GetRemotePeopleListCommand}" Order="Secondary"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <DataTemplate x:Key="WithSwipe" x:DataType="vm:PeopleListViewModel">
+            <Grid ColumnDefinitions="2*,*,2*">
+                <!--TODO MAUI BUG SwipeView bug means Add and scroll will fail here until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed-->
+                <SwipeView Grid.Column="0" Grid.ColumnSpan="3">
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
+                                                CommandParameter="{Binding x:DataType=model:Person}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"/>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+                    <SwipeView.RightItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
+                                                CommandParameter="{Binding x:DataType=model:Person}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"/>
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+                    <VerticalStackLayout Grid.ColumnSpan="3" x:DataType="model:Person">
+                        <Label Text="{Binding Path=DisplayName}" FontSize="Large" LineBreakMode="TailTruncation"/>
+                        <Label Text="{Binding Path=Email}" Padding="20,0,0,0"/>
+                        <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+                    </VerticalStackLayout>
+                </SwipeView>
+                <!--A transparent label covering the middle of each item mainly to avoid accidentally triggering a swipe-->
+                <Label Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="Transparent">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=SelectPersonCommand}"
+                                    CommandParameter="{Binding x:DataType=model:Person}" />
+                        <TapGestureRecognizer NumberOfTapsRequired="2" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=ShowDetailsCommand}"
+                                    CommandParameter="{Binding x:DataType=model:Person}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="NoSwipe" x:DataType="vm:PeopleListViewModel">
+            <Grid ColumnDefinitions="2*,*,2*">
+                <VerticalStackLayout Grid.ColumnSpan="3" x:DataType="model:Person">
+                    <Label Text="{Binding Path=DisplayName}" FontSize="Large" LineBreakMode="TailTruncation"/>
+                    <Label Text="{Binding Path=Email}" Padding="20,0,0,0"/>
+                    <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+                </VerticalStackLayout>
+                <ImageButton Grid.Column="0" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="{StaticResource TransparentGreen}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"
+                                    CommandParameter="{Binding x:DataType=model:Person}"/>
+                <!--A transparent label covering the middle of each item mainly to avoid accidentally triggering a swipe-->
+                <Label Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="Transparent">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=SelectPersonCommand}"
+                                    CommandParameter="{Binding x:DataType=model:Person}" />
+                        <TapGestureRecognizer NumberOfTapsRequired="2" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=ShowDetailsCommand}"
+                                    CommandParameter="{Binding x:DataType=model:Person}" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <ImageButton Grid.Column="2" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="{StaticResource TransparentRed}" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"
+                                    CommandParameter="{Binding x:DataType=model:Person}"/>
+            </Grid>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="auto,*, auto, auto, auto">
+        <!--#region People List -->
+        <BoxView Grid.Row="1" HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" VerticalOptions="Start"/>
+        <CollectionView
+            Grid.Row="1"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedPerson}"
+            ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
+            ItemSizingStrategy="MeasureFirstItem"
+            ItemsSource="{Binding AllPeople}"/>
+        <!--#endregion-->
+        <!--#region Hint -->
+        <Border Grid.Row="2" IsVisible="{Binding ShowPeopleHint}" Style="{StaticResource HintStyle}">
+            <VerticalStackLayout>
+                <Label Text="Swipe Person left deletes" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="Swipe Person right uses" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="See Help for more info" FontSize="Large" HorizontalOptions="Center"/>
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <CheckBox IsChecked="{Binding ShowPeopleHint, Converter={StaticResource Not}}"/>
+                    <Label Text="Hide this hint" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+        <!--#endregion-->
+        <!--#region Undelete -->
+        <HorizontalStackLayout Grid.Row="3" HorizontalOptions="Center" Spacing="10">
+            <Button Text="UnDelete" Command="{Binding UnDeletePersonCommand}" IsVisible="{Binding IsAnyDeletedPerson}"/>
+            <Button Text="UnDelete All" Command="{Binding UnDeleteAllPeopleCommand}" IsVisible="{Binding IsManyDeletedPeople}"/>
+        </HorizontalStackLayout>
+        <!--#endregion-->
+    </Grid>
+</ContentPage>

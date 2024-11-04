@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup 
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:DivisiBill"
+             xmlns:views="clr-namespace:DivisiBill.Views"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             x:DataType="vm:PaymentsViewModel"
+             Color="Transparent"
+             Size="{OnPlatform Default='300,250', WinUI='400,350'}"
+             x:Class="DivisiBill.Views.PaymentsPage">
+    <toolkit:Popup.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="HorizontalOptions" Value="End"/>
+            </Style>
+        </ResourceDictionary>
+    </toolkit:Popup.Resources>
+    <Border StrokeThickness="2" StrokeShape="RoundRectangle 10" HorizontalOptions="Center" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Tapped="ClosePopup"/>
+        </Border.GestureRecognizers>
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+            <VerticalStackLayout.GestureRecognizers>
+            </VerticalStackLayout.GestureRecognizers>
+            <Label Text="Payment Breakdown" FontSize="Large" FontAttributes="Bold" TextDecorations="Underline" HorizontalOptions="Center"/>
+            <Grid ColumnDefinitions="*, auto" RowDefinitions="auto, auto, auto" ColumnSpacing="10" HorizontalOptions="Center">
+                <Label Grid.Row="0" Grid.Column="0" Text="Charge" VerticalOptions="Center"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Charge,StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="+ Tip" VerticalOptions="Center"/>
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding AdjustedTip,StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="= Total" VerticalOptions="Center"/>
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding RoundedAmount,StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold"/>
+            </Grid>
+            <Label IsVisible="{Binding IsPersonal}" HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="{Binding Nickname, StringFormat='If {0} paid'}"/>
+                        <Span Text="{Binding NicknameOwed, StringFormat=' they are owed {0:C0}'}"/>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Label IsVisible="{Binding IsAnyUnallocated}" HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="WARNING" TextColor="Red"/>
+                        <Span Text="{Binding Unallocated, StringFormat=' {0:C} is unallocated'}"/>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Border Margin="10">
+                <Label Text="Done" HorizontalOptions="Center" Margin="3"/>
+            </Border>
+        </VerticalStackLayout>
+    </Border>
+</toolkit:Popup>

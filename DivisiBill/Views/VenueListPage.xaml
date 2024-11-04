@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:model="clr-namespace:DivisiBill.Models"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             mc:Ignorable="d"            
+             x:DataType="vm:VenueListViewModel"
+             x:Class="DivisiBill.Views.VenueListPage"
+             Title="Venue List">
+    <ContentPage.Resources>
+        <DataTemplate x:Key="WithSwipe">
+            <Grid ColumnDefinitions="*,*,*">
+                <SwipeView Grid.ColumnSpan="3" x:DataType="model:Venue">
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
+                                            CommandParameter="{Binding}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+                    <SwipeView.RightItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
+                                            CommandParameter="{Binding}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+                    <VerticalStackLayout x:DataType="model:Venue">
+                        <Grid ColumnDefinitions="*, auto">
+                            <Label Text="{Binding Path=Name}" FontSize="Large" LineBreakMode="TailTruncation"/>
+                            <Label Grid.Column="1" Text="{Binding Path=Distance, Converter={StaticResource Distance}}" FontSize="Small" VerticalOptions="Center" HorizontalOptions="End"/>
+                        </Grid>
+                        <BoxView Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
+                    </VerticalStackLayout>
+                </SwipeView>
+                <!--#region Select/Deselect/Details button -->
+                <Rectangle Grid.Column="1" BackgroundColor="Transparent" x:DataType="model:Venue">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=SelectVenueCommand, x:DataType=vm:VenueListViewModel}"/>
+                        <TapGestureRecognizer NumberOfTapsRequired="2"
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+                <!--#endregion-->
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="NoSwipe">
+            <Grid ColumnDefinitions="*,*,*"  x:DataType="model:Venue">
+                <VerticalStackLayout Grid.ColumnSpan="3">
+                    <Grid ColumnDefinitions="*, auto">
+                        <Label Text="{Binding Path=Name}" FontSize="Large" LineBreakMode="TailTruncation"/>
+                        <Label Grid.Column="1" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="Small" VerticalOptions="Center" HorizontalOptions="End"/>
+                    </Grid>
+                    <BoxView Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
+                    <!--#region Context Menu to Replace Swipe -->
+                    <FlyoutBase.ContextFlyout>
+                        <MenuFlyout >
+                            <MenuFlyoutItem
+                                    Text="Use"
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
+                            <MenuFlyoutItem
+                                    Text="Map"
+                                    CommandParameter="{Binding}"
+                                    Clicked="OnShowMap"/>
+                            <MenuFlyoutItem
+                                    Text="Edit Details"
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
+                            <MenuFlyoutItem
+                                    Text="Delete"
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
+                        </MenuFlyout>
+                    </FlyoutBase.ContextFlyout>
+                    <!--#endregion-->
+                </VerticalStackLayout>
+                <!--#region Select/Deselect/Details button -->
+                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding SelectVenueCommand, Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, x:DataType=vm:VenueListViewModel}"/>
+                        <TapGestureRecognizer NumberOfTapsRequired="2"
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+                <!--#endregion-->
+            </Grid>
+        </DataTemplate>
+    </ContentPage.Resources>
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding AssignCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Command="{Binding AddCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}"/>
+        <ToolbarItem Text="Map"       Clicked="OnShowMap"                           Order="Secondary"/>
+        <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"        Order="Secondary"/>
+        <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}" Order="Secondary"/>
+    </ContentPage.ToolbarItems>
+
+    <services:ColumnLayout>
+        <!--#region List of Venues -->
+        <CollectionView x:Name="CurrentCollectionView"
+            x:DataType="vm:VenueListViewModel"
+            ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
+            SelectionMode="Single"
+            SelectedItem="{Binding CurrentItem}"
+            Margin="10,0"                
+            ItemSizingStrategy="MeasureAllItems"
+            ItemsSource="{Binding VenueList}">
+            <CollectionView.Header>
+                <VerticalStackLayout>
+                    <Label HorizontalOptions="Center" FontSize="Large" FontAttributes="Bold">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="{Binding VenueCount}"/>
+                                <Span Text=" Venues by "/>
+                                <Span Text="{Binding SortOrderName}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <BoxView Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="2"/>
+                </VerticalStackLayout>
+            </CollectionView.Header>
+        </CollectionView>
+        <!--#endregion-->
+        <!--#region Hint -->
+        <Border IsVisible="{Binding ShowVenuesHint}" Style="{StaticResource HintStyle}">
+            <VerticalStackLayout>
+                <Label Text="Swipe Venue left deletes" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="Swipe Venue right uses" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="See Help for more info" FontSize="Large" HorizontalOptions="Center"/>
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <CheckBox IsChecked="{Binding ShowVenuesHint, Converter={StaticResource Not}}"/>
+                    <Label Text="Hide this hint" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+        <!--#endregion-->
+        <!--#region Undelete -->
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+            <Button Text="UnDelete" Command="{Binding UndeleteVenueCommand}" IsVisible="{Binding IsAnyDeletedVenue}"/>
+            <Button Text="UnDelete All" Command="{Binding UndeleteAllVenuesCommand}" IsVisible="{Binding IsManyDeletedVenues}"/>
+        </HorizontalStackLayout>
+        <!--#endregion-->
+    </services:ColumnLayout>
+</ContentPage>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+       xmlns:view="clr-namespace:DivisiBill.Views"
+       xmlns:local="clr-namespace:DivisiBill"
+       TabBarIsVisible="False"
+       FlyoutBehavior="Disabled"
+       Title="DivisiBill"
+       x:Class="DivisiBill.AppShell">
+
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <ContentView BackgroundColor="Red" HeightRequest="100">
+                <Image Aspect="AspectFit" Margin="10" Source="divisibillfg.png"/>
+            </ContentView>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <ContentView>
+                <!--x:DataType="BaseShellItem" Handles FlyoutItem too-->
+                <Label Text="{Binding Title}" FontSize="{OnIdiom Phone=Medium}"
+                       x:DataType="BaseShellItem"
+                       Margin="20, 8"
+                       VerticalTextAlignment="Center" />
+            </ContentView>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <ContentView>
+                <!--x:DataType="BaseShellItem" Handles MenuItem too, why it is not BaseMenuItem or MenuItem though is a mystery-->
+                <!--The Text property is mapped to Title by MenuShellItem, see https://github.com/dotnet/maui/issues/25190-->
+                <Label Text="{Binding Title}" FontSize="{OnIdiom Phone=Medium}"
+                       x:DataType="BaseShellItem"
+                       Margin="20, 8"
+                       VerticalTextAlignment="Center" />
+            </ContentView>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
+    <TabBar>
+        <!--This is the initial page, used to decide what to show the user first, it is normally never visible -->
+        <ShellContent Title="Getting Started" ContentTemplate="{DataTemplate view:GettingStartedPage}"/>
+        <!--This is the initialization page the user normally sees-->
+        <ShellContent Title="Startup" ContentTemplate="{DataTemplate view:SplashPage}" Route="{x:Static local:Routes.SplashPage}"/>
+    </TabBar>
+    <ShellContent Title="Items" ContentTemplate="{DataTemplate view:LineItemsPage}" Route="{x:Static local:Routes.LineItemsPage}"/>
+    <ShellContent Title="Totals" ContentTemplate="{DataTemplate view:TotalsPage}" Route="{x:Static local:Routes.TotalsPage}"/>
+    <MenuItem      Text="Camera" Clicked="GoToImagePageWithCamera"/>
+    <ShellContent Title="Image" ContentTemplate="{DataTemplate view:ImagePage}" Route="{x:Static local:Routes.ImagePage}"/>
+    <MenuItem      Text= "Properties" Clicked="PushProperties" />
+    <ShellContent Title="List Saved Bills by Age" ContentTemplate="{DataTemplate view:MealListByAgePage}" Route="{x:Static local:Routes.MealListByAgePage}"/>
+    <ShellContent Title="List Saved Bills by Name" ContentTemplate="{DataTemplate view:MealListByNamePage}"/>
+    <ShellContent Title="List Saved Bills by Distance" ContentTemplate="{DataTemplate view:MealListByDistancePage}"/>
+    <ShellContent Title="Manage Data" ContentTemplate="{DataTemplate view:DataManagementPage}"/>
+    <ShellContent Title="List Venues by Name" ContentTemplate="{DataTemplate view:VenueListByNamePage}"/>
+    <ShellContent Title="List Venues by Distance" ContentTemplate="{DataTemplate view:VenueListByDistancePage}"/>
+    <ShellContent Title="List People" ContentTemplate="{DataTemplate view:PeopleListPage}"/>
+    <ShellContent Title="Program Settings" ContentTemplate="{DataTemplate view:SettingsPage}"/>
+    <FlyoutItem Title="Information and Problems" Route="Information" FlyoutDisplayOptions="AsSingleItem">
+        <ShellContent Title="About" ContentTemplate="{DataTemplate view:AboutPage}" Shell.TabBarIsVisible="True"/>
+        <ShellContent Title="Release Notes" ContentTemplate="{DataTemplate view:ReleaseNotesPage}" Shell.TabBarIsVisible="True"/>
+        <ShellContent Title="Report a problem" ContentTemplate="{DataTemplate view:ProblemReportPage}" Shell.TabBarIsVisible="True"/>
+    </FlyoutItem>
+    <MenuItem     Text="Help Index" Clicked="OnHelpIndexClicked"/>
+    <MenuItem     Text="Help" Clicked="OnHelpClicked"/>
+    <ShellContent Title="Tutorial" ContentTemplate="{DataTemplate view:TutorialPage}" Shell.FlyoutBehavior="Disabled" Route="{x:Static local:Routes.TutorialPage}"/>
+    <MenuItem     Text ="Exit" Clicked="OnExitClicked"/>
+</Shell>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg824"
+   width="1080"
+   height="2220"
+   viewBox="0 0 1080 2220"
+   sodipodi:docname="totalspage.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs828" />
+  <sodipodi:namedview
+     id="namedview826"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="1.1"
+     inkscape:cx="778.18182"
+     inkscape:cy="496.81818"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="1192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g830"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g830">
+    <image
+       width="1080"
+       height="2220"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       xlink:href="totalspage.png"
+       id="image850"
+       x="0"
+       y="0" />
+    <a
+       id="a1292"
+       xlink:href="totalsglossary.html#flyout"
+       target="_parent"
+       xlink:title="Open/Close Flyout"
+       transform="translate(2.2750583,63.347319)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect936"
+         width="94.871796"
+         height="90.708664"
+         x="27.599068"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1345"
+       xlink:href="totalsglossary.html#ellipsis"
+       target="_parent"
+       xlink:title="Send Mail"
+       transform="matrix(0.77086245,0,0,1,541.42905,63.911422)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
+         id="rect938"
+         width="141.44522"
+         height="90.708664"
+         x="546.80652"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1348"
+       xlink:href="totalsglossary.html#filter"
+       target="_parent"
+       xlink:title="Show All participants"
+       transform="matrix(1.1377049,0,0,1,-261.47044,63.347319)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect940"
+         width="132.82056"
+         height="90.708664"
+         x="688.25171"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1351"
+       xlink:href="totalsglossary.html#add"
+       target="_parent"
+       xlink:title="Add Participant"
+       transform="matrix(1.1377049,0,0,1,-261.47044,63.347319)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect942"
+         width="132.82051"
+         height="90.708664"
+         x="821.07227"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1354"
+       xlink:href="totalsglossary.html#delete"
+       target="_parent"
+       xlink:title="Delete All Participants "
+       transform="matrix(1.1731534,0,0,1,-295.2845,63.347319)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.5464;stroke-linecap:round"
+         id="rect944"
+         width="119.021"
+         height="90.708664"
+         x="953.89276"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1177"
+       xlink:href="totalsglossary.html#venue-name"
+       target="_parent"
+       xlink:title="Venue Name"
+       transform="translate(-1.7249417,89.347319)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect1048"
+         width="474.35898"
+         height="74.172493"
+         x="296.68997"
+         y="167.31935" />
+    </a>
+    <a
+       id="a1312"
+       xlink:href="totalsglossary.html#participant"
+       target="_parent"
+       xlink:title="Participant and Amount"
+       transform="matrix(1.0000151,0,0,1.0171898,3.7047754,61.93449)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect1074"
+         width="1024.6154"
+         height="72.447556"
+         x="24.149183"
+         y="431.23544" />
+    </a>
+    <a
+       id="a1315"
+       xlink:href="totalsglossary.html#unallocated-amount"
+       target="_parent"
+       xlink:title="Unallocated Amount"
+       transform="translate(0,82)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect1076"
+         width="796.9231"
+         height="77.622375"
+         x="143.17017"
+         y="1507.5991" />
+    </a>
+    <a
+       id="a1318"
+       xlink:href="totalsglossary.html#rounded-total"
+       target="_parent"
+       xlink:title="Rounded Total"
+       transform="translate(0,58)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect1078"
+         width="627.87878"
+         height="72.447556"
+         x="220.79254"
+         y="1616.2704" />
+    </a>
+    <a
+       id="a1321"
+       xlink:href="totalsglossary.html#summary"
+       target="_parent"
+       xlink:title="Bill Summary Amounts"
+       transform="matrix(0.95230264,0,0,1,24.971936,-30)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect1080"
+         width="1048.7646"
+         height="351.88806"
+         x="17.249418"
+         y="1791.4918" />
+    </a>
+  </g>
+</svg>

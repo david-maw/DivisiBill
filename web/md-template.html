@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+<head>
+    <title>[title]</title>
+    <link rel="stylesheet" href="divisibill/styles.css">
+</head>
+<body>
+    [content]
+    <script>
+        let li = window.location.href.lastIndexOf("#");
+        var s;
+        if (li >= 0) {
+            s = window.location.href.substring(li + 1);
+        }
+
+        if (s != null && s.length > 0) {
+            let e = document.getElementById(s);
+            if (e != null) {
+                let h = e.innerHTML;
+                e.innerHTML = "<mark>" + h + "</mark>";
+            }
+        }
+    </script>
+</body>
+</html>

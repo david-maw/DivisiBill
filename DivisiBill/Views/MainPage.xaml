@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:DivisiBill"
+             mc:Ignorable="d"
+             x:Class="DivisiBill.Views.MainPage"
+             Title="Bill">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="TBIMail" IconImageSource="{StaticResource GlyphMail}"/>
+        <ToolbarItem x:Name="TBIFilter" IconImageSource="{StaticResource GlyphFilterOff}"/>
+        <ToolbarItem x:Name="TBIAdd" IconImageSource="{StaticResource GlyphAdd}"/>
+        <ToolbarItem x:Name="TBIDel" IconImageSource="{StaticResource GlyphDel}"/>
+    </ContentPage.ToolbarItems>
+    <Label Text="Nothing useful here" />
+    <!--<views:LineItemsPage />
+    <views:TotalsPage />-->
+</ContentPage>

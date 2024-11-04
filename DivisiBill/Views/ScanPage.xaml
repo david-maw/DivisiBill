@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:DivisiBill.Views"
+             xmlns:models="clr-namespace:DivisiBill.Models"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:ScanPage}"
+             Shell.FlyoutBehavior="Disabled"
+             x:Class="DivisiBill.Views.ScanPage"
+             Title="ScanPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{StaticResource GlyphReplace}" Clicked="OnReplaceItemList"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Clicked="OnAddItemList"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <services:ColumnLayout Margin="10" x:DataType="views:ScanPage">
+            <VerticalStackLayout x:Name="loading" IsVisible="False">
+                <ActivityIndicator IsRunning="True" HeightRequest="50"/>
+                <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="Large"/>
+                <Button x:Name="cancelButton"  Text="Cancel" HorizontalOptions="Center" Clicked="OnCancel" IsEnabled="False"/>
+            </VerticalStackLayout>
+            <Label Text="{Binding ErrorMessage}" HorizontalOptions="Center"/>
+            <CollectionView x:Name="LineItemsListView"
+                ItemsSource="{Binding Path = LineItems}"
+                VerticalOptions="Fill"
+                SelectionMode="None"
+                ItemSizingStrategy="MeasureAllItems"
+                EmptyView="No items defined">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid  x:DataType="models:LineItem" Margin="0" RowDefinitions="Auto" ColumnDefinitions="*, Auto">
+                            <Label Text="{Binding Path = ItemName }" Grid.Column="0"
+                            LineBreakMode="NoWrap" HorizontalTextAlignment="Start"
+                            FontFamily="monospace" FontSize="Medium" />
+
+                            <Label Text="{Binding Path = Amount}" Grid.Column="1"
+                                LineBreakMode="NoWrap"
+                                FontFamily="monospace" FontSize="Medium" HorizontalTextAlignment="End"  />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </services:ColumnLayout>
+    </ContentPage.Content>
+</ContentPage>

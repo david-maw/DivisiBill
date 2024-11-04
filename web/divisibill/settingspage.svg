@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="svg836"
+   width="1080"
+   height="2220"
+   viewBox="0 0 1080 2220"
+   sodipodi:docname="settingspage.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata31">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs840" />
+  <sodipodi:namedview
+     id="namedview838"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="0.51316815"
+     inkscape:cx="539.78408"
+     inkscape:cy="1228.6421"
+     inkscape:window-width="1154"
+     inkscape:window-height="1453"
+     inkscape:window-x="27"
+     inkscape:window-y="33"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g842"
+     inkscape:document-rotation="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g842">
+    <image
+       xlink:href="settingspage.png"
+       inkscape:label="settings page"
+       id="image844"
+       style="fill:#00ff00;fill-opacity:0.25;image-rendering:optimizeQuality"
+       preserveAspectRatio="none"
+       height="2220"
+       width="1080" />
+    <a
+       xlink:href="settingsglossary.html#dark-mode-switch"
+       transform="matrix(0.29748244,0,0,0.82578135,650.81959,-405.39658)"
+       inkscape:label="wifi"
+       xlink:title="Toggle Dark Mode"
+       target="_parent"
+       id="a938-8-1">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-4"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#title"
+       transform="translate(-2.9482072,-23.2749)"
+       inkscape:label="title"
+       xlink:title="Title Including Edition"
+       target="_parent"
+       id="a852">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect850"
+         width="660.39838"
+         height="79.601593"
+         x="218.16733"
+         y="238.80478" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#location"
+       transform="matrix(1.2741265,0,0,0.6561998,-144.40355,139.90797)"
+       inkscape:label="location"
+       xlink:title="Current Location"
+       target="_parent"
+       id="a9">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect7"
+         width="660.39838"
+         height="79.601593"
+         x="218.16733"
+         y="238.80478" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#defaults"
+       transform="matrix(3.3384958,0,0,1.6565613,-1271.342,-1247.2754)"
+       inkscape:label="defaults"
+       xlink:title="Preferred bill defaults"
+       target="_parent"
+       id="a855-9">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect844-5"
+         width="309.56174"
+         height="141.51395"
+         x="392.11154"
+         y="981.75299" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#wifi-switch"
+       transform="matrix(0.40701475,0,0,0.80264292,579.65376,27.11615)"
+       inkscape:label="wifi"
+       xlink:title="Require WiFi"
+       target="_parent"
+       id="a938">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1279.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#status"
+       transform="matrix(0.61697206,0,0,0.51712773,214.66624,710.9568)"
+       inkscape:label="wifi"
+       xlink:title="Current Purchase Status"
+       target="_parent"
+       id="a938-2">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-8"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1279.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#backup-switch"
+       transform="matrix(0.48821974,0,0,0.80374898,66.226953,-127.91663)"
+       inkscape:label="wifi"
+       xlink:title="Allow automated backup to cloud"
+       target="_parent"
+       id="a938-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#modify-button"
+       transform="matrix(0.49279487,0,0,1.4454978,284.13475,-897.3563)"
+       inkscape:label="wifi"
+       xlink:title="Change Professional Subscription"
+       target="_parent"
+       id="a938-8-9-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-9"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#restore-hints-button"
+       transform="matrix(0.38799028,0,0,1.3091949,126.14747,-1282.8346)"
+       inkscape:label="wifi"
+       xlink:title="Show all hints"
+       target="_parent"
+       id="a938-8-9-0">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-98"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#system-settings-button"
+       transform="matrix(0.38799028,0,0,1.3091949,121.04482,-1137.7645)"
+       inkscape:label="wifi"
+       xlink:title="Show system settings for app"
+       target="_parent"
+       id="a938-8-9-0-6">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-98-2"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#clear-checkboxes-button"
+       transform="matrix(0.38489561,0,0,1.2817533,557.77817,-1214.1536)"
+       inkscape:label="wifi"
+       xlink:title="Clear &quot;Do not ask again&quot; checkboxes"
+       target="_parent"
+       id="a938-8-9-5-4">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-1-0"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1450.4404" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#scans"
+       transform="matrix(0.74873934,0,0,0.53039369,154.72687,679.9241)"
+       inkscape:label="scans"
+       xlink:title="OCR Scan Status"
+       target="_parent"
+       id="a941-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#send-crash-data"
+       transform="matrix(0.53348897,0,0,0.38088838,28.440601,1041.7263)"
+       inkscape:label="scans"
+       xlink:title="Send Crash Data on Fault"
+       target="_parent"
+       id="a941-8-6">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5-4"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#ask-after-restart"
+       transform="matrix(0.53348897,0,0,0.27072657,516.19522,1216.8547)"
+       inkscape:label="scans"
+       xlink:title="Ask about sending telemetry after restart"
+       target="_parent"
+       id="a941-8-6-6">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5-4-7"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+  </g>
+</svg>

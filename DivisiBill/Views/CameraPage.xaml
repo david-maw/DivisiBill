@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="DivisiBill.Views.CameraPage"
+             x:DataType="vm:CameraViewModel"
+             BindingContext="{vm:CameraViewModel}"
+             Shell.FlyoutBehavior="Disabled"
+             Title="Camera">
+    <ContentPage.ToolbarItems>
+        <!--<ToolbarItem IconImageSource="{Binding LightGlyph}" Command="{Binding ChangeLightModeCommand}"/>-->
+        <ToolbarItem IconImageSource="{StaticResource GlyphImages}" Command="{Binding BrowseCommand}"/>
+        <ToolbarItem IconImageSource="{Binding FlashGlyph}" Command="{Binding ChangeFlashModeCommand}"/>
+    </ContentPage.ToolbarItems>
+    <Grid>
+        <toolkit:CameraView x:Name="MyCamera"
+            CameraFlashMode="{Binding FlashMode}"
+            IsTorchOn="{Binding IsLightOn}"
+            MediaCaptured="OnPictureTaken"/>
+        <!--Have to specify x:DataType to avoid a warning, see https://github.com/dotnet/maui/issues/25272-->
+        <Ellipse Stroke="Red"
+                 Fill="White"
+                 StrokeThickness="5"
+                 WidthRequest="80"
+                 x:DataType="Ellipse"
+                 HeightRequest="{Binding Source={RelativeSource Self},Path=WidthRequest}"
+                 HorizontalOptions="Center"
+                 VerticalOptions="End"
+                 Margin="20">
+            <Ellipse.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnTakePicture"/>
+            </Ellipse.GestureRecognizers>
+        </Ellipse>
+    </Grid>
+</ContentPage>

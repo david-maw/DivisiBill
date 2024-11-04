@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:DivisiBill.ViewModels"
+             Shell.FlyoutBehavior="Disabled"
+             Title="Venue Details"
+             x:DataType="viewmodels:VenueEditViewModel"
+             x:Class="DivisiBill.Views.VenueEditPage">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding SaveCommand}"/>
+    </Shell.BackButtonBehavior>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>
+        <ToolbarItem Command="{Binding DeleteCommand}" IconImageSource="{StaticResource GlyphDel}"/>
+    </ContentPage.ToolbarItems>
+    <!--This is a grid rather than a stack for 2 reasons:
+            1 - it allows the Notes field to occupy all the available space
+            2 - it simplifies the layout of the name input line-->
+    <Grid Margin="10,0,10,10" ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *">
+        <Label Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Path=OriginalName}" 
+                   HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
+        <Label Grid.Row="1" Grid.ColumnSpan="2" Text="(in use)" IsVisible="{Binding IsInUse}" HorizontalOptions="Center"/>
+        <Label Grid.Row="2" Grid.ColumnSpan="2" HorizontalOptions="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <FormattedString.Spans>
+                        <Span Text="{Binding MyLocation, StringFormat='Location={0}',Converter={StaticResource Location}, TargetNullValue='Location Unknown'}"/>
+                        <Span Text="{Binding Distance, StringFormat=' ({0})',Converter={StaticResource Distance}, TargetNullValue=''}"/>
+                    </FormattedString.Spans>
+                </FormattedString>
+            </Label.FormattedText>
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding ShowMapCommand}"/>
+                <TapGestureRecognizer Command="{Binding ClearLocationCommand}" NumberOfTapsRequired="1"  Buttons="Secondary"/>
+                <TapGestureRecognizer Command="{Binding ClearLocationCommand}" NumberOfTapsRequired="2" />
+            </Label.GestureRecognizers>
+        </Label>
+        <Label Grid.Row="3" Text="New Name:" VerticalOptions="Center"/>
+        <Entry Grid.Row="3" Grid.Column="1" x:Name="nameEntry" ClearButtonVisibility="WhileEditing" Placeholder="Enter Venue Name"
+                   ReturnType="Next" Keyboard="Text" Text="{Binding Name}"/>
+        <Label Grid.Row="4" Grid.ColumnSpan="2" Text="New name is invalid, will remain unchanged" HorizontalOptions="Center" IsVisible="{Binding IsNewNameInvalid}"/>
+        <Label Grid.Row="5" Grid.ColumnSpan="2" Text="Notes" TextDecorations="Underline" HorizontalOptions="Center"/>
+        <Border Grid.Row="6" Grid.ColumnSpan="2">
+            <Editor Text="{Binding Notes}"/>
+        </Border>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="1080"
+   height="2220"
+   viewBox="0 0 1080 2220"
+   sodipodi:docname="flyout.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="0.57972973"
+     inkscape:cx="462.28438"
+     inkscape:cy="1249.7203"
+     inkscape:window-width="1138"
+     inkscape:window-height="1539"
+     inkscape:window-x="1515"
+     inkscape:window-y="20"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g8"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g8">
+    <image
+       width="1080"
+       height="2220"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       xlink:href="flyout.png"
+       id="image10" />
+    <a
+       id="a831"
+       xlink:href="lineitemspage.html"
+       target="_parent"
+       xlink:title="List of Bill Items"
+       transform="matrix(1.1012641,0,0,1,-1.2605341,60.997669)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect844"
+         width="153.30678"
+         height="64.860558"
+         x="29.482071"
+         y="300.71713" />
+    </a>
+    <a
+       id="a834"
+       xlink:href="totalspage.html"
+       target="_parent"
+       xlink:title="Bill Totals and List of Participants"
+       transform="matrix(1.1489299,0,0,1,-295.44268,168.21911)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect912"
+         width="162.1514"
+         height="67.808762"
+         x="283.02789"
+         y="295.66534" />
+    </a>
+    <a
+       id="a833"
+       xlink:href="imagepage.html"
+       target="_parent"
+       xlink:title="Handle Bill Images"
+       transform="translate(0,282)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect914"
+         width="262.39044"
+         height="64.860558"
+         x="29.482071"
+         y="408.05975" />
+    </a>
+    <a
+       id="a833-0"
+       xlink:href="camerapage.html"
+       target="_parent"
+       xlink:title="Take a picture"
+       transform="translate(-1.3841679,170.81904)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect914-9"
+         width="262.39044"
+         height="64.860558"
+         x="29.482071"
+         y="408.05975" />
+    </a>
+    <a
+       id="a836"
+       xlink:href="propertiespage.html"
+       target="_parent"
+       xlink:title="Properties of the current bill"
+       transform="translate(0,278)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect916"
+         width="362.62949"
+         height="64.860558"
+         x="29.482071"
+         y="521.8327" />
+    </a>
+    <a
+       id="a839"
+       xlink:href="meallistpage.html"
+       target="_parent"
+       xlink:title="List of stored bills"
+       transform="translate(0,264)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1087"
+         width="650.30304"
+         height="298.91492"
+         x="29.482071"
+         y="638.22845" />
+    </a>
+    <a
+       id="a839-2"
+       xlink:href="gettingstarted.html"
+       target="_parent"
+       xlink:title="Help and Tutorial"
+       transform="matrix(0.72148542,0,0,0.94229326,10.302543,1263.8937)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1087-7"
+         width="650.30304"
+         height="298.91492"
+         x="29.482071"
+         y="649.10736" />
+    </a>
+    <a
+       id="a842"
+       xlink:href="venuelistviewpage.html"
+       target="_parent"
+       xlink:title="List of venues"
+       transform="matrix(1,0,0,0.82220899,0,560.70173)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1089"
+         width="588.20514"
+         height="203.74358"
+         x="29.482071"
+         y="958.86713" />
+    </a>
+    <a
+       id="a842-1"
+       xlink:href="datamanagementpage.html"
+       target="_parent"
+       xlink:title="Data Management"
+       transform="matrix(1,0,0,0.32480022,0,919.25089)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1089-1"
+         width="588.20514"
+         height="203.74358"
+         x="29.482071"
+         y="958.86713" />
+    </a>
+    <a
+       id="a845"
+       xlink:href="peoplelistpage.html"
+       target="_parent"
+       xlink:title="List of people"
+       transform="translate(0,268)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect918"
+         width="294.82071"
+         height="64.860558"
+         x="29.482071"
+         y="1299.6016" />
+    </a>
+    <a
+       id="a848"
+       xlink:href="settingspage.html"
+       target="_parent"
+       xlink:title="Program settings"
+       transform="translate(0,380)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect920"
+         width="424.54184"
+         height="64.860558"
+         x="29.482071"
+         y="1301.3148" />
+    </a>
+    <a
+       id="a848-0"
+       xlink:href="aboutpage.html"
+       target="_parent"
+       xlink:title="About/Notes/Report  Pages"
+       transform="matrix(1.5322617,0,0,1.0531892,-14.22838,410.03662)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke:#ffff00;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect920-0"
+         width="424.54184"
+         height="64.860558"
+         x="29.482071"
+         y="1301.3148" />
+    </a>
+  </g>
+</svg>

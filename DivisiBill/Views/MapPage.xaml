@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:services = "clr-namespace:DivisiBill.Services"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
+             xmlns:views="clr-namespace:DivisiBill.Views"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:MapPage}"
+             Shell.FlyoutBehavior="Disabled"
+             x:DataType="views:MapPage"
+             x:Class="DivisiBill.Views.MapPage"
+             Title="MapPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding MapTypeCommand}" IconImageSource="{StaticResource GlyphMap}"/>
+        <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>
+        <ToolbarItem Command="{Binding ClearLocationCommand}" IconImageSource="{StaticResource GlyphMapMarkerRemove}"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <maps:Circle x:Name="AccuracyCircle" x:Key="AccuracyCircle" FillColor="{StaticResource TransparentRed}" StrokeWidth="0"/>
+    </ContentPage.Resources>
+    <services:ColumnLayout>
+        <Label
+            Text="{Binding VenueName,Mode=OneWay}"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
+        <Label VerticalOptions="Center" HorizontalOptions="Center">
+        <Label.FormattedText>
+                <FormattedString>
+                    <FormattedString.Spans>
+                        <Span Text="{Binding VenueLocation, StringFormat='Location={0}',Converter={StaticResource Location}, TargetNullValue='Location Unknown'}"/>
+                        <Span Text="{Binding VenueDistance, StringFormat=' ({0})',Converter={StaticResource Distance}, TargetNullValue=''}"/>
+                    </FormattedString.Spans>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+        <maps:Map x:Name="map" services:ColumnLayout.Fill="True" 
+            MapClicked="OnMapClicked" 
+            IsShowingUser="{Binding MapIsShowingUser, Mode=OneTime}"/>
+    </services:ColumnLayout>
+</ContentPage>
