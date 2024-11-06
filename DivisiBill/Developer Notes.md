@@ -68,8 +68,16 @@ Likewise, the AutoPlus web site files in the web project (which include DivisiBi
 are also generated from MarkDown files which use the same MarkDown extension to automatically
 generate HTML when saved. 
 
-Not required, but very handy is the spell checking extension. It can occasionally be
+Not required, but very helpful is the spell checking extension. It can occasionally be
 annoying but saves a lot of typos.
+
+Handy Additional Tools
+----------------------
+
+Some useful tools in this environment are:
+
+- Inkscape - a graphical SVG editor, for help project interactive screen images.
+- GitHub CLI - especially useful for managing secrets.
 
 Building the Solution
 ---------------------
@@ -96,6 +104,11 @@ variables, ether per-user or per-machine (see the DOS SETX command). Here's a su
 | DIVISIBILL_TEST_PRO_JSON_B64 | A test pro license encoded in Base-64 
 | DIVISIBILL_TEST_OCR_JSON_B64 | A test OCR license encoded in Base-64
 
+The easiest way to set these is probably using the SETX program. You can also set them using the Windows UI. 
+Just search for "environment" and select "Edit the system environment variables". This will allow you to set 
+values either for the current user or the local machine. Don't forget these will not take effect until you start 
+a new program, so you may need to restart Visual Studio.
+
 Read through the section on "Build Information and Secrets" and "Automated Build and Deployment" 
 below for more information, especially on how and why we use Base-64 encoding and the mechanism 
 by which the contents of environment variables is made available at runtime.
@@ -108,29 +121,29 @@ feature branches for in-process stuff.
 
 Here are the branches with well defined functions:
 
-- development - This is the main branch and where new development goes
+- main - This is the main branch and where new development eventually goes
 - alpha - Pushing to this branch causes a build to be generated and sent 
   to the Play Store Closed Testing 'alpha' track
 
-New development is typically done in a feature branch off development and merged 
-into development when it's all done. In the private repository it was just merged,
-no pull request but in the public repository there's a more normal pull request flow. 
-This gives the development stream a detailed record of every change in a very 
+New development is typically done in a feature branch off main and merged into main when it's all done using a 
+normal pull request flow. This gives the main branch a detailed record of every change in a very 
 granular way. Once the feature branch is merged you can safely delete it
-or you can keep it around for future features.
+or you can rebase it on main and keep it around for future features.
 
-Releases are created simply by resetting the alpha branch
-to point at whatever set of changes you want to release and pushing the 
-update to GitHub.
+Releases are created by the repository owner simply by resetting the alpha branch
+to point at whatever set of changes are to be released and pushing the 
+update to GitHub. Assuming all the secrets are set correctly the result will
+be an AAB file released to the Play Store closed testing "Alpha" stream. 
 
-If you want to set another branch to the current one without switching, just
+To point another branch to the current one without switching, just
 > git branch -f otherbranch currentbranch
 
 And to push the changes to remote 
 > git push origin otherbranch
 
-So to trigger an android release from the Development Branch regardless of what branch you are currently on:
-> git branch -f alpha development
+So to trigger an android release from the main branch regardless of what branch you are currently on
+the owner can enter:
+> git branch -f alpha main
 > git push origin alpha   
 
 Building A Single Platform
@@ -277,12 +290,49 @@ changesNotSentForReview](https://github.com/marketplace/actions/upload-android-a
 in the GitHub actions marketplace. The source is on github as [lozdan/upload-google-play](https://github.com/lozdan/upload-google-play)
 It also looked good though I didn't try it.
 
+Secrets Using GitHub CLI
+------------------------
+
+You can set up many of the secrets using the environment variables you already set, a git command prompt, and the gitHub 
+CLI, for example:
+```
+gh secret set DIVISIBILL_WS_URI     -b "%DIVISIBILL_WS_URI_RELEASE%%"
+gh secret set DIVISIBILL_WS_KEY     -b "%DIVISIBILL_WS_KEY_RELEASE%"
+gh secret set DIVISIBILL_SENTRY_DSN -b "%DIVISIBILL_SENTRY_DSN%"
+gh secret set SENTRY_AUTH_TOKEN     -b "%SENTRY_AUTH_TOKEN%"
+```
+or, if you prefer PowerShell:
+```
+gh secret set DIVISIBILL_WS_URI     -b "$env:DIVISIBILL_WS_URI_RELEASE";
+gh secret set DIVISIBILL_WS_KEY     -b "$env:DIVISIBILL_WS_KEY_RELEASE";
+gh secret set DIVISIBILL_SENTRY_DSN -b "$env:DIVISIBILL_SENTRY_DSN";
+gh secret set SENTRY_AUTH_TOKEN     -b "$env:SENTRY_AUTH_TOKEN";
+```
+Secrets used for the build process are not in local environment variables so you'll need to 
+set these explicitly:
+```
+gh secret set KEYSTORE_PASSWORD -b "keystore password";
+gh secret set KEYSTORE_PASSWORD_ALIAS -b "key password (usually the same)";
+```
+The final secrets are typically set from a file because they are long and/or contain characters the
+command line parser handles poorly. That's easiest at a command prompt rather than in PowerShell:
+```
+gh secret set SERVICE_ACCOUNT_JSON < service_account_file.json;
+gh secret set KEYSTORE_B64 < keystorele.b64;
+```
+or, in PowerShell:
+```
+gh Get-Content service_account_file.json | secret set SERVICE_ACCOUNT_JSON
+gh Get-Content keystore.b64 | secret set KEYSTORE_B64
+```
+
 Google Service Account
 ----------------------
 
-The hardest part of setting up automation was coming up with a Google service account that worked, following the instructions circa 2023
-didn't always seem to do the trick. One service account finally worked, no idea why, but there's
-a checklist at [revenuecat](https://www.revenuecat.com/docs/google-play-checklists) that might help.
+Part of setting up release automation is coming up with a Google service account that has permission to push the compiled app
+(in the form of an AAB file) to the Play Store and start the release process (automated testing followed by making it
+available to testers via the store). This is not the same problem that the license checking web service has and can (and 
+probably should) use different Google credentials.
 
 After a successful automated build, the Google service account is retrieved from an environment variable and used to deploy
 the app to the play store "alpha" stream. This starts with putting the service account into a secret so the 'Deploy' build
