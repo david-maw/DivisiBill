@@ -407,7 +407,7 @@ public partial class App : Application, INotifyPropertyChanged
                 while (WsVersionTask.Result != System.Net.HttpStatusCode.OK)
                 {
                     AskAboutLicense = AskAboutLicense && 
-                        await Utilities.AskAsync("Cloud Failure", "Could not find the cloud licensing service, do you want to try again or continue without licenses",
+                        await Utilities.AskAsync("Cloud Failure", $"Could not find the cloud licensing service ({WsVersionTask.Result}), do you want to try again or continue without licenses",
                             "try again", "continue");
                     if (!AskAboutLicense) break;
                     if (WsVersionTask.IsCompleted)
