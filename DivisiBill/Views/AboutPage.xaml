@@ -47,6 +47,12 @@
                         Command="{Binding OpenAutoPlusCommand}"
                         BackgroundColor="Red"
                         TextColor="White" />
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Label Text="Show Web Service Information" VerticalOptions="Center"/>
+                    <CheckBox x:Name="ShowWsInfo"/>
+                </HorizontalStackLayout>
+                <Label Text="{Binding BaseAddress, StringFormat='URL Base = {0}'}" TextDecorations="Underline" HorizontalOptions="Center" IsVisible="{Binding Source={x:Reference ShowWsInfo}, Path=IsChecked, x:DataType=CheckBox}"/>
+                <Label Text="{x:Static services:CallWs.MostRecentVersionInfo}" IsVisible="{Binding Source={x:Reference ShowWsInfo}, Path=IsChecked, x:DataType=CheckBox}"/>
             </VerticalStackLayout>
         </ScrollView>
         <ContentView Grid.Row="2" Padding="10" BackgroundColor="Blue">
