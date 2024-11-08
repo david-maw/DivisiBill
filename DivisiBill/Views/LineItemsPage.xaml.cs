@@ -3,7 +3,7 @@ using CommunityToolkit.Maui.Core.Platform;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using DivisiBill.ViewModels;
-using Sentry;
+using System.Diagnostics;
 
 namespace DivisiBill.Views;
 
@@ -78,6 +78,7 @@ public partial class LineItemsPage : ContentPage
     private void LineItemsPage_SizeChanged(object sender, EventArgs e)
     {
         if (mealViewModel is not null)
+            try
         {
             ArrangeSharesButtons();
             var li = (LineItem)LineItemsListView.SelectedItem;
@@ -87,6 +88,14 @@ public partial class LineItemsPage : ContentPage
                 LineItemsListView.ScrollTo(li);
             }
         }
+#pragma warning disable CS0168 // Unnecessary assignment of a value
+            catch (Exception ex)
+#pragma warning restore CS0168 // Unnecessary assignment of a value
+            {
+                if (App.IsDebug)
+                    Debugger.Break();
+                // Do nothing in a release build, the layout might be wrong, but that's all
+    }
     }
     protected override void OnAppearing()
     {
