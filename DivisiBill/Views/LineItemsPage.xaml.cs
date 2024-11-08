@@ -79,15 +79,15 @@ public partial class LineItemsPage : ContentPage
     {
         if (mealViewModel is not null)
             try
-        {
-            ArrangeSharesButtons();
-            var li = (LineItem)LineItemsListView.SelectedItem;
-            if (li is not null)
             {
-                DrawAllSharesButtons(li);
-                LineItemsListView.ScrollTo(li);
+                ArrangeSharesButtons();
+                var li = (LineItem)LineItemsListView.SelectedItem;
+                if (li is not null)
+                {
+                    DrawAllSharesButtons(li);
+                    LineItemsListView.ScrollTo(li);
+                }
             }
-        }
 #pragma warning disable CS0168 // Unnecessary assignment of a value
             catch (Exception ex)
 #pragma warning restore CS0168 // Unnecessary assignment of a value
@@ -95,7 +95,7 @@ public partial class LineItemsPage : ContentPage
                 if (App.IsDebug)
                     Debugger.Break();
                 // Do nothing in a release build, the layout might be wrong, but that's all
-    }
+            }
     }
     protected override void OnAppearing()
     {
@@ -267,7 +267,19 @@ public partial class LineItemsPage : ContentPage
         else
             collectionView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End);
     }
-
+    private void OnScrollRequest(object sender, EventArgs e)
+    {
+        var bo = sender as ToolbarItem;
+        var whereTo = bo.CommandParameter as string;
+        switch (whereTo)
+        {
+            case "Up"   : LineItemsListView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start); break;
+            case "Down" : LineItemsListView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End); break;
+            case "End"  : LineItemsListView.ScrollTo(mealViewModel.LineItems.Count-1, position: ScrollToPosition.End); break;
+            case "Start": LineItemsListView.ScrollTo(0, position: ScrollToPosition.Start); break;
+            default:break;
+        }
+    }
     private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
     {
         firstVisibleItemIndex = e.FirstVisibleItemIndex;

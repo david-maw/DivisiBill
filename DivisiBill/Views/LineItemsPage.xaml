@@ -22,6 +22,10 @@
         <ToolbarItem Text="Share Equally"        Order="Secondary" Command="{Binding ChangeSharingCommand}" CommandParameter="Even"/>
         <ToolbarItem Text="Share Proportionally" Order="Secondary" Command="{Binding ChangeSharingCommand}" CommandParameter="Proportional"/>
         <ToolbarItem Text="Change Sharing"       Order="Secondary" Command="{Binding ChangeSharingCommand}" CommandParameter="Cycle"/>
+        <ToolbarItem Text="Swipe Up"             Order="Secondary" Clicked="OnScrollRequest" CommandParameter="Up"/>
+        <ToolbarItem Text="Swipe Down"           Order="Secondary" Clicked="OnScrollRequest" CommandParameter="Down"/>
+        <ToolbarItem Text="Swipe to End"         Order="Secondary" Clicked="OnScrollRequest" CommandParameter="End"/>
+        <ToolbarItem Text="Swipe to Start"       Order="Secondary" Clicked="OnScrollRequest" CommandParameter="Start"/>
     </ContentPage.ToolbarItems>
     <!--#endregion-->
     <ContentPage.Resources>
