@@ -6,6 +6,10 @@ The "About" page (a tab on the "Information and Problems" page) now has a "Show 
 
 If checked it shows the base URL used to reach the web service and details about the service itself if they are available.
 
+## Add Swipe Menu Choices to Items Page
+
+Swipe up and down through a long list of items is unreliable so this introduces command menu alternatives.
+
 # 6.2.0
 
 ## First Open Source Release
