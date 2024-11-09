@@ -2,7 +2,7 @@
 
 # DivisiBill
 
-DivisiBill is a free, open source, .NET MAUI project with an Android production build and a Windows build used for development. It is available in the [Play Store](https://play.google.com/store/apps/details?id=com.autoplus.divisibill). DivisiBill is currently
+DivisiBill is a free, open source ([MIT license](https://github.com/david-maw/DivisiBill/blob/main/LICENSE.txt)) project built using XAML and C# in .NET MAUI. It has an Android production build as well as a Windows build used for development. It is available in the [Play Store](https://play.google.com/store/apps/details?id=com.autoplus.divisibill). DivisiBill is currently
 the only product of [AutoPlus](http://autopl.us). There's more information about the product and the company on the web site [here](https://www.autopl.us/divisibill/index.html) .
 
 DivisiBill lets you define each item on a bill and indicate how it should be divided among guests.Then it calculates how much each guest owes, including tax and tip. If you enter the tax or tip amount you want to use, 
