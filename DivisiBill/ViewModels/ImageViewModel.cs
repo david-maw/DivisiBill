@@ -328,7 +328,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
 
         var newBitmap = new SKBitmap((int)(bitmap.Width * scale), (int)(bitmap.Height * scale), SKColorType.Gray8, SKAlphaType.Opaque);
 
-        bitmap.ScalePixels(newBitmap, SKFilterQuality.High);
+        bitmap.ScalePixels(newBitmap, new SKSamplingOptions(SKFilterMode.Linear));
 
         using (var image = SKImage.FromBitmap(newBitmap))
         using (var data = image.Encode(SKEncodedImageFormat.Jpeg, 100))
