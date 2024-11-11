@@ -168,7 +168,8 @@ public partial class Meal : ObservableObjectPlus
     public const string SuspectFolderName = "Suspect";
     public const string DeletedItemFolderName = "Deleted";
     public const string ImageFolderName = "Images";
-    private static readonly XmlSerializer mealSerializer = new XmlSerializer(typeof(Meal));
+    private static XmlSerializer mealSerializer = null;
+    private static XmlSerializer MealSerializer => mealSerializer ??= new XmlSerializer(typeof(Meal));
     #endregion
     #region Construction
     public Meal() // public constructor needed for deserialization
@@ -951,7 +952,7 @@ public partial class Meal : ObservableObjectPlus
         {
             Trace.Assert(sourceStream.Position == 0, "Source stream expected to be positioned at 0");
             DebugExamineStream(sourceStream);
-            m = (Meal)mealSerializer.Deserialize(sourceStream);
+            m = (Meal)MealSerializer.Deserialize(sourceStream);
             if (ms is not null)
             {
                 ms.RoundedAmount = m.Summary.RoundedAmount; // for the check in Summary.set
@@ -1158,7 +1159,7 @@ public partial class Meal : ObservableObjectPlus
         {
             var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
-            mealSerializer.Serialize(xmlwriter, this, namespaces);
+            MealSerializer.Serialize(xmlwriter, this, namespaces);
         }
         DebugExamineStream(streamParameter);
     }
