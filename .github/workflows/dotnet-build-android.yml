@@ -33,7 +33,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
 
     # Install the .NET MAUI workload
     - name: Install .NET MAUI
@@ -44,7 +44,7 @@ jobs:
         
     # Test the release
     - name: Test
-      run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net8.0-windows10.0.19041.0
+      run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net9.0-windows10.0.19041.0
       
     # Build to apk and aab
     - name: Build
@@ -53,13 +53,13 @@ jobs:
         DIVISIBILL_WS_KEY: ${{ secrets.DIVISIBILL_WS_KEY }}
         DIVISIBILL_SENTRY_DSN: ${{ secrets.DIVISIBILL_SENTRY_DSN }}
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      run: dotnet build DivisiBill/DivisiBill.csproj -c Release -f net8.0-android --no-restore /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=keystore /p:AndroidSigningkeyAlias="DivisiBill Upload" /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}"
+      run: dotnet build DivisiBill/DivisiBill.csproj -c Release -f net9.0-android --no-restore /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=keystore /p:AndroidSigningkeyAlias="DivisiBill Upload" /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}"
 
     # Upload Just the Signed Artifacts (apk and aab)
     - name: Upload Android Artifact
       uses: actions/upload-artifact@v4
       with:
-          path: DivisiBill/bin/Release/net8.0-android/*Signed.a*
+          path: DivisiBill/bin/Release/net9.0-android/*Signed.a*
 
     # Deploy to the Play Store
     - name: Deploy Android Artifact
@@ -67,6 +67,6 @@ jobs:
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.autoplus.divisibill
-        releaseFiles: DivisiBill/bin/Release/net8.0-android/*Signed.aab
+        releaseFiles: DivisiBill/bin/Release/net9.0-android/*Signed.aab
         track: alpha
         changesNotSentForReview: false
