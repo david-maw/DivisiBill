@@ -12,6 +12,8 @@ Windows machine and:
  2. Use Visual Studio 2022 to debug it, or
  3. use `dotnet run -f:net8.0-windows10.0.19041.0` at a command prompt to run it
 
+There are several Git branches available but the only well-behaved one is "main". The "alpha" branch is used as part of the release CI/CD process and hops around somewhat randomly and others may come and go but should be considered experimental at best. 
+
 Read on for more information.
 
 Overall Solution Structure
