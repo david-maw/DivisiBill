@@ -42,8 +42,13 @@
      <!--Enables 'dotnet run' (along with "commandName": "Project" in launchsettings.json)-->
      <WindowsPackageType>None</WindowsPackageType>
    </PropertyGroup>
-  
-   <ItemGroup>
+
+  <!--Turn on Android AOT compilation to Speed Up initialization-->
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+    <RunAOTCompilation>True</RunAOTCompilation>
+  </PropertyGroup>
+
+  <ItemGroup>
       <!-- App Icon, see https://learn.microsoft.com/en-us/dotnet/core/tools/sdk-errors/netsdk1005 -->
      <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Update="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
      <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
@@ -187,9 +192,6 @@ namespace DivisiBill.Generated
 }
 ]]>
     </BuildEnvironmentText>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
-    <RunAOTCompilation>False</RunAOTCompilation>
   </PropertyGroup>
 
   <Target Name="AddBuildEnvironment" BeforeTargets="BeforeBuild;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="ForceBuildEveryTime">
