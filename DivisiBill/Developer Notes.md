@@ -328,6 +328,17 @@ gh Get-Content service_account_file.json | secret set SERVICE_ACCOUNT_JSON
 gh Get-Content keystore.b64 | secret set KEYSTORE_B64
 ```
 
+Using the DivisiBill Web Service
+--------------------------------
+
+The web service can be tested using the DivisiBill app by setting the DIVISIBILL_WS_URI environment variable to the URL for the
+web service, no key is needed. This setup must be done before running the app. The easiest way to do this and have the
+environment variable persist is to start a command prompt and enter:
+
+>    SETX DIVISIBILL_WS_URI http://localhost:7190/api/
+
+Don't forget to restart the Visual Studio instance for DivisiBill after doing this so the new environment variable can be used by the build process. For more complex scenarios read the developer notes for the DiviBillWs web service project.
+
 Google Service Account
 ----------------------
 
