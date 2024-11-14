@@ -255,7 +255,7 @@
                         ValidStyle="{StaticResource ValidLabelStyle}"
                         UnequalStyle="{StaticResource UnequalLabelStyle}"
                         EqualValue="{Binding ScannedSubTotal}"
-                        TestEquality="{Binding ScannedSubTotal, Converter={services:IsNonZeroConverter}}"
+                        TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"
                     />
                     </Label.Behaviors>
                 </Label>
@@ -268,7 +268,7 @@
                 <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Path="CouponAmountAfterTax" Converter="{services:IsNonZeroConverter}" x:DataType="vm:MealViewModel"/>
+                            <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
                             <Binding Path="IsFiltered" Converter="{StaticResource Not}" x:DataType="vm:MealViewModel"/>
                         </MultiBinding>
                     </Label.IsVisible>
@@ -277,7 +277,7 @@
                        Text="{Binding CouponAmountAfterTax, StringFormat='{0:C}'}">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Path="CouponAmountAfterTax" Converter="{services:IsNonZeroConverter}" x:DataType="vm:MealViewModel"/>
+                            <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
                             <Binding Path="IsFiltered" Converter="{StaticResource Not}" x:DataType="vm:MealViewModel"/>
                         </MultiBinding>
                     </Label.IsVisible>
@@ -285,7 +285,7 @@
                 <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Path="FilteredCouponAmountAfterTax" Converter="{services:IsNonZeroConverter}" x:DataType="vm:MealViewModel"/>
+                            <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
                             <Binding Path="IsFiltered" x:DataType="vm:MealViewModel"/>
                         </MultiBinding>
                     </Label.IsVisible>
@@ -294,7 +294,7 @@
                        Text="{Binding FilteredCouponAmountAfterTax, StringFormat='{0:C}'}">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Path="FilteredCouponAmountAfterTax" Converter="{services:IsNonZeroConverter}" x:DataType="vm:MealViewModel"/>
+                            <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
                             <Binding Path="IsFiltered" x:DataType="vm:MealViewModel"/>
                         </MultiBinding>
                     </Label.IsVisible>

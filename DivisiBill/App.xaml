@@ -21,6 +21,7 @@
             <services:InvertBoolConverter x:Key="Not"/>
             <services:DistanceConverter x:Key="Distance"/>
             <services:LocationConverter x:Key="Location"/>
+            <services:IsNonZeroConverter x:Key="IsNonZero"/>
 
             <viewModels:CloudViewModel x:Key="CloudViewModel"/>
             <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> <!--This is defined in code-->
