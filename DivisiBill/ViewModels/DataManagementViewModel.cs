@@ -90,9 +90,12 @@ partial class DataManagementViewModel : ObservableObject
                 Stream s = new MemoryStream();
                 archive.ToStream(s);
                 s.Position = 0;
+                FileSaverResult fileSaverResult = new(null,null);
 #if WINDOWS || ANDROID
-                var fileSaverResult = await FileSaver.Default.SaveAsync(Path.GetFileName(filePath), s);
+                fileSaverResult = await FileSaver.Default.SaveAsync(Path.GetFileName(filePath), s);
 #endif
+                if (!fileSaverResult.IsSuccessful)
+                    await Utilities.ShowAppSnackBarAsync("Archive Failed");
             }
         }
         catch (Exception ex)
