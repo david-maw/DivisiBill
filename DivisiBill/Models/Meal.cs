@@ -2407,7 +2407,7 @@ public partial class Meal : ObservableObjectPlus
          * The difference is generally +/- one cent at most, but it could be as much as +/- one cent per person in theory.  
          * The extra is added (or subtracted from) the first non zero total it would not overwhelm.
         */
-        if (IsUnsharedAmountSignificant)
+        if (IsUnsharedAmountSignificant && nonZeroCosts.Length > 0)
         {
             Utilities.DebugMsg($"In {nameof(DistributeCosts20230527)} : {remainingTotal:C} was unallocated after sharing costs in {DebugDisplay}");
             var costItem = nonZeroCosts.First(ci => (ci.Amount + remainingTotal) > 0);
@@ -2505,7 +2505,7 @@ public partial class Meal : ObservableObjectPlus
         private set
         {
             SetProperty(ref unsharedAmount, value);
-            IsUnsharedAmountSignificant = !IsAnyUnallocated && value * 100 > (Costs.Count(pc => pc.Amount > 0) + 1);
+            IsUnsharedAmountSignificant = value != 0 && !IsAnyUnallocated && value * 100 > (Costs.Count(pc => pc.Amount > 0) + 1);
         }
     }
 
