@@ -863,6 +863,7 @@ public class AwaitableQueue<T>
 /// </summary>
 public class SentryEventProcessor : ISentryEventProcessor
 {
+    public static int skipBreaks = 0; // Just set this to skip the next however many breaks
     public  SentryEvent Process(SentryEvent sentryEvent)
     {
         Utilities.DebugMsg($"In SentryEventProcessor.Process, Sentry EventId: {sentryEvent.EventId}");
@@ -870,7 +871,10 @@ public class SentryEventProcessor : ISentryEventProcessor
         {
             // Never report anything on a debug build but you can put a breakpoint here to look at them
             Utilities.DebugMsg("In SentryEventProcessor.Process, debug build, ignoring Sentry Event");
-            Debugger.Break();
+            if (skipBreaks <= 0)
+                Debugger.Break();
+            else
+                skipBreaks --;
             return null;
         }
         if (App.Settings is not null && App.Settings.SendCrashYes)
