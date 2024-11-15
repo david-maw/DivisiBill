@@ -1,3 +1,13 @@
+# 6.2.2
+
+## Notify User if Archive to Disk Fails
+
+Previously it would fail silently, now it displays a message.
+
+##  Do Not Wait After Reporting Pro License
+
+When a pro license is discovered where previously there had been none a message is displayed. We no longer wait for the user to acknowledge that message before continuing. 
+
 # 6.2.1
 
 ## Add an Option to Show Web Service Information
