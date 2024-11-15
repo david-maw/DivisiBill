@@ -450,7 +450,7 @@ public partial class App : Application, INotifyPropertyChanged
                         FoundProSubscription = true;
                         if (!Settings.HadProSubscription && !App.Settings.FirstUse)
                         {
-                            await Utilities.DisplayAlertAsync("Pro License Found", "Subscription check returned a pro license");
+                            await Utilities.ShowAppSnackBarAsync("Subscription check now returns a pro license");
                             Settings.HadProSubscription = true;
                         }
                         break;
