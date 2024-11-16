@@ -12,11 +12,12 @@
       <ImplicitUsings>disable</ImplicitUsings>
       <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
       <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
-     <NoWarn>NU1608;XC0103</NoWarn>
+     <NoWarn>NU1608;XC0103;MVVMTK0045</NoWarn>
      <!--NU1608 Because Plugin.InAppBilling 8.x triggers it-->
      <!--XC0103 Because https://github.com/dotnet/docs-maui/issues/2486 has not been put in Community Toolkit yet, so this gets a warning in .NET9-->
-     
-      <!-- Display name -->
+     <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
+
+     <!-- Display name -->
       <ApplicationTitle>DivisiBill</ApplicationTitle>
  
       <!-- App Identifier -->
@@ -92,18 +93,18 @@
       <PackageReference Include="epj.RouteGenerator" Version="1.0.2" />
       <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.0-rc.2.24503.2" />
       <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.0-rc.2.24503.2" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0-rc.2.24473.5" />
-      <PackageReference Include="CommunityToolkit.Common" Version="8.4.0-preview1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+      <PackageReference Include="CommunityToolkit.Common" Version="8.4.0-preview2" />
       <PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
-      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0-preview1" />
-      <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="9.0.0-rc.2.24503.2" />
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0-preview2" />
+      <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="9.0.10" />
       <PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
       <PackageReference Include="Sentry.Maui" Version="4.13.0" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
       <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="4.13.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
       <PackageReference Include="SkiaSharp" Version="3.118.0-preview.1.2" />
-      <PackageReference Include="System.Text.Encodings.Web" Version="9.0.0-rc.2.24473.5" />
+      <PackageReference Include="System.Text.Encodings.Web" Version="9.0.0" />
    </ItemGroup>
 
    <ItemGroup>

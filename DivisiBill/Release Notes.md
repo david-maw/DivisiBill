@@ -4,9 +4,13 @@
 
 Previously it would fail silently, now it displays a message.
 
-##  Do Not Wait After Reporting Pro License
+## Do Not Wait After Reporting Pro License
 
 When a pro license is discovered where previously there had been none a message is displayed. We no longer wait for the user to acknowledge that message before continuing. 
+
+## Upgrade to .NET 9
+
+The build and various dependent libraries are upgraded to .NET 9. This should make no functional difference except that a few actions will be faster.
 
 # 6.2.1
 
