@@ -91,8 +91,8 @@
       <PackageReference Include="CommunityToolkit.Maui.Camera" Version="1.0.5" />
       <PackageReference Include="CommunityToolkit.Maui.Maps" Version="2.0.4" />
       <PackageReference Include="epj.RouteGenerator" Version="1.0.2" />
-      <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.0-rc.2.24503.2" />
-      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.0-rc.2.24503.2" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.10" />
+      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.10" />
       <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
       <PackageReference Include="CommunityToolkit.Common" Version="8.4.0-preview2" />
       <PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
