@@ -636,6 +636,18 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
+    public void ChangeComp(object param)
+    {
+        if (param is LineItem li)
+        { 
+            if (li.Amount >= 0 || li.Comped)
+                li.Comped = !li.Comped;
+            else
+                Utilities.DisplayAlertAsync("Error", "You cannot comp a coupon (negative item)");
+        }
+    }
+
+    [RelayCommand]
     public void ChangeSharing(object param)
     {
         if (param is String changeTypeString && Enum.TryParse(changeTypeString, out ChangeType changeType))

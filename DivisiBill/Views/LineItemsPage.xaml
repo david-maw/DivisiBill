@@ -106,7 +106,7 @@
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
-                            Tapped="OnCompButtonClicked"/>
+                            Command="{Binding ChangeCompCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"/>
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--#endregion-->
@@ -162,7 +162,7 @@
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
-                            Tapped="OnCompButtonClicked"/>
+                            Command="{Binding ChangeCompCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"/>
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--#endregion-->

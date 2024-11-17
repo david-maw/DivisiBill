@@ -250,15 +250,6 @@ public partial class LineItemsPage : ContentPage
             LineItemsListView.SelectedItem = li;
     }
     private void OnVenueNameTapped(object sender, TappedEventArgs e) => App.PushAsync(Routes.PropertiesPage);
-    private void OnCompButtonClicked(object sender, EventArgs e)
-    {
-        var mi = sender as BindableObject;
-        var li = mi.BindingContext as LineItem;
-        if (li.Amount > 0 || li.Comped)
-            li.Comped = !li.Comped;
-        else
-            Utilities.DisplayAlertAsync("Error", "You cannot comp a coupon (negative item)");
-    }
 
     int firstVisibleItemIndex, lastVisibleItemIndex;
     private void OnCollectionSwipedUpDown(object sender, SwipedEventArgs e)
