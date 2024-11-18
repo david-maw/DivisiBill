@@ -377,7 +377,6 @@ public partial class MealViewModel : ObservableObjectPlus
     #region Data Entry
     #region Item Selection
 
-    // Logically you'd think this would do, but it does not work because newValue seems to be set to OldValue
     [ObservableProperty]
     private LineItem selectedLineItem;
     partial void OnSelectedLineItemChanging(LineItem oldValue, LineItem newValue)
@@ -392,6 +391,13 @@ public partial class MealViewModel : ObservableObjectPlus
     }
     public LineItem SelectedOrFirstLineItem => SelectedLineItem ?? LineItems.FirstOrDefault();
 
+    /// <summary>
+    /// Implements a command to select or Deselect the current LineItem
+    /// BEWARE because of bug https://github.com/dotnet/maui/issues/5446 this may be called before or after LineItemsPage.OnItemSelected/>
+    /// Amazingly, this depends on whether a Button or Rectangle is used, if it is a Button, everything is fine, but for a Rectangle
+    /// it is called before on Android, after on Windows on .NET 8 and 9 at least.
+    /// </summary>
+    /// <param name="li"></param>
     [RelayCommand]
     private void ToggleSelectLineItem(LineItem li) => SelectedLineItem = SelectedLineItem == li ? null : li;
 

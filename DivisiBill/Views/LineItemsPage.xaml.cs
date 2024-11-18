@@ -189,6 +189,8 @@ public partial class LineItemsPage : ContentPage
 
     /// <summary>
     /// Handle the selection or deselection of a new LineItem in the list, ensure that any updated values for the previous item are persisted.
+    /// BEWARE because of bug https://github.com/dotnet/maui/issues/5446 this may be called before or after <see cref="MealViewModel.ToggleSelectLineItem(LineItem)"/>
+    /// It is currently called after on Android, before on Windows
     /// </summary>
     /// <param name="sender">The item list</param>
     /// <param name="e">Information about what changed</param>

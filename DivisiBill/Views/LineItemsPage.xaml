@@ -82,26 +82,33 @@
                 </SwipeView>
                 <!--#endregion-->
                 <!--#region overlay buttons -->
-                <!--Button overlay to toggle sharing, spans the margin and does not cause an item to be selected-->
-                <Button Grid.Column="0" BackgroundColor="Transparent"
-                                Command="{Binding ChangeSharingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                                HeightRequest="{Binding FontSize, Source={Reference amountLabel}, x:DataType=Label}"
-                                CommandParameter="{Binding}"/>
-                <!--Click to toggle select or display payments-->
-                <Rectangle Grid.Column="2" BackgroundColor="Transparent">
+                <!--Tap to toggle sharing, spans the margin and does not cause an item to be selected-->
+                <Rectangle Grid.Column="0" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding ChangeSharingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+                <!--Tap to toggle select or double tap to display payments-->
+                <Rectangle Grid.Column="1" Grid.ColumnSpan="3" BackgroundColor="Transparent">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
                             Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2" 
-                            Command="{Binding DisplayPaymentsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            CommandParameter="{Binding SelectedCost, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" />
+                            CommandParameter="{Binding SelectedCost, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            Command="{Binding DisplayPaymentsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" />
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
-                <!--Button overlay to toggle Comped value, spans the margin and does not cause an item to be selected-->
-                <Button Grid.Column="4" BackgroundColor="Transparent"
-                                Clicked="OnCompButtonClicked" BorderWidth="0" HeightRequest="{Binding FontSize, Source={Reference amountLabel}, x:DataType=Label}"
-                                CommandParameter="{Binding}"/>
+                <!--Tap to toggle Comped value, spans the margin and does not cause an item to be selected-->
+                <Rectangle Grid.Column="4" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Tapped="OnCompButtonClicked"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
                 <!--#endregion-->
             </Grid>
         </DataTemplate>
@@ -130,20 +137,34 @@
                     </Grid>
                     <!--#endregion-->
                 <!--#region overlay buttons -->
-                <!--Button overlay to toggle sharing, spans the margin and does not cause an item to be selected-->
-                <Button Grid.Column="0" BackgroundColor="Transparent"
-                                Command="{Binding ChangeSharingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                                HeightRequest="{Binding FontSize, Source={Reference amountLabel}, x:DataType=Label}"
-                                CommandParameter="{Binding}"/>
-                <!--Click to toggle select-->
-                <Button Grid.Column="1" Grid.ColumnSpan="3" BackgroundColor="Transparent"
-                                            BorderWidth="0" HeightRequest="{Binding FontSize, Source={Reference amountLabel}, x:DataType=Label}"
-                                            Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                                            CommandParameter="{Binding}"/>
-                <!--Button overlay to toggle Comped value, spans the margin and does not cause an item to be selected-->
-                <Button Grid.Column="4" BackgroundColor="Transparent"
-                                Clicked="OnCompButtonClicked" BorderWidth="0" HeightRequest="{Binding FontSize, Source={Reference amountLabel}, x:DataType=Label}"
-                                CommandParameter="{Binding}"/>
+                <!--Tap to toggle sharing, spans the margin and does not cause an item to be selected-->
+                <Rectangle Grid.Column="0" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding ChangeSharingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+                <!--Tap to toggle select or double tap to display payments-->
+                <!--Strangely, if this button is replaced with a Rectangle it doesn't work correctly because the event order changes, at least through .NET 9-->
+                <Button Grid.Column="1" Grid.ColumnSpan="3" BackgroundColor="Transparent">
+                    <Button.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"/>
+                        <TapGestureRecognizer NumberOfTapsRequired="2" 
+                            CommandParameter="{Binding SelectedCost, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            Command="{Binding DisplayPaymentsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" />
+                    </Button.GestureRecognizers>
+                </Button>
+                <!--Tap to toggle Comped value, spans the margin and does not cause an item to be selected-->
+                <Rectangle Grid.Column="4" BackgroundColor="Transparent">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer
+                            CommandParameter="{Binding}"
+                            Tapped="OnCompButtonClicked"/>
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
                 <!--#endregion-->
                 <!--#region Context Menu to Replace Swipe -->
                 <FlyoutBase.ContextFlyout>
@@ -158,7 +179,6 @@
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>
- 
     <services:ColumnLayout x:DataType="vm:MealViewModel">
         <!--#region Page Switch Shortcut -->
         <services:ColumnLayout.GestureRecognizers>
@@ -215,8 +235,6 @@
             </CollectionView.GestureRecognizers>
             <!--#endregion-->
         </CollectionView>
-        <!--#endregion-->
-        <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint -->
         <Border IsVisible="{Binding ShowLineItemsHint}" Style="{StaticResource HintStyle}">
