@@ -37,7 +37,7 @@
                     </VerticalStackLayout>
                 </SwipeView>
                 <!--#region Select/Deselect/Details button -->
-                <Rectangle Grid.Column="1" BackgroundColor="Transparent" x:DataType="model:Venue">
+                <Rectangle Grid.Column="1" x:DataType="model:Venue">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
@@ -82,7 +82,7 @@
                     <!--#endregion-->
                 </VerticalStackLayout>
                 <!--#region Select/Deselect/Details button -->
-                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="1">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"

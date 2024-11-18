@@ -69,7 +69,7 @@
                     <!--#endregion-->
                 </SwipeView>
                 <!--#region Select Button -->
-                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="1">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
@@ -101,7 +101,7 @@
                 </Grid>
                 <!--#endregion-->
                 <!--#region Select Button -->
-                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="1">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"

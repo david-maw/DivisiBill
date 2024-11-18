@@ -43,7 +43,7 @@
                     </VerticalStackLayout>
                 </SwipeView>
                 <!--Click to toggle item select without triggering swipe action-->
-                <Rectangle Grid.Column="1" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="1">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"

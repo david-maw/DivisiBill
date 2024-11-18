@@ -83,7 +83,7 @@
                 <!--#endregion-->
                 <!--#region overlay buttons -->
                 <!--Tap to toggle sharing, spans the margin and does not cause an item to be selected-->
-                <Rectangle Grid.Column="0" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="0">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
@@ -91,7 +91,7 @@
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--Tap to toggle select or double tap to display payments-->
-                <Rectangle Grid.Column="1" Grid.ColumnSpan="3" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="1" Grid.ColumnSpan="3">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
@@ -102,7 +102,7 @@
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--Tap to toggle Comped value, spans the margin and does not cause an item to be selected-->
-                <Rectangle Grid.Column="4" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="4">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
@@ -138,7 +138,7 @@
                     <!--#endregion-->
                 <!--#region overlay buttons -->
                 <!--Tap to toggle sharing, spans the margin and does not cause an item to be selected-->
-                <Rectangle Grid.Column="0" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="0">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
@@ -158,7 +158,7 @@
                     </Button.GestureRecognizers>
                 </Button>
                 <!--Tap to toggle Comped value, spans the margin and does not cause an item to be selected-->
-                <Rectangle Grid.Column="4" BackgroundColor="Transparent">
+                <Rectangle Grid.Column="4">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
