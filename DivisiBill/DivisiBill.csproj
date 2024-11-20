@@ -25,8 +25,8 @@
       <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
  
       <!-- Versions -->
-      <ApplicationDisplayVersion>6.2.2</ApplicationDisplayVersion>
-      <ApplicationVersion>283</ApplicationVersion>
+      <ApplicationDisplayVersion>6.2.3</ApplicationDisplayVersion>
+      <ApplicationVersion>291</ApplicationVersion>
       <AssemblyVersion>$(ApplicationDisplayVersion).$(ApplicationVersion)</AssemblyVersion>
  
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
