@@ -12,9 +12,32 @@ public class AppSettings : ISettings
         get => Guid.Parse(Preferences.Get(nameof(PeopleUpdater), Guid.Empty.ToString()));
         set => Preferences.Set(nameof(PeopleUpdater), value.ToString());
     }
+    /// <summary>
+    /// Apologizes for the change in stored format for DateTime preferences in .NET 9
+    /// </summary>
+    /// <param name="name">The name of the preference</param>
+    /// <param name="defaultDateTime">The default value to be returned if the preference is not set</param>
+    /// <returns></returns>
+    private DateTime PreferencesGet(string name, DateTime defaultDateTime)
+    {
+        if (!Preferences.ContainsKey(name))
+            return defaultDateTime;
+        DateTime dt = defaultDateTime;
+        try
+        {
+            dt = Preferences.Get(name, defaultDateTime);
+        }
+        catch (Exception)
+        {
+            // Probably means we were presented with a string written by .NET 8 or before
+            string s = Preferences.Get(name, "");
+            dt = (DateTime.TryParse(s, out DateTime result)) ? result : defaultDateTime;
+        }
+        return dt;
+    }
     public DateTime PeopleUpdateTime
     {
-        get => Preferences.Get(nameof(PeopleUpdateTime), DateTime.MinValue);
+        get => PreferencesGet(nameof(PeopleUpdateTime), DateTime.MinValue);
         set => Preferences.Set(nameof(PeopleUpdateTime), value);
     }
     public Guid VenueUpdater
@@ -87,7 +110,7 @@ public class AppSettings : ISettings
     }
     public DateTime LastUse
     {
-        get => Preferences.Get(nameof(LastUse), DateTime.MinValue);
+        get => PreferencesGet(nameof(LastUse), DateTime.MinValue);
         set => Preferences.Set(nameof(LastUse), value);
     }
     public string UserKey
