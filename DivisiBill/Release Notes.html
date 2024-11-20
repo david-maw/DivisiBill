@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <html>
 <head>
-<title>6.2.2</title>
+<title>6.2.3</title>
     <style>
         html, body {
             font-family: Arial, Helvetica, sans-serif;
@@ -12,20 +12,22 @@
     </style>
 </head>
 <body>
-<h1 id="section">6.2.2</h1>
+<h1 id="section">6.2.3</h1>
 <h2 id="notify-user-if-archive-to-disk-fails">Notify User if Archive to Disk Fails</h2>
 <p>Previously it would fail silently, now it displays a message.</p>
 <h2 id="do-not-wait-after-reporting-pro-license">Do Not Wait After Reporting Pro License</h2>
-<p>When a pro license is discovered where previously there had been none a message is displayed. We no longer wait for the user to acknowledge that message before continuing.</p>
+<p>When a pro license is discovered where previously there had been none a message is displayed. We no longer wait solely for the user to acknowledge that message before continuing, it disappears on its own after a few seconds.</p>
 <h2 id="upgrade-to.net-9">Upgrade to .NET 9</h2>
 <p>The build and various dependent libraries are upgraded to .NET 9. This should make no functional difference except that a few actions will be faster.</p>
-<h1 id="section-1">6.2.1</h1>
+<h1 id="section-1">6.2.2</h1>
+<p>Experimental upgrade to .NET 9. No user visible changes.</p>
+<h1 id="section-2">6.2.1</h1>
 <h2 id="add-an-option-to-show-web-service-information">Add an Option to Show Web Service Information</h2>
 <p>The &quot;About&quot; page (a tab on the &quot;Information and Problems&quot; page) now has a &quot;Show Web Service Information&quot; checkbox.</p>
 <p>If checked it shows the base URL used to reach the web service and details about the service itself if they are available.</p>
 <h2 id="add-swipe-menu-choices-to-items-page">Add Swipe Menu Choices to Items Page</h2>
 <p>Swipe up and down through a long list of items is unreliable so this introduces command menu alternatives.</p>
-<h1 id="section-2">6.2.0</h1>
+<h1 id="section-3">6.2.0</h1>
 <h2 id="first-open-source-release">First Open Source Release</h2>
 <p>Prior to this release (November 2024) the DivisiBill sources were private, this moves them into open source. To build the released code you need to define a variety of secrets but the app runs without them. Without the defined secrets OCR and cloud storage are not available but all other features work.</p>
 
