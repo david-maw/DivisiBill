@@ -208,6 +208,8 @@ partial class DataManagementViewModel : ObservableObject
         {
             Utilities.ReportCrash(ex);
             // The user canceled or something went wrong
+            await Utilities.ShowAppSnackBarAsync("Restore Faulted, Archive was unusable");
+
         }
         finally
         {
