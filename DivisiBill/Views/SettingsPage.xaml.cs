@@ -24,7 +24,13 @@ public partial class SettingsPage : ContentPage
         svm.RefreshValues();
         if (mapPage is not null && mapPage.VenueLocationHasChanged)
         {
+            bool locationChanged = App.MyLocation is not null;
             mapPage.VenueLocationHasChanged = false;
+            if (mapPage.VenueLocation is not null && locationChanged)
+            {
+                await CommunityToolkit.Maui.Alerts.Toast.Make("Will set fake location in 10s").Show();
+                await Task.Delay(10_000); 
+            }
             await App.SetFakeLocation(mapPage.VenueLocation);
         }
         await App.StartMonitoringLocation(); 

@@ -605,22 +605,20 @@ public partial class App : Application, INotifyPropertyChanged
         }
     }
     /// <summary>
-    /// Set, reset, or change the fake location to a specified value - if it is changing (as opposed to being set
-    /// from null or cleared) delay before actually setting it so as to give the tester time to switch pages and see
-    /// how a dynamic change is handled. It uses toast messages to notify the user so as to allow app page switching. 
+    /// Set, reset, or change the fake location to a specified value
+    /// Notify the user so as to allow app page switching. 
     /// </summary>
     /// <param name="newFakeLocation">The new value to use</param>
     /// <returns></returns>
     public static async Task SetFakeLocation(Location newFakeLocation)
     {
-        if (newFakeLocation is not null && MyLocation is not null)
-        {
-            await CommunityToolkit.Maui.Alerts.Toast.Make("Will set fake location in 10s").Show();
-            await Task.Delay(10_000);
-        }
+        bool fakeLocationIsValid = fakeLocation is not null;
+        bool myLocationIsValid = MyLocation is not null;
         FakeLocation = newFakeLocation;
         await GetMyLocationAsync(CancellationToken.None);
-        await CommunityToolkit.Maui.Alerts.Toast.Make("Fake location changed").Show();
+        if ((fakeLocationIsValid != myLocationIsValid) || // Only one of the locations is null
+            (fakeLocationIsValid && myLocationIsValid && MyLocation.GetDistanceTo(FakeLocation) > 1))
+            await Utilities.ShowAppSnackBarAsync("Location changed");
     }
 
     private static Location fakeLocation = null;
