@@ -64,7 +64,7 @@ public partial class MealListViewModel : ObservableObjectPlus
 
     /// <summary>
     /// Called whenever the local Meal list changes, which can happen if asynchronous restore or recover operations are in process
-    /// or if asynchronous file cleanup is in process.
+    /// or if asynchronous file cleanup is in process. Its basic job is to keep the displayed list in sync with the changes if necessary.
     /// </summary>
     private void LocalMealList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
@@ -83,7 +83,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             foreach (MealSummary ms in e.NewItems)
             {
                 if (!(ms.IsRemote && ShowRemoteMeals)) // in other words if not already in the list
-                    if (mealList.Upsert(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                    if (UpsertIntoMealList(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
                         SelectedMealSummariesCount++;
             }
         else
@@ -100,7 +100,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     }
     /// <summary>
     /// Called whenever the remote Meal list changes, which can happen if asynchronous archive or backup operations are in process
-    /// or if asynchronous cleanup of the remote list is in process.
+    /// or if asynchronous cleanup of the remote list is in process. Its basic job is to keep the displayed list in sync with the changes if necessary.
     /// </summary>
     private void RemoteMealList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
@@ -119,7 +119,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             foreach (MealSummary ms in e.NewItems)
             {
                 if (!(ms.IsLocal && ShowLocalMeals)) // in other words if not already in the list
-                    if (mealList.Upsert(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                    if (UpsertIntoMealList(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
                         SelectedMealSummariesCount++;
             }
         else
@@ -759,6 +759,13 @@ public partial class MealListViewModel : ObservableObjectPlus
                 else // should never happen
                     return new ObservableCollection<MealSummary>();
             }
+            
+            static IOrderedEnumerable<MealSummary> SortByDistance(IEnumerable<MealSummary> mealSummaries)
+            {
+                if (App.MyLocation is null)
+                    return mealSummaries.OrderBy((ms) => ms.VenueName);
+                return mealSummaries.OrderBy((ms) => ms.Distance).ThenBy((ms) => ms.VenueName).ThenByDescending((ms) => ms.CreationTime);
+            }
 
             // Begin MealList 'get' code
 
@@ -820,10 +827,17 @@ public partial class MealListViewModel : ObservableObjectPlus
         }
         private set => SetProperty(ref mealList, value);
     }
-    private static IOrderedEnumerable<MealSummary> SortByDistance(IEnumerable<MealSummary> mealSummaries)
+    private bool UpsertIntoMealList(MealSummary ms)
     {
-        if (App.MyLocation is null)
-            return mealSummaries.OrderBy((ms) => ms.VenueName);
-        return mealSummaries.OrderBy((ms) => ms.Distance).ThenBy((ms) => ms.VenueName).ThenByDescending((ms) => ms.CreationTime);
+        switch (SortOrder)  
+        {
+            case SortOrderType.byDistance:
+                return mealList.Upsert(ms, MealSummary.CompareDistanceTo);
+            case SortOrderType.byName:
+                return mealList.Upsert(ms, MealSummary.CompareVenueTo);
+            case SortOrderType.byDate:
+            default:
+                return mealList.Upsert(ms, MealSummary.CompareCreationTimeTo);
+        }
     }
 }

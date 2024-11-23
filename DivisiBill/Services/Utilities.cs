@@ -112,11 +112,16 @@ public static class Utilities
         // Validation code to ensure order is correct when we exit this function
         if (App.IsDebug)                            
         {
+            bool noErrors = true;
             T priorVenue = list.First();
-            foreach (T currentVenue in list)                                        
+            foreach (T currentVenue in list)
             {
-                if (compareTo(currentVenue, priorVenue) < 0)
+                if (noErrors && compareTo(currentVenue, priorVenue) < 0)
+                {
+                    noErrors = false;
                     Debugger.Break();
+                    int i = compareTo(currentVenue, priorVenue); // so the debugger can step in 
+                }
                 priorVenue = currentVenue;
             }
         }
@@ -132,7 +137,7 @@ public static class Utilities
     /// <param name="targetItem"></param>
     public static bool Upsert<T>(this IList<T> list, T targetItem) where T : class, IComparable<T>
     {
-        int compareTo(T item1, T item2)
+        static int compareTo(T item1, T item2)
         {
             return item1.CompareTo(item2);
         }

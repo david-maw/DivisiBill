@@ -415,25 +415,6 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         }
     }
 
-    /// <summary>
-    /// Compare by distance then venue name then newest first
-    /// </summary>
-    /// <param name="otherMs">the MealSummary to compare the current one with</param>
-    /// <returns>+1 if this is later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
-    public int CompareDistanceTo(MealSummary otherMs)
-    {
-        if (this.Equals(otherMs)) return 0;
-        if (otherMs is null) return 1;
-        int result = Distance.CompareTo(otherMs.Distance);
-        if (result == 0)
-            result = VenueName.CompareTo(otherMs.VenueName);
-        if (result == 0)
-            result = otherMs.CreationTime.CompareTo(CreationTime);
-        if (result == 0 && Debugger.IsAttached)
-            Debugger.Break(); // let the developer know there's a problem
-        return result;
-    }
-
     private bool fileSelected;
     private string venueName = string.Empty;
     private DateTime creationTime = DateTime.MinValue;
@@ -606,7 +587,20 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         return true; // Item added
     }
     public int CompareTo(MealSummary otherMs) => CompareCreationTimeTo(otherMs);
+
+    /// <summary>
+    /// Compare by creation time, latest first. No two creation times should be the same.
+    /// </summary>
+    /// <param name="otherMs">the MealSummary to compare the current one with</param>
+    /// <returns>+1 if this is later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
     public int CompareCreationTimeTo(MealSummary otherMs) => otherMs.CreationTime.CompareTo(CreationTime); // Note that this is inverted because we want newest first;
+    public static int CompareCreationTimeTo(MealSummary thisMs, MealSummary otherMs) => thisMs.CompareCreationTimeTo(otherMs);
+
+    /// <summary>
+    /// Compare by venue name then creation time newest first
+    /// </summary>
+    /// <param name="otherMs">the MealSummary to compare the current one with</param>
+    /// <returns>+1 if this would sort later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
     public int CompareVenueTo(MealSummary otherMs)
     {
         if (this.Equals(otherMs)) return 0;
@@ -618,5 +612,26 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             Debugger.Break(); // let the developer know there's a problem
         return result;
     }
+    public static int CompareVenueTo(MealSummary thisMs, MealSummary otherMs) => thisMs.CompareVenueTo(otherMs);
+
+    /// <summary>
+    /// Compare by distance then venue name then newest first
+    /// </summary>
+    /// <param name="otherMs">the MealSummary to compare the current one with</param>
+    /// <returns>+1 if this would sort later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
+    public int CompareDistanceTo(MealSummary otherMs)
+    {
+        if (this.Equals(otherMs)) return 0;
+        if (otherMs is null) return 1;
+        int result = Distance.CompareTo(otherMs.Distance);
+        if (result == 0)
+            result = VenueName.CompareTo(otherMs.VenueName);
+        if (result == 0)
+            result = otherMs.CreationTime.CompareTo(CreationTime);
+        if (result == 0 && Debugger.IsAttached)
+            Debugger.Break(); // let the developer know there's a problem
+        return result;
+    }
+    public static int CompareDistanceTo(MealSummary thisMs, MealSummary otherMs) => thisMs.CompareDistanceTo(otherMs);
     #endregion
 }
