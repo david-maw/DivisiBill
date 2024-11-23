@@ -29,7 +29,6 @@ public partial class MealListViewModel : ObservableObjectPlus
         Meal.LocalMealList.CollectionChanged += LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged += RemoteMealList_CollectionChanged;
         App.MyLocationChanged += App_MyLocationChanged;
-        App.Current.RequestedThemeChanged += OnRequestedThemeChanged;
     }
     private void App_MyLocationChanged(object sender, EventArgs e)
     {
@@ -41,13 +40,6 @@ public partial class MealListViewModel : ObservableObjectPlus
         Meal.LocalMealList.CollectionChanged -= LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged -= RemoteMealList_CollectionChanged;
         App.MyLocationChanged -= App_MyLocationChanged;
-        App.Current.RequestedThemeChanged -= OnRequestedThemeChanged;
-    }
-
-    private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
-    {
-        OnPropertyChanged(nameof(FileGlyphLocal));
-        OnPropertyChanged(nameof(FileGlyphRemote));
     }
 
     public async Task OnAppearing()
@@ -653,37 +645,26 @@ public partial class MealListViewModel : ObservableObjectPlus
     public FontImageSource FilterGlyph => (FontImageSource)(Filter ? Application.Current.Resources["GlyphFilterOn"] : Application.Current.Resources["GlyphFilterOff"]);
     #region Show/Hide Local/Remote
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowLocalGlyph))]
-    [NotifyPropertyChangedFor(nameof(FileGlyphLocal))]
     [NotifyPropertyChangedFor(nameof(ShowLocalText))]
     [NotifyPropertyChangedFor(nameof(WhereText))]
     private bool showLocalMeals = true;
     partial void OnShowLocalMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
-    public FontImageSource ShowLocalGlyph => (FontImageSource)(ShowLocalMeals ? Application.Current.Resources["GlyphFolder"] : Application.Current.Resources["GlyphFolderOff"]);
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowRemoteGlyph))]
-    [NotifyPropertyChangedFor(nameof(FileGlyphRemote))]
     [NotifyPropertyChangedFor(nameof(ShowRemoteText))]
     [NotifyPropertyChangedFor(nameof(WhereText))]
     private bool showRemoteMeals = false;
     partial void OnShowRemoteMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
-    public FontImageSource ShowRemoteGlyph => (FontImageSource)(ShowRemoteMeals ? Application.Current.Resources["GlyphCloudOutline"] : Application.Current.Resources["GlyphCloudOffOutline"]);
     public string ShowRemoteText => ShowRemoteMeals ? "Hide Remote" : "Show Remote";
     public string ShowLocalText => ShowLocalMeals ? "Hide Local" : "Show Local";
     public string WhereText => ShowLocalMeals == ShowRemoteMeals ? null : ShowLocalMeals ? "local" : "remote";
     public string FilterText => Filter ? "Show Bills" : "Show Venues";
     #region Meal local/remote status icons
     public bool Dark => Application.Current.UserAppTheme == AppTheme.Dark || Application.Current.RequestedTheme == AppTheme.Dark;
-    private FontImageSource FileGlyphLocalLight => (FontImageSource)(ShowLocalMeals ? Application.Current.Resources["FileGlyphLocalLight"] : Application.Current.Resources["FileGlyphLocalLightOutline"]);
-    private FontImageSource FileGlyphLocalDark => (FontImageSource)(ShowLocalMeals ? Application.Current.Resources["FileGlyphLocalDark"] : Application.Current.Resources["FileGlyphLocalDarkOutline"]);
-    public FontImageSource FileGlyphLocal => Dark ? FileGlyphLocalLight : FileGlyphLocalDark;
-    private FontImageSource FileGlyphRemoteLight => (FontImageSource)(ShowRemoteMeals ? Application.Current.Resources["FileGlyphRemoteLight"] : Application.Current.Resources["FileGlyphRemoteLightOutline"]);
-    private FontImageSource FileGlyphRemoteDark => (FontImageSource)(ShowRemoteMeals ? Application.Current.Resources["FileGlyphRemoteDark"] : Application.Current.Resources["FileGlyphRemoteDarkOutline"]);
-    public FontImageSource FileGlyphRemote => Dark ? FileGlyphRemoteLight : FileGlyphRemoteDark;
     #endregion 
     #endregion
-
+    public bool IsCloudAccessAllowed => App.Settings.IsCloudAccessAllowed;
+    
     [ObservableProperty]
     private double progress = 0;
 
@@ -692,7 +673,6 @@ public partial class MealListViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     private bool isSelectableList = false;
-
     partial void OnIsSelectableListChanged(bool value)
     {
         if (IsSelectableList)
@@ -718,7 +698,6 @@ public partial class MealListViewModel : ObservableObjectPlus
             }
         }
     }
-        
     public bool SetCount { get => false; set => SetSelectedMealSummariesCount(); }
     private void SetSelectedMealSummariesCount() => SelectedMealSummariesCount = MealList.Count(ms => ms.FileSelected);
     private void SetSelectedMealSummariesCountText() => SelectedMealSummariesCountText = SelectedMealSummariesCount > 0 & IsSelectableList ? SelectedMealSummariesCount.ToString() : null;

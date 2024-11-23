@@ -34,16 +34,15 @@
             <Color x:Key="TransparentRed">#14FF0000</Color>
             <Color x:Key="LightRed">#F9C</Color>
             <Color x:Key="DarkRed">#900</Color>
+            <Color x:Key="FileGlyphLight">LightSkyBlue</Color>
+            <Color x:Key="FileGlyphDark">Blue</Color>
             <Color x:Key="SelectedBackGroundColor">#f17b01</Color> <!--Same color that Android uses by default-->
             <!-- ICON NAME -->
-            <FontImageSource x:Key="FileGlyphLocalDarkOutline"   Color="Blue"          Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
-            <FontImageSource x:Key="FileGlyphRemoteDarkOutline"  Color="Blue"          Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
-            <FontImageSource x:Key="FileGlyphLocalLightOutline"  Color="LightSkyBlue"  Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
-            <FontImageSource x:Key="FileGlyphRemoteLightOutline" Color="LightSkyBlue"  Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
-            <FontImageSource x:Key="FileGlyphLocalDark"          Color="Blue"          Glyph="&#xF024B;" FontFamily="mdicons"/><!--folder-->
-            <FontImageSource x:Key="FileGlyphRemoteDark"         Color="Blue"          Glyph="&#xF015F;" FontFamily="mdicons"/><!--cloud-->
-            <FontImageSource x:Key="FileGlyphLocalLight"         Color="LightSkyBlue"  Glyph="&#xF024B;" FontFamily="mdicons"/><!--folder-->
-            <FontImageSource x:Key="FileGlyphRemoteLight"        Color="LightSkyBlue"  Glyph="&#xF015F;" FontFamily="mdicons"/><!--cloud-->
+
+            <FontImageSource x:Key="FileGlyphLocalOutline"       Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
+            <FontImageSource x:Key="FileGlyphRemoteOutline"      Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
+            <FontImageSource x:Key="FileGlyphLocal"              Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF024B;" FontFamily="mdicons"/> <!--folder-->
+            <FontImageSource x:Key="FileGlyphRemote"             Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF015F;" FontFamily="mdicons"/> <!--cloud-->
 
             <FontImageSource x:Key="ListGlyphUnselected"        Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0130;" FontFamily="mdicons"/> <!--checkbox-blank-circle-outline-->
             <FontImageSource x:Key="ListGlyphSelected"          Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0134;" FontFamily="mdicons"/> <!--checkbox-marked-circle-outline-->
