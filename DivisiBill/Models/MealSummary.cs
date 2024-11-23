@@ -452,17 +452,20 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     private static readonly XmlSerializer mealSummaryXmlSerializer = new XmlSerializer(typeof(MealSummary));
     public static MealSummary LoadJsonFromStream(Stream sourceStream)
     {
-        MealSummary ms;
+        MealSummary ms = null;
         try
         {
             ms = (MealSummary)mealSummarySerializer.ReadObject(sourceStream);
             // Beware the MealSummary constructor is not called above use [OnDeserializing] or [OnDeserialized] if that's ever needed
             ms.hasImage = File.Exists(ms.ImagePath);
         }
+        catch (ArgumentNullException e)
+        {
+            // Probably a dubious JSON stream, just ignore it
+        }
         catch (Exception e)
         {
             ReportCrash(e);
-            return null;
         }
         return ms;
     }
