@@ -394,7 +394,6 @@ public partial class MealListViewModel : ObservableObjectPlus
         => ms is not null
         && App.Settings.IsCloudAccessAllowed
         && ms.IsRemote
-        && !ms.IsBusy
         && !ms.IsLocal;
 
     /// <summary>
@@ -451,7 +450,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     private async Task<int> DownloadMultipleMeals()
     {
         int failed = 0;
-        var list = new List<MealSummary>(MealList.Where(ms => ms.FileSelected)); // a separate list so as to ignore updates
+        var list = new List<MealSummary>(MealList.Where(ms => ms.FileSelected && !ms.IsLocal && !ms.IsBusy)); // a separate list so as to ignore updates
         ProgressLimit = list.Count;
         Progress = 0;
         int attempted = 0;
@@ -464,7 +463,7 @@ public partial class MealListViewModel : ObservableObjectPlus
                 MaxDegreeOfParallelism = -1, // Whatever the system can handle
                 CancellationToken = cancellationTokenSource.Token
             };
-            
+            foreach (var ms in list) ms.IsBusy = true;
             Task downLoad = Parallel.ForEachAsync(list, parallelOptions, async (mealSummary, cancellationToken) =>
             {
                 bool worked = await DownloadOneMeal(mealSummary, false, cancellationToken);
@@ -483,7 +482,8 @@ public partial class MealListViewModel : ObservableObjectPlus
                 {
                     var ms = await downloadedQueue.DequeueAsync(cancellationTokenSource.Token);
                     if (ms is null) break;
-                    ms.LocationChanged(isLocal: true); 
+                    ms.LocationChanged(isLocal: true);
+                    ms.IsBusy = false;
                 }
             }, cancellationTokenSource.Token); 
 
@@ -505,11 +505,10 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// <returns>true if the meal was downloaded false otherwise</returns>
     private async Task<bool> DownloadOneMeal(MealSummary ms, bool changeLocation = true, CancellationToken ct = default)
     {
-        if (CanDownLoadMeal(ms))
+        try
         {
-            try
+            if (CanDownLoadMeal(ms))
             {
-                ms.IsBusy = true;
                 Meal m = await Meal.LoadFromRemoteAsync(ms);
                 if (m is not null)
                 {
@@ -519,10 +518,10 @@ public partial class MealListViewModel : ObservableObjectPlus
                     return true;
                 }
             }
-            finally
-            {
-                ms.IsBusy = false;
-            }
+        }
+        finally
+        {
+            ms.IsBusy = false;
         }
         return false;
     }
