@@ -258,7 +258,11 @@ public partial class MealListViewModel : ObservableObjectPlus
     private async Task DeleteMeal(MealSummary ms)
     {
         if (ms is not null)
+        {
+            if (ms == SelectedMealSummary)
+                SelectedMealSummary = MealList.Alternate(ms);
             await DeleteOneMeal(ms, true, true);
+        }
         else
             await DeleteAnyMeal(true, true);
     }
@@ -266,36 +270,58 @@ public partial class MealListViewModel : ObservableObjectPlus
     {
         if (IsSelectableList)
         {
+            List<MealSummary> list = new();
+            int failed = 0;
             try
             {
-                var list = new List<MealSummary>(MealList.Where(ms => ms.FileSelected && ((tryLocal && ms.IsLocal) || (tryRemote && ms.IsRemote)))); // need a separate list so as not to disturb the iterator
-                Task task = DeleteMultipleMeals(list, tryLocal, tryRemote);
+                list = new(MealList.Where(ms => ms.FileSelected && ((tryLocal && ms.IsLocal) || (tryRemote && ms.IsRemote) && !ms.IsBusy))); // need a separate list so as not to disturb the iterator
+                Task<int> task = DeleteMultipleMeals(list, tryLocal, tryRemote);
                 Task whichTask = await Task.WhenAny(Task.Delay(500), task);
+                // Deletes, especially local ones, are really fast, so don't bother to show a busy indication unless they take a while
                 if (whichTask != task)
+                {
                     IsBusy = true;
-                await task;
+                    foreach (var ms in list) ms.IsBusy = true;
+                }
+                failed = await task;
             }
             finally
             {
-                if (IsBusy)
+                if (IsBusy || failed != 0) // The delete took a while or was only partially successful
                 {
+                    if (SelectedMealSummary is not null && !SelectedMealSummary.IsLocal && !SelectedMealSummary.IsRemote)
+                        SelectedMealSummary = null;
+                    int succeeded = list.Count - failed;
                     await Task.Delay(1000);
                     IsBusy = false;
+                    foreach (var ms in list) ms.IsBusy = false;
+                    if (failed == 0)
+                        await Utilities.ShowAppSnackBarAsync($"{succeeded} bills deleted");
+                    else
+                        await Utilities.ShowAppSnackBarAsync($"{succeeded} of {list.Count} bills deleted");
                 }
             }
         }
         else if (SelectedMealSummary is not null)
         {
-            var next = MealList.Alternate(SelectedMealSummary);
-            await DeleteOneMeal(SelectedMealSummary, tryLocal, tryRemote);
-            SelectedMealSummary = next;
+            var mealToDelete = SelectedMealSummary; // Because deleting it
+            var next = MealList.Alternate(mealToDelete);
+            await DeleteOneMeal(mealToDelete, tryLocal, tryRemote);
+            // If the meal is not showing any more select the next one
+            if (!(mealToDelete.IsLocal && ShowLocalMeals) 
+                && !(mealToDelete.IsRemote && ShowRemoteMeals))
+                SelectedMealSummary = next;
         }
     }
 
     /// <summary>
-    /// Delete any meals in the MealList marked as FileSelected 
+    /// Delete any meals in the passed list and mark them as not busy
     /// </summary>
-    private async Task DeleteMultipleMeals(List<MealSummary> list, bool tryLocal, bool tryRemote)
+    /// <param name="list">The list of meals to delete</param>
+    /// <param name="tryLocal">Delete local files from list</param>
+    /// <param name="tryRemote">Delete remote file from list</param>
+    /// <returns>How many were not deleted</returns>
+    private async Task<int> DeleteMultipleMeals(List<MealSummary> list, bool tryLocal, bool tryRemote)
     {
         ProgressLimit = list.Count;
         Progress = 0;
@@ -303,12 +329,15 @@ public partial class MealListViewModel : ObservableObjectPlus
         cancellationTokenSource = new CancellationTokenSource();
         foreach (MealSummary mealSummary in list)
         {
+            await Task.Delay(1000);
             if (cancellationTokenSource.IsCancellationRequested)
                 break;
             await DeleteOneMeal(mealSummary, tryLocal, tryRemote);
+            mealSummary.IsBusy = false;
             attempted++;
             Progress = (double)attempted / ProgressLimit;
         }
+        return ProgressLimit - attempted; 
     }
 
     /// <summary>
