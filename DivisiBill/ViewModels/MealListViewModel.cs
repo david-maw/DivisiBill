@@ -1,7 +1,6 @@
 ﻿using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Collections.Specialized;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -456,6 +455,18 @@ public partial class MealListViewModel : ObservableObjectPlus
         int attempted = 0;
         cancellationTokenSource = new CancellationTokenSource();
         AwaitableQueue<MealSummary> downloadedQueue = new();
+        Task locationChanger = new Task(async () =>
+            {
+                while (true)
+                {
+                    var ms = await downloadedQueue.DequeueAsync(CancellationToken.None);
+                    if (ms is null) break;
+                    ms.LocationChanged(isLocal: true);
+                    ms.IsBusy = false;
+                }
+            }, CancellationToken.None);
+
+        locationChanger.Start();
         try
         {
             ParallelOptions parallelOptions = new()
@@ -466,6 +477,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             foreach (var ms in list) ms.IsBusy = true;
             Task downLoad = Parallel.ForEachAsync(list, parallelOptions, async (mealSummary, cancellationToken) =>
             {
+                if (cancellationToken.IsCancellationRequested) throw new TaskCanceledException(); 
                 bool worked = await DownloadOneMeal(mealSummary, false, cancellationToken);
                 // In order not to multi-thread access to LocalMealList we just queue the changed mealsummaries and handle them all on one thread
                 if (worked)
@@ -473,28 +485,21 @@ public partial class MealListViewModel : ObservableObjectPlus
                 else
                     Interlocked.Increment(ref failed);
                 Interlocked.Increment(ref attempted);
-                Progress = (double)attempted / ProgressLimit; 
+                Progress = (double)attempted / ProgressLimit;
             });
 
-            Task locationChanger = new Task(async () => 
-            {
-                while (true)
-                {
-                    var ms = await downloadedQueue.DequeueAsync(cancellationTokenSource.Token);
-                    if (ms is null) break;
-                    ms.LocationChanged(isLocal: true);
-                    ms.IsBusy = false;
-                }
-            }, cancellationTokenSource.Token); 
-
-            locationChanger.Start();
             await downLoad;
             downloadedQueue.Enqueue(null);
-            await locationChanger;
         }
-        catch (OperationCanceledException)
+        catch (Exception ex) when (ex is OperationCanceledException || ex is TaskCanceledException)
         {
             failed += ProgressLimit - attempted; // then just continue, no need to report the error
+            if (!locationChanger.IsCompleted)
+            {
+                downloadedQueue.Enqueue(null);
+                await locationChanger;
+            }
+            foreach (var ms in list) ms.IsBusy = false;
         }
         return failed;
     }
