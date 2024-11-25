@@ -533,7 +533,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             await downLoad;
             downloadedQueue.Enqueue(null);
         }
-        catch (Exception ex) when (ex is OperationCanceledException || ex is TaskCanceledException)
+        catch (Exception ex) when (ex is OperationCanceledException or TaskCanceledException)
         {
             failed += ProgressLimit - attempted; // then just continue, no need to report the error
             if (!locationChanger.IsCompleted)
