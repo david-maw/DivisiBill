@@ -459,7 +459,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             // Beware the MealSummary constructor is not called above use [OnDeserializing] or [OnDeserialized] if that's ever needed
             ms.hasImage = File.Exists(ms.ImagePath);
         }
-        catch (ArgumentNullException e)
+        catch (ArgumentNullException)
         {
             // Probably a dubious JSON stream, just ignore it
         }
