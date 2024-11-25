@@ -24,7 +24,13 @@ public interface ISettings
     /// </summary>
     bool MealSavedToFile { get; set; }
     bool MealSavedToRemote { get; set; }
+    /// <summary>
+    /// Is Internet access permitted to be used for backup
+    /// </summary>
     bool IsCloudAccessAllowed { get; set; }
+    /// <summary>
+    /// Is WiFi access required before the Internet can be used
+    /// </summary>
     bool WiFiOnly { get; set; }
     bool FirstUse {  get; set; }
     DateTime LastUse { get; set; }

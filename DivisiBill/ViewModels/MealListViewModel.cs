@@ -46,7 +46,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         CheckDeleted();
         await App.StartMonitoringLocation();
         SetSelectedMealSummariesCount(); // Just in case another page changed it
-        IsCloudAllowed = App.Settings.IsCloudAccessAllowed;
+        IsCloudAllowed = App.IsCloudAllowed;
     }
     public async Task OnDisappearing()
     {
@@ -711,7 +711,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     #endregion
 
     [ObservableProperty]
-    private bool isCloudAllowed = App.Settings.IsCloudAccessAllowed;
+    private bool isCloudAllowed = App.IsCloudAllowed;
 
     [ObservableProperty]
     private double progress = 0;

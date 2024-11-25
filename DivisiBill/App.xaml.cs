@@ -244,6 +244,7 @@ public partial class App : Application, INotifyPropertyChanged
     {
         bool wifiIsNotRequiredOrIsPresent = Settings is null || !Settings.WiFiOnly || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
         IsCloudAccessible = Connectivity.NetworkAccess == NetworkAccess.Internet && wifiIsNotRequiredOrIsPresent;
+        IsCloudAllowed = Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
     }
 
     private static async void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)
@@ -257,7 +258,11 @@ public partial class App : Application, INotifyPropertyChanged
 
     private static bool isCloudAccessible = false;
     /// <summary>
-    /// Can we reach the cloud via acceptable interfaces (that is perhaps not WiFi), we might still not be permitted to use it.
+    /// Can we physically reach the Internet via an acceptable interfaces, so perhaps we require WiFi, even if it is not to be used for backup.
+    /// The user can limit access by setting: <see cref="AppSettings.IsCloudAccessAllowed"/> and <see cref="AppSettings.WiFiOnly"/>
+    /// Various calculated results are available as related properties:
+    /// <see cref="App.IsCloudAccessible"/> - Can you reach the Internet, whether backup is permitted or not
+    /// <see cref="App.IsCloudAllowed"/> - Can you reach it AND are you allowed to perform backups
     /// See also Settings.IsCloudAccessAllowed and App.IsCloudAllowed
     /// </summary>
     public static bool IsCloudAccessible
@@ -274,8 +279,7 @@ public partial class App : Application, INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Is the cloud usable (both enabled and connected)
-    /// See also Settings.IsCloudAccessAllowed and App.IsCloudAccessible
+    /// Is the cloud accessible (<see cref="App.IsCloudAccessible"/>) and are we permitted to use it (<see cref="AppSettings.IsCloudAccessAllowed"/>).
     /// </summary>
     public static bool IsCloudAllowed
     {

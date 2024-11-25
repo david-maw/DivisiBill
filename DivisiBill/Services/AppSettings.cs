@@ -96,7 +96,7 @@ public class AppSettings : ISettings
         set
         {
             Preferences.Set(nameof(WiFiOnly), value);
-            App.IsCloudAccessible = !value || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
+            App.EvaluateCloudAccessible();
         }
     }
     public bool FirstUse
