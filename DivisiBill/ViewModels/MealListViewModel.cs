@@ -435,18 +435,22 @@ public partial class MealListViewModel : ObservableObjectPlus
     private async Task Download(MealSummary ms)
     {
         int failed = 0;
+        int succeeded = 0;
 
         if (ms is not null)
+        {
             failed = await DownloadOneMeal(ms) ? 0 : 1;
+            succeeded = 1 - failed;
+        }
         else if (IsSelectableList)
         {
             try
             {
-                Task<int> task = DownloadMultipleMeals();
+                Task<(int, int)> task = DownloadMultipleMeals();
                 Task whichTask = await Task.WhenAny(Task.Delay(500), task);
                 if (whichTask != task)
                     IsBusy = true;
-                failed = await task;
+                (succeeded, failed) = await task;
             }
             finally
             {
@@ -458,14 +462,22 @@ public partial class MealListViewModel : ObservableObjectPlus
             }
         }
         else if (SelectedMealSummary is not null)
+        {
             failed = await DownloadOneMeal(SelectedMealSummary) ? 0 : 1;
+            succeeded = 1 - failed;
+        }
         if (failed == 0)
-            await Utilities.ShowAppSnackBarAsync($"Download completed without errors");
+        {
+            if (succeeded != 1)
+                await Utilities.ShowAppSnackBarAsync($"Downloaded {succeeded} bills");
+            else
+                await Utilities.ShowAppSnackBarAsync("One Bill Downloaded"); // there was only one so no need for a count information
+        }
         else
         {
             await Utilities.HapticNotify();
             if (IsSelectableList)
-                await Utilities.ShowAppSnackBarAsync($"Download complete, {failed} failed");
+                await Utilities.ShowAppSnackBarAsync($"Downloaded {succeeded} bills, {failed} failed");
             else
                 await Utilities.ShowAppSnackBarAsync("Download failed"); // there was only one so no need for a count information
         }
@@ -476,7 +488,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// Download selected files, note that you can select files which are already downloaded, in which case the download will fail
     /// </summary>
     /// <returns>The number of failed downloads</returns>
-    private async Task<int> DownloadMultipleMeals()
+    private async Task<(int Succeeded, int Failed)> DownloadMultipleMeals()
     {
         int failed = 0;
         var list = new List<MealSummary>(MealList.Where(ms => ms.FileSelected && !ms.IsLocal && !ms.IsBusy)); // a separate list so as to ignore updates
@@ -531,7 +543,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             }
             foreach (var ms in list) ms.IsBusy = false;
         }
-        return failed;
+        return (attempted - failed, failed);
     }
     /// <summary>
     /// Download a single meal from the cloud to local storage  
