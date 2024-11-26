@@ -2790,11 +2790,13 @@ public partial class Meal : ObservableObjectPlus
         Utilities.DebugMsg("Entered BackuptoRemoteAsync, waiting for CloudAllowedSource");
         await App.CloudAllowedSource.WaitWhilePausedAsync();
         Utilities.DebugMsg("In BackuptoRemoteAsync, CloudAllowedSource no longer paused");
+        // This is where all the elapsed time goes, reaching out over the network
         List<RemoteItemInfo> remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
-        var remoteMealNames = remoteFileInfoList.Select(x => x.Name);
+        // We use HashSet types to store the data, but the performance difference pales compared to the network time above        
+        HashSet<string> remoteMealNames = [.. remoteFileInfoList.Select(x => x.Name)];
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
         var remoteFileInfoDict = remoteFileInfoList.ToDictionary(m => m.Name);
-        var localMealNames = new List<string>();
+        HashSet<string> localMealNames = new ();
         foreach (var ms in LocalMealList)
         {
             if (remoteMealNames.Contains(ms.Id))
@@ -2802,7 +2804,8 @@ public partial class Meal : ObservableObjectPlus
             localMealNames.Add(ms.Id);
         }
         // Queue each MealSummary that is not remote for transmission
-        List<string> localOnlyMealNames = localMealNames.Except(remoteMealNames).ToList();
+        HashSet<string> localOnlyMealNames = new(localMealNames);
+        localOnlyMealNames.ExceptWith(remoteMealNames);
         foreach (string mealName in localOnlyMealNames)
         {
             MealSummary ms = LocalMealList.First(foundMs => mealName.Equals(foundMs.Id));
