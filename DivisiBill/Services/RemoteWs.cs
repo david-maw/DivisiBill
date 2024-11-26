@@ -55,7 +55,7 @@ public static class RemoteWs
     /// <returns>Either a list of items, possibly empty, or null if something goes wrong (like no Internet access)</returns>
     internal static async Task<List<RemoteItemInfo>> GetItemInfoListAsync(string itemTypeName)
     {
-        const int MaxItems = 100;
+        const int MaxItems = 1000;
         if (string.IsNullOrWhiteSpace(itemTypeName))
             return null;
         List<RemoteItemInfo> remoteItemInfos = new List<RemoteItemInfo>();
