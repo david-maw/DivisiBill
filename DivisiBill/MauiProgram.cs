@@ -64,7 +64,9 @@ public static class MauiProgram
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("materialdesignicons-webfont.ttf", "mdicons");
-                fonts.AddFont("Segoe UI.ttf", "monospace");
+#if WINDOWS
+                fonts.AddFont("Segoe-UI.ttf", "monospace"); 
+#endif
             })
 #if WINDOWS
 			.UseMauiCommunityToolkitMaps(Generated.BuildInfo.DivisiBillBingMapsSecret); // You should add your own key here from bingmapsportal.com
