@@ -43,12 +43,14 @@ public static class Utilities
         return randomString.ToString();
     }
     /// <summary>
-    /// Insert an item in an ordered list of items. The list is ordered based on a compare function passed as a parameter.
+    /// Insert an item in an ordered list of items or move it if it is already there but should be somewhere else. 
+    /// The list is ordered based on a compare function passed as a parameter. This would be a lot easier if it 
+    /// were not for the 'move' case.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The object type we're working with</typeparam>
     /// <param name="list">The list on which we are operating</param>
-    /// <param name="targetItem">The item to insert</param>
-    /// <param name="compareTo">The comparison function to determine where to insert</param>
+    /// <param name="targetItem">The item to insert or move</param>
+    /// <param name="compareTo">The comparison function to determine where the item should be</param>
     /// <returns>True if a new item was inserted false if not (one was already there or the list was null)</returns>
     public static bool Upsert<T>(this IList<T> list, T targetItem, Func<T, T, int> compareTo) where T : class
     {
@@ -236,11 +238,7 @@ public static class Utilities
         return s.ToString();
     }
 
-    public static void ReportCrash(Exception ex, Stream sourceStream = null, string streamName = null, [CallerFilePath] string callerFilePath = null, [CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
-    {
-        ReportCrash("", ex, sourceStream, streamName, callerFilePath, methodName, callerLineNumber);
-    }
-    public static void ReportCrash(string comment, Exception ex, Stream sourceStream, string streamName, [CallerFilePath] string callerFilePath = null, [CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
+    public static void ReportCrash(Exception ex, string comment = "", Stream sourceStream = null, string streamName = null, [CallerFilePath] string callerFilePath = null, [CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
     {
         string errText = $"Utilities.ReportCrash called from {methodName} ({callerFilePath} {callerLineNumber})";
         DebugMsg(errText + ", ex:" + ex);

@@ -937,7 +937,7 @@ public partial class Meal : ObservableObjectPlus
         if  (!string.IsNullOrEmpty(errorDescription))
             errmsg += "\n" + errorDescription +"\n";
 
-        Utilities.ReportCrash(errmsg, ex, sourceStream, streamName);
+        Utilities.ReportCrash(ex, errmsg, sourceStream, streamName);
     }
     public static Meal LoadFromStream(Stream sourceStream, MealSummary ms = null, bool setup = true)
     {

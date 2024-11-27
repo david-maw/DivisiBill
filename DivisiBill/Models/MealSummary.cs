@@ -497,7 +497,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         }
         catch (Exception e)
         {
-            ReportCrash(e, sourceStream, diagnosticName);
+            ReportCrash(e, "Meal Deserialize Faulted", sourceStream, diagnosticName);
             return null;
         }
         DebugExamineStream(sourceStream);
