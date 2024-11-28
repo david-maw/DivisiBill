@@ -1,3 +1,37 @@
+# 6.2.4
+
+## Speed Up Initial Bill Evaluation
+
+In parallel with initialization the app evaluates whether each local bill is stored in the cloud in order to show this status. To do this it downloads names for all the cloud bills. It used to do this 100 at a time, now it does 1000 at a time which can be considerably faster (1s vs. 6s for 3000 bills in testing, likely faster in production depending on your Internet speed).
+
+Once the evaluation described above completes (typically in a few seconds), the status of individual bills is accurately displayed.
+
+## Hide Cloud/Local Icons in Bill List
+
+The local/remote icons in the bill list are not useful if cloud access is not available, so we hide them in that case. For example, when the user does not permit cloud access or cloud access is not available.
+
+## Improved Download
+
+When downloading bills completes the message displayed now shows the number of downloads that succeeded and/or failed.
+
+Canceling a download is now more reliable.
+
+Rather than showing a busy indicator for the whole page during bill download we show one for each bill until it is downloaded.
+
+## Improved Bill Deletion
+
+If deleting multiple bills takes significant time or if some of the deletions fail (perhaps because the process was canceled) a status message is shown.
+
+When deleting a single bill, if it is the selected bill then we select an alternate (ideally the next bill in the list).
+
+## Improved Undelete
+
+When undeleting bills into a list sorted by name or distance the undeleted bill could be inserted in the wrong place in the list.
+
+When undeleting venues into a list sorted by distance the undeleted venue could be inserted in the wrong place in the list.
+
+These problems have been corrected.
+
 # 6.2.3
 
 ## Notify User if Archive to Disk Fails

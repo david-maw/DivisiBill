@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <html>
 <head>
-<title>6.2.3</title>
+<title>6.2.4</title>
     <style>
         html, body {
             font-family: Arial, Helvetica, sans-serif;
@@ -12,22 +12,39 @@
     </style>
 </head>
 <body>
-<h1 id="section">6.2.3</h1>
+<h1 id="section">6.2.4</h1>
+<h2 id="speed-up-initial-bill-evaluation">Speed Up Initial Bill Evaluation</h2>
+<p>In parallel with initialization the app evaluates whether each local bill is stored in the cloud in order to show this status. To do this it downloads names for all the cloud bills. It used to do this 100 at a time, now it does 1000 at a time which can be considerably faster (1s vs. 6s for 3000 bills in testing, likely faster in production depending on your Internet speed).</p>
+<p>Once the evaluation described above completes (typically in a few seconds), the status of individual bills is accurately displayed.</p>
+<h2 id="hide-cloudlocal-icons-in-bill-list">Hide Cloud/Local Icons in Bill List</h2>
+<p>The local/remote icons in the bill list are not useful if cloud access is not available, so we hide them in that case. For example, when the user does not permit cloud access or cloud access is not available.</p>
+<h2 id="improved-download">Improved Download</h2>
+<p>When downloading bills completes the message displayed now shows the number of downloads that succeeded and/or failed.</p>
+<p>Canceling a download is now more reliable.</p>
+<p>Rather than showing a busy indicator for the whole page during bill download we show one for each bill until it is downloaded.</p>
+<h2 id="improved-bill-deletion">Improved Bill Deletion</h2>
+<p>If deleting multiple bills takes significant time or if some of the deletions fail (perhaps because the process was canceled) a status message is shown.</p>
+<p>When deleting a single bill, if it is the selected bill then we select an alternate (ideally the next bill in the list).</p>
+<h2 id="improved-undelete">Improved Undelete</h2>
+<p>When undeleting bills into a list sorted by name or distance the undeleted bill could be inserted in the wrong place in the list.</p>
+<p>When undeleting venues into a list sorted by distance the undeleted venue could be inserted in the wrong place in the list.</p>
+<p>These problems have been corrected.</p>
+<h1 id="section-1">6.2.3</h1>
 <h2 id="notify-user-if-archive-to-disk-fails">Notify User if Archive to Disk Fails</h2>
 <p>Previously it would fail silently, now it displays a message.</p>
 <h2 id="do-not-wait-after-reporting-pro-license">Do Not Wait After Reporting Pro License</h2>
 <p>When a pro license is discovered where previously there had been none a message is displayed. We no longer wait solely for the user to acknowledge that message before continuing, it disappears on its own after a few seconds.</p>
 <h2 id="upgrade-to.net-9">Upgrade to .NET 9</h2>
 <p>The build and various dependent libraries are upgraded to .NET 9. This should make no functional difference except that a few actions will be faster.</p>
-<h1 id="section-1">6.2.2</h1>
+<h1 id="section-2">6.2.2</h1>
 <p>Experimental upgrade to .NET 9. No user visible changes.</p>
-<h1 id="section-2">6.2.1</h1>
+<h1 id="section-3">6.2.1</h1>
 <h2 id="add-an-option-to-show-web-service-information">Add an Option to Show Web Service Information</h2>
 <p>The &quot;About&quot; page (a tab on the &quot;Information and Problems&quot; page) now has a &quot;Show Web Service Information&quot; checkbox.</p>
 <p>If checked it shows the base URL used to reach the web service and details about the service itself if they are available.</p>
 <h2 id="add-swipe-menu-choices-to-items-page">Add Swipe Menu Choices to Items Page</h2>
 <p>Swipe up and down through a long list of items is unreliable so this introduces command menu alternatives.</p>
-<h1 id="section-3">6.2.0</h1>
+<h1 id="section-4">6.2.0</h1>
 <h2 id="first-open-source-release">First Open Source Release</h2>
 <p>Prior to this release (November 2024) the DivisiBill sources were private, this moves them into open source. To build the released code you need to define a variety of secrets but the app runs without them. Without the defined secrets OCR and cloud storage are not available but all other features work.</p>
 
