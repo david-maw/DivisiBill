@@ -350,24 +350,36 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 
     public static MealSummary PopMostRecentDeletion() => DeletedStack.Any() ? DeletedStack.Pop() : null;
     /// <summary>
-    /// Undelete a local Meal and its associated image
+    /// Undelete a local Meal and its associated image, if by some weird mischance the corresponding file already exists, just forget the deleted one
     /// </summary>
-    public void UnDelete()
+    public bool UnDelete()
     {
+        bool asExpected = false;
         string DeletedMealPath = Path.Combine(Meal.DeletedItemFolderPath, FileName);
         if (File.Exists(DeletedMealPath))
         {
-            File.Move(DeletedMealPath, Path.Combine(Meal.MealFolderPath, FileName));
+            string OriginalMealPath = Path.Combine(Meal.MealFolderPath, FileName);
+            if (File.Exists(OriginalMealPath))
+                File.Delete(DeletedMealPath);
+            else
+            {
+                File.Move(DeletedMealPath, OriginalMealPath);
+                asExpected = true;
+            }
             LocationChanged(isLocal: true);
             UnDeleteImage();
         }
+        return asExpected;
     }
     private void UnDeleteImage()
     {
         string DeletedImagePath = Path.Combine(Meal.DeletedItemFolderPath, ImageName);
         if (File.Exists(DeletedImagePath))
         {
-            File.Move(DeletedImagePath, ImagePath);
+            if (File.Exists(ImagePath))
+                File.Delete(DeletedImagePath);
+            else
+                File.Move(DeletedImagePath, ImagePath);
             Meal.CurrentMeal.Summary.DetermineHasImage();
         }
     }

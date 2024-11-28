@@ -212,11 +212,16 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
+        <!--#region Ruled Line -->
         <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" VerticalOptions="End" Margin="0,10,0,0"/>
+        <!--#endregion-->
+        <!--#region Busy Indicator when Meals are Loading -->
         <VerticalStackLayout IsVisible="{Binding IsMealListLoading}">
             <Label Text="Loading List..." HorizontalOptions="Center" FontSize="Title"/>
             <ActivityIndicator HeightRequest="100" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" IsRunning="True"/>
         </VerticalStackLayout>
+        <!--#endregion-->
+        <!--#region Progress Reporting and Cancel -->
         <Border StrokeThickness="2" StrokeShape="RoundRectangle 10" HorizontalOptions="Center" IsVisible="{Binding IsBusy}">
             <VerticalStackLayout>
                 <HorizontalStackLayout IsEnabled="True" HorizontalOptions="Center" Spacing="10" Margin="0,10,0,0">
@@ -227,6 +232,8 @@
                 <Button Text="Cancel" Command="{Binding CancelCommand}"/>
             </VerticalStackLayout>
         </Border>
+        <!--#endregion-->
+        <!--#region List of Meals -->
         <CollectionView services:ColumnLayout.Fill="True" x:Name="CurrentCollectionView"
                 ItemsSource="{Binding MealList}"
                 IsVisible="{Binding IsMealListLoading, Converter={StaticResource Not}}"
@@ -236,9 +243,12 @@
                 EmptyView="No bills found"
                 ItemSizingStrategy="MeasureAllItems">
         </CollectionView>
+        <!--#endregion-->
+        <!--#region Undelete -->
         <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
             <Button Text="Undo Deletion" Command="{Binding UndeleteCommand}" IsVisible="{Binding AnyDeleted}"/>
             <Button Text="Undo All Deletions" Command="{Binding UndeleteAllCommand}" IsVisible="{Binding ManyDeleted}"/>
         </HorizontalStackLayout>
+        <!--#endregion-->
     </services:ColumnLayout>
 </ContentPage>
