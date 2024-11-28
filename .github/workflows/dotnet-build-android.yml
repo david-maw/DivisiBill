@@ -27,7 +27,6 @@ jobs:
     - name: Restore keystore
       run: $b64Decoded = [Convert]::FromBase64String("${{ secrets.KEYSTORE_B64 }}");
         [IO.File]::WriteAllBytes("$PWD/DivisiBill/keystore",$b64Decoded);
-        Dir DivisiBill;
   
     # Install the .NET Core workload
     - name: Setup .NET
@@ -53,6 +52,7 @@ jobs:
         DIVISIBILL_WS_KEY: ${{ secrets.DIVISIBILL_WS_KEY }}
         DIVISIBILL_SENTRY_DSN: ${{ secrets.DIVISIBILL_SENTRY_DSN }}
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        DIVISIBILL_VERSION_INCREMENT: ${{ github.run_number }}
       run: dotnet build DivisiBill/DivisiBill.csproj -c Release -f net9.0-android --no-restore /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=keystore /p:AndroidSigningkeyAlias="DivisiBill Upload" /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}"
 
     # Upload Just the Signed Artifacts (apk and aab)
