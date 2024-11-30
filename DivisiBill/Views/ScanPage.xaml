@@ -28,12 +28,12 @@
                 EmptyView="No items defined">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid  x:DataType="models:LineItem" Margin="0" RowDefinitions="Auto" ColumnDefinitions="*, Auto">
+                        <Grid  x:DataType="models:LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
                             <Label Text="{Binding Path = ItemName }" Grid.Column="0"
-                            LineBreakMode="NoWrap" HorizontalTextAlignment="Start"
+                            LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"
                             FontFamily="monospace" FontSize="Medium" />
 
-                            <Label Text="{Binding Path = Amount}" Grid.Column="1"
+                            <Label Text="{Binding Path = Amount, StringFormat='{0:C}'}" Grid.Column="1"
                                 LineBreakMode="NoWrap"
                                 FontFamily="monospace" FontSize="Medium" HorizontalTextAlignment="End"  />
                         </Grid>
