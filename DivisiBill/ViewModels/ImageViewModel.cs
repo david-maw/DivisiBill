@@ -79,7 +79,6 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         else
             Meal.CurrentMeal.DeleteImage();
         imageChanged = false;
-        browsedPictureName = null;
     }
     #endregion
     #region Commands
