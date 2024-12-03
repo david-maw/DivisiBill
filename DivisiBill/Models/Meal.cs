@@ -687,7 +687,7 @@ public partial class Meal : ObservableObjectPlus
         Utilities.DebugMsg($"In TrySaveOldBillAsync, called from {methodName} at {callerLineNumber}");
         if (CurrentMeal is not null && CurrentMeal.TooOldToContinue && !CurrentMeal.Frozen) // The bill is old, start a new one
         {
-            await StatusMsgAsync("In TrySaveOldBillAsync, marking copy of existing meal as new");
+            Utilities.DebugMsg("In TrySaveOldBillAsync, marking copy of existing meal as new");
             await CurrentMeal.MarkAsNewAsync("ElapsedTime");
             return true;
         }
