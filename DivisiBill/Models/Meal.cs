@@ -579,7 +579,7 @@ public partial class Meal : ObservableObjectPlus
                         sw.Write(" ");
                 }
                 string lineItemText = lineItem.ItemName + (lineItem.Comped ? " (comped)" : "");
-                sw.Write($"  {lineItemText, -30}{(lineItem.Amount < 0 ? " " : "")} {lineItem.Amount, 10:C}"); // add an extra space to make negative numbers line up 
+                sw.Write($"  {lineItemText, -30} {lineItem.Amount, 10:C}"); // add an extra space to make negative numbers line up 
                 if (personCost is not null)
                 {
                     decimal dinerAmount = lineItem.GetAmounts()[(int)personCost.DinerID - 1];
@@ -591,7 +591,8 @@ public partial class Meal : ObservableObjectPlus
             #endregion
             #region Per Bill Amounts and Totals
             sw.WriteLine();
-            sw.WriteLine("            {0, -30} {1,10:C}", "Comped", GetCompedAmount());
+            if (GetCompedAmount() != 0)
+                sw.WriteLine("            {0, -30} {1,10:C}", "Comped", GetCompedAmount()); 
             if (GetCouponAmountBeforeTax() != 0)
                 sw.WriteLine("            {0, -30} {1,10:C}", "Coupons", GetCouponAmountBeforeTax());
             sw.Write("            {0, -30} {1,10:C}", "Subtotal", SubTotal);
@@ -601,7 +602,7 @@ public partial class Meal : ObservableObjectPlus
             sw.WriteLine();
             sw.WriteLine("            {0, -30} {1,10:C}", "Tax", Tax);
             if (CouponAmountAfterTax != 0)
-                sw.WriteLine("            {0, -30} {1,10:C}", "Coupons", CouponAmountAfterTax);
+                sw.WriteLine("            {0, -30} {1,10:C}", "Discount After Tax", -CouponAmountAfterTax);
             sw.WriteLine("            {0, -30} {1,10:C}", "Tip", Tip);
             sw.WriteLine("            {0, -30} {1,10:C}", "Total", TotalAmount);
             #endregion
