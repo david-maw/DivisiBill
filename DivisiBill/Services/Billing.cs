@@ -158,9 +158,9 @@ internal static class Billing
             else
                 return true;
         }
-        Utilities.DebugMsg("Returning FALSE from In Billing.PurchaseProSubscriptionAsync");
+        Utilities.DebugMsg("Returning FALSE from Billing.PurchaseProSubscriptionAsync");
         return false;
-    } 
+    }
     #endregion
     #region OCR License
     // OCR licenses hold scan counts, you can buy one whenever your scan counts drop to zero. Buying one adds a
@@ -235,12 +235,12 @@ internal static class Billing
         string validationResult = await CallWs.VerifyPurchase(OcrPurchase, isSubscription: false);
         if (validationResult is null) return -2;
         int.TryParse(validationResult, out int ocrLicenseScansAdded);
-        ScansLeft = ocrLicenseScansAdded;
-        Utilities.DebugMsg("In PurchaseOcrLicenseAsync, OCR scans purchased = " + ocrLicenseScansAdded);
+        ScansLeft += ocrLicenseScansAdded;
+        Utilities.DebugMsg($"In PurchaseOcrLicenseAsync, OCR scans purchased = {ocrLicenseScansAdded}, scans left = {ScansLeft}");
         return ocrLicenseScansAdded;
     }
     /// <summary>
-    /// Consume an OCR license if there is one left behind by a fault during purchase
+    /// Remove an OCR license from the store (but not from our list of used licenses) once it has no scans attached any more
     /// </summary>
     internal static async Task ConsumeDepletedOcrLicense()
     {
@@ -248,24 +248,17 @@ internal static class Billing
             return; // Not implemented for Windows 
         int purchaseCount = await GetHasOcrLicenseAsync();
         Utilities.DebugMsg("In ConsumeDepletedOcrLicense, license purchase test returned " + purchaseCount);
-        if (purchaseCount >= ScansWarningLevel)
-        {
-            // This means too many scans associated with this license have not yet been consumed
+        if (purchaseCount >= ScansWarningLevel) // Too many scans associated with this license have not yet been consumed
             Utilities.DebugMsg($"In ConsumeDepletedOcrLicense, because license still has {purchaseCount} scans it will not be removed");
-        }
-        else if (purchaseCount < 0)
+        else if (OcrPurchase is not null)
         {
-            // This means there was some sort of error associated with this license
-            Utilities.DebugMsg("In ConsumeDepletedOcrLicense, license in error and will not be removed");
-        }
-        else
-        {
-            if (OcrPurchase is not null)
-            {
-                await ConsumeItemAsync(OcrPurchase.ProductId, OcrPurchase.PurchaseToken);
+            // Notify the store that it can forget about this item, and allow the user to purchase another.
+            await ConsumeItemAsync(OcrPurchase.ProductId, OcrPurchase.PurchaseToken);
+            if (purchaseCount < 0) // We've never seen this license, but remove it anyway because it prevents the user buying another
+                Utilities.DebugMsg("In ConsumeDepletedOcrLicense, consumed an unrecognized license, Order ID = " + OcrPurchase.Id);
+            else
                 Utilities.DebugMsg("In ConsumeDepletedOcrLicense, consumed a license, Order ID = " + OcrPurchase.Id);
-                OcrPurchase = null;
-            }
+            OcrPurchase = null;
         }
     }
     #endregion
@@ -324,8 +317,8 @@ internal static class Billing
             return null;
         }
         InAppBillingPurchase purchase = null;
-        (var Resul, var billing) = await OpenBilling();
-        if (billing is null)
+        (_, var inAppBilling) = await OpenBilling();
+        if (inAppBilling is null)
         {
             //we are off line or can't connect, don't try to purchase
             return null;
@@ -334,7 +327,7 @@ internal static class Billing
         {
             try
             {
-                purchase = await billing.PurchaseAsync(productId, isSubscription ? ItemType.Subscription : ItemType.InAppPurchase, obfuscatedAccountId);
+                purchase = await inAppBilling.PurchaseAsync(productId, isSubscription ? ItemType.Subscription : ItemType.InAppPurchase, obfuscatedAccountId);
             }
             catch (InAppBillingPurchaseException pe)
             {
@@ -356,21 +349,7 @@ internal static class Billing
                 bool recorded = await CallWs.RecordPurchaseAsync(purchase, isSubscription);
 
                 if (recorded)
-                {
-                    // Need to finalize only if on Android - unless you turn off auto finalize on iOS
-                    var ack = await billing.FinalizePurchaseAsync(new[] { purchase.TransactionIdentifier });
-
-                    if (!ack.Any(item => item.Id.Equals(purchase.PurchaseToken) && item.Success))
-                        return null;
-                    // Here we have a license from Google and have recorded it, setting IsAcknowledged = 1, so now validate it through our web service
-                    string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
-                    if (validationResult is not null)
-                    {
-                        int.TryParse(validationResult, out int scans);
-                        purchase.Quantity = scans;
-                        return purchase;
-                    }
-                }
+                    return await FinalizePurchaseAsync(purchase, inAppBilling, isSubscription);
                 else 
                 {
                     // Something suspicious happened, we got an alleged new license from Google, but were unable to record it (meaning it was not really new)
@@ -389,6 +368,31 @@ internal static class Billing
         Utilities.DebugMsg("In Billing.PurchaseItemAsync:  Attempt to record license failed");
         return null;
     }
+
+    private static async Task<InAppBillingPurchase> FinalizePurchaseAsync(InAppBillingPurchase purchase, IInAppBilling inAppBilling, bool isSubscription)
+    {
+        // Need to finalize only if on Android - unless you turn off auto finalize on iOS
+        try
+        {
+            var ack = await inAppBilling.FinalizePurchaseAsync(new[] { purchase.TransactionIdentifier });
+            if (!ack.Any(item => item.Id.Equals(purchase.PurchaseToken) && item.Success))
+                return null;
+        }
+        catch (InAppBillingPurchaseException pe)
+        {
+            Utilities.DebugMsg("In FinalizePurchaseAsync, inAppBilling.FinalizePurchaseAsync threw a PurchaseException: " + pe.Message + ", " + pe.PurchaseError.ToString());
+        }
+
+        // Here we have a license from Google and have recorded it, setting IsAcknowledged = 1, so now validate it through our web service
+        string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
+        if (validationResult is not null && int.TryParse(validationResult, out int scans))
+        {
+            purchase.Quantity = scans;
+            return purchase;
+        }
+        return null;
+    }
+
     private static async Task<bool> ConsumeItemAsync(string productId, string purchaseToken)
     {
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
@@ -419,6 +423,7 @@ internal static class Billing
         return false;
     }
 
+#if DEBUG
     private static async Task<string> GetInAppBillingPurchaseFakeAsync(string androidJson, string productId)
     {
         Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync");
@@ -446,7 +451,8 @@ internal static class Billing
             Utilities.ReportCrash(ex);
         }
         return null;
-    }
+    } 
+#endif
 
 
     private static async Task<(BillingStatusType, InAppBillingPurchase)> GetInAppBillingPurchaseAsync(string productId, bool isSubscription = false)
@@ -480,6 +486,9 @@ internal static class Billing
             else
                 Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} found in play store purchase list, verifying with web service");
 
+            if (purchase.IsAcknowledged == false) // Probably there was an unfortunately timed interruption during the purchase attempt, but the client has paid, so finalize it
+                await FinalizePurchaseAsync(purchase, billing.Interface, isSubscription);
+            
             string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
 
             if (validationResult is null)
