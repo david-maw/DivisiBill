@@ -11,17 +11,18 @@ namespace DivisiBill.Services;
 /// 
 /// <para>The flow is that a user buys a license through the program using the store for the platform (only Android at
 /// present) and then presents it to a web service for validation. The web service ALSO calls the store to validate the
-/// license it was given is a new one (an unacknowledged one that is not in our list of known licenses). if that
-/// validation passes (it is both valid and new to us), the license is stored in a table (so it's now a known one).
-/// If it is an OCR license we also store a count of OCR scans it enables the user to consume, including unused scans
-/// from a previous license.</para>
+/// license it was given is a new one (an unacknowledged one) and also that is not in its list of known licenses. if that
+/// validation passes, the license is stored in a table (so it's now a known one) and a value is returned to the caller
+/// to tell it to /// acknowledge the license with the store.
+/// If it is an OCR license we also return a count of OCR scans it enables the user to consume, and persist the new total
+/// including unused scans from a previous license.</para>
 /// 
 /// <para>The pro license is checked at startup and intermittently thereafter <see cref="GetHasProSubscriptionAsync"/>. 
 /// The OCR license management is mostly in the web service but it is occasionally checked 
-/// <see cref="GetHasOcrLicenseAsync"/> /// web service, where the count of remaining scans for each license is kept. 
+/// <see cref="GetHasOcrLicenseAsync"/> against the web service, where the count of remaining scans for each license is kept. 
 /// The number of scans left is decremented whenever a scan is done by the web service and once the number left drops below a
 /// threshold <see cref="ScansWarningLevel"/> the user is allowed to purchase a new license and we delete the old one (on 
-/// Android you have to before you can buy another), see <see cref="ConsumeDepletedOcrLicense"/>. Any scans remaining on 
+/// Android you have to do that before you can buy another), see <see cref="ConsumeDepletedOcrLicense"/>. Any scans remaining on 
 /// the old license are transferred to the new license.</para>
 /// 
 /// <para>If someone could get hold of a valid license and persuade an app to present it, they could scan bills and decrement 
@@ -31,7 +32,8 @@ namespace DivisiBill.Services;
 /// point of all this (to make it more work than it is worth).</para>
 /// 
 /// <para>Because only a valid but previously unknown license ever allocates additional scans there's no obvious way to reuse
-/// a license to get more scans, all you can do is consume the ones you've already been allocated.</para>
+/// a license to get more scans, all you can do is consume the ones you've already been allocated. The Play Store for Android 
+/// adds the additional wrinkle of acknowledging a license, but that's not necessary for the security of the process.</para>
 /// </summary>
 internal static class Billing
 {
@@ -44,13 +46,15 @@ internal static class Billing
         connectionFailed = 4,
         connectionFaulted = 5,
     }
-    public const string ProSubscriptionId = "pro.subscription";
-    public const string ProSubscriptionIdOld = "pro.upgrade"; // actually a product, not a subscription
     public const string ExpectedPackageName = "com.autoplus.divisibill";
     public const int ScansWarningLevel = 4; // If this many or fewer are left, warn the user and allow them to purchase additional scans
 
-    internal static InAppBillingPurchase ProPurchase { get; private set; } = null;
     #region Pro License
+    public const string ProSubscriptionId = "pro.subscription";
+    public const string OldProProductId = "pro.upgrade"; // a product, not a subscription, kept around to simplify testing because it does not expire
+    internal static InAppBillingPurchase ProPurchase { get; private set; } = null;
+    internal static bool HasOldProProductId { get; private set; } = false;
+
     /// <summary>
     /// Check for a pro subscription (or the test pro product) and return a value indicating the outcome.
     /// </summary>
@@ -75,10 +79,10 @@ internal static class Billing
             else
             {
                 string json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json, Billing.ProSubscriptionIdOld);
+                string resultString = await GetInAppBillingPurchaseFakeAsync(json, Billing.OldProProductId);
                 ProPurchase = new InAppBillingPurchase()
                 {
-                    ProductId = ProSubscriptionIdOld, // temporary
+                    ProductId = OldProProductId, // temporary
                     State = PurchaseState.Failed,
                     Id = "GPA.XXXX-XXXX-XXXX-10936",
                     OriginalJson = json
@@ -86,6 +90,7 @@ internal static class Billing
                 if (resultString is not null)
                 {
                     ProPurchase.State = PurchaseState.Purchased;
+                    HasOldProProductId = true;
                     return BillingStatusType.ok; // No error
                 } 
             }
@@ -98,12 +103,13 @@ internal static class Billing
             Billing.BillingStatusType billingResult = BillingStatusType.notFound;
             try
             {
-                #region Old Style Pro Product Testing
+                #region Old Style Pro Product (used for Testing)
                 Utilities.DebugMsg("In GetHasProSubscriptionAsync, trying old style pro product");
-                (billingResultOld, ProPurchase) = await GetInAppBillingPurchaseAsync(ProSubscriptionIdOld, isSubscription: false);
+                (billingResultOld, ProPurchase) = await GetInAppBillingPurchaseAsync(OldProProductId, isSubscription: false);
                 if (billingResultOld == BillingStatusType.ok && ProPurchase is not null && ProPurchase.State == PurchaseState.Purchased)
                 {
                     Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found old style pro product " + ProPurchase.Id);
+                    HasOldProProductId = true;
                     return BillingStatusType.ok; // No error
                 }
                 else if (billingResultOld >= BillingStatusType.noInternet)

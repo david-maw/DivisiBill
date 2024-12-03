@@ -178,7 +178,9 @@ internal static class CallWs
         return false;
     }
 
+#if DEBUG
     /// <summary>
+    /// A version of <see cref="VerifyPurchase"/> for testing using predefined android licenses in a debug build
     /// Verify that an InAppBilling purchase really is what it pretends to be by calling the issuer
     /// and also that we previously purchased it. Currently only implemented for Android.
     /// </summary>
@@ -200,9 +202,9 @@ internal static class CallWs
                 string s = await response.Content.ReadAsStringAsync();
                 Utilities.DebugMsg("In VerifyAndroidPurchase, verify returned ok and \"" + s + "\"");
                 // If this is a pro license, pass it to future web service calls for authorization
-                if (productId.Equals(Billing.ProSubscriptionId) || productId.Equals(Billing.ProSubscriptionIdOld))
+                if (productId.Equals(Billing.ProSubscriptionId) || productId.Equals(Billing.OldProProductId))
                 {
-                    // The fake JSON string may be delimited by CR/LF, if it is just replace them with a space because they are not allowed in headers
+                    // The fake JSON string may be delimited by CR/LF, if it is just remove them because CR/LF are not allowed in headers
                     string flatJson = androidJson.Replace("\r\n", string.Empty);
                     UpsertHttpClientHeader(PurchaseHeaderName, flatJson); // This will be the license used from now on
                     response.StoreTokenHeader();
@@ -213,7 +215,8 @@ internal static class CallWs
                 Utilities.DebugMsg("In VerifyAndroidPurchase, verify returned " + response.StatusCode);
         }
         return null;
-    }
+    } 
+#endif
     /// <summary>
     /// Verify that an InAppBilling purchase really is what it pretends to be by calling the issuer
     /// and also that we previously purchased it. Currently only implemented for Android.
@@ -236,7 +239,7 @@ internal static class CallWs
                     string s = await response.Content.ReadAsStringAsync();
                     Utilities.DebugMsg("In VerifyPurchase, verify returned ok and \"" + s + "\"");
                     // If this is a pro license, pass it to future web service calls for authorization
-                    if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.ProSubscriptionIdOld))
+                    if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.OldProProductId))
                     {
                         UpsertHttpClientHeader(PurchaseHeaderName, purchase.OriginalJson); // This will be the license used from now on
                         response.StoreTokenHeader();

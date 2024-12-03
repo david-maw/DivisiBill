@@ -71,6 +71,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task PurchaseUpgradeAsync()
     {
+        if (Billing.HasOldProProductId)
+        {
+            await Utilities.DisplayAlertAsync("Tester", "You have a perpetual professional license and do not need a subscription");
+            return;
+        }
         IsBusy = true;
         bool subscriptionPurchased = await Billing.PurchaseProSubscriptionAsync();
         IsBusy = false;
@@ -90,6 +95,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task RemoveUpgradeAsync()
     {
+        if (Billing.HasOldProProductId)
+        {
+            await Utilities.DisplayAlertAsync("Tester", "You have a perpetual professional license which cannot be modified");
+            return;
+        }
         await Launcher.OpenAsync(new Uri("https://play.google.com/store/account/subscriptions"
             + $"?sku={Billing.ProSubscriptionId}&package={Billing.ExpectedPackageName}"));
     }

@@ -104,7 +104,7 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout IsVisible="{Binding Path=HasProSubscription}">
                         <Label Text="Remove or Change Pro Subscription" HorizontalOptions="Center"/>
-                        <Button Text="Modify Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{OnPlatform Default=false,Android=true}"/>
+                        <Button Text="Modify Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5"/>
                     </VerticalStackLayout>
                     <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
                     <Label Text="{Binding ProSubscriptionId, StringFormat='Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
