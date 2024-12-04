@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Diagnostics;
+using CommunityToolkit.Maui.Views;
 using DivisiBill.Generated;
 using DivisiBill.Models;
 using DivisiBill.ViewModels;
@@ -14,6 +15,9 @@ using System.Xml;
 
 namespace DivisiBill.Services;
 
+/// <summary>
+/// A general repository for handy capabilities used throughout the app
+/// </summary>
 public static class Utilities
 {
 #if DEBUG
@@ -21,6 +25,11 @@ public static class Utilities
 #else
     public static readonly bool IsDebug = false;
 #endif
+    /// <summary>
+    /// Create a pseudo random string of letters and digits for use ans a randomized key
+    /// </summary>
+    /// <param name="size">Length of string to create</param>
+    /// <returns>Pseudo-random string of characters</returns>
     internal static string GenerateToken(int size = 50)
     {
         Guard.IsLessThan(1000, size);
@@ -62,6 +71,17 @@ public static class Utilities
         {
             list.Add(targetItem);
             return true;
+        }
+        // Validation code to ensure order is correct when we enter this function
+        if (App.IsDebug)
+        {
+            T priorVenue = list.First();
+            foreach (T currentVenue in list)
+            {
+                if (compareTo(currentVenue, priorVenue) < 0)
+                    Debugger.Break();
+                priorVenue = currentVenue;
+            }
         }
         // Go through the list to see if the item is already in it and where it should be now
         // A linear search because we do not know the former item location, if any.
@@ -221,6 +241,10 @@ public static class Utilities
         return (default(T), -1);
     }
 
+    /// <summary>
+    /// Return a block of text describing the current app build. Used for diagnostic messages.
+    /// </summary>
+    /// <returns>text describing the current app build.</returns>
     public static string GetAppInformation()
     {
         StringBuilder s = new StringBuilder("DivisiBill ", 1000);
@@ -239,6 +263,16 @@ public static class Utilities
         return s.ToString();
     }
 
+    /// <summary>
+    /// Report an exception with optional explanatory text
+    /// </summary>
+    /// <param name="comment"></param>
+    /// <param name="ex"></param>
+    /// <param name="sourceStream"></param>
+    /// <param name="streamName"></param>
+    /// <param name="callerFilePath"></param>
+    /// <param name="methodName"></param>
+    /// <param name="callerLineNumber"></param>
     public static void ReportCrash(Exception ex, string comment = "", Stream sourceStream = null, string streamName = null, [CallerFilePath] string callerFilePath = null, [CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
     {
         string errText = $"Utilities.ReportCrash called from {methodName} ({callerFilePath} {callerLineNumber})";
@@ -312,7 +346,7 @@ public static class Utilities
     }
 
     /// <summary>
-    /// A mechanism for nested code to send status messages to subscribers of StatusMsgInvoked
+    /// Send a status message to subscribers of StatusMsgInvoked (used to report progress during initialization)
     /// </summary>
     public delegate void SendMsg(string msg);
 
@@ -332,12 +366,18 @@ public static class Utilities
             }
         }
     }
+
+    /// <summary>
+    /// Send a status message to subscribers of StatusMsgInvoked (used to report progress during initialization).
+    /// These messages are also put in the breadcrumb trail for context in case there's an unexpected failure.
+    /// </summary>
     public async static Task StatusMsgAsync(string msg, 
         [CallerFilePath] string sourceFilePath = "",
         [CallerLineNumber] int sourceLineNumber = 0)
     {
         await PauseBeforeMessageSource.WaitWhilePausedAsync();
         StatusMsgInvoked?.Invoke(msg);
+        // Extract just the file name - has to be done manually because this may be an Android build compiled on Windows
         var sourceFileName = sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1);
         SentrySdk.AddBreadcrumb(
             type: "debug", 
@@ -366,7 +406,8 @@ public static class Utilities
     /// The basic flow is to ask for the permission, if it is granted use it, if not then either just give
     /// up if we've already shown a rationale, or should not show one. After denying the request once Android will 
     /// offer the user a "Don't ask again" option and if that is chosen requests will be automatically denied in future
-    /// with no rational displayed, that feature will presumably simply be unused. 
+    /// with no rational displayed, that feature will presumably simply be unused. The exact behavior of Android depends on
+    /// the release level and much of the "do not ask again" logic is not needed in later (32+) versions.
     /// </summary>
     /// <param name="Explain">A function to call to explain to the user why the permission is needed</param>
     /// <returns>a boolean indicating whether the requested permission was granted</returns>
@@ -396,10 +437,18 @@ public static class Utilities
         }
     }
 
+    /// <summary>
+    /// True if we're running on Windows
+    /// </summary>
     public static bool IsUWP => DeviceInfo.Platform == DevicePlatform.WinUI;
+    /// <summary>
+    /// True if we're running on Android
+    /// </summary>
     public static bool IsAndroid => DeviceInfo.Platform == DevicePlatform.Android;
 
+    // Stops the count of milliseconds before the first message getting silly.
     static DateTime startTime = DateTime.Now;
+    // A timer for use with diagnostic messages
     static double lastSeconds = 0;
 
     [Conditional("DEBUG")]
@@ -443,6 +492,14 @@ public static class Utilities
             DebugMsg(msg);
     }
 
+    // 
+    /// <summary>
+    /// A mechanism for displaying an action sheet in a way that lets testing intercept it
+    /// </summary>
+    /// <param name="title">The title of the requested dialog</param>
+    /// <param name="message">The message body to show</param>
+    /// <param name="buttons">The options to offer</param>
+    /// <returns></returns>
     public delegate Task<string> DisplayActionSheetAsyncType(string title, string cancel, params string[] buttons);
     public static Task<string> ActualDisplayActionSheetAsync(string title, string cancel, params string[] buttons)
     {
@@ -451,13 +508,29 @@ public static class Utilities
     }
     public static DisplayActionSheetAsyncType DisplayActionSheetAsync = ActualDisplayActionSheetAsync;
 
+    /// <summary>
+    /// Ask a simple yes/no question in a way that lets testing intercept it by assigning to AskAsync
+    /// </summary>
+    /// <param name="title">The title of the requested dialog</param>
+    /// <param name="message">The message body to show</param>
+    /// <param name="accept">Text for a 'yes' answer</param>
+    /// <param name="cancel">Text for a 'no' answer</param>
+    /// <returns></returns>
     public delegate Task<bool> AskAsyncType(string title, string message, string accept = null, string cancel = null);
-    public static AskAsyncType AskAsync = ActualAskAsync;
+    public static AskAsyncType AskAsync = ActualAskAsync; 
     public static async Task<bool> ActualAskAsync(string title, string message, string accept = null, string cancel = null)
     {
         DebugMsg("Question to user: " + message);
         return await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, accept, cancel));
     }
+    
+    /// <summary>
+    /// Send a message to the user and wait for acknowledgment
+    /// </summary>
+    /// <param name="title">The title of the requested dialog</param>
+    /// <param name="message">The message body to show</param>
+    /// <param name="accept">Text to acknowledge the message</param>
+    /// <returns></returns>
     public delegate Task DisplayAlertAsyncType(string title, string message, string accept = null);
     public static DisplayAlertAsyncType DisplayAlertAsync = ActualDisplayAlertAsync;
     public static Task ActualDisplayAlertAsync(string title, string message, string accept = null)
@@ -465,19 +538,41 @@ public static class Utilities
         DebugMsg("Alert to user: " + message);
         return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, "OK"));
     }
+
+    /// <summary>
+    /// Show a summary of payments (basically enough information for a credit slip)
+    /// </summary>
+    /// <param name="paymentsViewModel">A <see cref="PaymentsViewModel"/> populated with the required payment information</param>
+    /// <returns></returns>
     public static async Task ShowPayments(PaymentsViewModel paymentsViewModel)
     {
         await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel));
     }
+    /// <summary>
+    /// Show an application message that will go away by itself if not acknowledged
+    /// </summary>
+    /// <param name="message">The message to show the user</param>
+    /// <returns></returns>
     public static Task ShowAppSnackBarAsync(string message)
     {
         DebugMsg("Snack message to user: " + message);
         return Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message));
     }
+    
+    /// <summary>
+    /// Check if the contents of two files are the same
+    /// </summary>
+    /// <param name="path1">Path to first file</param>
+    /// <param name="path2">Path to second file</param>
+    /// <returns></returns>
     public static bool AreFileContentsEqual(String path1, String path2) =>
         File.Exists(path1) && File.Exists(path2)
         && File.ReadAllBytes(path1).SequenceEqual(File.ReadAllBytes(path2));
 
+    /// <summary>
+    /// Diagnostic list of image files - handy on Android where they are in an encrypted folder
+    /// </summary>
+    /// <param name="comment"></param>
     [Conditional("DEBUG")]
     public static void LogImageFolder(string comment)
     {
