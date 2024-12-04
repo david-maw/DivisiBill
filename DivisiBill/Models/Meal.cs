@@ -1141,7 +1141,7 @@ public partial class Meal : ObservableObjectPlus
         string myString = Encoding.UTF8.GetString(buf, 0, (int)s.Position);
         if (Utilities.IsUWP && myString.Length > 4096) // too large to store on Windows
         {
-            Utilities.DisplayAlertAsync("Error", $"Bill is too large ({myString.Length} bytes) to store in App on Windows");
+            Utilities.DisplayAlertAsync("Error", $"Bill is too large ({myString.Length * 2} bytes) to store in App on Windows");
             myString = string.Empty;
         }
         App.Settings.StoredMeal = myString;
