@@ -23,6 +23,7 @@ public static class Utilities
 #endif
     internal static string GenerateToken(int size = 50)
     {
+        Guard.IsLessThan(1000, size);
         StringBuilder randomString = new StringBuilder();
 
         Random random = new Random();
