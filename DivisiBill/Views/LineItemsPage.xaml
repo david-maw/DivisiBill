@@ -6,6 +6,7 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:services="clr-namespace:DivisiBill.Services"
              Title="Items"
+             Shell.FlyoutBehavior="Flyout"
              x:Class="DivisiBill.Views.LineItemsPage"
              x:DataType="vm:MealViewModel"
              BindingContext="{DynamicResource MealViewModel}">
