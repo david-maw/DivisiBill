@@ -35,6 +35,7 @@
                 FalseObject="{StaticResource FileGlyphLocalOutline}"/>
         <DataTemplate x:Key="WithSwipe" x:DataType="model:MealSummary">
             <Grid ColumnDefinitions="Auto, 2*, *, 2*, 10, Auto">
+                <!--#region Item Selection Area -->
                 <Grid IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}" Margin="0,0,5,0">
                     <Image Grid.Row="0" Source="{StaticResource ListGlyphSelected}" 
                            IsVisible="{Binding FileSelected, x:DataType=model:MealSummary}"
@@ -43,6 +44,7 @@
                            IsVisible="{Binding FileSelected, Converter={StaticResource Not}, x:DataType=model:MealSummary}"
                            VerticalOptions="Center"/>
                 </Grid>
+                <!--#endregion-->
                 <!--TODO MAUI BUG SwipeView bug means Add and scroll will fail here until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed-->
                 <!--#region Bill Summary Info Surrounded by SwipeView -->
                 <SwipeView Grid.Column="1" Grid.ColumnSpan="4">
@@ -62,7 +64,7 @@
                     </SwipeView.RightItems>
                     <!--#region Bill Summary Info -->
                     <VerticalStackLayout Margin="0,0,2,0">
-                        <Label Text="{Binding VenueName}" Margin="0,0,0,-5"
+                        <Label Text="{Binding VenueName}" Margin="0,-3,0,-3"
                                 LineBreakMode="TailTruncation" 
                                 FontSize="Large" />
                         <Grid ColumnDefinitions="*, auto">
@@ -101,12 +103,12 @@
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--#endregion-->
-                <!--#region Local and remote indicators -->
-                <!--Only show them if cloud access is allowed, otherwise they do not tell the user anything-->
-                <Grid Grid.Column="4" Grid.ColumnSpan="2" RowDefinitions="20,20" WidthRequest="30" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,3,0"
-                      IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}">
-                    <Image Grid.Row="0" Source="{Binding IsRemote,Converter={StaticResource RemoteIconConverter}}"/>
-                    <Image Grid.Row="1" Source="{Binding IsLocal,Converter={StaticResource LocalIconConverter}}"/>
+                <!--#region Image, Local and Remote Indicators -->
+                <Grid Grid.Column="4" Grid.ColumnSpan="2" ColumnDefinitions="20, 20" RowDefinitions="20,20" WidthRequest="42" VerticalOptions="Center" HorizontalOptions="End">
+                    <Image Grid.Column="0" Grid.RowSpan="1" Source="{StaticResource FileGlyphImage}" IsVisible="{Binding HasImage}"/>
+                    <!--Only show these if cloud access is allowed, otherwise they do not tell the user anything-->
+                    <Image Grid.Column="1" Grid.Row="0" Source="{Binding IsRemote,Converter={StaticResource RemoteIconConverter}}" IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}"/>
+                    <Image Grid.Column="1" Grid.Row="1" Source="{Binding IsLocal,Converter={StaticResource LocalIconConverter}}" IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}"/>
                 </Grid>
                 <!--#endregion-->
                 <!--#region activity indicator and Download request -->
@@ -122,6 +124,7 @@
         </DataTemplate>
         <DataTemplate x:Key="NoSwipe" x:DataType="model:MealSummary">
             <Grid ColumnDefinitions="Auto, 2*, *, 2*, 10, Auto">
+                <!--#region Item Selection Area -->
                 <Grid IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}" Margin="0,0,5,0">
                     <Image Grid.Row="0" Source="{StaticResource ListGlyphSelected}" 
                            IsVisible="{Binding FileSelected}" 
@@ -130,6 +133,7 @@
                            IsVisible="{Binding FileSelected, Converter={StaticResource Not}, x:DataType=model:MealSummary}"
                            VerticalOptions="Center"/>
                 </Grid>
+                <!--#endregion-->
                 <!--#region Bill Summary Info -->
                 <VerticalStackLayout Grid.Column="1" Grid.ColumnSpan="3">
                     <Label Text="{Binding VenueName}" Margin="0,0,0,-5"
@@ -176,12 +180,12 @@
                             Command="{Binding DeleteMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}"
                             CommandParameter="{Binding}"/>
                 <!--#endregion-->
-                <!--#region Local and remote indicators -->
-                <!--Only show them if cloud access is allowed, otherwise they do not tell the user anything-->
-                <Grid Grid.Column="4" Grid.ColumnSpan="2" RowDefinitions="20,20" WidthRequest="30" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,3,0"
-                           IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}">
-                    <Image Grid.Row="0" Source="{Binding IsRemote,Converter={StaticResource RemoteIconConverter}}"/>
-                    <Image Grid.Row="1" Source="{Binding IsLocal,Converter={StaticResource LocalIconConverter}}"/>
+                <!--#region Image, Local and Remote Indicators -->
+                <Grid Grid.Column="4" Grid.ColumnSpan="2" ColumnDefinitions="20, 20" RowDefinitions="20,20" WidthRequest="42" VerticalOptions="Center" HorizontalOptions="End">
+                    <Image Grid.Column="0" Grid.RowSpan="1" Source="{StaticResource FileGlyphImage}" IsVisible="{Binding HasImage}"/>
+                    <!--Only show these if cloud access is allowed, otherwise they do not tell the user anything-->
+                    <Image Grid.Column="1" Grid.Row="0" Source="{Binding IsRemote,Converter={StaticResource RemoteIconConverter}}" IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}"/>
+                    <Image Grid.Column="1" Grid.Row="1" Source="{Binding IsLocal,Converter={StaticResource LocalIconConverter}}" IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}"/>
                 </Grid>
                 <!--#endregion-->
                 <BoxView HeightRequest="1" Grid.ColumnSpan="6" VerticalOptions="End" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
