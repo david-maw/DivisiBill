@@ -53,9 +53,11 @@ public static class Utilities
         return randomString.ToString();
     }
     /// <summary>
-    /// Insert an item in an ordered list of items or move it if it is already there but should be somewhere else. 
-    /// The list is ordered based on a compare function passed as a parameter. This would be a lot easier if it 
-    /// were not for the 'move' case.
+    /// Insert an item in an ordered list of items or move it if it is already there but should be in a different
+    /// place in the list. 
+    /// The list is ordered based on a compare function passed as a parameter. 
+    /// This would be a lot easier if it were not for the 'move' case where the item is already in the list but in
+    /// the wrong place so the list may initially have one element out of order.
     /// </summary>
     /// <typeparam name="T">The object type we're working with</typeparam>
     /// <param name="list">The list on which we are operating</param>
@@ -71,17 +73,6 @@ public static class Utilities
         {
             list.Add(targetItem);
             return true;
-        }
-        // Validation code to ensure order is correct when we enter this function
-        if (App.IsDebug)
-        {
-            T priorVenue = list.First();
-            foreach (T currentVenue in list)
-            {
-                if (compareTo(currentVenue, priorVenue) < 0)
-                    Debugger.Break();
-                priorVenue = currentVenue;
-            }
         }
         // Go through the list to see if the item is already in it and where it should be now
         // A linear search because we do not know the former item location, if any.
@@ -497,7 +488,7 @@ public static class Utilities
     /// A mechanism for displaying an action sheet in a way that lets testing intercept it
     /// </summary>
     /// <param name="title">The title of the requested dialog</param>
-    /// <param name="message">The message body to show</param>
+    /// <param name="cancel">The cancel button text</param>
     /// <param name="buttons">The options to offer</param>
     /// <returns></returns>
     public delegate Task<string> DisplayActionSheetAsyncType(string title, string cancel, params string[] buttons);
