@@ -175,14 +175,22 @@ public class AppSettings : ISettings
 
         set
         {
-            int x      = Math.Abs(value.X) < int.MaxValue ? (int)value.X : 0;
-            int y      = Math.Abs(value.Y) < int.MaxValue ? (int)value.Y : 0;
-            int width  = Math.Abs(value.Width) < int.MaxValue ? (int)value.Width : 0;
-            int height = Math.Abs(value.Height) < int.MaxValue ? (int)value.Height : 0;
-            Preferences.Set("PositionX", x);
-            Preferences.Set("PositionY", y);
-            Preferences.Set("PositionWidth", width);
-            Preferences.Set("PositionHeight", height);
+            try
+            {
+                int x = Math.Abs(value.X) < int.MaxValue ? (int)value.X : 0;
+                int y = Math.Abs(value.Y) < int.MaxValue ? (int)value.Y : 0;
+                int width = Math.Abs(value.Width) < int.MaxValue ? (int)value.Width : 0;
+                int height = Math.Abs(value.Height) < int.MaxValue ? (int)value.Height : 0;
+                Preferences.Set("PositionX", x);
+                Preferences.Set("PositionY", y);
+                Preferences.Set("PositionWidth", width);
+                Preferences.Set("PositionHeight", height);
+            }
+            catch (Exception ex)
+            {
+                Utilities.ReportCrash(ex, "Error persisting window size and position");
+                // Do nothing, it does no great harm if this data is not stored
+            }
         }
     }
 
