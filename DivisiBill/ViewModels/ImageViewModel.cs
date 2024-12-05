@@ -151,9 +151,11 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     [RelayCommand]
     private void Delete()
     {
+        if (Meal.CurrentMeal.Frozen)
+            Meal.CurrentMeal.MarkAsChanged();
         PreviewImageSource = null;
         browsedPictureName = null;
-        Meal.CurrentMeal.DeleteImage();
+        Meal.CurrentMeal.DeleteImage(); 
     }
     #region Controlling the Camera Flash
     /// <summary>
