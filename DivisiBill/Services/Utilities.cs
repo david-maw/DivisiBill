@@ -32,7 +32,7 @@ public static class Utilities
     /// <returns>Pseudo-random string of characters</returns>
     internal static string GenerateToken(int size = 50)
     {
-        Guard.IsLessThan(1000, size);
+        Guard.IsLessThan(size, 1000);
         StringBuilder randomString = new StringBuilder();
 
         Random random = new Random();
