@@ -58,7 +58,11 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         {
             PreviewImageSource = null;
         }
+        Meal.CurrentMeal.Summary.PropertyChanged += CurrentMeal_PropertyChanged;
+        OnPropertyChanged(nameof(HasImage));
+        OnPropertyChanged(nameof(HasDeletedImage));
     }
+
     /// <summary>
     /// Persist the current image (or lack of one) with the current Meal
     /// </summary>
@@ -79,7 +83,21 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         else
             Meal.CurrentMeal.DeleteImage();
         imageChanged = false;
+        Meal.CurrentMeal.Summary.PropertyChanged -= CurrentMeal_PropertyChanged;
     }
+    
+    private void CurrentMeal_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case "HasDeletedImage":
+            case "HasImage":
+                OnPropertyChanged(e.PropertyName); break; 
+            default: 
+                break;
+        }
+    }
+
     #endregion
     #region Commands
     /// <summary>
@@ -148,29 +166,35 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// <summary>
     /// Delete the current image and clear the current bill image
     /// </summary>
-    [RelayCommand]
+    [RelayCommand] // If it was working yet this should be [RelayCommand(CanExecute = nameof(HasImage))]
     private void Delete()
     {
-        if (Meal.CurrentMeal.Frozen)
-            Meal.CurrentMeal.MarkAsChanged();
-        PreviewImageSource = null;
-        browsedPictureName = null;
-        Meal.CurrentMeal.DeleteImage(); 
-        OnPropertyChanged(nameof(HasDeletedImage));
-        OnPropertyChanged(nameof(HasImage));
+        if (HasImage)
+        {
+            if (Meal.CurrentMeal.Frozen)
+                Meal.CurrentMeal.MarkAsChanged();
+            PreviewImageSource = null;
+            browsedPictureName = null;
+            Meal.CurrentMeal.DeleteImage();
+            OnPropertyChanged(nameof(HasDeletedImage));
+            OnPropertyChanged(nameof(HasImage)); 
+        }
     }
 
     /// <summary>
     /// UnDelete the current image - beware this is one of the only functions that changes a Meal in place rather than creating a new one.
     /// </summary>
-    [RelayCommand(CanExecute = nameof(HasDeletedImage))]
+    [RelayCommand] // If it was working yet this should be [RelayCommand(CanExecute = nameof(HasDeletedImage))]
     private void Undelete()
     {
-        Meal.CurrentMeal.UndeleteImage();
-        PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath));
-        browsedPictureName = null;
-        OnPropertyChanged(nameof(HasDeletedImage));
-        OnPropertyChanged(nameof(HasImage));
+        if (HasDeletedImage)
+        {
+            Meal.CurrentMeal.UndeleteImage();
+            PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath));
+            browsedPictureName = null;
+            OnPropertyChanged(nameof(HasDeletedImage));
+            OnPropertyChanged(nameof(HasImage)); 
+        }
     }
     #region Controlling the Camera Flash
     /// <summary>
