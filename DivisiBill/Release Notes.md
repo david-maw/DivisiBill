@@ -1,3 +1,17 @@
+# 6.2.5
+
+## Show a 'Has Image' Indication in Bill List
+
+Lists of bills now include an indication whether or not each bill has a stored image associated with it. If the bill has a stored image ten at the end of each entry (by the cloud/local icons) is a new icon.
+
+## Undelete Image Permitted
+
+The details page shown when you double tap a bill in the list now shows whether a bill has a recoverable image. If such a bill is selected the Image page now permits its deleted image to be recovered by using the "Undelete" menu selection (or using the Undelete button shown if there is no current image).
+
+## Deleting an Image Creates a New Bill
+
+Deleting an image from an old bill should have created a new one but instead it was simply deleting the image from the existing bill. This has been corrected and a new bill is now created rather than modifying the existing one.
+
 # 6.2.4
 
 ## Speed Up Initial Bill Evaluation
@@ -66,5 +80,5 @@ Swipe up and down through a long list of items is unreliable so this introduces 
 
 ## First Open Source Release
 
-Prior to this release (November 2024) the DivisiBill sources were private, this moves them into open source. To build the released code you need to define a variety of secrets but the app runs without them. Without the defined secrets OCR and cloud storage are not available but all other features work.
+Prior to this release (November 2024) the DivisiBill sources were private, this moves them into open source on GitHub [here](https://github.com/david-maw/DivisiBill). To build the released code you need to define a variety of secrets but the app runs without them. Without the defined secrets OCR and cloud storage are not available but all other features work.
 
