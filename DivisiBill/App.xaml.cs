@@ -39,8 +39,8 @@ public partial class App : Application, INotifyPropertyChanged
     public const string BaseFolderName = "DivisiBill";
 #endif
     public static readonly bool IsDebug = Utilities.IsDebug; // Not a const so as to avoid "unreachable code" warnings
-    public static readonly TimeSpan MinimumIdleTime = TimeSpan.FromSeconds(60); // A changed bill younger than this is not persisted
-    public static readonly TimeSpan MaximumIdleTime = TimeSpan.FromSeconds(20); // Changed bills untouched for this long are always persisted
+    public static readonly TimeSpan MinimumIdleTime = TimeSpan.FromMinutes(90); // A changed bill younger than this is not persisted
+    public static readonly TimeSpan MaximumIdleTime = TimeSpan.FromMinutes(150); // Changed bills untouched for this long are always persisted
     public static string BaseFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), BaseFolderName);
     // On Android BaseFolderPath is typically /data/user/0/com.autoplus.divisibill/files/DivisiBill, on Windows C:\users\<user>\Documents\DivisiBill
     public static string AppFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), BaseFolderName);
