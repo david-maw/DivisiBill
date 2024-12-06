@@ -921,7 +921,7 @@ public partial class Meal : ObservableObjectPlus
             m.Frozen = App.Settings.MealFrozen;
             m.Summary.IsLocal = File.Exists(m.Summary.FilePath);
             if (m.Summary.IsLocal)
-                m.DetermineHasImage();
+                m.CheckImageFiles();
             m.SavedToRemote = App.Settings.MealSavedToRemote;
             m.Summary.IsRemote = m.SavedToRemote;
             m.MonitorChanges = true; // From now on take notice of changes
@@ -1019,7 +1019,7 @@ public partial class Meal : ObservableObjectPlus
         }
         else
         {
-            m.DetermineHasImage();
+            m.CheckImageFiles();
             m.MonitorChanges = true;
         }
         return m;
@@ -1045,7 +1045,7 @@ public partial class Meal : ObservableObjectPlus
                 {
                     if (m.CreationTime == DateTime.MinValue || m.Size < 0) // It's a file without a stored creation time
                         m.Summary.SetCreationTimeFromFileName(TargetFileName);
-                    m.DetermineHasImage();
+                    m.CheckImageFiles();
                     m.Summary.IsLocal = true;
                     m.SavedToFile = true;
                     if (m.Size < 0)
@@ -1086,7 +1086,7 @@ public partial class Meal : ObservableObjectPlus
             }
             else
             {
-                m.DetermineHasImage(); // Just in case it is stored locally
+                m.CheckImageFiles(); // Just in case it is stored locally
                 m.Summary.IsRemote = true;
                 m.SavedToRemote = true;
                 m.MonitorChanges = true;
@@ -1280,6 +1280,8 @@ public partial class Meal : ObservableObjectPlus
             OnPropertyChanged(nameof(DiagnosticInfo));
         else if (e.PropertyName == nameof(MealSummary.HasImage))
             OnPropertyChanged(nameof(HasImage));
+        else if (e.PropertyName == nameof(MealSummary.HasDeletedImage))
+            OnPropertyChanged(nameof(HasDeletedImage));
         else if (e.PropertyName == nameof(MealSummary.CreationTime))
         {
             OnPropertyChanged(nameof(Age));
@@ -1303,9 +1305,15 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     public string ImagePath => Summary.ImagePath;
     public bool HasImage => Summary.HasImage;
+    public bool HasDeletedImage => Summary.HasDeletedImage;
     public void DeleteImage() => Summary.DeleteImage();
+    public void UndeleteImage() => Summary.UndeleteImage();
     public bool ReplaceImage(string s) => Summary.ReplaceImage(s);
-    public bool DetermineHasImage() => Summary.DetermineHasImage();
+    public void CheckImageFiles()
+    {
+        Summary.DetermineHasImage();
+        Summary.DetermineHasDeletedImage();
+    }
 
     /// <summary>
     /// Called whenever a user tells us it's time to persist a file. This is a special action - it persists a snapshot of the
@@ -1633,6 +1641,8 @@ public partial class Meal : ObservableObjectPlus
             if (SavedToFile) info.Append(", SavedToFile");
             if (Summary.IsRemote) info.Append(", IsRemote");
             if (SavedToRemote) info.Append(", SavedToRemote");
+            if (HasImage) info.Append(", HasImage");
+            if (HasDeletedImage) info.Append(", HasDeletedImage");
             return info.ToString();
         }
     }

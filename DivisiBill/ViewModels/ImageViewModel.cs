@@ -156,6 +156,21 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         PreviewImageSource = null;
         browsedPictureName = null;
         Meal.CurrentMeal.DeleteImage(); 
+        OnPropertyChanged(nameof(HasDeletedImage));
+        OnPropertyChanged(nameof(HasImage));
+    }
+
+    /// <summary>
+    /// UnDelete the current image - beware this is one of the only functions that changes a Meal in place rather than creating a new one.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(HasDeletedImage))]
+    private void Undelete()
+    {
+        Meal.CurrentMeal.UndeleteImage();
+        PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath));
+        browsedPictureName = null;
+        OnPropertyChanged(nameof(HasDeletedImage));
+        OnPropertyChanged(nameof(HasImage));
     }
     #region Controlling the Camera Flash
     /// <summary>
@@ -198,7 +213,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// Whether there is an image to show
     /// </summary>
     public bool HasImage => PreviewImageSource is not null;
-
+    public bool HasDeletedImage => Meal.CurrentMeal.HasDeletedImage; 
     /// <summary>
     /// The current image as an <see cref="ImageSource"/> 
     /// </summary>

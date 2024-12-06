@@ -27,6 +27,7 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public ObservableCollection<PersonCost> Costs => m?.Costs;
     public Meal CurrentMeal => m;
     public bool HasImage => ms.HasImage;
+    public bool HasDeletedImage => ms.HasDeletedImage;
     public bool IsBad => m is not null && m.Size < 0;
     public string ErrorMessage => IsBad ? m?.CreationReason : string.Empty;
     public string FileName => ms.FileName;

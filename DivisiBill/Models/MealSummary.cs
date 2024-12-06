@@ -227,7 +227,11 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     /// The full path to the local file this MealSummary (or the Meal that points to it) is stored in.
     /// </summary>
     public string FilePath => Path.Combine(Meal.MealFolderPath, FileName);
-    
+    /// <summary>
+    /// The full path to the deleted file this MealSummary (or the Meal that points to it) is stored in.
+    /// </summary>
+    public string DeletedFilePath => Path.Combine(Meal.DeletedItemFolderPath, FileName);
+
     /// <summary>
     /// The (fixed) name of the stored image file 
     /// </summary>
@@ -237,6 +241,10 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     /// The fully qualified path to the bill image for this bill
     /// </summary>
     public string ImagePath => Path.Combine(Meal.ImageFolderPath, ImageName);
+    /// <summary>
+    /// The full path to the local file the deleted image for this bill is stored in.
+    /// </summary>
+    public string DeletedImagePath => Path.Combine(Meal.DeletedItemFolderPath, ImageName);
     public void SetCreationTimeFromFileName(string fn)
     {
          if (TryDateTimeFromName(fn, out DateTime dt))
@@ -287,11 +295,11 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 
     public void DeleteImage()
     {
-        if (File.Exists(ImagePath))
+        if (HasImage)
         {
             Directory.CreateDirectory(Meal.DeletedItemFolderPath);
-            string deletedImagePath = Path.Combine(Meal.DeletedItemFolderPath, ImageName);
-            File.Move(ImagePath, deletedImagePath, true);
+            File.Move(ImagePath, DeletedImagePath, true);
+            HasDeletedImage = true;
             HasImage = false;
         }
     }
@@ -307,6 +315,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         return false;
     }
     public bool DetermineHasImage() => HasImage = File.Exists(ImagePath);
+    public bool DetermineHasDeletedImage() => HasDeletedImage = File.Exists(DeletedImagePath); 
 
     // Deletes all local copies of meals with no option for recovery (used with archive restore)
     // Does NOT delete any corresponding image so that restoring a meal will restore access to the corresponding image 
@@ -333,9 +342,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         {
             Directory.CreateDirectory(Meal.DeletedItemFolderPath);
             Meal.CurrentMeal.Summary.DeleteImage();
-            string deletedFilePath = Path.Combine(Meal.DeletedItemFolderPath, FileName);
-            File.Delete(deletedFilePath); // Ignore any formerly deleted file of the same name
-            File.Move(FilePath, deletedFilePath);
+            File.Move(FilePath, DeletedFilePath, true); // Overwrite any formerly deleted file of the same name
             DeletedStack.Push(this);
             LocationChanged(isLocal: false);
         }
@@ -350,40 +357,38 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 
     public static MealSummary PopMostRecentDeletion() => DeletedStack.Any() ? DeletedStack.Pop() : null;
     /// <summary>
-    /// Undelete a local Meal and its associated image, if by some weird mischance the corresponding file already exists, just forget the deleted one
+    /// Undelete a local Meal and its associated image, if by some weird mischance the corresponding file already exists, just discard it
     /// </summary>
     public bool UnDelete()
     {
-        bool asExpected = false;
-        string DeletedMealPath = Path.Combine(Meal.DeletedItemFolderPath, FileName);
-        if (File.Exists(DeletedMealPath))
+        bool unexpected = false;
+        if (File.Exists(DeletedFilePath))
         {
-            string OriginalMealPath = Path.Combine(Meal.MealFolderPath, FileName);
-            if (File.Exists(OriginalMealPath))
-                File.Delete(DeletedMealPath);
-            else
-            {
-                File.Move(DeletedMealPath, OriginalMealPath);
-                asExpected = true;
-            }
+            if (File.Exists(FilePath))
+                unexpected = true;
+            File.Move(DeletedFilePath, FilePath, true);
             LocationChanged(isLocal: true);
-            UnDeleteImage();
+            unexpected |= UndeleteImage();
         }
-        return asExpected;
+        return unexpected;
     }
-    private void UnDeleteImage()
+    /// <summary>
+    /// Undelete a Meal image, if by some weird mischance the corresponding file already exists, just discard it
+    /// </summary>
+    public bool UndeleteImage()
     {
-        string DeletedImagePath = Path.Combine(Meal.DeletedItemFolderPath, ImageName);
-        if (File.Exists(DeletedImagePath))
+        bool unexpected = false;
+        if (HasDeletedImage)
         {
-            if (File.Exists(ImagePath))
-                File.Delete(DeletedImagePath);
-            else
-                File.Move(DeletedImagePath, ImagePath);
-            Meal.CurrentMeal.Summary.DetermineHasImage();
+            if (HasImage)
+                unexpected = true;
+            File.Move(DeletedImagePath, ImagePath, true);
+            HasImage = true;
+            HasDeletedImage = false;
         }
+        return unexpected;
     }
-    
+
     /// <summary>
     /// Adds the MealSummary to the local and remote lists if it should be there and isn't already
     /// </summary>
@@ -454,6 +459,14 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     {
         get => hasImage;
         private set => SetProperty(ref hasImage, value);
+    }
+
+    private bool hasDeletedImage = false;
+    [XmlIgnore]
+    public bool HasDeletedImage
+    {
+        get => hasDeletedImage;
+        private set => SetProperty(ref hasDeletedImage, value);
     }
 
     [XmlIgnore]
