@@ -35,6 +35,8 @@ The Android version of DivisiBill is available in the Play Store [here](https://
 
 To contact support or sales, click [here](mailto:support@autopl.us?subject=DivisiBill%20Mail%20from%20AutoPlus%20web%20page).
 
+DivisiBill is open source software. The source is hosted on GitHub [here](https://github.com/david-maw/DivisiBill). It makes use of a web service implemented as Azure Functions, the source of which is [here](https://github.com/david-maw/DivisiBillWs).
+
 ## What is AutoPlus Software?
 
 AutoPlus Software is a company originally formed to market a body shop management tool
