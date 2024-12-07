@@ -264,7 +264,7 @@ public static class Utilities
     /// <param name="callerFilePath"></param>
     /// <param name="methodName"></param>
     /// <param name="callerLineNumber"></param>
-    public static void ReportCrash(Exception ex, string comment = "", Stream sourceStream = null, string streamName = null, [CallerFilePath] string callerFilePath = null, [CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
+    public static void ReportCrash(this Exception ex, string comment = "", Stream sourceStream = null, string streamName = null, [CallerFilePath] string callerFilePath = null, [CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
     {
         string errText = $"Utilities.ReportCrash called from {methodName} ({callerFilePath} {callerLineNumber})";
         DebugMsg(errText + ", ex:" + ex);
@@ -421,9 +421,9 @@ public static class Utilities
             status = await permission.RequestAsync();
             return status == PermissionStatus.Granted;
         }
-        catch (Exception Ex)
+        catch (Exception ex)
         {
-            ReportCrash(Ex);
+            ReportCrash(ex);
             return false;
         }
     }

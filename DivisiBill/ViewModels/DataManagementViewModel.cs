@@ -100,7 +100,7 @@ partial class DataManagementViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
         }
     }
     private static readonly PickOptions pickOptions
@@ -206,7 +206,7 @@ partial class DataManagementViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
             // The user canceled or something went wrong
             await Utilities.ShowAppSnackBarAsync("Restore Faulted, Archive was unusable");
 

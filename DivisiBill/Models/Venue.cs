@@ -65,7 +65,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
         return false;
     }
@@ -88,7 +88,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
         return false;
     }
@@ -113,7 +113,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
         return false;
     }
@@ -159,7 +159,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
             if (failed)
                 File.Delete(TargetPathName);

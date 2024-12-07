@@ -108,7 +108,7 @@ public class Archive
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
             return null;
         }
     }
@@ -173,7 +173,7 @@ public class Archive
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
             return false;
         }
         finally 

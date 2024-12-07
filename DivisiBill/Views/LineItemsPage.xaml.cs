@@ -159,7 +159,7 @@ public partial class LineItemsPage : ContentPage
         }
         catch (Exception ex)
         {
-            Services.Utilities.ReportCrash(ex);
+            ex.ReportCrash();
             return; // The button layout may be messed up, but the program will run just fine
         }
     }
@@ -277,7 +277,7 @@ public partial class LineItemsPage : ContentPage
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex, "fault attempting to scroll");
+            ex.ReportCrash("fault attempting to scroll");
             // Do nothing, we do not really care if a scroll attempt fails
         }
     }

@@ -233,10 +233,10 @@ public partial class Meal : ObservableObjectPlus
                 bool saved = await TrySaveOldBillAsync();
                 Utilities.DebugMsg("Completed TrySaveOldBillAsync, returned" + (saved ? " saved" : " not saved"));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Utilities.ReportCrash(e);
-                await StatusMsgAsync("Meal.InitializeAsync faulted: " + e.Message);
+                ex.ReportCrash();
+                await StatusMsgAsync("Meal.InitializeAsync faulted: " + ex.Message);
                 await Task.Delay(10000); // enough time to read the message
             }
         }
@@ -382,7 +382,7 @@ public partial class Meal : ObservableObjectPlus
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
             RemoteMealList.Clear(); // Something went wrong, better no list than a partial one
             return false;
         }
@@ -607,11 +607,11 @@ public partial class Meal : ObservableObjectPlus
             sw.WriteLine("            {0, -30} {1,10:C}", "Total", TotalAmount);
             #endregion
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Utilities.ReportCrash(e);
+            ex.ReportCrash();
             sw.WriteLine();
-            sw.WriteLine("exception: {0}", e.Message);
+            sw.WriteLine("exception: {0}", ex.Message);
         }
         finally
         {
@@ -938,7 +938,7 @@ public partial class Meal : ObservableObjectPlus
         if  (!string.IsNullOrEmpty(errorDescription))
             errmsg += "\n" + errorDescription +"\n";
 
-        Utilities.ReportCrash(ex, errmsg, sourceStream, streamName);
+        ex.ReportCrash(errmsg, sourceStream, streamName);
     }
     public static Meal LoadFromStream(Stream sourceStream, MealSummary ms = null, bool setup = true)
     {

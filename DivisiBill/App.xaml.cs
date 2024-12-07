@@ -385,7 +385,7 @@ public partial class App : Application, INotifyPropertyChanged
         catch (Exception ex)
         {
             Utilities.DebugMsg("App.CheckLicenses faulted checking Internet - no Internet");
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
             return;
         }
 

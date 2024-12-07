@@ -67,7 +67,7 @@ internal partial class ProblemReportViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
         }
         // Now delete the temporary file used for attachment
         await Utilities.DisplayAlertAsync("Issue Reported", "Your mail has been sent", "ok");

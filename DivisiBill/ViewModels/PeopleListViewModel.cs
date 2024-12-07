@@ -146,7 +146,7 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
         }
 
         if (contact is not null)

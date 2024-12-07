@@ -120,7 +120,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
         return false;
     }
@@ -141,7 +141,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
         return false;
     }
@@ -207,7 +207,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
             // Initiate backup to cloud if it is permitted
             if (remote && App.IsCloudAllowed)

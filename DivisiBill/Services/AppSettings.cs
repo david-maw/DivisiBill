@@ -188,7 +188,7 @@ public class AppSettings : ISettings
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex, "Error persisting window size and position");
+                ex.ReportCrash("Error persisting window size and position");
                 // Do nothing, it does no great harm if this data is not stored
             }
         }

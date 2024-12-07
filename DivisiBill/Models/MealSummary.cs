@@ -332,7 +332,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             }
             catch (Exception ex)
             {
-                Utilities.ReportCrash(ex);
+                ex.ReportCrash();
             }
         }
     }
@@ -488,9 +488,9 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         {
             // Probably a dubious JSON stream, just ignore it
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            ReportCrash(e);
+            ex.ReportCrash();
         }
         return ms;
     }
@@ -520,9 +520,9 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             ms.Size = (int)sourceStream.Length;
             ms.hasImage = File.Exists(ms.ImagePath);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            ReportCrash(e, "Meal Deserialize Faulted", sourceStream, diagnosticName);
+            ex.ReportCrash("Meal Deserialize Faulted", sourceStream, diagnosticName);
             return null;
         }
         DebugExamineStream(sourceStream);

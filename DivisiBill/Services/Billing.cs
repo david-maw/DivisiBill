@@ -359,7 +359,7 @@ internal static class Billing
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
         }
         finally
         {
@@ -414,7 +414,7 @@ internal static class Billing
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
         }
         finally
         {
@@ -448,7 +448,7 @@ internal static class Billing
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
         }
         return null;
     } 
@@ -512,7 +512,7 @@ internal static class Billing
         }
         catch (Exception ex)
         {
-            Utilities.ReportCrash(ex);
+            ex.ReportCrash();
         }
         finally
         {
