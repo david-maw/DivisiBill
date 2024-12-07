@@ -34,7 +34,7 @@
                 TrueObject="{StaticResource FileGlyphLocal}" 
                 FalseObject="{StaticResource FileGlyphLocalOutline}"/>
         <DataTemplate x:Key="WithSwipe" x:DataType="model:MealSummary">
-            <Grid ColumnDefinitions="Auto, 2*, *, 2*, 10, Auto">
+            <Grid ColumnDefinitions="Auto, 2*, 2*, *, 10, Auto">
                 <!--#region Item Selection Area -->
                 <Grid IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}},x:DataType=vm:MealListViewModel}" Margin="0,0,5,0">
                     <Image Grid.Row="0" Source="{StaticResource ListGlyphSelected}" 
