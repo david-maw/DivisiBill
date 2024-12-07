@@ -264,13 +264,21 @@ public partial class LineItemsPage : ContentPage
     {
         var bo = sender as ToolbarItem;
         var whereTo = bo.CommandParameter as string;
-        switch (whereTo)
+        try
         {
-            case "Up"   : LineItemsListView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start); break;
-            case "Down" : LineItemsListView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End); break;
-            case "End"  : LineItemsListView.ScrollTo(mealViewModel.LineItems.Count-1, position: ScrollToPosition.End); break;
-            case "Start": LineItemsListView.ScrollTo(0, position: ScrollToPosition.Start); break;
-            default:break;
+            switch (whereTo)
+            {
+                case "Up": LineItemsListView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start); break;
+                case "Down": LineItemsListView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End); break;
+                case "End": LineItemsListView.ScrollTo(mealViewModel.LineItems.Count - 1, position: ScrollToPosition.End); break;
+                case "Start": LineItemsListView.ScrollTo(0, position: ScrollToPosition.Start); break;
+                default: break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utilities.ReportCrash(ex, "fault attempting to scroll");
+            // Do nothing, we do not really care if a scroll attempt fails
         }
     }
     private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
