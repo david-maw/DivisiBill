@@ -12,11 +12,11 @@ This icon, in the top left corner of the screen, allows you to show or collapse 
 
 ### Filter (<u>&#xF0233;</u>/<u>&#xF14F0;</u>)
 
-Cancels filtering for a particular person if it is already in use or filters based on the first person assigned to the selected item (if there is one).
+Changes filtering, either by cycling round all the participants, or if an item is selected, all the participants for the selected particular item. Before cycling round to the first item it turn off filtering altogether, so as to show the full list of items.
 
 ### Add (<u>&#xF0419;</u>)
 
-Adds a new item to the bill and selects it so you can edit the description, amount and assignment to participants.
+Adds a new item to the bill before the currently selected item and selects the newly added item so you can edit the description, amount and assignment to participants.
 
 ### Delete (<u>&#xF0A7A;</u>)
 
@@ -24,12 +24,15 @@ Deletes the selected item or items (you can Undo this if you do it by mistake). 
 
 ### Ellipsis (<u>&#xF01D9;</u>)
 
-Tap on the ellipsis to open a secondary menu containing commands to send mail or distribute shares of an item.
+Tap on the ellipsis to open a secondary menu containing a selection of commands.
 
-Selecting "Mail" will send mail containing information about the bill overall, not personalized to any specific participant.
-
-The selections for sharing let you clear sharing, share evenly, or share proportionally according to what each person spent. 
-
+- Clear Filter: Stops filtering for a particular participant and shows all items.
+- Duplicate: Creates a copy of the selected item and places it before the item (delete and undelete it to move it somewhere else).  
+- Send Mail: will send mail containing information about the bill overall, not personalized to any specific participant.
+- Payments: Shows what the payment totals for the bill and the tip to add to round the total to an exact amount.
+- Sharing: Clear sharing on the selected item, share it evenly between item participants, or share proportionally according to what each participant spent on the rest of the bill (which can be handy for splitting discounts). The "Change Sharing" command cycles among these choices.
+- Swipe: for long item lists this lets you scroll around in them.
+ 
 ## Venue Name
 
 This is the name of the current venue. Tapping the name shows the properties (tax and tip rates, for example) of the current bill, double tapping lets you select a new venue from your list.
@@ -46,7 +49,15 @@ Sometimes items will be "comped" by a restaurant, usually by way of an apology b
 
 ## Line Items
 
-You can swipe individual items left to delete them (if you delete an item by mistake you can get it back until you exit the page). Tap on an item to make it the current focus so you can edit the name or price and/or assign it to one or more participants.
+You can swipe individual items left to delete them (if you delete an item by mistake you can get it back until you exit the page). Tap on an item to make it the current focus so you can edit the name or price and/or assign it to one or more participants. This button disappears when you leave the page and you can no longer restore the current set of deleted items.
+
+## Undelete
+
+The Undelete button appears when there is at least one deleted item, tap it to restore the most recently deleted item. This button disappears when you leave the page.
+
+## Undelete All 
+
+The Undelete All button appears when there is more than one deleted item, tap it to restore all the deleted items. This button disappears when you leave the page and you can no longer restore the current set of deleted items.
 
 ## Subtotal
 

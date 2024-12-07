@@ -25,9 +25,9 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="1"
      showgrid="false"
-     inkscape:zoom="1.24"
-     inkscape:cx="510.48387"
-     inkscape:cy="378.62903"
+     inkscape:zoom="0.45"
+     inkscape:cx="511.11111"
+     inkscape:cy="1065.5556"
      inkscape:window-width="2560"
      inkscape:window-height="1529"
      inkscape:window-x="1192"
@@ -125,7 +125,7 @@
        xlink:href="lineitemsglossary.html#venue-name"
        target="_parent"
        xlink:title="Venue Name"
-       transform="matrix(1.0060563,0,0,1,1.8850855,64.765957)">
+       transform="matrix(1.0060563,0,0,1,1.8850855,94.765957)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect1048"
@@ -140,7 +140,7 @@
        target="_parent"
        xlink:title="Edit an item"
        inkscape:label="LineItem Link"
-       transform="matrix(1.0013213,0,0,7.503735,0.3343036,-4765.4062)">
+       transform="matrix(1.0013213,0,0,7.503735,0.3343036,-4735.4062)">
       <rect
          style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:10.7465;stroke-linecap:round"
          id="rect847"
@@ -169,12 +169,46 @@
          inkscape:label="LineItem" />
     </a>
     <a
+       id="a1231-0-3"
+       xlink:href="lineitemsglossary.html#undelete"
+       target="_parent"
+       xlink:title="Undelete button"
+       inkscape:label="LineItem Link"
+       transform="matrix(0.29286595,0,0,1.6246462,217.92495,774.98737)">
+      <rect
+         style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:10.7465;stroke-linecap:round"
+         id="rect847-7-4"
+         width="898.69458"
+         height="75.897469"
+         x="94.871811"
+         y="677.9021"
+         ry="0.37388664"
+         inkscape:label="LineItem" />
+    </a>
+    <a
+       id="a1231-0-3-8"
+       xlink:href="lineitemsglossary.html#undelete-all"
+       target="_parent"
+       xlink:title="Undelete All Button"
+       inkscape:label="LineItem Link"
+       transform="matrix(0.35209164,0,0,1.6246462,487.30611,774.98737)">
+      <rect
+         style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:10.7465;stroke-linecap:round"
+         id="rect847-7-4-6"
+         width="898.69458"
+         height="75.897469"
+         x="94.871811"
+         y="677.9021"
+         ry="0.37388664"
+         inkscape:label="LineItem" />
+    </a>
+    <a
        id="a956"
        xlink:href="lineitemsglossary.html#sharing-control-column"
        target="_parent"
        xlink:title="Sharing Control"
        inkscape:label="Sharing"
-       transform="matrix(1.0060563,0,0,0.97372942,1.8850855,56.941522)">
+       transform="matrix(1.0060563,0,0,0.97372942,1.8850855,86.941522)">
       <rect
          style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect852"
@@ -191,7 +225,7 @@
        target="_parent"
        xlink:title="Comp on/off"
        inkscape:label="Comp"
-       transform="matrix(1.0060563,0,0,0.97372942,1.8850855,56.941522)">
+       transform="matrix(1.0060563,0,0,0.97372942,1.8850855,86.941522)">
       <rect
          style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect981"

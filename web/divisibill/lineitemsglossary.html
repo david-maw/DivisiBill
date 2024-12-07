@@ -13,15 +13,21 @@
 <h3 id="flyout">Flyout (<u>󰍜</u>)</h3>
 <p>This icon, in the top left corner of the screen, allows you to show or collapse the flyout menu to navigate to other pages (navigate from the Items page to the Totals page by swiping left, back to the Items page by swiping right).</p>
 <h3 id="filter">Filter (<u>󰈳</u>/<u>󱓰</u>)</h3>
-<p>Cancels filtering for a particular person if it is already in use or filters based on the first person assigned to the selected item (if there is one).</p>
+<p>Changes filtering, either by cycling round all the participants, or if an item is selected, all the participants for the selected particular item. Before cycling round to the first item it turn off filtering altogether, so as to show the full list of items.</p>
 <h3 id="add">Add (<u>󰐙</u>)</h3>
-<p>Adds a new item to the bill and selects it so you can edit the description, amount and assignment to participants.</p>
+<p>Adds a new item to the bill before the currently selected item and selects the newly added item so you can edit the description, amount and assignment to participants.</p>
 <h3 id="delete">Delete (<u>󰩺</u>)</h3>
 <p>Deletes the selected item or items (you can Undo this if you do it by mistake). To delete a single item, you can also swipe left on that item.</p>
 <h3 id="ellipsis">Ellipsis (<u>󰇙</u>)</h3>
-<p>Tap on the ellipsis to open a secondary menu containing commands to send mail or distribute shares of an item.</p>
-<p>Selecting &quot;Mail&quot; will send mail containing information about the bill overall, not personalized to any specific participant.</p>
-<p>The selections for sharing let you clear sharing, share evenly, or share proportionally according to what each person spent.</p>
+<p>Tap on the ellipsis to open a secondary menu containing a selection of commands.</p>
+<ul>
+<li>Clear Filter: Stops filtering for a particular participant and shows all items.</li>
+<li>Duplicate: Creates a copy of the selected item and places it before the item (delete and undelete it to move it somewhere else).</li>
+<li>Send Mail: will send mail containing information about the bill overall, not personalized to any specific participant.</li>
+<li>Payments: Shows what the payment totals for the bill and the tip to add to round the total to an exact amount.</li>
+<li>Sharing: Clear sharing on the selected item, share it evenly between item participants, or share proportionally according to what each participant spent on the rest of the bill (which can be handy for splitting discounts). The &quot;Change Sharing&quot; command cycles among these choices.</li>
+<li>Swipe: for long item lists this lets you scroll around in them.</li>
+</ul>
 <h2 id="venue-name">Venue Name</h2>
 <p>This is the name of the current venue. Tapping the name shows the properties (tax and tip rates, for example) of the current bill, double tapping lets you select a new venue from your list.</p>
 <h2 id="sharing-control-column">Sharing Control Column</h2>
@@ -30,7 +36,11 @@
 <h2 id="comp">Comp</h2>
 <p>Sometimes items will be &quot;comped&quot; by a restaurant, usually by way of an apology because something went wrong. Clicking in this column allows you to toggle the Comped status of an item, denoted by ☺ (a smiley face icon). Comped items are free, but are still considered when calculating the tip. If you don't want a comped item to contribute to the tip, just set the cost to zero, or delete the item altogether.</p>
 <h2 id="line-items">Line Items</h2>
-<p>You can swipe individual items left to delete them (if you delete an item by mistake you can get it back until you exit the page). Tap on an item to make it the current focus so you can edit the name or price and/or assign it to one or more participants.</p>
+<p>You can swipe individual items left to delete them (if you delete an item by mistake you can get it back until you exit the page). Tap on an item to make it the current focus so you can edit the name or price and/or assign it to one or more participants. This button disappears when you leave the page and you can no longer restore the current set of deleted items.</p>
+<h2 id="undelete">Undelete</h2>
+<p>The Undelete button appears when there is at least one deleted item, tap it to restore the most recently deleted item. This button disappears when you leave the page.</p>
+<h2 id="undelete-all">Undelete All</h2>
+<p>The Undelete All button appears when there is more than one deleted item, tap it to restore all the deleted items. This button disappears when you leave the page and you can no longer restore the current set of deleted items.</p>
 <h2 id="subtotal">Subtotal</h2>
 <p>When no item is selected a box containing the subtotal shows here. When an item is selected, some additional controls appear; you can see them <a href="itemselected.html">here</a>.</p>
 <p>If no item is selected and &quot;Discount After Tax&quot; is set for this bill in the bill properties then the discount is not part of the subtotal and is shown on a separate line like this:</p>
