@@ -301,7 +301,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
                 await stream.CopyToAsync(newStream);
         }
         // Make a snapshot of the image to help with debugging
-        if (App.IsDebug)
+        if (Utilities.IsDebug)
             File.Copy(Meal.TempImageFilePath, Path.Combine(Meal.ImageFolderPath, "LatestImage.jpg"), true);
         imageChanged = true;
         IsBusy = false;

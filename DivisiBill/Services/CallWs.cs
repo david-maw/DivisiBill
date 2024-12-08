@@ -104,7 +104,7 @@ internal static class CallWs
             //    "1" - Return an error and multi line error text describing the message it received
             //    "2" - Return a fake ScannedBill without ever calling an OCR function
             //    Other values are ignored and the normal OCR functions are performed
-            int option = App.IsDebug ? App.ScanOption : 0;
+            int option = Utilities.IsDebug ? App.ScanOption : 0;
             HttpResponseMessage response = await client.PostAsync($"scan?option={option}", form);
             responseData = await response.Content.ReadAsStringAsync();
             response.EnsureSuccessStatusCode();
@@ -191,7 +191,7 @@ internal static class CallWs
     internal static async Task<string> VerifyAndroidPurchase(string androidJson, string productId, bool isSubscription)
     {
         Utilities.DebugMsg("In VerifyAndroidPurchase for " + productId);
-        if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && App.IsDebug))
+        if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug))
         {
             Utilities.DebugMsg("In VerifyAndroidPurchase, awaiting verify");
             // validate the license by calling a web service
@@ -226,7 +226,7 @@ internal static class CallWs
     internal static async Task<string> VerifyPurchase(InAppBillingPurchase purchase, bool isSubscription)
     {
         Utilities.DebugMsg("In VerifyPurchase for " + purchase.Id);
-        if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && App.IsDebug))
+        if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug))
         {
             try
             {

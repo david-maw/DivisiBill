@@ -192,7 +192,7 @@ public partial class Meal : ObservableObjectPlus
                 if (App.Settings is null) // for testing
                     App.Settings = new AppSettings();
                 await GetLocalMealListAsync(); ; 
-                if (LocalMealList.Count == 0 && App.IsDebug)
+                if (LocalMealList.Count == 0 && Utilities.IsDebug)
                 {
                     await StatusMsgAsync("Creating fake bill list so we have something to work with");
                     CreateFakeStoredBills();
@@ -805,7 +805,7 @@ public partial class Meal : ObservableObjectPlus
                 // difficult by the fact that the CreationTime has been changed but we can use the original FileName
                 if (string.IsNullOrEmpty(FileName))
                 { 
-                    if (App.IsDebug) Debugger.Break(); 
+                    if (Utilities.IsDebug) Debugger.Break(); 
                 }
                 else
                 {
@@ -1014,7 +1014,7 @@ public partial class Meal : ObservableObjectPlus
         {
             // The stream was bad so just return null
             DebugMsg($"In Meal.LoadFromFile: LoadFromStream returned null for {ms.FileName}");
-            if (App.IsDebug)
+            if (Utilities.IsDebug)
                 Debugger.Break();
         }
         else
@@ -1038,7 +1038,7 @@ public partial class Meal : ObservableObjectPlus
                 {
                     // The stream was bad so just return null
                     Utilities.DebugMsg($"In Meal.LoadFromFile: LoadFromStream returned null for {ms.FileName}");
-                    if (App.IsDebug)
+                    if (Utilities.IsDebug)
                         Debugger.Break();
                 }
                 else
@@ -1052,7 +1052,7 @@ public partial class Meal : ObservableObjectPlus
                     {
                         MoveSuspectFile(TargetFileName);
                         m.Summary.VenueName = "Suspect File - will hide";
-                        if (App.IsDebug)
+                        if (Utilities.IsDebug)
                             Debugger.Break();
                     }
                     if (Utilities.IsDebug && App.InitializationComplete.Task.IsCompleted) // don't do this until we're well into initialization
@@ -2866,7 +2866,7 @@ public partial class Meal : ObservableObjectPlus
                         // The stream was bad so do not store it
                         DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned null for {rfi.Name}");
                         filesInError++;
-                        if (App.IsDebug)
+                        if (Utilities.IsDebug)
                             Debugger.Break();
                     }
                     else if (m.Size <= 0)
@@ -2880,7 +2880,7 @@ public partial class Meal : ObservableObjectPlus
                             DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream detected the cloud was no longer accessible, so exit the loop");
                             break;
                         }
-                        if (App.IsDebug)
+                        if (Utilities.IsDebug)
                             Debugger.Break();
                     }
                     else
@@ -2946,7 +2946,7 @@ public partial class Meal : ObservableObjectPlus
             else
             {
                 DebugMsg($"Null meal detected in BackupLoopAsync for summary: {ms}");
-                if (App.IsDebug)
+                if (Utilities.IsDebug)
                     Debugger.Break();
             }
         }

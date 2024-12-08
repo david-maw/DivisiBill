@@ -24,7 +24,7 @@ public static class MauiProgram
                 options.Dsn = Generated.BuildInfo.DivisiBillSentryDsn;
 
                 options.Release = Utilities.VersionName;
-                options.Environment = App.IsDebug ? "debug" : "production";
+                options.Environment = Utilities.IsDebug ? "debug" : "production";
                 options.AddExceptionFilterForType<OperationCanceledException>(); // Also filters out children, like TaskCanceledException
                 options.AddEventProcessor(new Services.SentryEventProcessor()); 
 

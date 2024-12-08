@@ -81,7 +81,7 @@ public partial class SplashPage : ContentPage
             buildTimeDisplay.Text = BuildTime;
             if (App.SentryAllowed)
             {
-                if (App.IsDebug)
+                if (Utilities.IsDebug)
                 {
                     App.Settings.SendCrashYes = false;
                     App.Settings.SendCrashAsk = false;

@@ -92,7 +92,7 @@ public partial class LineItemsPage : ContentPage
             catch (Exception ex)
 #pragma warning restore CS0168 // Unnecessary assignment of a value
             {
-                if (App.IsDebug)
+                if (Utilities.IsDebug)
                     Debugger.Break();
                 // Do nothing in a release build, the layout might be wrong, but that's all
             }

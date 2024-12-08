@@ -38,7 +38,6 @@ public partial class App : Application, INotifyPropertyChanged
 #else
     public const string BaseFolderName = "DivisiBill";
 #endif
-    public static readonly bool IsDebug = Utilities.IsDebug; // Not a const so as to avoid "unreachable code" warnings
     public static readonly TimeSpan MinimumIdleTime = TimeSpan.FromMinutes(90); // A changed bill younger than this is not persisted
     public static readonly TimeSpan MaximumIdleTime = TimeSpan.FromMinutes(150); // Changed bills untouched for this long are always persisted
     public static string BaseFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), BaseFolderName);
@@ -426,7 +425,7 @@ public partial class App : Application, INotifyPropertyChanged
                     if (WsVersionTask.Result == System.Net.HttpStatusCode.OK)
                         WsVersionChecked = true;
                 }
-                else if (App.IsDebug)
+                else if (Utilities.IsDebug)
                     await Utilities.DisplayAlertAsync("GetVersion Failed", "Retry of remote call on GetVersion failed, request returned " + WsVersionTask.Result);
             }
         }
@@ -633,7 +632,7 @@ public partial class App : Application, INotifyPropertyChanged
     {
         if (UseLocation)
         {
-            if (App.IsDebug)
+            if (Utilities.IsDebug)
             {
                 FakeLocation = Settings.FakeLocation;
             }

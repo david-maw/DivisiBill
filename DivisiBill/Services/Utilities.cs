@@ -124,7 +124,7 @@ public static class Utilities
             }
         }
         // Validation code to ensure order is correct when we exit this function
-        if (App.IsDebug)                            
+        if (IsDebug)                            
         {
             bool noErrors = true;
             T priorVenue = list.First();
@@ -958,7 +958,7 @@ public class SentryEventProcessor : ISentryEventProcessor
     public  SentryEvent Process(SentryEvent sentryEvent)
     {
         Utilities.DebugMsg($"In SentryEventProcessor.Process, Sentry EventId: {sentryEvent.EventId}");
-        if (App.IsDebug)
+        if (Utilities.IsDebug)
         {
             // Never report anything on a debug build but you can put a breakpoint here to look at them
             Utilities.DebugMsg("In SentryEventProcessor.Process, debug build, ignoring Sentry Event");

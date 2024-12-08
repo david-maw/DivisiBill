@@ -481,7 +481,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             if ((Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid)
             {
                 value = Distances.Inaccurate;
-                //if (App.IsDebug)
+                //if (Utilities.IsDebug)
                 //    throw new ArgumentException("Attempt to set Distance to an invalid Venue Location");
             }
             if (distance != value)
