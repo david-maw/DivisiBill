@@ -452,10 +452,8 @@ public partial class App : Application, INotifyPropertyChanged
                     case Billing.BillingStatusType.ok:
                         FoundProSubscription = true;
                         if (!Settings.HadProSubscription && !App.Settings.FirstUse)
-                        {
                             await Utilities.ShowAppSnackBarAsync("Subscription check now returns a pro license");
-                            Settings.HadProSubscription = true;
-                        }
+                        Settings.HadProSubscription = true;
                         break;
                     case Billing.BillingStatusType.noInternet:
                         await Utilities.DisplayAlertAsync("No Internet", "Subscription check failed because no Internet connection was found");
