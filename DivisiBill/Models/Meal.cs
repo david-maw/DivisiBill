@@ -540,7 +540,7 @@ public partial class Meal : ObservableObjectPlus
         StreamWriter sw = new StreamWriter(stream);
         try
         {
-            sw.WriteLine("DivisiBill " + Utilities.VersionName+"." + Utilities.BuildName);
+            sw.WriteLine("DivisiBill " + Utilities.VersionName+"." + Utilities.Revision);
             #region Bill Properties
             if ((personCost is not null) && (personCost.Diner is not null))
                 sw.WriteLine("Calculation for {0}", personCost.Diner.DisplayName);

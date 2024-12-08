@@ -42,7 +42,8 @@
                 <Label.FormattedText>
                     <FormattedString>
                         <FormattedString.Spans>
-                            <Span Text="Build "/>
+                            <Span Text="{x:Static services:Utilities.DebugString}"/>
+                            <Span Text=" Build "/>
                             <Span Text="{x:Static appmodel:AppInfo.BuildString}"/>
                             <Span Text=" at "/>
                             <Span x:Name="buildTimeDisplay" Text="{x:Static services:Utilities.BuildTime}"/>

@@ -240,7 +240,7 @@ public static class Utilities
     {
         StringBuilder s = new StringBuilder("DivisiBill ", 1000);
         s.AppendLine((App.IsLimited ? "Basic" : "Professional") + " Edition");
-        s.AppendLine("Version " + VersionName + " build " + BuildName + " at " + BuildTime);
+        s.AppendLine("Version " + VersionName + " build " + Revision + " at " + BuildTime);
         if (Billing.ProPurchase is not null)
         {
             s.AppendLine("Professional Edition Purchase ID: " + Billing.ProPurchase.Id
@@ -784,7 +784,8 @@ public static class Utilities
     public static string EditionName => App.IsLimited ? "Basic" : "Professional";
     private static Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
     public static string VersionName { get; } = $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}";
-    public static string BuildName { get; } = $"{assemblyVersion.Revision}";
+    public static string DebugString { get; } = IsDebug ? "DEBUG" : null;
+    public static string Revision { get; } = assemblyVersion.Revision.ToString();
     public static string BuildTime { get; } = DateTime.Parse(BuildEnvironment.BuildTimeString, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind).ToLocalTime().ToString();
     private static HtmlWebViewSource GetReleaseNotes()
     {

@@ -35,8 +35,9 @@
                     <Label.FormattedText>
                         <FormattedString>
                             <FormattedString.Spans>
-                                <Span Text="Build "/>
-                                <Span Text="{x:Static services:Utilities.BuildName}"/>
+                                <Span Text="{x:Static services:Utilities.DebugString}"/>
+                                <Span Text=" Build "/>
+                                <Span Text="{x:Static services:Utilities.Revision}"/>
                                 <Span Text=" at "/>
                                 <Span Text="{x:Static services:Utilities.BuildTime}"/>
                             </FormattedString.Spans>
