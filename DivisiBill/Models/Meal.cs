@@ -812,6 +812,7 @@ public partial class Meal : ObservableObjectPlus
                     try
                     {
                         File.Copy(OriginalSummary.ImagePath, Summary.ImagePath);
+                        Summary.DetermineHasImage();
                     }
                     catch (Exception)
                     {
@@ -1307,7 +1308,7 @@ public partial class Meal : ObservableObjectPlus
     public bool HasImage => Summary.HasImage;
     public bool HasDeletedImage => Summary.HasDeletedImage;
     public void DeleteImage() => Summary.DeleteImage();
-    public void UndeleteImage() => Summary.UndeleteImage();
+    public void TryUndeleteImage() => Summary.TryUndeleteImage();
     public bool ReplaceImage(string s) => Summary.ReplaceImage(s);
     public void CheckImageFiles()
     {

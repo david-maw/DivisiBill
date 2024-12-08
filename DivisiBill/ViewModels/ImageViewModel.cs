@@ -8,6 +8,11 @@ using SkiaSharp;
 
 namespace DivisiBill.ViewModels;
 
+/// <summary>
+/// This is where all the image manipulation takes place, the user can select a new image or take a picture as many times as they like
+/// but eventually whatever image is showing when they exit is the one we keep. The current intermediate image is in <see cref="Meal.TempImageFilePath"/>.
+/// The image is in <see cref="Meal.ImagePath"/> and any deleted image is in the <see cref="Meal.DeletedItemFolderPath"/> along with deleted Meal files. 
+/// </summary>
 public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
 {
     #region Life Cycle
@@ -58,9 +63,11 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         {
             PreviewImageSource = null;
         }
+        // Make sure Image File Status is initialized to correct value
+        Meal.CurrentMeal.CheckImageFiles();
+        // Track subsequent changes
         Meal.CurrentMeal.Summary.PropertyChanged += CurrentMeal_PropertyChanged;
-        OnPropertyChanged(nameof(HasImage));
-        OnPropertyChanged(nameof(HasDeletedImage));
+        OnPropertyChanged(nameof(HasPreviewImage));
     }
 
     /// <summary>
@@ -68,7 +75,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// </summary>
     public void Store()
     {
-        if (HasImage)
+        if (HasPreviewImage)
         {
             if (imageChanged)
             {
@@ -148,7 +155,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     {
         if (Services.Billing.ScansLeft <= 0)
             await Utilities.DisplayAlertAsync("Limit", "You have no OCR scan licenses left, purchase more on the Setting page to use OCR", "OK");
-        else if (HasImage)
+        else if (Meal.CurrentMeal.HasImage)
         {
             if (imageChanged)
                 Store();
@@ -169,15 +176,14 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     [RelayCommand] // If it was working yet this should be [RelayCommand(CanExecute = nameof(HasImage))]
     private void Delete()
     {
-        if (HasImage)
+        if (Meal.CurrentMeal.HasImage)
         {
             if (Meal.CurrentMeal.Frozen)
                 Meal.CurrentMeal.MarkAsChanged();
             PreviewImageSource = null;
             browsedPictureName = null;
             Meal.CurrentMeal.DeleteImage();
-            OnPropertyChanged(nameof(HasDeletedImage));
-            OnPropertyChanged(nameof(HasImage)); 
+            OnPropertyChanged(nameof(HasPreviewImage)); 
         }
     }
 
@@ -189,11 +195,10 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     {
         if (HasDeletedImage)
         {
-            Meal.CurrentMeal.UndeleteImage();
+            Meal.CurrentMeal.TryUndeleteImage();
             PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath));
             browsedPictureName = null;
-            OnPropertyChanged(nameof(HasDeletedImage));
-            OnPropertyChanged(nameof(HasImage)); 
+            OnPropertyChanged(nameof(HasPreviewImage)); 
         }
     }
     #region Controlling the Camera Flash
@@ -236,13 +241,13 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// <summary>
     /// Whether there is an image to show
     /// </summary>
-    public bool HasImage => PreviewImageSource is not null;
+    public bool HasPreviewImage => PreviewImageSource is not null;
     public bool HasDeletedImage => Meal.CurrentMeal.HasDeletedImage; 
     /// <summary>
     /// The current image as an <see cref="ImageSource"/> 
     /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasImage))]
+    [NotifyPropertyChangedFor(nameof(HasPreviewImage))]
     private ImageSource previewImageSource = null;
     
     [ObservableProperty]

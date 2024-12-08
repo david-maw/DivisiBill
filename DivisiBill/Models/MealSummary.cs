@@ -182,6 +182,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             OnPropertyChanged(nameof(FilePath));
             OnPropertyChanged(nameof(FileName));
             OnPropertyChanged(nameof(ImagePath));
+            OnPropertyChanged(nameof(DeletedImagePath));
             OnPropertyChanged(nameof(ImageName));
         }); 
     }
@@ -309,7 +310,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         {
             DeleteImage();
             File.Move(PathToNewImage, ImagePath);
-            OnPropertyChanged(nameof(HasImage));
+            HasImage = false; // Toggle hasImage so as to trigger a refresh if needed
             return HasImage = true;
         }
         return false;
@@ -368,25 +369,25 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
                 unexpected = true;
             File.Move(DeletedFilePath, FilePath, true);
             LocationChanged(isLocal: true);
-            unexpected |= UndeleteImage();
+            TryUndeleteImage();
         }
         return unexpected;
     }
     /// <summary>
-    /// Undelete a Meal image, if by some weird mischance the corresponding file already exists, just discard it
+    /// Undelete a Meal image, if meal currently has an image, swap them
     /// </summary>
-    public bool UndeleteImage()
+    public void TryUndeleteImage()
     {
-        bool unexpected = false;
         if (HasDeletedImage)
         {
             if (HasImage)
-                unexpected = true;
-            File.Move(DeletedImagePath, ImagePath, true);
+                File.Move(ImagePath, Meal.TempImageFilePath, true);
+            File.Move(DeletedImagePath, ImagePath);
+            if (HasImage)
+                File.Move(Meal.TempImageFilePath, DeletedImagePath);
+            HasDeletedImage = HasImage;
             HasImage = true;
-            HasDeletedImage = false;
         }
-        return unexpected;
     }
 
     /// <summary>
@@ -482,7 +483,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         {
             ms = (MealSummary)mealSummarySerializer.ReadObject(sourceStream);
             // Beware the MealSummary constructor is not called above use [OnDeserializing] or [OnDeserialized] if that's ever needed
-            ms.hasImage = File.Exists(ms.ImagePath);
+            ms.HasImage = File.Exists(ms.ImagePath);
         }
         catch (ArgumentNullException)
         {
@@ -518,7 +519,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             ms = (MealSummary)mealSummaryXmlSerializer.Deserialize(sourceStream);
             // Deserialize above calls the MealSummary constructor
             ms.Size = (int)sourceStream.Length;
-            ms.hasImage = File.Exists(ms.ImagePath);
+            ms.HasImage = File.Exists(ms.ImagePath);
         }
         catch (Exception ex)
         {

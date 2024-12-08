@@ -22,7 +22,7 @@
     </ContentPage.ToolbarItems>
     <Grid RowDefinitions="Auto,Auto,*">
         <!--#region No Image -->
-        <Grid IsVisible="{Binding HasImage,Converter={StaticResource Not}}">
+        <Grid IsVisible="{Binding HasPreviewImage,Converter={StaticResource Not}}">
             <VerticalStackLayout IsVisible="{Binding IsBusy,Converter={StaticResource Not}}" Spacing="10">
                 <Label Text="No Image loaded" HorizontalOptions="Center" FontSize="Large" />
                 <Button Text="Restore Deleted image" HorizontalOptions="Center" Command="{Binding UndeleteCommand}" IsVisible="{Binding HasDeletedImage}"/>
@@ -36,7 +36,7 @@
         </VerticalStackLayout>
         <!--#endregion-->
         <!--#region NewRegion -->
-        <services:PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasImage}">
+        <services:PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasPreviewImage}">
             <services:PinchToZoomContainer.Content>
                 <Image x:Name="previewImage" 
                        Source="{Binding PreviewImageSource,Mode=OneWay}"
