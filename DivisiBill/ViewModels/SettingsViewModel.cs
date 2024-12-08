@@ -158,6 +158,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
         get => App.Settings.SendCrashAsk;
         set => App.Settings.SendCrashAsk = value;
     }
+    public bool IsDebug => Utilities.IsDebug; //TODO: Remove workaround for https://github.com/dotnet/maui/issues/26467 when it is fixed
     public bool WsAllowed => App.WsAllowed;
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;

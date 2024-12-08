@@ -40,8 +40,8 @@
                Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
             <!--#endregion-->
             <!--#region Bill Diagnostics (file name etc.) -->
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding Source={x:Static services:Utilities.IsDebug}}" Text="{Binding DiagnosticInfo}"/>
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding Source={x:Static services:Utilities.IsDebug}}" Text="{Binding DefaultFileName}"/>
+            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDebug}" Text="{Binding DiagnosticInfo}"/>
+            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDebug}" Text="{Binding DefaultFileName}"/>
             <!--#endregion-->
             <!--#region Bill information -->
             <Grid Margin="10,0" ColumnDefinitions="*,auto,auto" RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto" RowSpacing="-10">
