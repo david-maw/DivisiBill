@@ -135,8 +135,8 @@
             <!--#region Diagnostic and Developer stuff -->
             <!--#region Debug Builds Only -->
             <VerticalStackLayout IsVisible="{Binding IsDebug}">
-                <!--Large blank space-->
-                <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 350, 0, 0" />
+                <!--Large blank space before-->
+                <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 330, 0, 0" />
                 <Label HorizontalOptions="Center" FontSize="Large" Text="Debug"/>
                 <!--#region Show Base Folder Path -->
                 <Label HorizontalOptions="Center" FontSize="Small" Text="{x:Static DivisiBill:App.BaseFolderPath}"/>
@@ -146,21 +146,18 @@
                 <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
                 <!--#endregion-->
                 <!--#region Scan Options -->
-                <HorizontalStackLayout HorizontalOptions="Center">
-                    <Label Text="Scan Option Digit" VerticalOptions="Center"/>
-                    <Entry Text="{Binding ScanOption}" MaxLength="1" VerticalOptions="Center" WidthRequest="15">
-                        <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
-                                InvalidStyle="{StaticResource InvalidEntryStyle}"
-                                ValidStyle="{StaticResource ValidEntryStyle}"
-                                MinimumValue="0"
-                                MaximumValue="3"/>
-                    </Entry.Behaviors>
-                    </Entry>
-                    <Label Text="{Binding ScanOptionText}" VerticalOptions="Center"/>
-                </HorizontalStackLayout>
+                <Picker Title="Select a scan option below:" SelectedIndex="{Binding ScanOption}" HorizontalOptions="Center" FontSize="Small">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Scan</x:String>
+                            <x:String>Return Fault</x:String>
+                            <x:String>Return Fake Result</x:String>
+                            <x:String>Throw Exception</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
                 <!--#endregion-->
-                <Button Text="Set Fake Location" Clicked="OnSetLocation" HorizontalOptions="Center"/>
+                <Button Text="Set Fake Location" Clicked="OnSetLocation" HorizontalOptions="Center" Margin="0,10,0,0"/>
             </VerticalStackLayout>
             <!--#endregion-->
             <!--#endregion-->

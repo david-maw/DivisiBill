@@ -18,6 +18,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
             throw new NullReferenceException();
         else
             currentApp = Application.Current;
+        ScanOption = 2;
         App.MyLocationChanged += App_MyLocationChanged;
     }
 
@@ -112,7 +113,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
 
     [RelayCommand]
     private void ResetCheckBoxes() => App.Settings.ResetCheckboxes();
-
     public bool IsLimited
     {
         get => App.IsLimited;
@@ -125,7 +125,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
             }
         }
     }
-
     public bool IsOcrPurchaseAllowed => ScansLeft < Billing.ScansWarningLevel; // Includes the case where the user has purchased no scans yet
     public int ScanOption
     {
@@ -136,18 +135,9 @@ public partial class SettingsViewModel : ObservableObjectPlus
             {
                 App.ScanOption = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ScanOptionText));
             }
         }
     }
-    public string ScanOptionText => ScanOption switch
-    {
-        0 => "Scan",
-        1 => "Return Fault",
-        2 => "Return Fake Result",
-        3 => "Throw Exception",
-        _ => "Unknown"
-    };
     public bool SendCrashYes
     {
         get => App.Settings.SendCrashYes;
