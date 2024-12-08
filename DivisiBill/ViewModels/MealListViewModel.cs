@@ -275,7 +275,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             int failed = 0;
             try
             {
-                list = new(MealList.Where(ms => ms.FileSelected && ((tryLocal && ms.IsLocal) || (tryRemote && ms.IsRemote) && !ms.IsBusy))); // need a separate list so as not to disturb the iterator
+                list = new(MealList.Where(ms => ms.FileSelected && ((tryLocal && (ms.IsLocal || ms.IsFake)) || (tryRemote && ms.IsRemote) && !ms.IsBusy))); // need a separate list so as not to disturb the iterator
                 Task<int> task = DeleteMultipleMeals(list, tryLocal, tryRemote);
                 Task whichTask = await Task.WhenAny(Task.Delay(500), task);
                 // Deletes, especially local ones, are really fast, so don't bother to show a busy indication unless they take a while
@@ -330,7 +330,6 @@ public partial class MealListViewModel : ObservableObjectPlus
         cancellationTokenSource = new CancellationTokenSource();
         foreach (MealSummary mealSummary in list)
         {
-            await Task.Delay(1000);
             if (cancellationTokenSource.IsCancellationRequested)
                 break;
             await DeleteOneMeal(mealSummary, tryLocal, tryRemote);
