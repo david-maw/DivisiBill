@@ -262,16 +262,22 @@ public partial class LineItemsPage : ContentPage
     }
     private void OnScrollRequest(object sender, EventArgs e)
     {
+        if (firstVisibleItemIndex == lastVisibleItemIndex || mealViewModel is null || mealViewModel.LineItems is null)
+            return;
         var bo = sender as ToolbarItem;
         var whereTo = bo.CommandParameter as string;
+        int lastItemIndex = mealViewModel.LineItems.Count - 1;
+        if (lastItemIndex < 2)
+            return;
         try
         {
+            
             switch (whereTo)
             {
-                case "Up": LineItemsListView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start); break;
-                case "Down": LineItemsListView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End); break;
-                case "End": LineItemsListView.ScrollTo(mealViewModel.LineItems.Count - 1, position: ScrollToPosition.End); break;
-                case "Start": LineItemsListView.ScrollTo(0, position: ScrollToPosition.Start); break;
+                case "Up": if (lastVisibleItemIndex < lastItemIndex) LineItemsListView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start); break;
+                case "Down": if (firstVisibleItemIndex > 0) LineItemsListView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End); break;
+                case "End": if (lastVisibleItemIndex < lastItemIndex) LineItemsListView.ScrollTo(lastItemIndex, position: ScrollToPosition.End); break;
+                case "Start": if (firstVisibleItemIndex > 0) LineItemsListView.ScrollTo(0, position: ScrollToPosition.Start); break;
                 default: break;
             }
         }
