@@ -134,9 +134,9 @@
             <!--#endregion-->
             <!--#region Diagnostic and Developer stuff -->
             <!--#region Debug Builds Only -->
-            <VerticalStackLayout IsVisible="{Binding IsDebug}">
+            <VerticalStackLayout IsVisible="{Binding Source={x:Static services:Utilities.IsDebug}}">
                 <!--Large blank space before-->
-                <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 330, 0, 0" />
+                <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 350, 0, 0" />
                 <Label HorizontalOptions="Center" FontSize="Large" Text="Debug"/>
                 <!--#region Show Base Folder Path -->
                 <Label HorizontalOptions="Center" FontSize="Small" Text="{x:Static DivisiBill:App.BaseFolderPath}"/>

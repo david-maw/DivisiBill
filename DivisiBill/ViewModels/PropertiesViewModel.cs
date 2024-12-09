@@ -71,7 +71,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     }
     #endregion
     #region Totals, meal amounts and properties
-    public bool IsDebug => Utilities.IsDebug; //TODO: Remove workaround for https://github.com/dotnet/maui/issues/26467 when it is fixed
     public decimal SubTotal => Meal.CurrentMeal.SubTotal;
     public string VenueName => Meal.CurrentMeal.VenueName;
     public Location AppLocation => App.MyLocation;
