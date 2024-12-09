@@ -174,7 +174,7 @@ public static class Utilities
         {
             int i = list.IndexOf(existingItem);
             if (i < 0)
-                throw new ArgumentOutOfRangeException(); // existingItem was not in the list
+                list.Add(itemToInsert); // existingItem was not in the list, so just add the new one at the end
             else
                 list.Insert(i, itemToInsert);
         }
