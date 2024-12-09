@@ -32,7 +32,7 @@
                Text="{Binding LastChangeTimeText, StringFormat='Last Updated {0}'}"/>
         <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsForCurrentMeal}"
                Text="This is the current bill"/>
-        <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding Source={x:Static services:Utilities.IsDebug}}"
+        <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{x:Static services:Utilities.IsDebug}"
                Text="{Binding Id, StringFormat='Id: {0}'}"/>
         <Label FontSize="Large" Text="{Binding RoundedAmount, StringFormat='Rounded total {0:C0}'}"
                HorizontalTextAlignment="Center"/>
