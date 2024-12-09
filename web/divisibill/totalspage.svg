@@ -25,12 +25,12 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="1"
      showgrid="false"
-     inkscape:zoom="1.1"
-     inkscape:cx="778.18182"
-     inkscape:cy="496.81818"
-     inkscape:window-width="2560"
+     inkscape:zoom="0.34"
+     inkscape:cx="555.88235"
+     inkscape:cy="425"
+     inkscape:window-width="1200"
      inkscape:window-height="1529"
-     inkscape:window-x="1192"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="g830"
@@ -124,7 +124,7 @@
        xlink:href="totalsglossary.html#venue-name"
        target="_parent"
        xlink:title="Venue Name"
-       transform="translate(-1.7249417,89.347319)">
+       transform="translate(-1.7249417,115.34732)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect1048"
@@ -138,7 +138,7 @@
        xlink:href="totalsglossary.html#participant"
        target="_parent"
        xlink:title="Participant and Amount"
-       transform="matrix(1.0000151,0,0,1.0171898,3.7047754,61.93449)">
+       transform="matrix(1.0000151,0,0,1.0171898,3.7047754,49.93449)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect1074"
@@ -148,25 +148,11 @@
          y="431.23544" />
     </a>
     <a
-       id="a1315"
-       xlink:href="totalsglossary.html#unallocated-amount"
-       target="_parent"
-       xlink:title="Unallocated Amount"
-       transform="translate(0,82)">
-      <rect
-         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
-         id="rect1076"
-         width="796.9231"
-         height="77.622375"
-         x="143.17017"
-         y="1507.5991" />
-    </a>
-    <a
        id="a1318"
        xlink:href="totalsglossary.html#rounded-total"
        target="_parent"
        xlink:title="Rounded Total"
-       transform="translate(0,58)">
+       transform="matrix(1.0327901,0,0,1,-7.2398191,58)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect1078"
