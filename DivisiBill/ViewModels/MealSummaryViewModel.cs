@@ -25,6 +25,7 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public String ApproximateAge => ms.ApproximateAge;
     public Decimal RoundedAmount => ms.RoundedAmount;
     public ObservableCollection<PersonCost> Costs => m?.Costs;
+    public int LineItemCount => m?.LineItems?.Count ?? 0;
     public Meal CurrentMeal => m;
     public bool HasImage => ms.HasImage;
     public bool HasDeletedImage => ms.HasDeletedImage;

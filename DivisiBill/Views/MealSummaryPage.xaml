@@ -14,11 +14,14 @@
     </ContentPage.ToolbarItems>
 
     <services:ColumnLayout Spacing="2" Padding="5" x:DataType="vm:MealSummaryViewModel">
+        <!--#region Venue -->
         <Label Text="{Binding VenueName}" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnVenueNameTapped"/>
             </Label.GestureRecognizers>
         </Label>
+        <!--#endregion-->
+        <!--#region Creation and Update Times -->
         <Label HorizontalTextAlignment="Center" FontSize="Small">
             <Label.FormattedText>
                 <FormattedString >
@@ -30,32 +33,50 @@
         </Label>
         <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsLastChangeTimeDifferent}"
                Text="{Binding LastChangeTimeText, StringFormat='Last Updated {0}'}"/>
+        <!--#endregion-->
+        <!--#region Current Bill Status -->
         <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsForCurrentMeal}"
                Text="This is the current bill"/>
+        <!--#endregion-->
+        <!--#region Meal ID (debug only) -->
         <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{x:Static services:Utilities.IsDebug}"
                Text="{Binding Id, StringFormat='Id: {0}'}"/>
+        <!--#endregion-->
+        <!--#region Amounts -->
         <Label FontSize="Large" Text="{Binding RoundedAmount, StringFormat='Rounded total {0:C0}'}"
                HorizontalTextAlignment="Center"/>
         <Label FontSize="Large" Text="{Binding UnallocatedAmount, StringFormat='Unallocated {0:C0}'}" 
                HorizontalTextAlignment="Center" IsVisible="{Binding Path=IsAnyUnallocated}"/>
+        <!--#endregion-->
+        <!--#region Stored Image Status -->
         <Label Text="This bill has a corresponding stored image" IsVisible="{Binding Path=HasImage}"  HorizontalTextAlignment="Center"/>
         <Label Text="This bill has a deleted image" IsVisible="{Binding Path=HasDeletedImage}"  HorizontalTextAlignment="Center"/>
+        <!--#endregion-->
+        <!--#region Storage Location -->
         <VerticalStackLayout IsVisible="{Binding ShowStorage}">
             <Label Text="This bill is stored locally" IsVisible="{Binding Path=IsLocal}" HorizontalTextAlignment="Center"/>
             <Label Text="This bill is stored remotely" IsVisible="{Binding Path=IsRemote}" HorizontalTextAlignment="Center"/>
             <Label Text="This bill is not stored anywhere" IsVisible="{Binding Path=IsFake}" HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
+        <!--#endregion-->
+        <!--#region Error Reporting -->
         <Label TextColor="{AppThemeBinding Light={StaticResource DarkRed}, Dark={StaticResource LightRed}}" IsVisible="{Binding Path=IsBad}">
             <Label.FormattedText>
                 <FormattedString >
                     <Span Text="This bill has an error: " FontSize="Medium"/>
                     <Span Text="{Binding ErrorMessage}" FontSize="Medium"/>
-                    <Span Text="&#10;"/> <!--Newline-->
+                    <Span Text="&#10;"/>
+                    <!--Newline-->
                     <Span Text="Probably in file: " FontSize="Medium"/>
                     <Span Text="{Binding FileName}" FontSize="Medium"/>
                 </FormattedString>
             </Label.FormattedText>
         </Label>
+        <!--#endregion-->
+        <!--#region Item Count -->
+        <Label Text="{Binding LineItemCount,StringFormat='Items = {0}'}" FontSize="Large" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+        <!--#endregion-->
+        <!--#region Costs (Participant List) -->
         <Label Text="Participants" FontSize="Large" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
         <CollectionView
                 ItemsSource="{Binding Costs}"
@@ -74,5 +95,6 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        <!--#endregion-->
     </services:ColumnLayout>
 </ContentPage>
