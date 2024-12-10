@@ -1,3 +1,17 @@
+# 6.2.6
+
+## Allow Multiple Bill Deletion on Dummy Bills
+
+A brand new install creates dummy bills and because they were not stored locally the multi-bill select did not delete them. This has been corrected.
+
+## Retain Current Image During Undelete
+
+An undelete image operation on a bill with a current image as well as a deleted one just swaps the two images, so that a second undelete puts back the original one. Note that an image you just selected or created on the image page does not count as a new one until you exit the page.
+
+## Always Permit Item Add While Filtering
+
+The app would fault if you attempted to add an item while the selected item was not visible because it was filtered out.
+
 # 6.2.5
 
 ## Show a 'Has Image' Indication in Bill List
