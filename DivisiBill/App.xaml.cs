@@ -528,7 +528,7 @@ public partial class App : Application, INotifyPropertyChanged
     }
     #endregion
     #region Navigation
-    public static Task PushAsync(string location, string navigationParameterName, string navigationParameterValue) =>
+    public static Task PushAsync(string location, string navigationParameterName, object navigationParameterValue) =>
         PushAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
     public static Task PushAsync(string location, ShellNavigationQueryParameters navigationParameter = null)
     {
@@ -542,7 +542,7 @@ public partial class App : Application, INotifyPropertyChanged
         return Task.CompletedTask;
     }
 
-    public static Task GoToAsync(string location, string navigationParameterName, string navigationParameterValue) => 
+    public static Task GoToAsync(string location, string navigationParameterName, object navigationParameterValue) => 
         GoToAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
     public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter = null)
     {
