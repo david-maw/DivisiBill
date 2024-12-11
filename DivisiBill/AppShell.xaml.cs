@@ -15,6 +15,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(Routes.CameraPage, typeof(CameraPage));
         Routing.RegisterRoute(Routes.ImagePage, typeof(ImagePage)); // For the tutorial page to use
         Routing.RegisterRoute(Routes.VenueListByNamePage, typeof(VenueListByNamePage));
+        Routing.RegisterRoute(Routes.MealSummaryPage, typeof(MealSummaryPage));
     }
     protected async override void OnAppearing()
     {

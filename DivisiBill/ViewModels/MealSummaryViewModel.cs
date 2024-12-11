@@ -4,16 +4,33 @@ using System.Collections.ObjectModel;
 
 namespace DivisiBill.ViewModels;
 
+[QueryProperty(nameof(Summary), "Summary")]
+[QueryProperty(nameof(CurrentMeal), "Meal")]
+[QueryProperty(nameof(ShowStorage), "ShowStorage")]
 public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChanged because these are readonly values and so need not be observable
 {
-    readonly Meal m;
-    readonly MealSummary ms;
-    public MealSummaryViewModel(MealSummary item, Meal mealParameter = null, bool showStorageParameter = true)
-    {
-        m = mealParameter;
+    public MealSummaryViewModel() { }
 
-        ms = m?.Summary ?? item; // Use m.Summary if there is one
-        ShowStorage = showStorageParameter; 
+    private Meal m;
+    private MealSummary ms = new ();
+
+    public MealSummary Summary
+    {
+        get => ms;
+        set
+        {
+            if (CurrentMeal is null)
+                ms = value;
+        }
+    }
+    public Meal CurrentMeal
+    {
+        get => m;
+        set
+        {
+            m = value;
+            ms = value?.Summary;
+        }
     }
     public string VenueName => ms.VenueName;
     public DateTime LastChangeTime => ms.LastChangeTime;
@@ -26,7 +43,6 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public Decimal RoundedAmount => ms.RoundedAmount;
     public ObservableCollection<PersonCost> Costs => m?.Costs;
     public int LineItemCount => m?.LineItems?.Count ?? 0;
-    public Meal CurrentMeal => m;
     public bool HasImage => ms.HasImage;
     public bool HasDeletedImage => ms.HasDeletedImage;
     public bool IsBad => m is not null && m.Size < 0;
@@ -34,7 +50,7 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public string FileName => ms.FileName;
     public decimal UnallocatedAmount => m is null ? 0 : m.UnallocatedAmount;
     public bool IsAnyUnallocated => UnallocatedAmount != 0;
-    public bool ShowStorage { get; private set; }
+    public bool ShowStorage { get; set; }
     public bool IsLocal => ms.IsLocal;
     public bool IsRemote => ms.IsRemote;
     public bool IsFake => ms.IsFake;

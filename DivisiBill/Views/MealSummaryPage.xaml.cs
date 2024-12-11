@@ -7,24 +7,20 @@ public partial class MealSummaryPage : ContentPage
 {
     readonly MealSummaryViewModel viewModel;
 
-    public MealSummaryPage(MealSummaryViewModel viewModel)
-    {
-        InitializeComponent();
-
-        BindingContext = this.viewModel = viewModel;
-    }
-    // Constructor without parameters used in design mode
     public MealSummaryPage()
     {
         InitializeComponent();
 
-        var item = new MealSummary
-        {
-            VenueName = "Some Venue",
-            CreationTime = DateTime.Now,
-        };
-
-        BindingContext = viewModel = new MealSummaryViewModel(item);
+        viewModel = BindingContext as MealSummaryViewModel;
+    }
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        #region Nasty kludge to get the page bindings refreshed
+        var temp = BindingContext;
+        BindingContext = null;
+        BindingContext = temp;
+        #endregion
     }
 
     private async void OnDelItem(object sender, EventArgs e)

@@ -32,7 +32,15 @@ public partial class MealListPage : ContentPage
         if (ms is null)
             return;
         Meal m = ms.IsForCurrentMeal ? Meal.CurrentMeal : await Meal.LoadAsync(ms, true);
-        await Navigation.PushAsync(new MealSummaryPage(new MealSummaryViewModel(ms, m, viewModel.ShowLocalMeals && viewModel.ShowRemoteMeals)));
+        var navigationParameter = new ShellNavigationQueryParameters
+                {
+                    { "ShowStorage", viewModel.ShowLocalMeals && viewModel.ShowRemoteMeals }
+                };
+        if (m is not null)
+            navigationParameter.Add("Meal", m);
+        else
+            navigationParameter.Add("MealSummary", ms);
+        await App.PushAsync(Routes.MealSummaryPage, navigationParameter);
     }
     private async Task UseMeal(MealSummary ms)
     {

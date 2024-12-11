@@ -5,6 +5,8 @@
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              xmlns:DivisiBill="clr-namespace:DivisiBill"
+             BindingContext="{vm:MealSummaryViewModel}"
+             x:DataType="vm:MealSummaryViewModel"
              x:Class="DivisiBill.Views.MealSummaryPage"
              Shell.FlyoutBehavior="Disabled"
              Title="Bill Summary">
@@ -13,7 +15,7 @@
         <ToolbarItem Clicked="OnDelItem" IconImageSource="{StaticResource GlyphDel}"/>
     </ContentPage.ToolbarItems>
 
-    <services:ColumnLayout Spacing="2" Padding="5" x:DataType="vm:MealSummaryViewModel">
+    <services:ColumnLayout Spacing="2" Padding="5">
         <!--#region Venue -->
         <Label Text="{Binding VenueName}" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
