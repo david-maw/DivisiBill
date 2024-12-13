@@ -581,12 +581,57 @@ public partial class MealViewModel : ObservableObjectPlus
     }
     public bool IsManyDeletedLineItems => deletedLineItems.Count > 1;
 
+    #region Scrolling LineItem list
     [ObservableProperty]
     private bool isLineItemSwipeUpAllowed;
 
     [ObservableProperty]
     private bool isLineItemSwipeDownAllowed;
 
+    [ObservableProperty]
+    private int firstVisibleItemIndex;
+
+    partial void OnFirstVisibleItemIndexChanged(int value)
+    {
+        IsLineItemSwipeDownAllowed = value > 0;
+    }
+
+    [ObservableProperty]
+    private int lastVisibleItemIndex;
+
+    partial void OnLastVisibleItemIndexChanged(int value)
+    {
+        IsLineItemSwipeUpAllowed = value > 0 && value < LineItems.Count - 1;
+    }
+
+    public Action<int, bool> ScrollLineItemsTo = null;
+
+    [RelayCommand]
+    private void ScrollItems(string whereTo)
+    {
+        if (FirstVisibleItemIndex == LastVisibleItemIndex || ScrollLineItemsTo is null || LineItems is null)
+            return;
+        int lastItemIndex = LineItems.Count - 1;
+        if (lastItemIndex < 2)
+            return;
+        try
+        {
+            switch (whereTo)
+            {
+                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollLineItemsTo(LastVisibleItemIndex, false); break;
+                case "Down": if (FirstVisibleItemIndex > 0) ScrollLineItemsTo(FirstVisibleItemIndex, true); break;
+                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollLineItemsTo(lastItemIndex, false); break;
+                case "Start": if (FirstVisibleItemIndex > 0) ScrollLineItemsTo(0, true); break;
+                default: break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash("fault attempting to scroll");
+            // Do nothing, we do not really care if a scroll attempt fails
+        }
+    }
+    #endregion
     #endregion
     #region Commands
     private ObservableCollection<LineItem> GetLineItems() => IsFiltered

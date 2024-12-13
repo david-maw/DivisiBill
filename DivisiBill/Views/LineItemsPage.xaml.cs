@@ -110,6 +110,7 @@ public partial class LineItemsPage : ContentPage
         if (li is not null)
             DrawAllSharesButtons(li);
         mealViewModel.SharingChanged += MealViewModel_SharingChanged;
+        mealViewModel.ScrollLineItemsTo = ScrollLineItemsTo;
     }
     protected override void OnDisappearing()
     {
@@ -117,6 +118,7 @@ public partial class LineItemsPage : ContentPage
         Meal.RequestSnapshot();
         mealViewModel.ForgetDeletedItems();
         base.OnDisappearing();
+        mealViewModel.ScrollLineItemsTo = null;
     }
     private void MealViewModel_SharingChanged(LineItem li)
     {
@@ -251,47 +253,15 @@ public partial class LineItemsPage : ContentPage
     }
     private void OnVenueNameTapped(object sender, TappedEventArgs e) => App.PushAsync(Routes.PropertiesPage);
 
-    int firstVisibleItemIndex, lastVisibleItemIndex;
-    private void OnCollectionSwipedUpDown(object sender, SwipedEventArgs e)
+    #region Collection Scrolling
+    private void ScrollLineItemsTo(int index, bool toEnd) // Passed in to viewModel
     {
-        CollectionView collectionView = (CollectionView)sender;
-        if (e.Direction == SwipeDirection.Up)
-            collectionView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start);
-        else
-            collectionView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End);
-    }
-    private void OnScrollRequest(object sender, EventArgs e)
-    {
-        if (firstVisibleItemIndex == lastVisibleItemIndex || mealViewModel is null || mealViewModel.LineItems is null)
-            return;
-        var bo = sender as ToolbarItem;
-        var whereTo = bo.CommandParameter as string;
-        int lastItemIndex = mealViewModel.LineItems.Count - 1;
-        if (lastItemIndex < 2)
-            return;
-        try
-        {
-
-            switch (whereTo)
-            {
-                case "Up": if (lastVisibleItemIndex < lastItemIndex) LineItemsListView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start); break;
-                case "Down": if (firstVisibleItemIndex > 0) LineItemsListView.ScrollTo(firstVisibleItemIndex, position: ScrollToPosition.End); break;
-                case "End": if (lastVisibleItemIndex < lastItemIndex) LineItemsListView.ScrollTo(lastItemIndex, position: ScrollToPosition.End); break;
-                case "Start": if (firstVisibleItemIndex > 0) LineItemsListView.ScrollTo(0, position: ScrollToPosition.Start); break;
-                default: break;
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.ReportCrash("fault attempting to scroll");
-            // Do nothing, we do not really care if a scroll attempt fails
-        }
+        LineItemsListView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
     }
     private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
     {
-        firstVisibleItemIndex = e.FirstVisibleItemIndex;
-        lastVisibleItemIndex = e.LastVisibleItemIndex;
-        mealViewModel.IsLineItemSwipeDownAllowed = firstVisibleItemIndex > 0;
-        mealViewModel.IsLineItemSwipeUpAllowed = lastVisibleItemIndex > 0 && lastVisibleItemIndex < mealViewModel.LineItems.Count - 1;
+        mealViewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
+        mealViewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;
     }
+    #endregion
 }
