@@ -9,7 +9,7 @@ namespace DivisiBill.Views;
 
 [QueryProperty(nameof(Command), "command")]
 public partial class LineItemsPage : ContentPage
-    {
+{
     private MealViewModel mealViewModel;
     readonly Button[] ShareButtons;
     public LineItemsPage()
@@ -115,7 +115,7 @@ public partial class LineItemsPage : ContentPage
     {
         mealViewModel.SharingChanged -= MealViewModel_SharingChanged;
         Meal.RequestSnapshot();
-        mealViewModel.ForgetDeletedItems(); 
+        mealViewModel.ForgetDeletedItems();
         base.OnDisappearing();
     }
     private void MealViewModel_SharingChanged(LineItem li)
@@ -132,14 +132,14 @@ public partial class LineItemsPage : ContentPage
     /// The shape of each button has meaning and is set separately in DrawSharesButtons 
     /// </summary>
     private void ArrangeSharesButtons()
-        {
-            if (Width <= 0) // We do not yet know the size, so just give it up
-                return;
+    {
+        if (Width <= 0) // We do not yet know the size, so just give it up
+            return;
         try
         {
             // Figure out how wide each visible button can be
             int buttons = mealViewModel.Costs.Count;
-            double totalAvailableForButtons = Width - SharesContainer.Margin.Left - SharesContainer.Spacing * (buttons - 1) - SharesContainer.Margin.Right; 
+            double totalAvailableForButtons = Width - SharesContainer.Margin.Left - SharesContainer.Spacing * (buttons - 1) - SharesContainer.Margin.Right;
             double buttonWidth = totalAvailableForButtons / buttons; // this will be integer arithmetic so there could be a bit left over
             // First hide all of them
             foreach (var button in ShareButtons)
@@ -271,7 +271,7 @@ public partial class LineItemsPage : ContentPage
             return;
         try
         {
-            
+
             switch (whereTo)
             {
                 case "Up": if (lastVisibleItemIndex < lastItemIndex) LineItemsListView.ScrollTo(lastVisibleItemIndex, position: ScrollToPosition.Start); break;
@@ -291,5 +291,7 @@ public partial class LineItemsPage : ContentPage
     {
         firstVisibleItemIndex = e.FirstVisibleItemIndex;
         lastVisibleItemIndex = e.LastVisibleItemIndex;
+        mealViewModel.IsLineItemSwipeDownAllowed = firstVisibleItemIndex > 0;
+        mealViewModel.IsLineItemSwipeUpAllowed = lastVisibleItemIndex > 0 && lastVisibleItemIndex < mealViewModel.LineItems.Count - 1;
     }
 }

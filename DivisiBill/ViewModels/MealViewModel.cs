@@ -27,7 +27,7 @@ public partial class MealViewModel : ObservableObjectPlus
         Meal.CurrentMeal.PropertyChanged += CurrentMeal_PropertyChanged;
         LineItems = GetLineItems();
     }
-   ~MealViewModel()
+    ~MealViewModel()
     {
         Meal.CurrentMeal.PropertyChanged -= CurrentMeal_PropertyChanged;
     }
@@ -147,7 +147,7 @@ public partial class MealViewModel : ObservableObjectPlus
                 //The list could have been resequenced or a new item added, either way, just insert this where it was before, moving everything after down one
                 for (int unusedCostInx = endInx + 1; unusedCostInx > costInx; unusedCostInx--) // first move down all the ones including and after the slot we want
                 {
-                    PersonCostRenumber(Costs[unusedCostInx - 1], (LineItem.DinerID)(unusedCostInx+1));
+                    PersonCostRenumber(Costs[unusedCostInx - 1], (LineItem.DinerID)(unusedCostInx + 1));
                 }
                 // Now we have opened up an empty slot so we'll just be able to insert there
                 Costs.Insert(costInx, pc); // Insert the new diner in the newly emptied slot
@@ -243,7 +243,7 @@ public partial class MealViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     private PersonCost selectedCost;
-    
+
     [RelayCommand]
     private async Task ShowPerson(PersonCost pc)
     {
@@ -295,7 +295,7 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             AmountForSharerID = pc.DinerID; // turn on filtering for this PersonCost
             await GoToItemsAsync();
-        } 
+        }
     }
 
     [RelayCommand]
@@ -308,7 +308,7 @@ public partial class MealViewModel : ObservableObjectPlus
     private async Task ShowUnallocated() => await App.GoToAsync(Routes.LineItemsPage + "?command=SelectFirstUnallocatedLineItem");
 
     private bool isAnyDeletedCost = false;
-    
+
     public bool IsAnyDeletedCost
     {
         get => isAnyDeletedCost;
@@ -330,7 +330,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public void CostListDelete(PersonCost pc)
     {
         SavedCost sc = new SavedCost() { PersonCost = pc };
-        foreach(var li in LineItems.Where((li) => li.SharedBy[pc.DinerIndex]))
+        foreach (var li in LineItems.Where((li) => li.SharedBy[pc.DinerIndex]))
         {
             ShareInfo si = new ShareInfo() { LineItem = li, Shares = li.GetShares(pc.DinerID) };
             sc.ShareInfoList.Add(si);
@@ -580,6 +580,13 @@ public partial class MealViewModel : ObservableObjectPlus
         }
     }
     public bool IsManyDeletedLineItems => deletedLineItems.Count > 1;
+
+    [ObservableProperty]
+    private bool isLineItemSwipeUpAllowed;
+
+    [ObservableProperty]
+    private bool isLineItemSwipeDownAllowed;
+
     #endregion
     #region Commands
     private ObservableCollection<LineItem> GetLineItems() => IsFiltered
@@ -639,7 +646,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public void ChangeComp(object param)
     {
         if (param is LineItem li)
-        { 
+        {
             if (li.Amount >= 0 || li.Comped)
                 li.Comped = !li.Comped;
             else
@@ -655,15 +662,15 @@ public partial class MealViewModel : ObservableObjectPlus
         else if (param is LineItem li)
             ChangeSharing(li, ChangeType.Cycle);
     }
-    public event Action<LineItem> SharingChanged; 
+    public event Action<LineItem> SharingChanged;
 
     [RelayCommand]
     public async Task GoToTotals() => await App.GoToAsync(Routes.TotalsPage);
     #endregion
     #endregion
     #region Totals, meal amounts and properties
-    decimal VisiblePositive => LineItems.Where(l => l.FilteredAmount>0 && !l.Comped).Sum(l => l.FilteredAmount);
-    decimal VisibleNegative => - LineItems.Where(l => l.FilteredAmount < 0).Sum(l => l.FilteredAmount);
+    decimal VisiblePositive => LineItems.Where(l => l.FilteredAmount > 0 && !l.Comped).Sum(l => l.FilteredAmount);
+    decimal VisibleNegative => -LineItems.Where(l => l.FilteredAmount < 0).Sum(l => l.FilteredAmount);
     public decimal SubTotal => Meal.CurrentMeal.SubTotal;
     private void SetFilteredSubtotal() => FilteredSubTotal = Math.Max(0, IsFiltered ? VisiblePositive - (IsCouponAfterTax ? 0 : VisibleNegative) : 0);
     public decimal FilteredSubTotal { get => filteredSubTotal; private set => SetProperty(ref filteredSubTotal, value); }
@@ -714,15 +721,15 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             if (Meal.CurrentMeal.AmountForSharerID != value)
             {
-            Meal.CurrentMeal.AmountForSharerID = value;
+                Meal.CurrentMeal.AmountForSharerID = value;
                 LineItems = GetLineItems();
-            if (IsFiltered)
-            {
-                DistributeCostsIfNeeded();
-                SetFilteredBlockTotals();
+                if (IsFiltered)
+                {
+                    DistributeCostsIfNeeded();
+                    SetFilteredBlockTotals();
+                }
             }
         }
-    }
     }
     // The glyph to use - note it is inverted because it is showing what the glyph will do, not what the current state is
     public FontImageSource FilterGlyph => (FontImageSource)(IsFiltered ? Application.Current.Resources["GlyphFilterOff"] : Application.Current.Resources["GlyphFilterOn"]);
@@ -739,7 +746,7 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             // No item selected, just iterate through all the costs
             PersonCost next = Meal.CurrentMeal.GetNextPersonCost(FilteredSharer);
-            AmountForSharerID = next is null ? LineItem.DinerID.none : next.DinerID; 
+            AmountForSharerID = next is null ? LineItem.DinerID.none : next.DinerID;
         }
         else if (SelectedLineItem != previousFilteredLineItem)
         {
@@ -832,7 +839,7 @@ public partial class MealViewModel : ObservableObjectPlus
     private decimal filteredCouponAmountAfterTax;
     private void LoadDefaultTaxRateString()
     {
-        DefaultTaxRateString = string.Format("{0:0.00}", DefaultTaxRate*100);
+        DefaultTaxRateString = string.Format("{0:0.00}", DefaultTaxRate * 100);
     }
 
     [RelayCommand]
