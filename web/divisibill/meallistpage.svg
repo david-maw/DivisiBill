@@ -24,14 +24,14 @@
      inkscape:pagecheckerboard="1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.63"
-     inkscape:cx="566.66667"
-     inkscape:cy="441.26984"
-     inkscape:window-width="1200"
-     inkscape:window-height="1192"
-     inkscape:window-x="0"
-     inkscape:window-y="50"
-     inkscape:window-maximized="0"
+     inkscape:zoom="1.26"
+     inkscape:cx="641.26984"
+     inkscape:cy="440.87301"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="1192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -48,7 +48,7 @@
      transform="translate(41.311256,0.05096821)">
     <image
        width="285.75"
-       height="207.96249"
+       height="160.50548"
        preserveAspectRatio="none"
        style="image-rendering:optimizeQuality"
        xlink:href="meallistpage.png"
@@ -72,13 +72,41 @@
     </a>
     <a
        id="a1292-2"
-       xlink:href="meallistglossary.html#flilter-indicator"
+       xlink:href="meallistglossary.html#filter-indicator"
        target="_parent"
        xlink:title="bills or venues"
-       transform="matrix(0.26829332,0,0,0.21297002,60.387319,51.417329)">
+       transform="matrix(0.26829332,0,0,0.21297002,77.606234,51.837303)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect936-8"
+         width="94.871796"
+         height="90.708664"
+         x="27.599068"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1292-2-7"
+       xlink:href="meallistglossary.html#selected-count"
+       target="_parent"
+       xlink:title="number of bills selected"
+       transform="matrix(0.13106413,0,0,0.21297002,4.4645807,51.826249)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect936-8-3"
+         width="94.871796"
+         height="90.708664"
+         x="27.599068"
+         y="31.04895" />
+    </a>
+    <a
+       id="a1292-2-7-0"
+       xlink:href="meallistglossary.html#total-count"
+       target="_parent"
+       xlink:title="total number of bills in the list"
+       transform="matrix(0.13106413,0,0,0.21297002,34.824473,51.969042)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect936-8-3-4"
          width="94.871796"
          height="90.708664"
          x="27.599068"
@@ -131,7 +159,7 @@
        xlink:href="meallistglossary.html#bill"
        target="_parent"
        xlink:title="Individual Bill"
-       transform="matrix(0.91035549,0,0,0.83168317,23.582528,29.227502)">
+       transform="matrix(0.85769242,0,0,0.83168317,21.448494,29.227502)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect884"
@@ -145,10 +173,24 @@
        xlink:href="meallistglossary.html#location"
        target="_parent"
        xlink:title="Bill Location"
-       transform="matrix(1,0,0,0.67634855,0,40.211308)">
+       transform="matrix(0.659685,0,0,0.82656667,82.422451,28.920294)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect886"
+         width="20.904383"
+         height="95.055779"
+         x="222.16284"
+         y="68.184097" />
+    </a>
+    <a
+       id="a971-59"
+       xlink:href="meallistglossary.html#image"
+       target="_parent"
+       xlink:title="Bill Has Image"
+       transform="matrix(0.56490912,0,0,0.82656667,89.827213,27.463246)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
+         id="rect886-2"
          width="20.904383"
          height="95.055779"
          x="222.16284"
@@ -159,7 +201,7 @@
        xlink:href="meallistglossary.html#selected"
        target="_parent"
        xlink:title="Selection Indicator"
-       transform="matrix(1,0,0,0.63900416,-259.24873,43.360957)">
+       transform="matrix(1,0,0,0.80247682,-259.24873,30.562838)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect886-4"

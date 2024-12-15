@@ -36,9 +36,17 @@ Tap on the ellipsis to open a secondary menu containing additional commands:
     - Select None, Select All and Invert Selection allowing manipulation
       of the list of selected bills. Note that Select All actually selects all except the current bill.
 
+## Selected Count
+
+This tells you the page is in multiple item selection mode (press the Selection Mode icon to toggle this mode) and how many items are currently selected.
+
+## Total Count
+
+This tells you how many bills there are in the current list.
+
 ## Filter Indicator
 
-This tells you whether "Show Bills" or "Show Venues" are currently selected, this is also indicated by the Location icon (see [Location](#location)). 
+This tells you whether "Show Bills" or "Show Venues" are currently selected, change this by tapping the [ellipsis](#ellipsis) and selecting Show Bills or Show Venues. 
 
 ## Selected
 
@@ -50,10 +58,14 @@ Each entry in this list represents a single bill. You can swipe it left to delet
 
 Tapping on the center of a bill will select or deselect it, double tapping will show a quick summary of it.
 
+## Image
+
+This column has an image icon (<u>&#xF0976;</u>) in it if the bill has a stored image.
+
 ## Location
 
-This column shows where the bill is stored, either locally (<u>&#xF0256;</u>/<u>&#xF024B;</u>), in the cloud (<u>&#xF0163;</u>/<u>&#xF015F;</u>), or both. If it stored in the cloud, tapping in this column will download it.
+If cloud access is available and enabled this column shows whether the bill is stored locally (<u>&#xF0256;</u>/<u>&#xF024B;</u>), in the cloud (<u>&#xF0163;</u>/<u>&#xF015F;</u>), or both. A filled icon means the item is stored there, an outline one means it is not.
 
-If cloud access is allowed but you are not currently showing remote (cloud resident) bills, local bills will still show the cloud icon if they are also stored in the cloud. If either local or remote bills are not being shown an outline icon will be used instead of a filled-in one (also see the [Filter Indicator](#filter-indicator)).
+If cloud access is allowed but you are not currently showing remote (cloud resident) bills, local bills will still show the cloud icon to indicate whether or not they are also stored in the cloud.
 
-For a remote-only bill, tapping on this column will download it, use the [Manage Data](datamanagementpage.html) page to select all such bills. Note that there is no Upload selection on this page because all local bills are uploaded automatically if cloud storage is available and enabled.
+For a remote (cloud) only bill, tapping on this area will download it, use the [Manage Data](datamanagementpage.html) page to select all such bills. Note that there is no Upload selection because all local bills are uploaded automatically if cloud storage is available and enabled.
