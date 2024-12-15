@@ -48,7 +48,7 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                    CommandParameter="{Binding}"
-                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}}"/>
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <!--#region PersonCost display -->
@@ -60,10 +60,10 @@
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer 
                                 CommandParameter="{Binding}" 
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}}" />
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}" />
                             <TapGestureRecognizer NumberOfTapsRequired="2"
                                 CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}" />
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}" />
                         </Grid.GestureRecognizers>
                     </Grid>
                     <!--#endregion-->
@@ -73,10 +73,10 @@
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2" 
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--#endregion-->
@@ -93,10 +93,10 @@
                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer 
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2" 
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
                     </Grid.GestureRecognizers>
                 </Grid>
                 <!--#endregion-->
@@ -105,10 +105,10 @@
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2" 
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--#endregion-->
@@ -118,19 +118,19 @@
                         <MenuFlyoutItem
                                 Text="Person Details"
                                 CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}}"/>
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
                         <MenuFlyoutItem
                                 Text="Filter"
                                 CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}}"/>
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"/>
                         <MenuFlyoutItem
                                 Text="Delete"
                                 CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}}"/>
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
                         <MenuFlyoutItem
                                 Text="Change Selection"
                                 CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}}"/>
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
                     </MenuFlyout>
                 </FlyoutBase.ContextFlyout>
                 <!--#endregion-->
