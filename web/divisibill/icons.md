@@ -26,13 +26,13 @@ The same icons are used on multiple pages. Here is a list of icons you may see (
 | Exit                 | <u>&#xF0206;</u>
 | Filter On or Off     | <u>&#xF0233;</u> or <u>&#xF14F0;</u>
 | Flash On or Off      | <u>&#xF0241;</u> or <u>&#xF0243;</u>
-| Images               | <u>&#xF0978;</u>
+| Has Image            | <u>&#xF0976;</u>
 | Import               | <u>&#xF02FA;</u>
 | Increment            | <u>&#xF0419;</u>
 | List                 | <u>&#xF0279;</u>
 | Load                 | <u>&#xF02FA;</u>
 | Local File           | <u>&#xF0256;</u> or <u>&#xF024B;</u>
-| Local Storage On or Off | <u>&#xF0256;</u> or <u>&#xF19F9;</u>
+| Local Storage On/Off | <u>&#xF0256;</u> or <u>&#xF19F9;</u>
 | Mail                 | <u>&#xF01F0;</u>
 | Menu                 | <u>&#xF035C;</u>
 | Null                 | <u>&#xF07E2;</u>
@@ -42,6 +42,7 @@ The same icons are used on multiple pages. Here is a list of icons you may see (
 | Replace              | <u>&#xF0B33;</u>
 | Restore              | <u>&#xF099B;</u>
 | Save                 | <u>&#xF0818;</u>
+| Search Images        | <u>&#xF0978;</u>
 | Send Mail            | <u>&#xF10DD;</u>
 | Share                | <u>&#xF0041;</u>
 | Sort                 | <u>&#xF04BA;</u>
