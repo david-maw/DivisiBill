@@ -11,10 +11,11 @@ namespace DivisiBill.ViewModels;
 internal partial class ProblemReportViewModel : ObservableObject
 {
     [ObservableProperty]
-    private bool reported = false;
+    public partial bool Reported { get; set; } = false;
 
     [ObservableProperty]
-    private string descriptionText = string.Empty;
+    public partial string DescriptionText { get; set; } = string.Empty;
+
     partial void OnDescriptionTextChanged(string value) => Reported = false;
     
     [RelayCommand]

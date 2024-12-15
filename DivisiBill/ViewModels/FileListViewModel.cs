@@ -70,10 +70,10 @@ public partial class FileListViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private RemoteItemInfo selectedItem;
+    public partial RemoteItemInfo SelectedItem { get; set; }
 
     [ObservableProperty]
-    List<RemoteItemInfo> selectedItems = [];
+    public partial List<RemoteItemInfo> SelectedItems { get; set; } = [];
 
     [RelayCommand]
     private void Select(RemoteItemInfo remoteItemInfo)
@@ -127,7 +127,8 @@ public partial class FileListViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private bool showAsSelectableList = false;
+    public partial bool ShowAsSelectableList { get; set; } = false;
+
     [RelayCommand]
     private void ChangeList()
     {

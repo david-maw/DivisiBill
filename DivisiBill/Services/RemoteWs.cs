@@ -18,7 +18,7 @@ public partial class RemoteItemInfo:ObservableObject
     public string Description { get; set; } // An alias for the Summary field
     public bool ReplaceRequested { get; set; } = false;
     [ObservableProperty]
-    public bool selected = false;
+    public partial bool Selected { get; set; } = false;
 }
 /// <summary>
 /// A bridge between the objects in DivisiBill (Meal, VenueList, PeopleList) and the more general methods in

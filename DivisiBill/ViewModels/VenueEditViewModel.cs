@@ -23,8 +23,8 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     }
 //TODO Report the conflict between MemberNotNill and ObserveableProperty
 #pragma warning disable MVVMTK0034 // Direct field reference to [ObservableProperty] backing field
-    [MemberNotNull(nameof(name))]
-    [MemberNotNull(nameof(notes))]
+    [MemberNotNull(nameof(Name))]
+    [MemberNotNull(nameof(Notes))]
 #pragma warning restore MVVMTK0034 // Direct field reference to [ObservableProperty] backing field
     private void Initialize()
     {
@@ -43,20 +43,21 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNewNameInvalid))]
-    private string name;
+    public partial string Name { get; set; }
 
     public string OriginalName => originalVenue.Name;
 
     [ObservableProperty]
-    private string notes;
+    public partial string Notes { get; set; }
 
     [ObservableProperty]
-    private Location? myLocation = null;
+    public partial Location? MyLocation { get; set; } = null;
 
     partial void OnMyLocationChanged(Location? value) => Distance = App.Current.GetDistanceTo(value);
 
     [ObservableProperty]
-    private int distance = Distances.Unknown;
+    public partial int Distance { get; set; } = Distances.Unknown;
+
     public bool IsInUse => originalVenue.IsCurrentMeal;
     public bool HasUnsavedChanges => !(Utilities.StringFunctionallyEqual(Name, originalVenue.Name) && Utilities.StringFunctionallyEqual(Notes, originalVenue.Notes));
     public bool IsNewNameInvalid => string.IsNullOrWhiteSpace(Name) || Venue.AllVenues.Any((v) => originalVenue != v && Name.Equals(v.Name, StringComparison.Ordinal));

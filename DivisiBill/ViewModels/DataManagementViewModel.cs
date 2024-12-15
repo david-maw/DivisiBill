@@ -13,7 +13,8 @@ partial class DataManagementViewModel : ObservableObject
 {
 
     [ObservableProperty]
-    bool isBusy;
+    public partial bool IsBusy { get; set; }
+
     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     DateTime nextTime = DateTime.MinValue;
 
@@ -218,19 +219,19 @@ partial class DataManagementViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private bool archiveShare = true;
+    public partial bool ArchiveShare { get; set; } = true;
 
     [ObservableProperty]
-    private bool archiveToDisk = false;
+    public partial bool ArchiveToDisk { get; set; } = false;
 
     [ObservableProperty]
-    private bool filterByDate = false;
+    public partial bool FilterByDate { get; set; } = false;
 
     [ObservableProperty]
-    private bool deleteBeforeRestore = false;
+    public partial bool DeleteBeforeRestore { get; set; } = false;
 
     [ObservableProperty]
-    private bool overwriteDuplicates = false;
+    public partial bool OverwriteDuplicates { get; set; } = false;
 
     /// There's some strangeness below of DateOnly vs. DateTime, FinishDate and StartDate ought to be type DateOnly but that seems to behave as if it were XAML mode=OneWay as of Feb 2024  
 

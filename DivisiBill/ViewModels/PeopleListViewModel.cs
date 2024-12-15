@@ -29,7 +29,8 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
     public ObservableCollection<Person> AllPeople => Person.AllPeople;
 
     [ObservableProperty]
-    private bool showPeopleHint = false;
+    public partial bool ShowPeopleHint { get; set; } = false;
+
     partial void OnShowPeopleHintChanged(bool value) => App.Settings.ShowPeopleHint = value;
 
     #region Delete and Undelete
@@ -84,7 +85,8 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsManyDeletedPeople))]
-    private bool isAnyDeletedPerson = false;
+    public partial bool IsAnyDeletedPerson { get; set; } = false;
+
     public bool IsManyDeletedPeople => deletedPeople.Count > 1;
     #endregion
 
@@ -168,7 +170,7 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private Person selectedPerson;
+    public partial Person SelectedPerson { get; set; }
 
 #if WINDOWS
     private Person lastPersonSelectedByMe = null;

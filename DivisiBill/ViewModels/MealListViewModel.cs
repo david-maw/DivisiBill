@@ -684,7 +684,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FilterGlyph))]
     [NotifyPropertyChangedFor(nameof(FilterText))]
-    private bool filter = false;
+    public partial bool Filter { get; set; } = false;
 
     partial void OnFilterChanged(bool value) => InvalidateMealList(); // DeselectInvisibleMeals() is not needed here because the filtering code handles it
     public FontImageSource FilterGlyph => (FontImageSource)(Filter ? Application.Current.Resources["GlyphFilterOn"] : Application.Current.Resources["GlyphFilterOff"]);
@@ -692,13 +692,15 @@ public partial class MealListViewModel : ObservableObjectPlus
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowLocalText))]
     [NotifyPropertyChangedFor(nameof(WhereText))]
-    private bool showLocalMeals = true;
+    public partial bool ShowLocalMeals { get; set; } = true;
+
     partial void OnShowLocalMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowRemoteText))]
     [NotifyPropertyChangedFor(nameof(WhereText))]
-    private bool showRemoteMeals = false;
+    public partial bool ShowRemoteMeals { get; set; } = false;
+
     partial void OnShowRemoteMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
     public string ShowRemoteText => ShowRemoteMeals ? "Hide Remote" : "Show Remote";
     public string ShowLocalText => ShowLocalMeals ? "Hide Local" : "Show Local";
@@ -710,16 +712,17 @@ public partial class MealListViewModel : ObservableObjectPlus
     #endregion
 
     [ObservableProperty]
-    private bool isCloudAllowed = App.IsCloudAllowed;
+    public partial bool IsCloudAllowed { get; set; } = App.IsCloudAllowed;
 
     [ObservableProperty]
-    private double progress = 0;
+    public partial double Progress { get; set; } = 0;
 
     [ObservableProperty]
-    private int progressLimit = 0;
+    public partial int ProgressLimit { get; set; } = 0;
 
     [ObservableProperty]
-    private bool isSelectableList = false;
+    public partial bool IsSelectableList { get; set; } = false;
+
     partial void OnIsSelectableListChanged(bool value)
     {
         if (IsSelectableList)
@@ -730,7 +733,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private MealSummary selectedMealSummary;
+    public partial MealSummary SelectedMealSummary { get; set; }
 
     int selectedMealSummariesCount = 0;
     public int SelectedMealSummariesCount
@@ -750,13 +753,13 @@ public partial class MealListViewModel : ObservableObjectPlus
     private void SetSelectedMealSummariesCountText() => SelectedMealSummariesCountText = SelectedMealSummariesCount > 0 & IsSelectableList ? SelectedMealSummariesCount.ToString() : null;
 
     [ObservableProperty]
-    string selectedMealSummariesCountText = null;
+    public partial string SelectedMealSummariesCountText { get; set; } = null;
 
     [ObservableProperty]
-    SelectionMode mealCollectionMode = SelectionMode.Single;
+    public partial SelectionMode MealCollectionMode { get; set; } = SelectionMode.Single;
 
     [ObservableProperty]
-    private bool isMealListLoading;
+    public partial bool IsMealListLoading { get; set; }
 
     private ObservableCollection<MealSummary> mealList = null;
     /// <summary>

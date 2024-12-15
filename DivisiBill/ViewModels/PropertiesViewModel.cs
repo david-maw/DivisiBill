@@ -93,7 +93,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
             TipRate = int.Parse(TipRateString);
     }
     [ObservableProperty]
-    private string tipRateString;
+    public partial string TipRateString { get; set; }
     public bool TipRateStringIsValid { get; set; }
     #endregion
     #region TipString
@@ -109,7 +109,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private string tipString;
+    public partial string TipString { get; set; }
     public bool TipStringIsValid { get; set; }
     public int TipRate
     {
@@ -158,7 +158,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private string tipDeltaString;
+    public partial string TipDeltaString { get; set; }
     public bool TipDeltaStringIsValid { get; set; }
     #endregion
     #endregion
@@ -178,7 +178,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private string taxRateString;
+    public partial string TaxRateString { get; set; }
     public bool TaxRateStringIsValid { get; set; }
     #endregion
     #region TaxString
@@ -193,7 +193,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         }
     }
     [ObservableProperty]
-    private string taxString;
+    public partial string TaxString { get; set; }
     public bool TaxStringIsValid { get; set; }
     #endregion
     #region TaxDeltaString
@@ -202,10 +202,11 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #endregion
     #region Scanned Tax
     [ObservableProperty]
-    private string scannedTaxString;
+    public partial string ScannedTaxString { get; set; }
 
     [ObservableProperty]
-    private bool scannedTaxStringIsValid;
+    public partial bool ScannedTaxStringIsValid { get; set; }
+
     private void LoadScannedTax()
     {
         ScannedTaxString = (ScannedTax == 0) ? "" : string.Format("{0:0.00}", ScannedTax);
@@ -224,7 +225,8 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #endregion
     #region Scanned Subtotal (capitalized as SubTotal)
     [ObservableProperty]
-    private string scannedSubTotalString;
+    public partial string ScannedSubTotalString { get; set; }
+
     private void LoadScannedSubTotal() => ScannedSubTotalString = (ScannedSubTotal == 0) ? "" : string.Format("{0:0.00}", ScannedSubTotal);
 
     [RelayCommand]
@@ -238,7 +240,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private bool scannedSubTotalStringIsValid;
+    public partial bool ScannedSubTotalStringIsValid { get; set; }
     #endregion
     #region Meal Data
     /// <summary>
@@ -324,7 +326,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #endregion
     #region Venue Notes
     [ObservableProperty]
-    private string venueNotes;
+    public partial string VenueNotes { get; set; }
 
     partial void OnVenueNotesChanged(string value)
     {

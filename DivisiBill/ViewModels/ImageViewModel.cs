@@ -206,10 +206,10 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
     /// </summary>
     [ObservableProperty]
-    private FontImageSource lightGlyph = (FontImageSource)Application.Current.Resources["GlyphFlashlightOn"];
+    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)Application.Current.Resources["GlyphFlashlightOn"];
 
     [ObservableProperty]
-    private bool isLightOn = false;
+    public partial bool IsLightOn { get; set; } = false;
 
     [RelayCommand]
     private async Task ChangeLightMode()
@@ -242,22 +242,22 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// Whether there is an image to show
     /// </summary>
     public bool HasPreviewImage => PreviewImageSource is not null;
-    public bool HasDeletedImage => Meal.CurrentMeal.HasDeletedImage; 
+    public bool HasDeletedImage => Meal.CurrentMeal.HasDeletedImage;
     /// <summary>
     /// The current image as an <see cref="ImageSource"/> 
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasPreviewImage))]
-    private ImageSource previewImageSource = null;
-    
+    public partial ImageSource PreviewImageSource { get; set; } = null;
+
     [ObservableProperty]
     private double imageScale = 1;
 
     [ObservableProperty]
-    private double imageTranslationX = 0;
+    public partial double ImageTranslationX { get; set; } = 0;
 
     [ObservableProperty]
-    private double imageTranslationY = 0;
+    public partial double ImageTranslationY { get; set; } = 0;
     #endregion
     #region Image Load and Store
     /// <summary>

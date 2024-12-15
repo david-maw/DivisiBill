@@ -12,7 +12,7 @@ public partial class CameraViewModel : ObservableObject
     /// Handy boolean property to describe when asynchronous work is in process
     /// </summary>
     [ObservableProperty]
-    bool isBusy;
+    public partial bool IsBusy { get; set; }
     #endregion
     #region Controlling the light (which is also the Camera Flash)
     /// <summary>
@@ -20,10 +20,11 @@ public partial class CameraViewModel : ObservableObject
     /// Because this doesn't seem to work on android there's no UI for it
     /// </summary>
     [ObservableProperty]
-    private FontImageSource lightGlyph = (FontImageSource)Application.Current.Resources["GlyphFlashlightOn"];
+    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)Application.Current.Resources["GlyphFlashlightOn"];
 
     [ObservableProperty]
-    private bool isLightOn = false;
+    public partial bool IsLightOn { get; set; } = false;
+
     partial void OnIsLightOnChanged(bool value) 
     {
         LightGlyph = (FontImageSource)(value ? Application.Current.Resources["GlyphFlashlightOff"] : Application.Current.Resources["GlyphFlashlightOn"]);
@@ -39,8 +40,8 @@ public partial class CameraViewModel : ObservableObject
     /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
     /// </summary>
     [ObservableProperty]
-    private FontImageSource flashGlyph = (FontImageSource)Application.Current.Resources["GlyphFlashOn"];
-    
+    public partial FontImageSource FlashGlyph { get; set; } = (FontImageSource)Application.Current.Resources["GlyphFlashOn"];
+
     [ObservableProperty]
     private CameraFlashMode flashMode = CameraFlashMode.Off;
 

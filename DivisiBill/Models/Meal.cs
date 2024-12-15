@@ -1776,7 +1776,7 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     [XmlIgnore]
     [ObservableProperty]
-    private decimal couponAmountAfterTax;
+    public partial decimal CouponAmountAfterTax { get; set; }
 
     /// <summary>
     /// Get the sum of all the individual coupons for the bill if they are applied after tax.

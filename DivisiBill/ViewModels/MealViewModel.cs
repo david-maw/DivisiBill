@@ -242,7 +242,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public void DeselectCost(PersonCost pc) => SelectedCost = null;
 
     [ObservableProperty]
-    private PersonCost selectedCost;
+    public partial PersonCost SelectedCost { get; set; }
 
     [RelayCommand]
     private async Task ShowPerson(PersonCost pc)
@@ -378,7 +378,8 @@ public partial class MealViewModel : ObservableObjectPlus
     #region Item Selection
 
     [ObservableProperty]
-    private LineItem selectedLineItem;
+    public partial LineItem SelectedLineItem { get; set; }
+
     partial void OnSelectedLineItemChanging(LineItem oldValue, LineItem newValue)
     {
         if (oldValue is not null && IsValidLineItemAmountString)
@@ -469,7 +470,7 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private string lineItemAmountString;
+    public partial string LineItemAmountString { get; set; }
     #region ItemName
     public bool IsValidLineItemAmountString { get; set; } = false;
     #endregion
@@ -483,7 +484,7 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private string lineItemNameString;
+    public partial string LineItemNameString { get; set; }
     #endregion
     #endregion
     #region Delete and UnDelete
@@ -583,13 +584,13 @@ public partial class MealViewModel : ObservableObjectPlus
 
     #region Scrolling LineItem list
     [ObservableProperty]
-    private bool isLineItemSwipeUpAllowed;
+    public partial bool IsLineItemSwipeUpAllowed { get; set; }
 
     [ObservableProperty]
-    private bool isLineItemSwipeDownAllowed;
+    public partial bool IsLineItemSwipeDownAllowed { get; set; }
 
     [ObservableProperty]
-    private int firstVisibleItemIndex;
+    public partial int FirstVisibleItemIndex { get; set; }
 
     partial void OnFirstVisibleItemIndexChanged(int value)
     {
@@ -597,7 +598,7 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private int lastVisibleItemIndex;
+    public partial int LastVisibleItemIndex { get; set; }
 
     partial void OnLastVisibleItemIndexChanged(int value)
     {
@@ -639,7 +640,7 @@ public partial class MealViewModel : ObservableObjectPlus
     : Meal.CurrentMeal.LineItems;
 
     [ObservableProperty]
-    private ObservableCollection<LineItem> lineItems = null;
+    public partial ObservableCollection<LineItem> LineItems { get; set; } = null;
 
     public void ChangeShares(LineItem li)
     {
@@ -875,10 +876,10 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    private bool isDefaultTaxRateStringValid;
+    public partial bool IsDefaultTaxRateStringValid { get; set; }
 
     [ObservableProperty]
-    private string defaultTaxRateString;
+    public partial string DefaultTaxRateString { get; set; }
 
     private decimal filteredSubTotal;
     private decimal filteredCouponAmountAfterTax;
