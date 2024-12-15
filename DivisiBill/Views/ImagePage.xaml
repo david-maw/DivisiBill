@@ -35,7 +35,7 @@
             <ActivityIndicator Color="Red" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" IsRunning="True"/>
         </VerticalStackLayout>
         <!--#endregion-->
-        <!--#region NewRegion -->
+        <!--#region Image Container -->
         <services:PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasPreviewImage}">
             <services:PinchToZoomContainer.Content>
                 <Image x:Name="previewImage" 
