@@ -679,21 +679,27 @@ public partial class App : Application, INotifyPropertyChanged
         await InitializationComplete.Task;
         if (!UseLocation)
             return;
-            PauseToken IsRunning = IsRunningSource.Token;
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                await IsRunning.WaitWhilePausedAsync();
-                if (!cancellationToken.IsCancellationRequested)
-                    try
+        PauseToken IsRunning = IsRunningSource.Token;
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await IsRunning.WaitWhilePausedAsync();
+            if (!cancellationToken.IsCancellationRequested)
+                try
+                {
+                    await GetMyLocationAsync(cancellationToken);
+                    // The next few lines should be 'await Task.Delay(60000, cancellationToken)' but annoyingly VS always breaks on TaskCanceledException
+                    for (int i = 60; i > 0; i--)
                     {
-                        await GetMyLocationAsync(cancellationToken);
-                        await Task.Delay(60000, cancellationToken);
+                        if (cancellationToken.IsCancellationRequested)
+                            break;
+                        await Task.Delay(1000); 
                     }
-                    catch (TaskCanceledException)
-                    {
-                        // Just ignore this, it's the normal shutdown mechanism
-                    }
-            }
+                }
+                catch (TaskCanceledException)
+                {
+                    // Just ignore this, it's the normal shutdown mechanism
+                }
+        }
     }
     private static readonly Counter MonitoringLocationCounter = new Counter();
     public static async Task StartMonitoringLocation()
