@@ -681,6 +681,9 @@ public partial class MealListViewModel : ObservableObjectPlus
         }
     }
 
+    /// <summary>
+    /// Show only the latest bills for each venue if true.
+    /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FilterGlyph))]
     [NotifyPropertyChangedFor(nameof(FilterText))]
@@ -802,12 +805,20 @@ public partial class MealListViewModel : ObservableObjectPlus
                 return mealList; // There's a cached one, just use it
             ObservableCollection<MealSummary> theList = GetList();
             if (theList.Count <= 1)
-                return mealList = theList; // If there are one or fewer meals, sort order and filtering are irrelevant
+            {
+                if (theList.Count == 1)
+                {
+                    MealSummary ms = theList[0];
+                    Venue v = Venue.FindVenueByName(ms.VenueName);
+                    ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
+                }
+                return mealList = theList; // If there are one or zero meals, sort order and meal filtering are irrelevant
+            }
             else if (Filter)
             {
                 // We could perhaps optimize this by sorting theList in place then deleting the duplicates,
                 // but the performance gain doesn't seem worth the trouble.
-                List<MealSummary> filteredList = theList.OrderBy(ms => ms.VenueName).ThenByDescending((ms) => ms.CreationTime).ToList(); 
+                List<MealSummary> filteredList = theList.OrderBy(ms => ms.VenueName).ThenByDescending((ms) => ms.CreationTime).ToList();
                 for (int i = filteredList.Count-1; i > 0; i--)
                 {
                     MealSummary ms = filteredList[i];

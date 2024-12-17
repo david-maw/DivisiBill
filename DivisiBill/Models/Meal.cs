@@ -903,9 +903,10 @@ public partial class Meal : ObservableObjectPlus
     }
 
     /// <summary>
-    /// Read a meal from App local storage
+    /// Read a meal from App local storage, by the time this is called LocalMealList has been populated, so if the Meal is in it use the 
+    /// MealSummary from the list rather than creating a new one.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The stored Meal or null if there wasn't one</returns>
     public static Meal LoadFromApp()
     {
         string myString = App.Settings.StoredMeal;
@@ -917,14 +918,19 @@ public partial class Meal : ObservableObjectPlus
             MemoryStream s = new MemoryStream(buf);
             Meal m = LoadFromStream(s);
             DebugMsg("in Meal.LoadFromApp meal = " + m.Summary);
+            MealSummary existingMealSummary = LocalMealList.Where(ms=>ms.Id.Equals(m.Summary.Id)).FirstOrDefault();
             m.SavedToApp = true;
-            m.SavedToFile = App.Settings.MealSavedToFile;
+            m.SavedToFile = existingMealSummary is not null;
+            if (m.SavedToFile)
+                m.summary = existingMealSummary;
+            else
+            {
+                m.SavedToRemote = App.Settings.MealSavedToRemote;
+                m.Summary.IsRemote = m.SavedToRemote;
+            }
             m.Frozen = App.Settings.MealFrozen;
-            m.Summary.IsLocal = File.Exists(m.Summary.FilePath);
             if (m.Summary.IsLocal)
                 m.CheckImageFiles();
-            m.SavedToRemote = App.Settings.MealSavedToRemote;
-            m.Summary.IsRemote = m.SavedToRemote;
             m.MonitorChanges = true; // From now on take notice of changes
             return m;
         }
