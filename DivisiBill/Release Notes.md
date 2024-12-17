@@ -1,3 +1,23 @@
+# 6.2.7
+
+## Improved Handling of Long Lists of Items
+
+Lists longer than a page now show up/down buttons to notify off-screen items and allow easy scrolling to them.
+
+Had to add a grid so as to control layout.
+
+## Item Count on Bill Summaries
+
+Each bill summary now includes an item count.
+
+## Delete Correct Image
+
+When deleting a bill the image for the current bill was being deleted instead of the image corresponding to the bill being deleted. This has been corrected.
+
+## Help Updated
+
+The help files have been updated to be consistent with version 6.2.7.
+
 # 6.2.6
 
 ## Allow Multiple Bill Deletion on Dummy Bills
