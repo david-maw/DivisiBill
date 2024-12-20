@@ -1846,7 +1846,11 @@ public partial class Meal : ObservableObjectPlus
     public decimal RoundedAmount
     {
         get => Summary.RoundedAmount;
-        private set => Summary.RoundedAmount = value;
+        private set
+        {
+            Summary.RoundedAmount = value;
+            OnPropertyChanged();
+        }
     }
 
     private decimal totalAmount;

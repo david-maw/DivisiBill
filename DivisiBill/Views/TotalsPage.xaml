@@ -220,15 +220,9 @@
         </Label>
         <!--#endregion-->
         <!--#region Sum of Rounded Amounts -->
-        <Label Style="{StaticResource labelStyle}" FontAttributes="Bold" HorizontalOptions="Center" IsVisible="{Binding Path=IsAnyUnallocated,Converter={StaticResource Not}}">
-            <Label.FormattedText>
-                <FormattedString>
-                    <FormattedString.Spans>
-                        <Span Text="Total of Rounded"/>
-                        <Span Text="{Binding Path = RoundedAmount, StringFormat='~{0:C0}'}"/>
-                    </FormattedString.Spans>
-                </FormattedString>
-            </Label.FormattedText>
+        <Label Style="{StaticResource labelStyle}" 
+               Text="{Binding RoundedAmount,StringFormat='Total of Rounded~{0:C0}'}"
+               FontAttributes="Bold" HorizontalOptions="Center" IsVisible="{Binding Path=IsAnyUnallocated,Converter={StaticResource Not}}">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand}"/>
             </Label.GestureRecognizers>
