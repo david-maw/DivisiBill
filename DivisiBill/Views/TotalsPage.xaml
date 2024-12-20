@@ -206,7 +206,7 @@
         <!--#region Total Amounts -->
         <!--#region Unshared amount (if suspiciously large) -->
         <Label IsVisible="{Binding IsUnsharedAmountSignificant}"
-                Text="{Binding RoundingErrorAmount, StringFormat='Oops, rounding error {0:C}'}"
+                Text="{Binding RoundingErrorAmount, StringFormat='Bug, rounding error {0:C}'}"
                 FontSize="Large" HorizontalTextAlignment="Center">
         </Label>
         <!--#endregion-->

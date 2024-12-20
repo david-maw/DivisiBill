@@ -2151,13 +2151,15 @@ public partial class Meal : ObservableObjectPlus
         // you still get to tip on it
 
         decimal modifiedTaxRate = Tax == 0 ? 0 : Tax / TaxedAmount; // identical to TaxRate unless TaxDelta is set
-        
+        decimal modifiedTipRate = Tip == 0 ? 0 : Tip / GetTipBasis(); // identical to TipRate unless TipDelta is set
+
         foreach (var costItem in costsWithOrderAmount) // So, just the people who bought things
         {
             decimal shareOfTax = (costItem.ChargedAmount - costItem.PreTaxCouponAmount) * modifiedTaxRate;
             // A little extra may be needed to restore the extra value of a post-tax coupon
             decimal shareOfTaxForCoupon = IsCouponAfterTax ? costItem.PreTaxCouponAmount * (decimal)TaxRate : 0; // Add a little extra if the coupon is taxed
-            decimal shareOfTip = (costItem.OrderAmount + (TipOnTax ? shareOfTax + shareOfTaxForCoupon : 0)) * (decimal)TipRate;
+            // The tip is shared according to what each person spent
+            decimal shareOfTip = (costItem.OrderAmount + (TipOnTax ? shareOfTax + shareOfTaxForCoupon : 0)) * modifiedTipRate;
 
             // At this point we can make a first estimate of what this participant owes ignoring unused discounts and rounding
             costItem.Amount += shareOfTax + shareOfTip;
