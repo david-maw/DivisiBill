@@ -1931,11 +1931,11 @@ public partial class Meal : ObservableObjectPlus
     /// <param name="defaultRate">
     ///     The preferred default ratio between the two numbers, if nothing is provided we use the default tax rate
     /// </param>
-    /// <param name="lim">The granularity of the ratio to return, 100 means 1%, 400 means 1/4% and so on</param>
+    /// <param name="precision">The granularity of the ratio to return, 100 means 1%, 400 means 1/4% and so on</param>
     /// <returns>A simplified ratio between the two values</returns>
-    public static double SimplestRate(decimal total, decimal part, double defaultRate = double.NaN, int lim = 400)
+    public static double SimplestRate(decimal total, decimal part, double defaultRate = double.NaN, int precision = 400)
     {
-        Debug.Assert(lim > 0);
+        Debug.Assert(precision > 0);
         Debug.Assert(total > 0);
         Debug.Assert(part > 0);
         try
@@ -1946,14 +1946,14 @@ public partial class Meal : ObservableObjectPlus
                 defaultRate = App.Settings.DefaultTaxRate;
             decimal ratio = part / total;
             decimal defaultRateDelta = Math.Abs((decimal)defaultRate - ratio);
-            if (defaultRateDelta * lim < 1) // Default tax rate is close enough
+            if (defaultRateDelta * precision < 1) // Default tax rate is close enough
                 return defaultRate;
-            decimal roundedRatio = Math.Floor(ratio * lim) / lim; // round down to nearest 1/4 %
+            decimal roundedRatio = Math.Floor(ratio * precision) / precision; // round down to nearest 1/4 %
             decimal ratioDelta = ratio - roundedRatio;
-            if (ratioDelta > 1M / (lim * 2M)) // it is closer to round up
+            if (ratioDelta > 1M / (precision * 2M)) // it is closer to round up
             {
-                roundedRatio += 1M / lim;
-                ratioDelta = (1M / lim) - ratioDelta;
+                roundedRatio += 1M / precision;
+                ratioDelta = (1M / precision) - ratioDelta;
             }
             return (ratioDelta < defaultRateDelta) ? (double)roundedRatio : defaultRate;
 
