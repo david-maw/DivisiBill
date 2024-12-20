@@ -349,6 +349,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
         }
         // If we get to here it was not found in AllVenues
+        v.Location = App.MyLocation;
         if (newIndex < 0)
             allVenues.Add(v); // Item should go at end
         else
