@@ -159,12 +159,12 @@ public static class Utilities
     }
 
     /// <summary>
-    /// Insert an item in a list before a specified item or at the end if the specified item is null
+    /// Insert an item in a list before a specified item or at the end if the specified item is null or not in the list
     /// </summary>
     /// <typeparam name="T">The item type</typeparam>
-    /// <param name="list"></param>
-    /// <param name="existingItem"></param>
-    /// <param name="itemToInsert"></param>
+    /// <param name="list">The list of items of type T to insert the new item into</param>
+    /// <param name="existingItem">Insert before this item if it is in 'list'</param>
+    /// <param name="itemToInsert">The item t0 insert</param>
     public static void InsertBefore<T>(this IList<T> list, T existingItem, T itemToInsert) where T : class
     {
         ArgumentNullException.ThrowIfNull(itemToInsert);
