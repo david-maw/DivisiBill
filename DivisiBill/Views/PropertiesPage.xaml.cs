@@ -1,5 +1,5 @@
-using DivisiBill.Models;
 using DivisiBill.ViewModels;
+using CommunityToolkit.Maui.Core.Platform;
 
 namespace DivisiBill.Views;
 
@@ -16,7 +16,6 @@ public partial class PropertiesPage : ContentPage
         base.OnAppearing();
         // Force an update of the relative time displays
         viewModel.LoadProperties();
-        viewModel.CurrentMeal_PropertyChanged(null, new System.ComponentModel.PropertyChangedEventArgs(nameof(MealViewModel.ApproximateAge)));
     }
     protected override void OnDisappearing()
     {
@@ -25,4 +24,21 @@ public partial class PropertiesPage : ContentPage
     }
 
     private void GoToVenuesByName(object sender, EventArgs e) => Navigation.PushAsync(new VenueListByNamePage());
+
+    private void OnEntryFocused(object sender, FocusEventArgs e)
+    {
+        if (sender is Entry focusedEntry) 
+        {
+            focusedEntry.ShowKeyboardAsync();
+        }
+    }
+
+    private void OnEntryCompleted(object sender, EventArgs e)
+    {
+        if (sender is Entry focusedEntry) 
+        { 
+            focusedEntry.HideKeyboardAsync();
+            focusedEntry.Unfocus();
+        }
+    }
 }

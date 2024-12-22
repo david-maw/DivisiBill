@@ -30,6 +30,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         LoadScannedSubTotal();
         LoadScannedTax();
         LoadVenueNotes();
+        OnPropertyChanged(nameof(Meal.ApproximateAge));
     }
     public void UnloadProperties()
     {
