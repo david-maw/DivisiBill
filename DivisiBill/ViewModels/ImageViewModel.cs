@@ -67,7 +67,6 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         Meal.CurrentMeal.CheckImageFiles();
         // Track subsequent changes
         Meal.CurrentMeal.Summary.PropertyChanged += CurrentMeal_PropertyChanged;
-        OnPropertyChanged(nameof(HasPreviewImage));
     }
 
     /// <summary>
@@ -155,7 +154,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     {
         if (Services.Billing.ScansLeft <= 0)
             await Utilities.DisplayAlertAsync("Limit", "You have no OCR scan licenses left, purchase more on the Setting page to use OCR", "OK");
-        else if (Meal.CurrentMeal.HasImage)
+        else if (HasPreviewImage)
         {
             if (imageChanged)
                 Store();
@@ -180,11 +179,11 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         {
             if (Meal.CurrentMeal.Frozen)
                 Meal.CurrentMeal.MarkAsChanged();
-            PreviewImageSource = null;
-            browsedPictureName = null;
             Meal.CurrentMeal.DeleteImage();
-            OnPropertyChanged(nameof(HasPreviewImage)); 
         }
+        PreviewImageSource = null;
+        browsedPictureName = null;
+        OnPropertyChanged(nameof(HasPreviewImage)); 
     }
 
     /// <summary>
@@ -263,7 +262,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// <summary>
     /// Undo and panning or zooming the user might have done
     /// </summary>
-    internal void ResetImage()
+    internal void ResetImageView()
     {
         ImageScale = 1;
         ImageTranslationX = 0;
@@ -286,7 +285,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// <param name="stream">The original image</param>
     private async Task LoadImageStreamAsync(Stream stream)
     {
-        ResetImage();
+        ResetImageView();
         // Null stream probably means an operation was canceled
         if (stream is null)
         {
@@ -390,8 +389,8 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     #region IQueryAttributable Implementation
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        replacementImageStream = query.TryGetValue("ImageStream", out var streamObject) ? streamObject as Stream : null;
-        browsedPictureName = query.TryGetValue("Browsed", out var browsedObject) ? browsedObject as string : null;
+        replacementImageStream = query.TryGetValue("ImageStream", out var streamObject) ? streamObject as Stream : null; // Comes from the camera page
+        browsedPictureName = query.TryGetValue("Browsed", out var browsedObject) ? browsedObject as string : null; // From a browse initiated by the camera page
         startWithCamera = query.TryGetValue("StartWithCamera", out object startWithCameraObject) && startWithCameraObject is string s && bool.TryParse(s, out bool b) && b;
     } 
     #endregion
