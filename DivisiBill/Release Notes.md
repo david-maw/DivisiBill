@@ -1,10 +1,34 @@
+# 6.2.8
+
+## Handle Tip Delta Correctly
+
+A tip delta is used generally because you want a specific tip amount and it's not an exact 1/4 percent multiple of the bill subtotal. If one was in use Divisibill did not correctly divide it among participants and reported an error "Oops, rounding error...". This has been corrected.
+
+## Rounded Amount = $0 in Error
+
+Occasionally a change to the rounded amount was not noticed and it showed as $0, this has been corrected.
+
+## Give a Newly Created Venue a Location
+
+A newly created venue now gets the current location by default. The location can be cleared by double tapping on it, or changed by single tapping.
+
+## Allow OCR After Camera
+
+If you went directly to the camera page to take a picture of a bill to create an image the OCR button on the image page did not work. This has been corrected by ensuring that the OCR button also saves the current image if necessary.
+
+## Improve Properties Page User Interface
+
+The font size has been increased slightly and when an entry field is selected it is enlarged further to make data entry easier.
+
+If you press enter after typing a value on an on-screen-keyboard the keyboard will be dismissed and focus will be removed from the field.
+
+The Tip Delta amount is the difference between the calculated tip percentage and the actual tip amount. It is now recalculated along with the tip rate whenever the tip amount is changed, and zeroed when the tip rate is changed. It is shown with a 'non default' notation if it is set.
+
 # 6.2.7
 
 ## Improved Handling of Long Lists of Items
 
 Lists longer than a page now show up/down buttons to notify off-screen items and allow easy scrolling to them.
-
-Had to add a grid so as to control layout.
 
 ## Item Count on Bill Summaries
 
