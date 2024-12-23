@@ -1536,7 +1536,8 @@ public partial class Meal : ObservableObjectPlus
             if (tipRate != value || Tip != GetTip())
             {
                 tipRate = value;
-                Tip = GetTip(); 
+                TipDelta = 0;
+                Tip = GetTip();
                 MarkAsChanged();
                 OnPropertyChanged();
             }
@@ -1886,9 +1887,9 @@ public partial class Meal : ObservableObjectPlus
         if (Math.Abs(Tip - value) >= 0.01M)
         { // recalculate rate based on new amount
             double newTipRate = SimplestRate(tipBasis, value, App.Settings.DefaultTipRate,100);
+            TipRate = newTipRate;
             TipDelta = value - Math.Round(tipBasis * (decimal)newTipRate, 2);
             Tip = value;
-            TipRate = newTipRate;
         }
     }
 
