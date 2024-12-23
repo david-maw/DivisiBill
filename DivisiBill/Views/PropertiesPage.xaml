@@ -112,7 +112,8 @@
                 <Label Grid.Row="2" Grid.Column="2" Text="{x:Static services:Utilities.CurrencySymbol}" VerticalOptions="Center"  FontSize="{Binding Source={x:Reference entryTipAmount}, Path=FontSize, x:DataType=Entry}"/>
                 <!--#endregion-->
                 <!--#region Tip Delta -->
-                <Label Grid.Row="3" Grid.Column="0" Text="Tip Delta" Margin="0,10,50,10" VerticalOptions="Center" LineBreakMode="WordWrap"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="{Binding IsTipDeltaStringValid, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)',StringFormat='Tip Delta{0}'}"
+                       Margin="0,10,50,10" VerticalOptions="Center" LineBreakMode="WordWrap"/>
                 <Label Grid.Row="3" Grid.Column="1" Text="{Binding TipDeltaString}" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,5,0"/>
                 <Label Grid.Row="3" Grid.Column="2" Text="{x:Static services:Utilities.CurrencySymbol}" VerticalOptions="Center"/>
                 <!--#endregion-->

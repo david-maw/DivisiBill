@@ -140,7 +140,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
             {
                 Meal.CurrentMeal.TipDelta = value;
                 LoadTipDeltaString();
-                OnPropertyChanged(nameof(TipDeltaString));
             }
         }
     }
@@ -160,6 +159,11 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     public partial string TipDeltaString { get; set; }
+
+    partial void OnTipDeltaStringChanged(string value) => IsTipDeltaStringValid = string.IsNullOrEmpty(value);
+
+    [ObservableProperty]
+    public partial bool IsTipDeltaStringValid { get; set; }
     public bool TipDeltaStringIsValid { get; set; }
     #endregion
     #endregion
