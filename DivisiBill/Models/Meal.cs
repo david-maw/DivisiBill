@@ -1922,7 +1922,7 @@ public partial class Meal : ObservableObjectPlus
         else if (Math.Abs(Tax - value) >= 0.01M)
         {  // Recalculate the tax rate based on the new amount
             TaxRate = SimplestRate(TaxedAmount, value);
-            TaxDelta = value - Tax;
+            TaxDelta = value - TaxWithoutDelta;
         }
     }
  

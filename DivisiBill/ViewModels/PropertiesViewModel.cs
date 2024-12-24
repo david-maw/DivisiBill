@@ -58,6 +58,8 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
             LoadTipRateString();
         else if (e.PropertyName.Equals(nameof(Meal.Tax)))
             LoadTaxString();
+        else if (e.PropertyName.Equals(nameof(Meal.TaxDelta)))
+            OnPropertyChanged(nameof(TaxDeltaString));
         else if (e.PropertyName.Equals(nameof(Meal.Tip)))
             LoadTipString();
         else if (e.PropertyName.Equals(nameof(Meal.TaxRate)))
@@ -206,7 +208,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #endregion
     #region TaxDeltaString
     // This is a readonly field, so it is much simpler
-    public string TaxDeltaString => (Meal.CurrentMeal.TaxDelta == 0) ? "0" : string.Format("{0:0.00}", Meal.CurrentMeal.TaxDelta);
+    public string TaxDeltaString => (Meal.CurrentMeal.TaxDelta == 0) ? "" : string.Format("{0:0.00}", Meal.CurrentMeal.TaxDelta);
     #endregion
     #region Scanned Tax
     [ObservableProperty]
