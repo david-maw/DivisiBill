@@ -17,11 +17,9 @@
     </ContentPage.ToolbarItems>
     <!--#endregion-->
     <ContentPage.Resources>
-        <x:String x:Key="DefaultFontSize">Medium</x:String>
-        <x:String x:Key="FocusedFontSize">Large</x:String>
         <x:String x:Key="StoppedTypingTimeThreshold">1000</x:String>
         <Style TargetType="Label">
-            <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}"/>
+            <Setter Property="FontSize" Value="Medium"/>
         </Style>
         <Style TargetType="Entry">
             <Setter Property="Keyboard" Value="Numeric"/>
@@ -30,10 +28,10 @@
             <Setter Property="VerticalOptions" Value="Center"/>
             <Style.Triggers>
                 <Trigger TargetType="Entry" Property="IsFocused" Value="True">
-                    <Setter Property="FontSize" Value="{StaticResource FocusedFontSize}" />
+                    <Setter Property="FontSize" Value="Large" />
                 </Trigger>
                 <Trigger TargetType="Entry" Property="IsFocused" Value="False">
-                    <Setter Property="FontSize" Value="{StaticResource DefaultFontSize}" />
+                    <Setter Property="FontSize" Value="Medium" />
                 </Trigger>
             </Style.Triggers>
         </Style>
