@@ -7,6 +7,9 @@ namespace DivisiBill.ViewModels;
 
 internal partial class PropertiesViewModel : ObservableObjectPlus
 {
+    #region Constants
+    public static int StoppedTypingTimeThreshold = 1000; 
+    #endregion
     #region Constructor/Destructor
     public PropertiesViewModel()
     {

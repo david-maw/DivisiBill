@@ -87,7 +87,7 @@
                             MinimumValue="0"
                             MaximumValue="99" />
                         <toolkit:UserStoppedTypingBehavior
-                            StoppedTypingTimeThreshold="{StaticResource StoppedTypingTimeThreshold}"
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTipRateStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
@@ -105,7 +105,7 @@
                         MinimumValue="0"
                         MaximumValue="999.99" />
                         <toolkit:UserStoppedTypingBehavior
-                            StoppedTypingTimeThreshold="{StaticResource StoppedTypingTimeThreshold}"
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTipStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
@@ -144,7 +144,7 @@
                         MinimumValue="0"
                         MaximumValue="99.99" />
                         <toolkit:UserStoppedTypingBehavior
-                            StoppedTypingTimeThreshold="{StaticResource StoppedTypingTimeThreshold}"
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTaxRateStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
@@ -165,7 +165,7 @@
                         MinimumValue="0"
                         MaximumValue="999999.99" />
                         <toolkit:UserStoppedTypingBehavior
-                            StoppedTypingTimeThreshold="{StaticResource StoppedTypingTimeThreshold}"
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTaxStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
@@ -197,7 +197,7 @@
                         MinimumValue="0"
                         MaximumValue="999999.99" />
                         <toolkit:UserStoppedTypingBehavior
-                            StoppedTypingTimeThreshold="{StaticResource StoppedTypingTimeThreshold}"
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadScannedTaxCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
@@ -225,7 +225,7 @@
                         MinimumValue="0"
                         MaximumValue="999999.99" />
                         <toolkit:UserStoppedTypingBehavior
-                            StoppedTypingTimeThreshold="{StaticResource StoppedTypingTimeThreshold}"
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadScannedSubTotalCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
