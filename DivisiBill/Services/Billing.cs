@@ -39,12 +39,13 @@ internal static class Billing
 {
     public enum BillingStatusType
     {
-        ok = 0,
-        notFound = 1,
-        notVerified = 2, // Anything larger than this is a connection issue
-        noInternet = 3,
-        connectionFailed = 4,
-        connectionFaulted = 5,
+        ok,
+        notFound,
+        notLicensing,
+        notVerified, // Anything larger than this is a connection issue
+        noInternet,
+        connectionFailed,
+        connectionFaulted,
     }
     public const string ExpectedPackageName = "com.autoplus.divisibill";
     public const int ScansWarningLevel = 4; // If this many or fewer are left, warn the user and allow them to purchase additional scans
@@ -74,7 +75,7 @@ internal static class Billing
             {
                 Utilities.DebugMsg("In GetHasProSubscriptionAsync, DivisiBillTestProJsonB64 was empty");
                 ProPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
-                return BillingStatusType.notVerified; // error 
+                return BillingStatusType.notLicensing; // a specific error so it can be handled silently 
             }
             else
             {

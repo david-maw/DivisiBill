@@ -465,6 +465,9 @@ public partial class App : Application, INotifyPropertyChanged
                         await Utilities.DisplayAlertAsync("Subscription Fault", "Subscription check failed because of a fault, licenses are not available");
                         LicenseChecked = false;
                         break;
+                    case Billing.BillingStatusType.notLicensing:
+                        Utilities.DebugMsg("Subscription check failed because licensing is not configured");
+                        break;
                     case Billing.BillingStatusType.notVerified:
                         await Utilities.DisplayAlertAsync("Verification Failed", "Subscription check failed because the subscription could not be verified");
                         break;
