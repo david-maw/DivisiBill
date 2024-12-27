@@ -26,7 +26,7 @@
       <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
  
       <!-- Versions -->
-      <ApplicationDisplayVersion>6.2.8</ApplicationDisplayVersion>
+      <ApplicationDisplayVersion>6.2.9</ApplicationDisplayVersion>
       <ApplicationVersion>300</ApplicationVersion>
 
       <ApplicationVersion Condition="'$(DIVISIBILL_VERSION_INCREMENT)' != ''">$([MSBuild]::Add($(ApplicationVersion), $(DIVISIBILL_VERSION_INCREMENT)))</ApplicationVersion>
