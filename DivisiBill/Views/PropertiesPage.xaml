@@ -76,15 +76,16 @@
                        Text="{Binding IsDefaultTipRate, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)',StringFormat='Tip Rate{0}'}"/>
                 <!--#endregion-->
                 <!--#region Tip Rate Value -->
-                <Entry x:Name="entryTipRate" Grid.Row="1" Grid.Column="1" Text="{Binding TipRateString}" MaxLength="2" Focused="OnEntryFocused" Completed="OnEntryCompleted">
+                <Entry x:Name="entryTipRate" Grid.Row="1" Grid.Column="1" Text="{Binding TipRateString}" MaxLength="2"
+                       Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadTipRateStringCommand}">
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
+                        <services:CurrencyValidationBehavior
                             InvalidStyle="{StaticResource InvalidEntryStyle}"
                             ValidStyle="{StaticResource ValidEntryStyle}"
                             IsValid="{Binding TipRateStringIsValid}"
                             MinimumValue="0"
                             MaximumValue="99" />
-                        <toolkit:UserStoppedTypingBehavior
+                        <services:UserStoppedTypingBehavior
                             StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTipRateStringCommand}"/>
                     </Entry.Behaviors>
@@ -94,15 +95,16 @@
                 <!--#endregion-->
                 <Label Grid.Row="2" Text="Tip Amount including delta" VerticalOptions="Center"  FontSize="{Binding Source={x:Reference entryTipAmount}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
                 <!--#region Tip Amount Value -->
-                <Entry x:Name="entryTipAmount" Grid.Row="2" Grid.Column="1" Text="{Binding TipString}" Focused="OnEntryFocused" Completed="OnEntryCompleted">
+                <Entry x:Name="entryTipAmount" Grid.Row="2" Grid.Column="1" Text="{Binding TipString}"
+                       Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadTipStringCommand}">
                     <Entry.Behaviors>
                         <services:CurrencyValidationBehavior 
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        IsValid="{Binding TipStringIsValid}"
-                        MinimumValue="0"
-                        MaximumValue="999.99" />
-                        <toolkit:UserStoppedTypingBehavior
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            IsValid="{Binding TipStringIsValid}"
+                            MinimumValue="0"
+                            MaximumValue="999.99" />
+                        <services:UserStoppedTypingBehavior
                             StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTipStringCommand}"/>
                     </Entry.Behaviors>
@@ -133,15 +135,16 @@
                        Text="{Binding IsDefaultTaxRate, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)',StringFormat='Tax Rate{0}'}"/>
                 <!--#endregion-->
                 <!--#region Tax Rate Value -->
-                <Entry x:Name="entryTaxRate" Grid.Row="5" Grid.Column="1" Text="{Binding TaxRateString}" MaxLength="5" Focused="OnEntryFocused" Completed="OnEntryCompleted">
+                <Entry x:Name="entryTaxRate" Grid.Row="5" Grid.Column="1" Text="{Binding TaxRateString}" MaxLength="5"
+                       Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadTaxRateStringCommand}">
                     <Entry.Behaviors>
                         <services:CurrencyValidationBehavior 
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        IsValid="{Binding TaxRateStringIsValid}"
-                        MinimumValue="0"
-                        MaximumValue="99.99" />
-                        <toolkit:UserStoppedTypingBehavior
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            IsValid="{Binding TaxRateStringIsValid}"
+                            MinimumValue="0"
+                            MaximumValue="99.99" />
+                        <services:UserStoppedTypingBehavior
                             StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTaxRateStringCommand}"/>
                     </Entry.Behaviors>
@@ -151,18 +154,19 @@
                 <!--#endregion-->
                 <Label Grid.Row="6" Text="Tax Amount including Delta" VerticalOptions="Center" FontSize="{Binding Source={x:Reference entryTaxAmount}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
                 <!--#region Tax Amount value -->
-                <Entry x:Name="entryTaxAmount" Grid.Row="6" Grid.Column="1" Text="{Binding TaxString}" MaxLength="8" Focused="OnEntryFocused" Completed="OnEntryCompleted">
+                <Entry x:Name="entryTaxAmount" Grid.Row="6" Grid.Column="1" Text="{Binding TaxString}" MaxLength="8"
+                       Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadTaxStringCommand}">
                     <Entry.Behaviors>
                         <services:CurrencyValidationBehavior 
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        IsValid="{Binding TaxStringIsValid}"
-                        UnequalStyle="{StaticResource UnequalEntryStyle}"
-                        EqualValue="{Binding ScannedTax}"
-                        TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"
-                        MinimumValue="0"
-                        MaximumValue="999999.99" />
-                        <toolkit:UserStoppedTypingBehavior
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            IsValid="{Binding TaxStringIsValid}"
+                            UnequalStyle="{StaticResource UnequalEntryStyle}"
+                            EqualValue="{Binding ScannedTax}"
+                            TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"
+                            MinimumValue="0"
+                            MaximumValue="999999.99" />
+                        <services:UserStoppedTypingBehavior
                             StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadTaxStringCommand}"/>
                     </Entry.Behaviors>
@@ -182,19 +186,20 @@
                 <!--#region Scanned Amounts -->
                 <!--#region Scanned Tax -->
                 <Label Grid.Row="8" Text="Scanned Tax Amount" VerticalOptions="Center" FontSize="{Binding Source={x:Reference entryScannedTax}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
-                <Entry x:Name="entryScannedTax" Grid.Row="8" Grid.Column="1" Text="{Binding ScannedTaxString}" MaxLength="8" Focused="OnEntryFocused" Completed="OnEntryCompleted">
+                <Entry x:Name="entryScannedTax" Grid.Row="8" Grid.Column="1" Text="{Binding ScannedTaxString}" MaxLength="8"
+                       Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadScannedTaxCommand}">
                     <Entry.Behaviors>
                         <services:CurrencyValidationBehavior
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        UnequalStyle="{StaticResource UnequalEntryStyle}"
-                        IsValid="{Binding ScannedTaxStringIsValid}"
-                        EqualValue="{Binding Tax}"
-                        TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"
-                        AllowBlank="True"
-                        MinimumValue="0"
-                        MaximumValue="999999.99" />
-                        <toolkit:UserStoppedTypingBehavior
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            UnequalStyle="{StaticResource UnequalEntryStyle}"
+                            IsValid="{Binding ScannedTaxStringIsValid}"
+                            EqualValue="{Binding Tax}"
+                            TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"
+                            AllowBlank="True"
+                            MinimumValue="0"
+                            MaximumValue="999999.99" />
+                        <services:UserStoppedTypingBehavior
                             StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadScannedTaxCommand}"/>
                     </Entry.Behaviors>
@@ -210,19 +215,20 @@
                 <!--#region Scanned Subtotal -->
                 <Label Grid.Row="10" Text="Scanned Subtotal Amount" VerticalOptions="Center" Margin="0,20,0,0" 
                        FontSize="{Binding Source={x:Reference entryScannedSubtotal}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
-                <Entry x:Name="entryScannedSubtotal" Grid.Row="10" Grid.Column="1" Text="{Binding ScannedSubTotalString}" MaxLength="8" Focused="OnEntryFocused" Completed="OnEntryCompleted">
+                <Entry x:Name="entryScannedSubtotal" Grid.Row="10" Grid.Column="1" Text="{Binding ScannedSubTotalString}" MaxLength="8"
+                       Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadScannedSubTotalCommand}" >
                     <Entry.Behaviors>
                         <services:CurrencyValidationBehavior 
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        UnequalStyle="{StaticResource UnequalEntryStyle}"
-                        IsValid="{Binding ScannedSubTotalStringIsValid}"
-                        EqualValue="{Binding SubTotal}"
-                        TestEquality="{Binding ScannedSubTotal,Converter={StaticResource IsNonZero}}"
-                        AllowBlank="True"
-                        MinimumValue="0"
-                        MaximumValue="999999.99" />
-                        <toolkit:UserStoppedTypingBehavior
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            UnequalStyle="{StaticResource UnequalEntryStyle}"
+                            IsValid="{Binding ScannedSubTotalStringIsValid}"
+                            EqualValue="{Binding SubTotal}"
+                            TestEquality="{Binding ScannedSubTotal,Converter={StaticResource IsNonZero}}"
+                            AllowBlank="True"
+                            MinimumValue="0"
+                            MaximumValue="999999.99" />
+                        <services:UserStoppedTypingBehavior
                             StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
                             Command="{Binding UnloadScannedSubTotalCommand}"/>
                     </Entry.Behaviors>

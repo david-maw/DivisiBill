@@ -248,11 +248,11 @@
                 <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubTotal, StringFormat='{0:C}'}" Style="{StaticResource labelStyle}">
                     <Label.Behaviors>
                         <services:CurrencyLabelBehavior
-                        ValidStyle="{StaticResource ValidLabelStyle}"
-                        UnequalStyle="{StaticResource UnequalLabelStyle}"
-                        EqualValue="{Binding ScannedSubTotal}"
-                        TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"
-                    />
+                            BindingContext="{Binding BindingContext, Source={x:Reference page}, x:DataType=ContentPage}"
+                            ValidStyle="{StaticResource ValidLabelStyle}"
+                            UnequalStyle="{StaticResource UnequalLabelStyle}"
+                            EqualValue="{Binding ScannedSubTotal}"
+                            TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"/>
                     </Label.Behaviors>
                 </Label>
                 <!--#endregion-->
@@ -273,11 +273,11 @@
                     Text="{Binding Tax, StringFormat='{0:C}'}">
                     <Label.Behaviors>
                         <services:CurrencyLabelBehavior
-                        ValidStyle="{StaticResource ValidLabelStyle}"
-                        UnequalStyle="{StaticResource UnequalLabelStyle}"
-                        EqualValue="{Binding ScannedTax}"
-                        TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"
-                    />
+                            BindingContext="{Binding BindingContext, Source={x:Reference page}, x:DataType=ContentPage}"
+                            ValidStyle="{StaticResource ValidLabelStyle}"
+                            UnequalStyle="{StaticResource UnequalLabelStyle}"
+                            EqualValue="{Binding ScannedTax}"
+                            TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"/>
                     </Label.Behaviors>
                 </Label>
                 <!--#endregion-->

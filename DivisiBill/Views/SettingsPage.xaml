@@ -35,28 +35,28 @@
                 <Entry Grid.Row="1" Grid.Column="3" Text="{Binding DefaultTipRate}" MaxLength="2" Keyboard="Numeric" HorizontalTextAlignment="End">
                     <Entry.Behaviors>
                         <services:CurrencyValidationBehavior 
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        MinimumValue="0"
-                        MaximumValue="99" />
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            MinimumValue="0"
+                            MaximumValue="99" />
                     </Entry.Behaviors>
                 </Entry>
                 <Label Grid.Row="1" Grid.Column="4" Text="%" VerticalOptions="Center"/>
                 <Label Grid.Row="2" Text="Coupon After Tax" VerticalOptions="Center" HorizontalOptions="End"/>
                 <Switch Grid.Row="2" Grid.Column="1" IsToggled="{Binding IsCouponAfterTax}"/>
                 <Label Grid.Row="2" Grid.Column="2" Text="Tax Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
-                <Entry Grid.Row="2" Grid.Column="3" Text="{Binding DefaultTaxRateString}"
+                <Entry Grid.Row="2" Grid.Column="3" Text="{Binding DefaultTaxRateString}" ReturnCommand="{Binding UnloadDefaultTaxRateStringCommand}"
                        Keyboard="Numeric" HorizontalTextAlignment="End" WidthRequest="80">
                     <Entry.Behaviors>
                         <services:CurrencyValidationBehavior 
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        IsValid="{Binding IsDefaultTaxRateStringValid}"
-                        MinimumValue="0"
-                        MaximumValue="99.99" />
-                        <toolkit:UserStoppedTypingBehavior
-                        Command="{Binding UnloadDefaultTaxRateStringCommand}">
-                        </toolkit:UserStoppedTypingBehavior>
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            IsValid="{Binding IsDefaultTaxRateStringValid}"
+                            MinimumValue="0"
+                            MaximumValue="99.99" />
+                        <services:UserStoppedTypingBehavior
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
+                            Command="{Binding UnloadDefaultTaxRateStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
                 <Label Grid.Row="2" Grid.Column="4" Text="%" VerticalOptions="Center"/>

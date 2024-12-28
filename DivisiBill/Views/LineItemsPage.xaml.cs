@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui.Behaviors;
 using CommunityToolkit.Maui.Core.Platform;
 using DivisiBill.Models;
 using DivisiBill.Services;
@@ -18,13 +17,6 @@ public partial class LineItemsPage : ContentPage
         SizeChanged += LineItemsPage_SizeChanged;
         // Initialize the shares buttons
         ShareButtons = SharesContainer.Children.Select(v => (Button)v).ToArray();
-#if WINDOWS || ANDROID
-        // Detour the "SelectAllTextBehavior not working in net8.0 target bug
-        // by only doing this in conditional code, not XAML
-        // TODO remove when https://github.com/CommunityToolkit/Maui/issues/1847 is fixed
-        SelectedNameEntry.Behaviors.Add(new SelectAllTextBehavior());
-        SelectedAmountEntry.Behaviors.Add(new SelectAllTextBehavior());
-#endif
     }
     PersonCost CurrentPersonCost = null;
     private string command = null;

@@ -277,11 +277,10 @@
                     Text="{Binding SubTotal, StringFormat='{0:C}'}" FontSize="Large" HorizontalOptions="End">
                         <Label.Behaviors>
                             <services:CurrencyLabelBehavior
-                        ValidStyle="{StaticResource ValidLabelStyle}"
-                        UnequalStyle="{StaticResource UnequalLabelStyle}"
-                        EqualValue="{Binding ScannedSubTotal}"
-                        TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"
-                    />
+                                ValidStyle="{StaticResource ValidLabelStyle}"
+                                UnequalStyle="{StaticResource UnequalLabelStyle}"
+                                EqualValue="{Binding ScannedSubTotal}"
+                                TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"/>
                         </Label.Behaviors>
                     </Label>
                     <Label Grid.Row="0" FontSize="Large" LineBreakMode="TailTruncation" Text="Person Subtotal" IsVisible="{Binding IsFiltered}"/>
@@ -388,11 +387,13 @@
                 <Entry x:Name="SelectedNameEntry"
                        Text="{Binding LineItemNameString}"
                        toolkit:SetFocusOnEntryCompletedBehavior.NextElement="{x:Reference SelectedAmountEntry}"
+                       ReturnCommand="{Binding UnloadLineItemNameStringCommand}"
                        VerticalOptions="Center"
                        Placeholder="Name" ReturnType="Next">
                     <Entry.Behaviors>
-                        <toolkit:UserStoppedTypingBehavior Command="{Binding UnloadLineItemNameStringCommand}"/>
-                        <!--<toolkit:SelectAllTextBehavior /> Moved to code behind as a workaround for https://github.com/CommunityToolkit/Maui/issues/1847-->
+                        <services:UserStoppedTypingBehavior 
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
+                            Command="{Binding UnloadLineItemNameStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
                 <Entry x:Name="SelectedAmountEntry" Grid.Column="1" Placeholder="Value"
@@ -403,14 +404,15 @@
                        Keyboard="Numeric"
                        ReturnType="Done">
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        ValidStyle="{StaticResource ValidEntryStyle}"
-                        IsValid="{Binding  IsValidLineItemAmountString}"
-                        MinimumValue="-999999.99"
-                        MaximumValue="999999.99"/>
-                        <toolkit:UserStoppedTypingBehavior Command="{Binding UnloadLineItemAmountStringCommand}"/>
-                        <!--<toolkit:SelectAllTextBehavior /> Moved to code behind as a workaround for https://github.com/CommunityToolkit/Maui/issues/1847-->
+                        <services:CurrencyValidationBehavior
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            ValidStyle="{StaticResource ValidEntryStyle}"
+                            IsValid="{Binding  IsValidLineItemAmountString}"
+                            MinimumValue="-999999.99"
+                            MaximumValue="999999.99"/>
+                        <services:UserStoppedTypingBehavior 
+                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
+                            Command="{Binding UnloadLineItemAmountStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
             </Grid>
