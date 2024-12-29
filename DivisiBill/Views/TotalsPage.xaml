@@ -248,7 +248,6 @@
                 <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubTotal, StringFormat='{0:C}'}" Style="{StaticResource labelStyle}">
                     <Label.Behaviors>
                         <services:CurrencyLabelBehavior
-                            BindingContext="{Binding BindingContext, Source={x:Reference page}, x:DataType=ContentPage}"
                             ValidStyle="{StaticResource ValidLabelStyle}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
                             EqualValue="{Binding ScannedSubTotal}"
@@ -273,7 +272,6 @@
                     Text="{Binding Tax, StringFormat='{0:C}'}">
                     <Label.Behaviors>
                         <services:CurrencyLabelBehavior
-                            BindingContext="{Binding BindingContext, Source={x:Reference page}, x:DataType=ContentPage}"
                             ValidStyle="{StaticResource ValidLabelStyle}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
                             EqualValue="{Binding ScannedTax}"
