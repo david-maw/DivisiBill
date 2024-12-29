@@ -177,7 +177,8 @@
             <CollectionView.GestureRecognizers>
                 <!--GestureRecognizer on a CollectionView Inhibits Scrolling, but there are never enough costs to scroll-->
                 <SwipeGestureRecognizer Direction="Right"  Command="{Binding GoToItemsCommand}"/>
-                <TapGestureRecognizer Command="{Binding DeselectCostCommand}" />
+                <!--Alas 9.0.21 (SR2) makes this tap detection unusable on Windows due to https://github.com/dotnet/maui/issues/26640-->
+                <TapGestureRecognizer Command="{OnPlatform Default={Binding DeselectCostCommand}, WinUI={x:Null}}"/>
                 <TapGestureRecognizer NumberOfTapsRequired="2" 
                     Command="{Binding DisplayPaymentsCommand}"
                     CommandParameter="{Binding SelectedCost}" />

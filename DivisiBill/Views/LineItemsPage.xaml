@@ -221,12 +221,13 @@
             EmptyView="No items defined"
             Scrolled="OnCollectionViewScrolled"            
             SelectionChanged="OnItemSelected">
-            <!--#region Page Switch Shortcut -->
+            <!--#region Page Switch, List Scroll and Deselect All Shortcuts -->
             <CollectionView.GestureRecognizers>
                 <SwipeGestureRecognizer Direction="Up" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"/>
                 <SwipeGestureRecognizer Direction="Down" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"/>
                 <SwipeGestureRecognizer Direction="Left" Command="{Binding GoToTotalsCommand}"/>
-                <TapGestureRecognizer Command="{Binding DeselectAllLineItemsCommand}"/>
+                <!--Alas 9.0.21 (SR2) makes this tap detection unusable on Windows due to https://github.com/dotnet/maui/issues/26640-->
+                <TapGestureRecognizer Command="{OnPlatform Default={Binding DeselectAllLineItemsCommand}, WinUI={x:Null}}"/>
                 <TapGestureRecognizer NumberOfTapsRequired="2" 
                     Command="{Binding DisplayPaymentsCommand}"
                     CommandParameter="{Binding SelectedCost}" />

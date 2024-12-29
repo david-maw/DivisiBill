@@ -97,7 +97,6 @@
       <PackageReference Include="CommunityToolkit.Maui.Maps" Version="3.0.0" />
       <PackageReference Include="epj.RouteGenerator" Version="1.0.4" />
       <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
-      <!--Alas 9.0.21 (SR2) is unusable on Windows due to https://github.com/dotnet/maui/issues/26640-->
       <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.21" />
       <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
       <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
