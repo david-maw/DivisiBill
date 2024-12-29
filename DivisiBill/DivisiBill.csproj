@@ -108,7 +108,7 @@
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
       <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="5.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
-      <PackageReference Include="SkiaSharp" Version="3.118.0-preview.1.2" />
+      <PackageReference Include="SkiaSharp" Version="3.118.0-preview.2.3" />
       <PackageReference Include="System.Text.Encodings.Web" Version="9.0.0" />
    </ItemGroup>
 
