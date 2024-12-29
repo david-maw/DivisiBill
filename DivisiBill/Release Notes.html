@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <html>
 <head>
-<title>6.2.8</title>
+<title>6.2.9</title>
     <style>
         html, body {
             font-family: Arial, Helvetica, sans-serif;
@@ -12,7 +12,10 @@
     </style>
 </head>
 <body>
-<h1 id="section">6.2.8</h1>
+<h1 id="section">6.2.9</h1>
+<h2 id="increase-the-data-entry-wait-time">Increase the Data Entry Wait Time</h2>
+<p>DivisiBill waits for the user to stop providing input during data entry before attempting to format the text (if it is a number) or update other items based on what's entered. This happens on the properties, items and settings pages.  This delay has been increased, it is possible to signal 'done' immediately by pressing the 'enter' key (which may be labeled 'done' or simply have a symbol on it) if you do not wish to wait.</p>
+<h1 id="section-1">6.2.8</h1>
 <h2 id="handle-tip-delta-correctly">Handle Tip Delta Correctly</h2>
 <p>A tip delta is used generally because you want a specific tip amount and it's not an exact 1/4 percent multiple of the bill subtotal. If one was in use Divisibill did not correctly divide it among participants and reported an error &quot;Oops, rounding error...&quot;. This has been corrected.</p>
 <h2 id="rounded-amount-0-in-error">Rounded Amount = $0 in Error</h2>
@@ -25,7 +28,7 @@
 <p>The font size has been increased slightly and when an entry field is selected it is enlarged further to make data entry easier.</p>
 <p>If you press enter after typing a value on an on-screen-keyboard the keyboard will be dismissed and focus will be removed from the field.</p>
 <p>The Tip Delta amount is the difference between the calculated tip percentage and the actual tip amount. It is now recalculated along with the tip rate whenever the tip amount is changed, and zeroed when the tip rate is changed. It is shown with a 'non default' notation if it is set.</p>
-<h1 id="section-1">6.2.7</h1>
+<h1 id="section-2">6.2.7</h1>
 <h2 id="improved-handling-of-long-lists-of-items">Improved Handling of Long Lists of Items</h2>
 <p>Lists longer than a page now show up/down buttons to notify off-screen items and allow easy scrolling to them.</p>
 <h2 id="item-count-on-bill-summaries">Item Count on Bill Summaries</h2>
@@ -34,21 +37,21 @@
 <p>When deleting a bill the image for the current bill was being deleted instead of the image corresponding to the bill being deleted. This has been corrected.</p>
 <h2 id="help-updated">Help Updated</h2>
 <p>The help files have been updated to be consistent with version 6.2.7.</p>
-<h1 id="section-2">6.2.6</h1>
+<h1 id="section-3">6.2.6</h1>
 <h2 id="allow-multiple-bill-deletion-on-dummy-bills">Allow Multiple Bill Deletion on Dummy Bills</h2>
 <p>A brand new install creates dummy bills and because they were not stored locally the multi-bill select did not delete them. This has been corrected.</p>
 <h2 id="retain-current-image-during-undelete">Retain Current Image During Undelete</h2>
 <p>An undelete image operation on a bill with a current image as well as a deleted one just swaps the two images, so that a second undelete puts back the original one. Note that an image you just selected or created on the image page does not count as a new one until you exit the page.</p>
 <h2 id="always-permit-item-add-while-filtering">Always Permit Item Add While Filtering</h2>
 <p>The app would fault if you attempted to add an item while the selected item was not visible because it was filtered out.</p>
-<h1 id="section-3">6.2.5</h1>
+<h1 id="section-4">6.2.5</h1>
 <h2 id="show-a-has-image-indication-in-bill-list">Show a 'Has Image' Indication in Bill List</h2>
 <p>Lists of bills now include an indication whether or not each bill has a stored image associated with it. If the bill has a stored image ten at the end of each entry (by the cloud/local icons) is a new icon.</p>
 <h2 id="undelete-image-permitted">Undelete Image Permitted</h2>
 <p>The details page shown when you double tap a bill in the list now shows whether a bill has a recoverable image. If such a bill is selected the Image page now permits its deleted image to be recovered by using the &quot;Undelete&quot; menu selection (or using the Undelete button shown if there is no current image).</p>
 <h2 id="deleting-an-image-creates-a-new-bill">Deleting an Image Creates a New Bill</h2>
 <p>Deleting an image from an old bill should have created a new one but instead it was simply deleting the image from the existing bill. This has been corrected and a new bill is now created rather than modifying the existing one.</p>
-<h1 id="section-4">6.2.4</h1>
+<h1 id="section-5">6.2.4</h1>
 <h2 id="speed-up-initial-bill-evaluation">Speed Up Initial Bill Evaluation</h2>
 <p>In parallel with initialization the app evaluates whether each local bill is stored in the cloud in order to show this status. To do this it downloads names for all the cloud bills. It used to do this 100 at a time, now it does 1000 at a time which can be considerably faster (1s vs. 6s for 3000 bills in testing, likely faster in production depending on your Internet speed).</p>
 <p>Once the evaluation described above completes (typically in a few seconds), the status of individual bills is accurately displayed.</p>
@@ -65,22 +68,22 @@
 <p>When undeleting bills into a list sorted by name or distance the undeleted bill could be inserted in the wrong place in the list.</p>
 <p>When undeleting venues into a list sorted by distance the undeleted venue could be inserted in the wrong place in the list.</p>
 <p>These problems have been corrected.</p>
-<h1 id="section-5">6.2.3</h1>
+<h1 id="section-6">6.2.3</h1>
 <h2 id="notify-user-if-archive-to-disk-fails">Notify User if Archive to Disk Fails</h2>
 <p>Previously it would fail silently, now it displays a message.</p>
 <h2 id="do-not-wait-after-reporting-pro-license">Do Not Wait After Reporting Pro License</h2>
 <p>When a pro license is discovered where previously there had been none a message is displayed. We no longer wait solely for the user to acknowledge that message before continuing, it disappears on its own after a few seconds.</p>
 <h2 id="upgrade-to.net-9">Upgrade to .NET 9</h2>
 <p>The build and various dependent libraries are upgraded to .NET 9. This should make no functional difference except that a few actions will be faster.</p>
-<h1 id="section-6">6.2.2</h1>
+<h1 id="section-7">6.2.2</h1>
 <p>Experimental upgrade to .NET 9. No user visible changes.</p>
-<h1 id="section-7">6.2.1</h1>
+<h1 id="section-8">6.2.1</h1>
 <h2 id="add-an-option-to-show-web-service-information">Add an Option to Show Web Service Information</h2>
 <p>The &quot;About&quot; page (a tab on the &quot;Information and Problems&quot; page) now has a &quot;Show Web Service Information&quot; checkbox.</p>
 <p>If checked it shows the base URL used to reach the web service and details about the service itself if they are available.</p>
 <h2 id="add-swipe-menu-choices-to-items-page">Add Swipe Menu Choices to Items Page</h2>
 <p>Swipe up and down through a long list of items is unreliable so this introduces command menu alternatives.</p>
-<h1 id="section-8">6.2.0</h1>
+<h1 id="section-9">6.2.0</h1>
 <h2 id="first-open-source-release">First Open Source Release</h2>
 <p>Prior to this release (November 2024) the DivisiBill sources were private, this moves them into open source on GitHub <a href="https://github.com/david-maw/DivisiBill">here</a>. To build the released code you need to define a variety of secrets but the app runs without them. Without the defined secrets OCR and cloud storage are not available but all other features work.</p>
 

@@ -1,3 +1,9 @@
+# 6.2.9
+
+## Increase the Data Entry Wait Time
+
+DivisiBill waits for the user to stop providing input during data entry before attempting to format the text (if it is a number) or update other items based on what's entered. This happens on the properties, items and settings pages.  This delay has been increased, it is possible to signal 'done' immediately by pressing the 'enter' key (which may be labeled 'done' or simply have a symbol on it) if you do not wish to wait.
+
 # 6.2.8
 
 ## Handle Tip Delta Correctly
