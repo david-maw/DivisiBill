@@ -1,3 +1,9 @@
+# 6.2.10
+
+## Load Rounded Amount in Existing Bill
+
+The Rounded Amount for a newly loaded bill could show up a zero instead of its actual value. This also distorted calculations of the payment amount. This has been corrected.
+
 # 6.2.9
 
 ## Increase the Data Entry Wait Time
