@@ -922,9 +922,14 @@ public partial class Meal : ObservableObjectPlus
             m.SavedToApp = true;
             m.SavedToFile = existingMealSummary is not null;
             if (m.SavedToFile)
-                m.summary = existingMealSummary;
+            {
+                // The normal case where the meal is in local storage
+                existingMealSummary.RoundedAmount = m.Summary.RoundedAmount; // It probably will not be set in the one from the meal list
+                m.Summary = existingMealSummary;
+            }
             else
             {
+                // An unusual case where the meal probably came from remote storage though it's possibly a test meal which is not stored at all
                 m.SavedToRemote = App.Settings.MealSavedToRemote;
                 m.Summary.IsRemote = m.SavedToRemote;
             }
