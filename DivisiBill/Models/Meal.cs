@@ -856,14 +856,6 @@ public partial class Meal : ObservableObjectPlus
     private TimeSpan IdleTime => DateTime.Now - LastChangeTime;
     public bool TooOldToContinue => IdleTime > App.MaximumIdleTime;
     public bool OldEnoughToBeNewFile => IdleTime > App.MinimumIdleTime;
-    // Take the raw loaded bill and reconcile the PC entries in it with the people
-    // we know about, recalculate amounts, and so on. After this the meal in memory
-    // may differ from the stored one it was loaded from
-    private void CompleteSetup()
-    {
-        DistributeCosts(); // Make sure the calculations are up to date
-        SetupChangedEvents();
-    }
     // Add anything from this meal that should be in other lists, most of the work is for the list of people,
     // but we may add a venue too. By the time this function is done there is a Person entry corresponding to
     // every PersonCost in Costs and a Venue entry for the bill venue name.
@@ -982,10 +974,9 @@ public partial class Meal : ObservableObjectPlus
             {
                 personCost.SetDinerFromGuid();
             }
+            m.DistributeCosts(); // Make sure the calculations are up to date
             if (setup)
-                m.CompleteSetup();
-            else
-                m.DistributeCosts(); // Make sure the calculations are up to date
+                m.SetupChangedEvents();
             // Probably one of these will be set true by the caller, but we don't know which, so just reset them all
             m.SavedToApp = false;
             m.SavedToFile = false;
