@@ -53,7 +53,7 @@
                     </FormattedString>
                 </Label.FormattedText>
             </Label>
-            <Border Margin="10">
+            <Border Margin="10" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}">
                 <Label Text="Done" HorizontalOptions="Center" Margin="3"/>
             </Border>
         </VerticalStackLayout>
