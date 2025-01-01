@@ -2080,7 +2080,8 @@ public partial class Meal : ObservableObjectPlus
         var costsWithOrderAmount = Costs.Where(pc => pc.OrderAmount > 0).ToList();
         if (costsWithOrderAmount.Count == 0)
         {
-            // Trivial case, nobody bought anything so there's nothing to calculate, just mark as completed and return
+            // Trivial case, nobody bought anything so there's nothing much to calculate, just guess at the rounded amount, mark as completed and return
+            RoundedAmount = GetRoundedAmount();
             IsDistributed = true;
             return;
         }
