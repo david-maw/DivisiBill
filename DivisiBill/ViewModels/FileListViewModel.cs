@@ -14,7 +14,7 @@ public partial class FileListViewModel : ObservableObjectPlus
         itemTypeName = itemTypeNameParameter;
     }
 
-    ~FileListViewModel() 
+    ~FileListViewModel()
     {
         if (FileList is not null)
             FileList.CollectionChanged -= FileList_CollectionChanged;
@@ -87,10 +87,10 @@ public partial class FileListViewModel : ObservableObjectPlus
         }
         else // Selecting a single item
         {
-            
+
             if (remoteItemInfo == SelectedItem)
                 SelectedItem = null;  // deselecting current item
-            else 
+            else
             {
                 if (SelectedItem is not null) // Selecting a new item where something was selected before
                     SelectedItem.Selected = false; // so deselect the old one 

@@ -124,7 +124,7 @@ public static class Utilities
             }
         }
         // Validation code to ensure order is correct when we exit this function
-        if (IsDebug)                            
+        if (IsDebug)
         {
             bool noErrors = true;
             T priorVenue = list.First();
@@ -284,7 +284,8 @@ public static class Utilities
         }
         if (sourceStream is not null && !(sourceStream.CanRead && sourceStream.Length > 0 && sourceStream.CanSeek))
             sourceStream = null;
-        SentrySdk.CaptureException(ex, scope => {
+        SentrySdk.CaptureException(ex, scope =>
+        {
             if (ex is XmlException xmlEx)
                 scope.Fingerprint = new[] { "xml-error" }; // this seems to be ignored
             // These attachments appear in the Sentry UI in reverse of the order they appear here
@@ -303,7 +304,7 @@ public static class Utilities
                 }
             }
             // Attach the reported stream
-            if (sourceStream is not null && sourceStream.CanSeek) 
+            if (sourceStream is not null && sourceStream.CanSeek)
             {
                 sourceStream.Position = 0;
                 streamName = "stream-" + (string.IsNullOrWhiteSpace(streamName) ? "anonymous.txt" : streamName);
@@ -328,7 +329,7 @@ public static class Utilities
         [CallerFilePath] string sourceFilePath = "",
         [CallerLineNumber] int sourceLineNumber = 0)
     {
-        string fullMsg = sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1) + "@" + sourceLineNumber + " (" + callerName  + "): " + msg;
+        string fullMsg = sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1) + "@" + sourceLineNumber + " (" + callerName + "): " + msg;
         SentrySdk.AddBreadcrumb(
             type: "debug",
             category: "Record." + callerName,
@@ -362,7 +363,7 @@ public static class Utilities
     /// Send a status message to subscribers of StatusMsgInvoked (used to report progress during initialization).
     /// These messages are also put in the breadcrumb trail for context in case there's an unexpected failure.
     /// </summary>
-    public async static Task StatusMsgAsync(string msg, 
+    public async static Task StatusMsgAsync(string msg,
         [CallerFilePath] string sourceFilePath = "",
         [CallerLineNumber] int sourceLineNumber = 0)
     {
@@ -371,7 +372,7 @@ public static class Utilities
         // Extract just the file name - has to be done manually because this may be an Android build compiled on Windows
         var sourceFileName = sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1);
         SentrySdk.AddBreadcrumb(
-            type: "debug", 
+            type: "debug",
             category: "Utilities.StatusMsg",
             message: sourceFileName + "@" + sourceLineNumber + ": " + msg);
         DebugMsg(msg);
@@ -508,13 +509,13 @@ public static class Utilities
     /// <param name="cancel">Text for a 'no' answer</param>
     /// <returns></returns>
     public delegate Task<bool> AskAsyncType(string title, string message, string accept = null, string cancel = null);
-    public static AskAsyncType AskAsync = ActualAskAsync; 
+    public static AskAsyncType AskAsync = ActualAskAsync;
     public static async Task<bool> ActualAskAsync(string title, string message, string accept = null, string cancel = null)
     {
         DebugMsg("Question to user: " + message);
         return await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, accept, cancel));
     }
-    
+
     /// <summary>
     /// Send a message to the user and wait for acknowledgment
     /// </summary>
@@ -549,7 +550,7 @@ public static class Utilities
         DebugMsg("Snack message to user: " + message);
         return Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message));
     }
-    
+
     /// <summary>
     /// Check if the contents of two files are the same
     /// </summary>
@@ -672,15 +673,15 @@ public static class Utilities
         string s = Path.GetFileNameWithoutExtension(name);
         if (s.Length == 14
             && int.TryParse(s.Substring(0, 4), out int y)
-            && y > 2010 && y < 2030 
+            && y > 2010 && y < 2030
             && int.TryParse(s.Substring(4, 2), out int m)
-            && m >= 1 && m <= 12 
+            && m >= 1 && m <= 12
             && int.TryParse(s.Substring(6, 2), out int d)
             && d >= 1 && d <= 31
             && int.TryParse(s.Substring(8, 2), out int hh)
-            && hh >= 0 && hh <= 23 
+            && hh >= 0 && hh <= 23
             && int.TryParse(s.Substring(10, 2), out int mm)
-            && mm >= 0 && mm < 60 
+            && mm >= 0 && mm < 60
             && int.TryParse(s.Substring(12, 2), out int ss)
             && ss >= 0 && ss < 60)
             return new DateTime(y, m, d, hh, mm, ss); // Plausible date
@@ -727,13 +728,13 @@ public static class Utilities
     /// <param name="fullString">The string to be fitted</param>
     /// <param name="maxLen">the length within which it should fit</param>
     /// <returns></returns>
-    public static string TruncatedTo(this string fullString,int maxLen)
+    public static string TruncatedTo(this string fullString, int maxLen)
     {
         if (fullString.Length <= maxLen)
             return fullString;
         if (maxLen <= 3)
             return "...";
-        return fullString.Substring(0, Math.Min(fullString.Length-1, maxLen-3)) + "...";
+        return fullString.Substring(0, Math.Min(fullString.Length - 1, maxLen - 3)) + "...";
     }
 
     /// <summary>
@@ -777,8 +778,8 @@ public static class Utilities
     public static async Task InitializeUtilitiesAsync()
     {
         using var notesStream = await FileSystem.OpenAppPackageFileAsync("Release Notes.html");
-            using (var reader = new StreamReader(notesStream))
-                ReleaseNotes = new HtmlWebViewSource { Html = reader.ReadToEnd() };
+        using (var reader = new StreamReader(notesStream))
+            ReleaseNotes = new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
     public static string CurrencySymbol = System.Globalization.NumberFormatInfo.CurrentInfo.CurrencySymbol;
     public static string EditionName => App.IsLimited ? "Basic" : "Professional";
@@ -794,7 +795,7 @@ public static class Utilities
         using (var reader = new StreamReader(stream))
             return new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
-    public static HtmlWebViewSource ReleaseNotes { get;  private set; }
+    public static HtmlWebViewSource ReleaseNotes { get; private set; }
     #region Geo
     public const int close = 5; // Anything within this distance is just 'close' because GPS is usually less certain then this 
 
@@ -874,7 +875,7 @@ public static class Utilities
         else
             return Math.Round(d);
     }
-#endregion
+    #endregion
 }
 public static class Distances
 {
@@ -896,10 +897,10 @@ public static class Distances
     /// </summary>
     /// <param name="distance"></param>
     /// <returns>the modified distance value</returns>
-    public static int Simplified(int distance) => 
+    public static int Simplified(int distance) =>
         distance <= Close ? Close
         : (distance < 1000 ? distance
-        : (distance >= Inaccurate ? Inaccurate 
+        : (distance >= Inaccurate ? Inaccurate
         : (distance + 50) / 100 * 100));
     /// <summary>
     /// Show distance text
@@ -908,10 +909,10 @@ public static class Distances
     /// <returns>String representation of approximate distance and units</returns>
     public static string Text(int distance) =>
         distance <= Close ? "close"
-        : (distance < 1000 ? string.Format("{0} m",distance)
-        : (distance < 9950 ? string.Format("{0:F1} km", (distance)/1000.0)
+        : (distance < 1000 ? string.Format("{0} m", distance)
+        : (distance < 9950 ? string.Format("{0:F1} km", (distance) / 1000.0)
         : (distance >= Inaccurate ? ""
-        : string.Format("{0} km", (distance+499) / 1000) ) ) );
+        : string.Format("{0} km", (distance + 499) / 1000))));
 }
 /// <summary>
 /// From https://stackoverflow.com/questions/7863573/awaitable-task-based-queue
@@ -955,7 +956,7 @@ public class AwaitableQueue<T>
 public class SentryEventProcessor : ISentryEventProcessor
 {
     public static int skipBreaks = 0; // Just set this to skip the next however many breaks
-    public  SentryEvent Process(SentryEvent sentryEvent)
+    public SentryEvent Process(SentryEvent sentryEvent)
     {
         Utilities.DebugMsg($"In SentryEventProcessor.Process, Sentry EventId: {sentryEvent.EventId}");
         if (Utilities.IsDebug)
@@ -965,7 +966,7 @@ public class SentryEventProcessor : ISentryEventProcessor
             if (skipBreaks <= 0)
                 Debugger.Break();
             else
-                skipBreaks --;
+                skipBreaks--;
             return null;
         }
         if (App.Settings is not null && App.Settings.SendCrashYes)

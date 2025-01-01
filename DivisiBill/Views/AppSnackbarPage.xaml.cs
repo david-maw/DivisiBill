@@ -2,7 +2,7 @@ namespace DivisiBill.Views;
 
 public partial class AppSnackBarPage : CommunityToolkit.Maui.Views.Popup
 {
-    private bool isOpen; 
+    private bool isOpen;
     public AppSnackBarPage(string parameterText)
     {
         InitializeComponent();
@@ -11,7 +11,7 @@ public partial class AppSnackBarPage : CommunityToolkit.Maui.Views.Popup
         Closed += AppSnackBarPage_Closed;
     }
 
-    ~AppSnackBarPage() 
+    ~AppSnackBarPage()
     {
         Opened -= AppSnackBarPage_Opened;
         Closed -= AppSnackBarPage_Closed;

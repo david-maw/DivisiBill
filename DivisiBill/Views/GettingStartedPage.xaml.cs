@@ -1,5 +1,4 @@
-﻿using DivisiBill.Services;
-using static DivisiBill.Services.Utilities;
+﻿using static DivisiBill.Services.Utilities;
 
 namespace DivisiBill.Views;
 public partial class GettingStartedPage : ContentPage
@@ -48,6 +47,6 @@ public partial class GettingStartedPage : ContentPage
         }
         base.OnAppearing();
         nesting--;
-        DebugMsg( $"Leave GettingStartedPage.OnAppearing, helpInvoked ={ helpInvoked}, nesting = {nesting}");
+        DebugMsg($"Leave GettingStartedPage.OnAppearing, helpInvoked ={helpInvoked}, nesting = {nesting}");
     }
 }

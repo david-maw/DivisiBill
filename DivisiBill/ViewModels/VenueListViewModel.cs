@@ -1,9 +1,9 @@
 ﻿#nullable enable
 
+using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.Specialized;
 
 namespace DivisiBill.ViewModels;
@@ -64,7 +64,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
         if (v is not null)
         {
             CurrentItem = v;
-            NavigateToDetails(v); 
+            NavigateToDetails(v);
         }
     }
 
@@ -80,7 +80,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
     }
 
 #if WINDOWS
-    private Venue? lastVenueSelectedByMe = null; 
+    private Venue? lastVenueSelectedByMe = null;
 #endif
 
     [RelayCommand]
@@ -113,7 +113,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
     {
         get => showVenuesHint;
         set => SetProperty(ref showVenuesHint, value, () => App.Settings.ShowVenuesHint = value);
-    } 
+    }
     #endregion
     #region Venues
     [RelayCommand]
@@ -144,7 +144,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
     }
     #region Venue Delete/Undelete
     private Stack<Venue> deletedVenues = new Stack<Venue>();
-    
+
     [RelayCommand]
     public async Task UndeleteVenueAsync()
     {
@@ -202,7 +202,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
             {
                 foreach (MealSummary sum in mealsForVenue.OrderBy((ms) => ms.CreationTime))
                     await sum.DeleteAsync(doLocal: true, doRemote: false);
-            } 
+            }
         }
     }
     #endregion

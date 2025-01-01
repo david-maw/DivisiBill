@@ -210,7 +210,7 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
 #if WINDOWS
-    private PersonCost lastCostSelectedByMe = null; 
+    private PersonCost lastCostSelectedByMe = null;
 #endif
 
     [RelayCommand]

@@ -4,10 +4,10 @@ using static DivisiBill.Services.Utilities;
 namespace DivisiBill;
 
 public partial class AppShell : Shell
-{                                                                                             
-	public AppShell()
-	{
-		InitializeComponent();
+{
+    public AppShell()
+    {
+        InitializeComponent();
         Routing.RegisterRoute(Routes.HelpPage, typeof(HelpPage));
         Routing.RegisterRoute(Routes.PropertiesPage, typeof(PropertiesPage));
         Routing.RegisterRoute(Routes.PersonEditPage, typeof(PersonEditPage));
@@ -33,13 +33,13 @@ public partial class AppShell : Shell
     /// </summary>
     /// <returns>true if the request has been handled, false if the caller should handle it</returns>
     protected override bool OnBackButtonPressed() => HandleBackRequest();
-    
+
     /// <summary>
     /// Only allow application exit from the main page, from others close the flyout or just go back to the main page
     /// </summary>
     /// <returns>true if the request has been handled, false if the caller should handle it</returns>
     public bool HandleBackRequest()
-    { 
+    {
         if (FlyoutIsPresented)
         {
             FlyoutIsPresented = false;
@@ -50,7 +50,7 @@ public partial class AppShell : Shell
             DebugMsg("In Shell.OnBackButtonPressed navigation branch");
             // If there is an active back button behavior, use it
             BackButtonBehavior bb = CurrentPage.GetPropertyIfSet(BackButtonBehaviorProperty, returnIfNotSet: (BackButtonBehavior)null);
-            if (bb !=null)
+            if (bb != null)
             {
                 if (bb.Command is not null && bb.IsEnabled && bb.IsVisible && bb.Command.CanExecute(null))
                     bb.Command.Execute(null);
@@ -101,6 +101,6 @@ public partial class AppShell : Shell
         if (CurrentPage is ImagePage imagePage)
             App.PushAsync(Routes.CameraPage);
         else
-        App.GoToAsync(Routes.ImagePage, "StartWithCamera", "true");
+            App.GoToAsync(Routes.ImagePage, "StartWithCamera", "true");
     }
 }

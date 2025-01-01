@@ -1,8 +1,7 @@
+using CommunityToolkit.Maui.Views;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using static DivisiBill.Services.Utilities;
-using CommunityToolkit.Maui.Views;
-using Sentry;
 
 namespace DivisiBill.Views;
 
@@ -29,15 +28,15 @@ public partial class SplashPage : ContentPage
         }
     }
     public SplashPage()
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         StatusMsgInvoked += LocalStatusMsg;
     }
 
     ~SplashPage()
     { StatusMsgInvoked -= LocalStatusMsg; }
 
-        private bool initializationStarted = false;
+    private bool initializationStarted = false;
 
     /// <summary>
     /// Called when the initial page is shown, either when the program is run for the first time or when it is
@@ -90,15 +89,15 @@ public partial class SplashPage : ContentPage
                 {
                     IQuestionDisposition questionDisposition = new QuestionDisposition("Telemetry", "Do you want to report crash data anonymously to DivisiBill Support?");
                     if (questionDisposition.AskAgain)
-                        _ = await this.ShowPopupAsync(new QuestionPage(questionDisposition)); 
-                } 
+                        _ = await this.ShowPopupAsync(new QuestionPage(questionDisposition));
+                }
             }
             App.EvaluateCloudAccessible(); // Set initial values
             App.HandleActivityChanges();
             if (App.WsAllowed)
             {
                 await StatusMsgAsync("Checking for Subscriptions and Licenses");
-                await App.CheckLicenses(true); 
+                await App.CheckLicenses(true);
             }
             editionSpan.Text = App.IsLimited ? " Basic Edition" : " Pro Edition";
             await StatusMsgAsync("Checking location");
@@ -165,10 +164,10 @@ public partial class SplashPage : ContentPage
     {
         if (!Utilities.PauseBeforeMessage)
             await Utilities.StatusMsgAsync("*** Pausing Messages ***");
-            IsPaused = !IsPaused;
+        IsPaused = !IsPaused;
     }
 
-        private bool isPaused = false;
+    private bool isPaused = false;
 
     public bool IsPaused
     {

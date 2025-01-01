@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DivisiBill.Models;
 using DivisiBill.Services;
 
 namespace DivisiBill.ViewModels;
@@ -109,7 +107,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     private void SystemSettings() => AppInfo.Current.ShowSettingsUI();
 
     [RelayCommand]
-    private void  EnableHints() => App.Settings.EnableHints();
+    private void EnableHints() => App.Settings.EnableHints();
 
     [RelayCommand]
     private void ResetCheckBoxes() => App.Settings.ResetCheckboxes();

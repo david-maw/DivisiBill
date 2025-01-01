@@ -6,7 +6,7 @@ using DivisiBill.Services;
 
 namespace DivisiBill.ViewModels;
 
-partial class PersonEditViewModel : ObservableObjectPlus 
+partial class PersonEditViewModel : ObservableObjectPlus
 {
     private readonly Person originalPerson, currentPerson;
     private readonly Action ClosePage;

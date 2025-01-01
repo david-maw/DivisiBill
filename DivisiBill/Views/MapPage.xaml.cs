@@ -1,9 +1,9 @@
+using CommunityToolkit.Maui.Alerts;
 using DivisiBill.Services;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
-using System.Windows.Input;
-using CommunityToolkit.Maui.Alerts;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 namespace DivisiBill.Views;
 
 public partial class MapPage : ContentPage
@@ -58,7 +58,7 @@ public partial class MapPage : ContentPage
     private static double Simplified(double d)
     {
         if (d <= 0) return d;
-        
+
         double digits = Math.Floor(Math.Log10(d));
         double exponent = Math.Pow(10, digits);
         double mantissa = d / exponent;
@@ -68,7 +68,7 @@ public partial class MapPage : ContentPage
     private async void OnMapClicked(object sender, MapClickedEventArgs e)
     {
         // A round number based on there being 20 distinct points across the screen
-        double fingerWidth = Simplified(map.VisibleRegion.Radius.Meters / 10.0);  
+        double fingerWidth = Simplified(map.VisibleRegion.Radius.Meters / 10.0);
         e.Location.Accuracy = fingerWidth;
         VenueLocation = e.Location;
         MovePin();
@@ -97,7 +97,7 @@ public partial class MapPage : ContentPage
     // BindingContext
     public string VenueName
     {
-        get => venueName; 
+        get => venueName;
         set
         {
             ArgumentNullException.ThrowIfNull(value);
@@ -105,10 +105,10 @@ public partial class MapPage : ContentPage
             pin.Label = VenueName;
         }
     }
-    public Location VenueLocation 
-    {  
+    public Location VenueLocation
+    {
         get => venueLocation;
-        set 
+        set
         {
             if ((value is null && venueLocation is not null) || value.GetDistanceTo(venueLocation) > 0)
             {
@@ -118,7 +118,7 @@ public partial class MapPage : ContentPage
                 VenueLocationHasChanged = true;
                 OnPropertyChanged();
             }
-        } 
+        }
     }
     private int venueDistance = Distances.Unknown;
     public int VenueDistance
@@ -139,8 +139,8 @@ public partial class MapPage : ContentPage
             if (mapSpan is not null)
             {
                 await Task.Delay(200); // Without this the MoveToRegion is ignored 
-                map.MoveToRegion(mapSpan); 
-            } 
+                map.MoveToRegion(mapSpan);
+            }
         }
     });
     public ICommand MapTypeCommand => new Command(() =>

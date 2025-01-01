@@ -12,7 +12,7 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public MealSummaryViewModel() { }
 
     private Meal m;
-    private MealSummary ms = new ();
+    private MealSummary ms = new();
 
     public MealSummary Summary
     {
@@ -61,8 +61,8 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     /// <returns></returns>
     public async Task DeleteMeal()
     {
-        if (ms.IsLocal) 
-            await m.Summary.DeleteAsync(doLocal:true, doRemote:false);
+        if (ms.IsLocal)
+            await m.Summary.DeleteAsync(doLocal: true, doRemote: false);
         else if (ms.IsRemote)
             await m.Summary.DeleteAsync(doLocal: false, doRemote: true);
     }

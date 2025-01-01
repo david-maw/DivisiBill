@@ -14,19 +14,20 @@ namespace DivisiBill;
 [epj.RouteGenerator.AutoRoutes("Page")]
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiApp<App>()
-            .UseSentry(options => {
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .UseSentry(options =>
+            {
                 // The DSN is the only required setting.
                 options.Dsn = Generated.BuildInfo.DivisiBillSentryDsn;
 
                 options.Release = Utilities.VersionName;
                 options.Environment = Utilities.IsDebug ? "debug" : "production";
                 options.AddExceptionFilterForType<OperationCanceledException>(); // Also filters out children, like TaskCanceledException
-                options.AddEventProcessor(new Services.SentryEventProcessor()); 
+                options.AddEventProcessor(new Services.SentryEventProcessor());
 
                 // Use debug mode if you want to see what the SDK is doing.
                 // Debug messages are written to stdout with Console.Writeline,
@@ -58,23 +59,23 @@ public static class MauiProgram
                 ));
 #endif
             })
-			.UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkit()
             .UseMauiCommunityToolkitCamera()
             .ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("materialdesignicons-webfont.ttf", "mdicons");
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("materialdesignicons-webfont.ttf", "mdicons");
 #if WINDOWS
-                fonts.AddFont("Segoe-UI.ttf", "monospace"); 
+                fonts.AddFont("Segoe-UI.ttf", "monospace");
 #endif
             })
 #if WINDOWS
-			.UseMauiCommunityToolkitMaps(Generated.BuildInfo.DivisiBillBingMapsSecret); // You should add your own key here from bingmapsportal.com
+            .UseMauiCommunityToolkitMaps(Generated.BuildInfo.DivisiBillBingMapsSecret); // You should add your own key here from bingmapsportal.com
 #else
-			.UseMauiMaps();
+            .UseMauiMaps();
 #endif
         builder.Services.AddTransient<Views.CameraPage>();
-        
+
         return builder.Build();
-	}
+    }
 }

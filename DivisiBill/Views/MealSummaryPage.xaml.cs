@@ -34,6 +34,6 @@ public partial class MealSummaryPage : ContentPage
         await viewModel.CurrentMeal.BecomeCurrentMealAsync();
         await App.GoToRoot(2);
     }
-    private void OnVenueNameTapped(object sender, TappedEventArgs e) 
+    private void OnVenueNameTapped(object sender, TappedEventArgs e)
         => Navigation.PushAsync(new VenueEditPage(Venue.SelectOrAddVenue(viewModel.VenueName, "Created from a bill")));
 }

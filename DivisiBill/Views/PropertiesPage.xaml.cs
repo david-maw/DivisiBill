@@ -1,5 +1,5 @@
-using DivisiBill.ViewModels;
 using CommunityToolkit.Maui.Core.Platform;
+using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
 
@@ -27,7 +27,7 @@ public partial class PropertiesPage : ContentPage
 
     private void OnEntryFocused(object sender, FocusEventArgs e)
     {
-        if (sender is Entry focusedEntry) 
+        if (sender is Entry focusedEntry)
         {
             focusedEntry.ShowKeyboardAsync();
         }
@@ -35,8 +35,8 @@ public partial class PropertiesPage : ContentPage
 
     private void OnEntryCompleted(object sender, EventArgs e)
     {
-        if (sender is Entry focusedEntry) 
-        { 
+        if (sender is Entry focusedEntry)
+        {
             focusedEntry.HideKeyboardAsync();
             focusedEntry.Unfocus();
         }

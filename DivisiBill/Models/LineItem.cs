@@ -1,10 +1,10 @@
-using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Xml.Serialization;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.Xml;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
@@ -268,7 +268,7 @@ public class LineItem : INotifyPropertyChanged
             SetShares(diner, 0);
         }
     }
-    
+
     /// <summary>
     /// The total number of shares allocated to this item.
     /// </summary>

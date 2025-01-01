@@ -1,5 +1,4 @@
 ﻿using DivisiBill.Models;
-using System.ComponentModel;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Services;
@@ -26,9 +25,9 @@ public class Archive
         };
         // Make a list of meals one by looping through list of local mealSummaries and creating a meal from each
         Meals = new List<Meal>(Meal.LocalMealList
-            .Where(ms=>DateOnly.FromDateTime(ms.CreationTime) >= startDate && DateOnly.FromDateTime(ms.CreationTime) <= finishDate)
+            .Where(ms => DateOnly.FromDateTime(ms.CreationTime) >= startDate && DateOnly.FromDateTime(ms.CreationTime) <= finishDate)
             .OrderByDescending(ms => ms.CreationTime)
-            .Select(ms=>Meal.LoadFromFile(ms)));
+            .Select(ms => Meal.LoadFromFile(ms)));
         if (Utilities.IsDebug)
         {
             // this is a handy place to check for differences between the old and new DistributeCosts algorithms
@@ -42,18 +41,18 @@ public class Archive
             Persons = new List<Person>(Person.AllPeople);
             AliasGuids = Person.AliasGuidList;
         }
-        else 
+        else
         {
-            Venues = new ();
-            Persons = new ();
+            Venues = new();
+            Persons = new();
             AliasGuids = new();
             // figure out what is used by the meals in the list and just include that
             foreach (var meal in Meals)
             {
                 Venue v = Venue.FindVenueByName(meal.VenueName);
-                if (v is not null) 
+                if (v is not null)
                     Venues.Add(v);
-                foreach (var pc in meal.Costs.Where(pc=>pc.Diner is not null))
+                foreach (var pc in meal.Costs.Where(pc => pc.Diner is not null))
                 {
                     Persons.Add(pc.Diner);
                     if (pc.PersonGUID != pc.Diner.PersonGUID)
@@ -75,9 +74,9 @@ public class Archive
     public string Version { get; set; } = "1.2";
     private DateTimeOffset creationTime = DateTimeOffset.Now;
     public string CreationTimeString
-    { 
-        get => creationTime.ToString(); 
-        set => DateTimeOffset.TryParse(value, out creationTime); 
+    {
+        get => creationTime.ToString();
+        set => DateTimeOffset.TryParse(value, out creationTime);
     }
     public string TimeName => Utilities.NameFromDateTime(creationTime.LocalDateTime);
     public bool DeleteBeforeRestore { get; set; } = false;
@@ -176,7 +175,7 @@ public class Archive
             ex.ReportCrash();
             return false;
         }
-        finally 
+        finally
         {
             App.HandleActivityChanges();
         }

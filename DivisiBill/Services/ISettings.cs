@@ -32,7 +32,7 @@ public interface ISettings
     /// Is WiFi access required before the Internet can be used
     /// </summary>
     bool WiFiOnly { get; set; }
-    bool FirstUse {  get; set; }
+    bool FirstUse { get; set; }
     DateTime LastUse { get; set; }
     string UserKey { get; set; }
     bool ShowLineItemsHint { get; set; }

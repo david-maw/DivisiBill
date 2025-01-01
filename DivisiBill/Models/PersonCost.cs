@@ -1,7 +1,7 @@
 using System.ComponentModel;
-using System.Xml.Serialization;
-using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
@@ -95,13 +95,13 @@ public class PersonCost : INotifyPropertyChanged
     public void RoundAllAmounts(int places = 2)
     {
         // In Alphabetical order
-        Amount               = Math.Round(Amount               , places);
-        PreTaxCouponAmount = Math.Round(PreTaxCouponAmount , places);
-        CompedAmount         = Math.Round(CompedAmount         , places);
-        CouponAmount         = Math.Round(CouponAmount         , places);
-        Discount             = Math.Round(Discount             , places);
-        OrderAmount          = Math.Round(OrderAmount          , places);
-        UnusedCouponAmount   = Math.Round(UnusedCouponAmount   , places);
+        Amount = Math.Round(Amount, places);
+        PreTaxCouponAmount = Math.Round(PreTaxCouponAmount, places);
+        CompedAmount = Math.Round(CompedAmount, places);
+        CouponAmount = Math.Round(CouponAmount, places);
+        Discount = Math.Round(Discount, places);
+        OrderAmount = Math.Round(OrderAmount, places);
+        UnusedCouponAmount = Math.Round(UnusedCouponAmount, places);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public class PersonCost : INotifyPropertyChanged
     /// </summary>
     [XmlIgnore]
     public decimal PreTaxCouponAmount { get; set; }
-    
+
     private decimal couponAmount;
     /// <summary>
     /// <para>The total value of any coupons assigned to this participant.</para>
@@ -166,7 +166,7 @@ public class PersonCost : INotifyPropertyChanged
     /// This is the tax basis for this participant.
     /// </summary>
     public decimal ChargedAmount => OrderAmount - CompedAmount;
-    
+
     private decimal compedAmount;
     /// <summary>
     /// The sum of this participant's shares in comped items.
@@ -278,8 +278,8 @@ public class PersonCost : INotifyPropertyChanged
     protected virtual void OnPropertyChanged([CallerMemberName] string propChanged = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
     public void SwapDinerID(PersonCost pc)
     {
-       var temp = DinerID;
-       DinerID = pc.DinerID;
-       pc.DinerID = temp;
+        var temp = DinerID;
+        DinerID = pc.DinerID;
+        pc.DinerID = temp;
     }
 }

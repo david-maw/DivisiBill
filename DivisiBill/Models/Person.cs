@@ -1,11 +1,11 @@
-using System.ComponentModel;
-using System.Text;
-using System.Collections.ObjectModel;
-using System.Runtime.Serialization;
-using System.Xml;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
 using DivisiBill.Services;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
@@ -96,8 +96,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             Updater = App.Settings.PeopleUpdater;
             if (Updater == Guid.Empty)
                 Updater = App.Current.Id; // Set the current appid
-                Utilities.DebugExamineStream(allPeopleStream);
-                DeserializeAllPeople(allPeopleStream, doReplace);
+            Utilities.DebugExamineStream(allPeopleStream);
+            DeserializeAllPeople(allPeopleStream, doReplace);
             return true;
         }
     }
@@ -128,7 +128,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     private static bool LoadFromLocal()
     {
         Stream allPeopleStream = new FileStream(PersonPathName, FileMode.Open, FileAccess.Read);
-        if (allPeopleStream is not null) 
+        if (allPeopleStream is not null)
             try
             {
                 DateTime savedUpdateTime = App.Settings.PeopleUpdateTime;
@@ -183,11 +183,11 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     {
         bool failed = true;
         using (MemoryStream stream = new MemoryStream(10000))
-        { 
-        SerializeAllPeople(stream);
-        stream.Position = 0;
-        Utilities.DebugExamineStream(stream);
-        // Initiate local backup if it is permitted
+        {
+            SerializeAllPeople(stream);
+            stream.Position = 0;
+            Utilities.DebugExamineStream(stream);
+            // Initiate local backup if it is permitted
             Directory.CreateDirectory(Path.GetDirectoryName(PersonPathName));
             try
             {
@@ -228,8 +228,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     public static DateTime UpdateTime
     {
-       get => updateTime;
-       set => updateTime = value;
+        get => updateTime;
+        set => updateTime = value;
     }
 
     public static bool IsDefaultList => UpdateTime == DateTime.MinValue;
@@ -239,8 +239,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     public static Guid Updater
     {
-       get => updater;
-       set => updater = value;
+        get => updater;
+        set => updater = value;
     }
     static public Person FindByNickname(string targetNickname) => AllPeople.FirstOrDefault(person => person.Nickname.Equals(targetNickname, StringComparison.OrdinalIgnoreCase));
 
@@ -253,8 +253,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     private static DataContractSerializer peopleSerializer = new DataContractSerializer(typeof(List<Person>));
     private static DataContractSerializer aliasSerializer = new DataContractSerializer(typeof(Dictionary<Guid, Guid>));
-    
-    
+
+
     public static List<Person> DeserializeList(Stream s)
     {
         var reader = XmlReader.Create(s);
@@ -390,7 +390,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             guidMappingEntryList.Clear();
             foreach (var entry in value)
             {
-                if (FindByGuid(entry.Key)==null // there is no existing person
+                if (FindByGuid(entry.Key) == null // there is no existing person
                     && !Aliases.ContainsKey(entry.Key))
                 {
                     // What we would expect, there is no existing alias entry, or person with this guid
@@ -420,12 +420,12 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         peopleSerializer.WriteObject(writer, people);
         var storedAliases = new Dictionary<Guid, Guid>();
         foreach (var alias in Aliases)
-            storedAliases.Add(alias.Key, alias.Value.PersonGUID);   
+            storedAliases.Add(alias.Key, alias.Value.PersonGUID);
         foreach (Person person in AllPeople)
             storedAliases.Remove(person.PersonGUID);
         if (storedAliases.Count > 0)
         {
-           aliasSerializer.WriteObject(writer, storedAliases);
+            aliasSerializer.WriteObject(writer, storedAliases);
         }
         writer.WriteEndElement();
         writer.WriteEndDocument();
@@ -452,8 +452,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         else
             PersonGUID = guid;
     }
-    public Person(string guidString):this(Guid.ParseExact(guidString, "D")){} // Guid in format 00000000-0000-0000-0000-000000000000
-    public Person(Person p):this(Guid.NewGuid())
+    public Person(string guidString) : this(Guid.ParseExact(guidString, "D")) { } // Guid in format 00000000-0000-0000-0000-000000000000
+    public Person(Person p) : this(Guid.NewGuid())
     {
         nickname = p.nickname;
         firstName = p.firstName;
@@ -502,23 +502,23 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     public bool IsEmpty
     {
-       get
-       {
-          return (
-             String.IsNullOrWhiteSpace(nickname)
-             && Complexity()==0
-             );
-       }
+        get
+        {
+            return (
+               String.IsNullOrWhiteSpace(nickname)
+               && Complexity() == 0
+               );
+        }
     }
 
     private int Complexity()
     {
-       int complexityScore = 0;
-       if (!String.IsNullOrWhiteSpace(firstName)) complexityScore += 1; 
-       if (!String.IsNullOrWhiteSpace(middleName)) complexityScore += 1;
-       if (!String.IsNullOrWhiteSpace(lastName)) complexityScore += 5;
-       if (!String.IsNullOrWhiteSpace(email)) complexityScore += 10;
-       return complexityScore;
+        int complexityScore = 0;
+        if (!String.IsNullOrWhiteSpace(firstName)) complexityScore += 1;
+        if (!String.IsNullOrWhiteSpace(middleName)) complexityScore += 1;
+        if (!String.IsNullOrWhiteSpace(lastName)) complexityScore += 5;
+        if (!String.IsNullOrWhiteSpace(email)) complexityScore += 10;
+        return complexityScore;
     }
 
     /// <summary>
@@ -562,11 +562,11 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     }
     public void Merge(Person p)
     {
-       if (nickname==null) nickname = p.nickname;
-       if (firstName is null) firstName = p.firstName;
-       if (middleName is null) middleName = p.middleName;
-       if (lastName is null) lastName = p.lastName;
-       if (email is null) email = p.email;
+        if (nickname == null) nickname = p.nickname;
+        if (firstName is null) firstName = p.firstName;
+        if (middleName is null) middleName = p.middleName;
+        if (lastName is null) lastName = p.lastName;
+        if (email is null) email = p.email;
     }
 
     /// <summary>
@@ -576,7 +576,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     {
         if (Meal.CurrentMeal?.Costs is null)
             return;
-        foreach(var pc in Meal.CurrentMeal.Costs)
+        foreach (var pc in Meal.CurrentMeal.Costs)
         {
             if (pc.Diner is null)
                 pc.Diner = new Person(pc.PersonGUID) { nickname = pc.Nickname, lastName = FromBill };
@@ -587,9 +587,9 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     public static void MergeSimilarPeople()
     {
-       var people = AllPeople.OrderBy(p => p.Nickname).ThenBy(p => p.Complexity()).ToArray();
-       Person currentPerson = people[people.Length - 1];
-        for (int i=people.Length - 2; i>=0; i--)
+        var people = AllPeople.OrderBy(p => p.Nickname).ThenBy(p => p.Complexity()).ToArray();
+        Person currentPerson = people[people.Length - 1];
+        for (int i = people.Length - 2; i >= 0; i--)
         {
             Person nextPerson = people[i];
             if (currentPerson.Includes(nextPerson))
@@ -625,7 +625,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         if (AllPeople is not null && AllPeople.Contains(this))
         {
             if (propChanged.Equals(nameof(DisplayName)))
-               MoveToCorrectPlace(); // The place in the list will have changed
+                MoveToCorrectPlace(); // The place in the list will have changed
             UpdateTime = DateTime.Now; // Note that the list has been updated
         }
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
@@ -654,13 +654,13 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         get
         {
             var s = new StringBuilder();
-            if ((Nickname != FirstName) || (middleName is not null)) 
+            if ((Nickname != FirstName) || (middleName is not null))
                 s.Append(firstName);
             if (middleName is not null)
                 s.Append(" " + middleName);
             if (lastName is not null)
                 s.Append(" " + lastName);
-            string y=s.ToString().Trim();
+            string y = s.ToString().Trim();
             if (!String.IsNullOrEmpty(y) && (y != Nickname))
                 return Nickname + " (" + y + ")";
             else
@@ -668,23 +668,23 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
 
-  public string FullName
-  {
-     get
-     {
-        var s = new StringBuilder();
-        if (firstName is not null)
-           s.Append(firstName);
-        if (middleName is not null)
-           s.Append(" " + middleName);
-        if (lastName is not null)
-           s.Append(" " + lastName);
-        string y = s.ToString().Trim();
-        if (String.IsNullOrEmpty(y))
-           return Nickname;
-        return y;
-     }
-  }
+    public string FullName
+    {
+        get
+        {
+            var s = new StringBuilder();
+            if (firstName is not null)
+                s.Append(firstName);
+            if (middleName is not null)
+                s.Append(" " + middleName);
+            if (lastName is not null)
+                s.Append(" " + lastName);
+            string y = s.ToString().Trim();
+            if (String.IsNullOrEmpty(y))
+                return Nickname;
+            return y;
+        }
+    }
     [DataMember(EmitDefaultValue = false)]
     public string FirstName
     {
@@ -769,7 +769,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             }
             if (string.IsNullOrWhiteSpace(nickname) && s is null)
                 return;
-            if (StringHasChanged(ref nickname,s))
+            if (StringHasChanged(ref nickname, s))
             {
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FullName));

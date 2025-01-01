@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
-using System.ComponentModel;
 
 namespace DivisiBill.ViewModels;
 
@@ -64,7 +63,7 @@ partial class DataManagementViewModel : ObservableObject
             if (foundOne)
                 await App.GoToAsync(Routes.MealListByAgePage + "?command=SelectFirstUnallocatedLineItem");
             else
-                await Utilities.ShowAppSnackBarAsync($"All {Meal.RemoteMealList.Count()} remote bills are already downloaded"); 
+                await Utilities.ShowAppSnackBarAsync($"All {Meal.RemoteMealList.Count()} remote bills are already downloaded");
         }
     }
 
@@ -86,12 +85,12 @@ partial class DataManagementViewModel : ObservableObject
                 });
                 await Utilities.ShowAppSnackBarAsync("Archive Complete");
             }
-            else if (ArchiveToDisk) 
+            else if (ArchiveToDisk)
             {
                 Stream s = new MemoryStream();
                 archive.ToStream(s);
                 s.Position = 0;
-                FileSaverResult fileSaverResult = new(null,null);
+                FileSaverResult fileSaverResult = new(null, null);
 #if WINDOWS || ANDROID
                 fileSaverResult = await FileSaver.Default.SaveAsync(Path.GetFileName(filePath), s);
 #endif
@@ -240,7 +239,7 @@ partial class DataManagementViewModel : ObservableObject
     /// </summary>
     public DateTime StartDate
     {
-        get =>  startDate;
+        get => startDate;
         set
         {
             SetProperty(ref startDate, value.Date);

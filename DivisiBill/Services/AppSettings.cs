@@ -169,7 +169,7 @@ public class AppSettings : ISettings
             int x = Preferences.Get("PositionX", 0);
             int y = Preferences.Get("PositionY", 0);
             int width = Preferences.Get("PositionWidth", 0);
-            int height = Preferences.Get("PositionHeight",  0);
+            int height = Preferences.Get("PositionHeight", 0);
             return new Rect(x, y, width, height);
         }
 

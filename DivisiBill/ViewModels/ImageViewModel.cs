@@ -39,10 +39,10 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         // see: https://github.com/dotnet/maui/issues/24241
         await Task.Delay(50);
 
-            if (startWithCamera)
-                await App.PushAsync(Routes.CameraPage);
-            else
-                await Load(); 
+        if (startWithCamera)
+            await App.PushAsync(Routes.CameraPage);
+        else
+            await Load();
     }
     public async Task Load()
     {
@@ -91,15 +91,15 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         imageChanged = false;
         Meal.CurrentMeal.Summary.PropertyChanged -= CurrentMeal_PropertyChanged;
     }
-    
+
     private void CurrentMeal_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
             case "HasDeletedImage":
             case "HasImage":
-                OnPropertyChanged(e.PropertyName); break; 
-            default: 
+                OnPropertyChanged(e.PropertyName); break;
+            default:
                 break;
         }
     }
@@ -119,7 +119,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// Pop up UI to browse through the file system for a bill image. If one is selected load it as the current image. 
     /// </summary>
     [RelayCommand]
-    private async Task Browse() 
+    private async Task Browse()
     {
         try
         {
@@ -183,7 +183,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         }
         PreviewImageSource = null;
         browsedPictureName = null;
-        OnPropertyChanged(nameof(HasPreviewImage)); 
+        OnPropertyChanged(nameof(HasPreviewImage));
     }
 
     /// <summary>
@@ -197,7 +197,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             Meal.CurrentMeal.TryUndeleteImage();
             PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath));
             browsedPictureName = null;
-            OnPropertyChanged(nameof(HasPreviewImage)); 
+            OnPropertyChanged(nameof(HasPreviewImage));
         }
     }
     #region Controlling the Camera Flash
@@ -222,11 +222,11 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
                 if (IsLightOn)
                     await Flashlight.TurnOnAsync();
                 else
-                    await Flashlight.TurnOffAsync(); 
+                    await Flashlight.TurnOffAsync();
             }
             else
             {
-                Utilities.DebugMsg("Flashlight not supported"); 
+                Utilities.DebugMsg("Flashlight not supported");
             }
         }
         catch (Exception ex)
@@ -392,6 +392,6 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         replacementImageStream = query.TryGetValue("ImageStream", out var streamObject) ? streamObject as Stream : null; // Comes from the camera page
         browsedPictureName = query.TryGetValue("Browsed", out var browsedObject) ? browsedObject as string : null; // From a browse initiated by the camera page
         startWithCamera = query.TryGetValue("StartWithCamera", out object startWithCameraObject) && startWithCameraObject is string s && bool.TryParse(s, out bool b) && b;
-    } 
+    }
     #endregion
 }

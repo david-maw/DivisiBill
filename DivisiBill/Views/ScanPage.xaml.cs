@@ -1,6 +1,6 @@
 using DivisiBill.Models;
-using System.Collections.ObjectModel;
 using DivisiBill.Services;
+using System.Collections.ObjectModel;
 
 namespace DivisiBill.Views;
 
@@ -191,7 +191,7 @@ public partial class ScanPage : ContentPage, IQueryAttributable
     #region IQueryAttributable Implementation
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        scannedBill = query.TryGetValue("ScannedBill", out var scannedBillObject) 
+        scannedBill = query.TryGetValue("ScannedBill", out var scannedBillObject)
             ? scannedBillObject as ScannedBill : new ScannedBill();
         ImagePath = query.TryGetValue("ImagePath", out var imagePathObject)
             ? imagePathObject as string : null;

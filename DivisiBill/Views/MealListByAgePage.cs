@@ -6,6 +6,6 @@ public class MealListByAgePage : MealListPage
     public MealListByAgePage()
     {
         viewModel.SortOrder = ViewModels.MealListViewModel.SortOrderType.byDate;
-        viewModel.Filter =false;
+        viewModel.Filter = false;
     }
 }

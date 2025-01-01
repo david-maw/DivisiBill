@@ -9,18 +9,18 @@ public partial class FileListPage : ContentPage
         InitializeComponent();
     }
 
-        protected async override void OnAppearing()
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (await fileListViewModel.InitializeAsync())
+            await fileListViewModel.SelectionCompleted.Task;
+        else
         {
-            base.OnAppearing();
-            if (await fileListViewModel.InitializeAsync())
-                await fileListViewModel.SelectionCompleted.Task;
-            else
-            {
-                // Something went wrong
-                await Services.Utilities.DisplayAlertAsync("Error", "Unable to retrieve items from the cloud archive", "ok");
-            }
-            await Shell.Current.Navigation.PopAsync();
+            // Something went wrong
+            await Services.Utilities.DisplayAlertAsync("Error", "Unable to retrieve items from the cloud archive", "ok");
         }
+        await Shell.Current.Navigation.PopAsync();
+    }
 
     protected override void OnDisappearing()
     {

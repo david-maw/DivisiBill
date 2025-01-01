@@ -8,7 +8,7 @@ namespace DivisiBill.ViewModels;
 internal partial class PropertiesViewModel : ObservableObjectPlus
 {
     #region Constants
-    public static int StoppedTypingTimeThreshold = 2000; 
+    public static int StoppedTypingTimeThreshold = 2000;
     #endregion
     #region Constructor/Destructor
     public PropertiesViewModel()
@@ -149,15 +149,15 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         }
     }
     #region TipDeltaString
-    private void LoadTipDeltaString() => 
-        TipDeltaString = TipDelta==0 ? "" : string.Format("{0:0.00}", TipDelta);
+    private void LoadTipDeltaString() =>
+        TipDeltaString = TipDelta == 0 ? "" : string.Format("{0:0.00}", TipDelta);
 
     [RelayCommand]
     private void UnloadTipDeltaString()
     {
         if (TipDeltaStringIsValid)
         {
-            TipDelta = string.IsNullOrWhiteSpace(TipDeltaString) ? 0 :decimal.Parse(TipDeltaString);
+            TipDelta = string.IsNullOrWhiteSpace(TipDeltaString) ? 0 : decimal.Parse(TipDeltaString);
             LoadTipDeltaString();
         }
     }

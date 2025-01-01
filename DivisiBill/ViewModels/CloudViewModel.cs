@@ -64,9 +64,9 @@ public class CloudViewModel : ObservableObjectPlus
     {
         get => InternetEnabled && !App.IsLimited;
     }
-    public string WiFiStatus 
+    public string WiFiStatus
     {
-        get 
+        get
         {
             var profiles = Connectivity.ConnectionProfiles;
             if (profiles.Contains(ConnectionProfile.WiFi))

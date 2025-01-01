@@ -9,7 +9,7 @@ public class ColumnLayoutManager : ILayoutManager
     IGridLayout _gridLayout;
     GridLayoutManager _manager;
 
-    public ColumnLayoutManager(ColumnLayout layout) 
+    public ColumnLayoutManager(ColumnLayout layout)
     {
         _columnLayout = layout;
     }
@@ -26,11 +26,11 @@ public class ColumnLayoutManager : ILayoutManager
         {
             var child = stackLayout[n];
 
-            bool useStar = ColumnLayout.IsFillSetForView(child) ? 
+            bool useStar = ColumnLayout.IsFillSetForView(child) ?
                 ColumnLayout.GetFillForView(child) : // it's set, just use it
                 child.GetType() == typeof(CollectionView); // not set, pick a default
 
-            if(useStar)
+            if (useStar)
             {
                 grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
             }

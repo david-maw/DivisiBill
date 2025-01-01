@@ -16,7 +16,7 @@ public class SimpleLocation : IEquatable<SimpleLocation>
     public SimpleLocation(Location location)
     {
         if (location is not null)
-        { 
+        {
             this.accuracy = location.AccuracyOrDefault();
             this.latitude = Utilities.Adjusted(location.Latitude, accuracy);
             this.longitude = Utilities.Adjusted(location.Longitude, accuracy);

@@ -61,7 +61,7 @@ public partial class PeopleListPage : ContentPage
             }
         }
     }
-    private async void ShowPerson(Person p) => await Navigation.PushAsync(new PersonEditPage() { TargetPerson = p});
+    private async void ShowPerson(Person p) => await Navigation.PushAsync(new PersonEditPage() { TargetPerson = p });
     protected override void OnDisappearing()
     {
         base.OnDisappearing();

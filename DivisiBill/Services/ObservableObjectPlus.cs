@@ -26,7 +26,7 @@ public partial class ObservableObjectPlus
         backingStore = value;
         onChanged?.Invoke();
         OnPropertyChanged(propertyName);
-        return true; 
+        return true;
     }
     #endregion
 }

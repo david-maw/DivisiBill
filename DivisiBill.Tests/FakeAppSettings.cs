@@ -1,6 +1,4 @@
-﻿using System;
-using DivisiBill.Services;
-using Microsoft.Maui.Devices.Sensors;
+﻿using DivisiBill.Services;
 
 namespace DivisiBill.Tests
 {
@@ -34,6 +32,6 @@ namespace DivisiBill.Tests
         public bool ShowTutorial { get; set; } = false;
         public Location FakeLocation { get; set; } = null;
         public bool HadProSubscription { get; set; } = false;
-        public Rect InitialPosition { get; set; } = new Rect(0,0,0,0);
+        public Rect InitialPosition { get; set; } = new Rect(0, 0, 0, 0);
     }
 }

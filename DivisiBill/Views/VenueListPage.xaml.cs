@@ -15,7 +15,7 @@ public partial class VenueListPage : ContentPage
     {
         InitializeComponent();
         context = new ViewModels.VenueListViewModel(
-            NavigateToDetails: (v) => Navigation.PushAsync(new VenueEditPage(v)), 
+            NavigateToDetails: (v) => Navigation.PushAsync(new VenueEditPage(v)),
             NavigateToHome: async () => { await App.GoToHomeAsync(); });
         BindingContext = context;
     }
@@ -72,7 +72,7 @@ public partial class VenueListPage : ContentPage
             mapPage.VenueLocation = v.Location;
             mapPage.VenueLocationHasChanged = false;
             if (!Utilities.IsUWP || App.BingMapsAllowed)
-                await Navigation.PushAsync(mapPage); 
+                await Navigation.PushAsync(mapPage);
         }
     }
 }

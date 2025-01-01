@@ -93,7 +93,7 @@ internal static class Billing
                     ProPurchase.State = PurchaseState.Purchased;
                     HasOldProProductId = true;
                     return BillingStatusType.ok; // No error
-                } 
+                }
             }
         }
         else
@@ -205,7 +205,7 @@ internal static class Billing
                     int.TryParse(resultString, out int scans);
                     ScansLeft = scans;
                     return scans;
-                } 
+                }
             }
         }
         else
@@ -351,7 +351,7 @@ internal static class Billing
 
                 if (recorded)
                     return await FinalizePurchaseAsync(purchase, inAppBilling, isSubscription);
-                else 
+                else
                 {
                     // Something suspicious happened, we got an alleged new license from Google, but were unable to record it (meaning it was not really new)
                     Utilities.DebugMsg("In Billing.PurchaseItemAsync: Attempt to record license failed");
@@ -452,7 +452,7 @@ internal static class Billing
             ex.ReportCrash();
         }
         return null;
-    } 
+    }
 #endif
 
 
@@ -489,7 +489,7 @@ internal static class Billing
 
             if (purchase.IsAcknowledged == false) // Probably there was an unfortunately timed interruption during the purchase attempt, but the client has paid, so finalize it
                 await FinalizePurchaseAsync(purchase, billing.Interface, isSubscription);
-            
+
             string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
 
             if (validationResult is null)
@@ -539,6 +539,6 @@ internal static class Billing
             "acknowledged": true
         }
         """;
-    #endif 
+#endif
     #endregion
 }

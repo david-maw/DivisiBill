@@ -1,9 +1,9 @@
-﻿using DivisiBill.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DivisiBill.ViewModels;
 
@@ -34,7 +34,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         if (sortOrder == SortOrderType.byDistance)
             InvalidateMealList();
     }
-    ~MealListViewModel() 
+    ~MealListViewModel()
     {
         Meal.LocalMealList.CollectionChanged -= LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged -= RemoteMealList_CollectionChanged;
@@ -164,7 +164,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// Show or hide the local meals. 
     /// </summary>
     [RelayCommand]
-    private async Task ChangeShowLocalMeals() 
+    private async Task ChangeShowLocalMeals()
     {
         try
         {
@@ -188,49 +188,49 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// </summary>
     [RelayCommand]
     private async Task ChangeShowRemoteMeals()
+    {
+        try
         {
-            try
+            if (App.Settings.IsCloudAccessAllowed)
             {
-                if (App.Settings.IsCloudAccessAllowed)
-                {
-                    IsMealListLoading = true;
-                    if (ShowRemoteMeals)
-                        ShowRemoteMeals = false;
-                    else
-                    {
-                        if (await Meal.GetRemoteMealListAsync())
-                            ShowRemoteMeals = true;
-                        else
-                        {
-                            IsMealListLoading = false;
-                            await ShowRemoteAccessWarning();
-                        }
-                    }
-                }
-                else if (!ShowRemoteMeals)
-                {
-                    if (App.IsLimited)
-                        await Utilities.DisplayAlertAsync("Cloud Archive Unavailable", "Cloud archiving is not supported in Basic Edition");
-                    else
-                    {
-                        App.Settings.IsCloudAccessAllowed = await Utilities.AskAsync("Cloud Archive is Off", "The 'Allow Archive to " +
-                            "Cloud' program setting is off. Do you want to turn it on?", "Yes", "No");
-                        if (App.Settings.IsCloudAccessAllowed)
-                            await ChangeShowRemoteMeals();
-                    }
-                }
+                IsMealListLoading = true;
+                if (ShowRemoteMeals)
+                    ShowRemoteMeals = false;
                 else
-                    await ShowRemoteAccessWarning();
+                {
+                    if (await Meal.GetRemoteMealListAsync())
+                        ShowRemoteMeals = true;
+                    else
+                    {
+                        IsMealListLoading = false;
+                        await ShowRemoteAccessWarning();
+                    }
+                }
             }
-            catch (Exception)
-            { // If anything went wrong make sure the client knows
-                ShowRemoteMeals = false; // Make it clear there is something wrong with the remote meal list
-            }
-            finally
+            else if (!ShowRemoteMeals)
             {
-                IsMealListLoading = false; 
+                if (App.IsLimited)
+                    await Utilities.DisplayAlertAsync("Cloud Archive Unavailable", "Cloud archiving is not supported in Basic Edition");
+                else
+                {
+                    App.Settings.IsCloudAccessAllowed = await Utilities.AskAsync("Cloud Archive is Off", "The 'Allow Archive to " +
+                        "Cloud' program setting is off. Do you want to turn it on?", "Yes", "No");
+                    if (App.Settings.IsCloudAccessAllowed)
+                        await ChangeShowRemoteMeals();
+                }
             }
+            else
+                await ShowRemoteAccessWarning();
         }
+        catch (Exception)
+        { // If anything went wrong make sure the client knows
+            ShowRemoteMeals = false; // Make it clear there is something wrong with the remote meal list
+        }
+        finally
+        {
+            IsMealListLoading = false;
+        }
+    }
 
     /// <summary>
     /// Notify the user that they attempted something that requires remote access and it's not available
@@ -309,7 +309,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             var next = MealList.Alternate(mealToDelete);
             await DeleteOneMeal(mealToDelete, tryLocal, tryRemote);
             // If the meal is not showing any more select the next one
-            if (!(mealToDelete.IsLocal && ShowLocalMeals) 
+            if (!(mealToDelete.IsLocal && ShowLocalMeals)
                 && !(mealToDelete.IsRemote && ShowRemoteMeals))
                 SelectedMealSummary = next;
         }
@@ -337,7 +337,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             attempted++;
             Progress = (double)attempted / ProgressLimit;
         }
-        return ProgressLimit - attempted; 
+        return ProgressLimit - attempted;
     }
 
     /// <summary>
@@ -374,7 +374,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         OnPropertyChanged(nameof(ManyDeleted));
     }
     public void CheckDeleted() => NoteDeletedChange();
-    
+
     /// <summary>
     /// Discard any list of deleted MealSummary objects (usually called when closing a MealListPage
     /// </summary>
@@ -518,7 +518,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             foreach (var ms in list) ms.IsBusy = true;
             Task downLoad = Parallel.ForEachAsync(list, parallelOptions, async (mealSummary, cancellationToken) =>
             {
-                if (cancellationToken.IsCancellationRequested) throw new TaskCanceledException(); 
+                if (cancellationToken.IsCancellationRequested) throw new TaskCanceledException();
                 bool worked = await DownloadOneMeal(mealSummary, false, cancellationToken);
                 // In order not to multi-thread access to LocalMealList we just queue the changed mealsummaries and handle them all on one thread
                 if (worked)
@@ -594,7 +594,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     private void SelectNone()
     {
         IsSelectableList = true;
-        foreach (var mealSummary in MealList.Where(ms=>ms.FileSelected))
+        foreach (var mealSummary in MealList.Where(ms => ms.FileSelected))
             mealSummary.FileSelected = false;
         SelectedMealSummariesCount = 0;
     }
@@ -616,7 +616,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             else
             {
                 howMany++;
-                ms.FileSelected = true; 
+                ms.FileSelected = true;
             }
         }
         SelectedMealSummariesCount = howMany;
@@ -644,7 +644,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         MealList = null; // The list is not accurate any more
     }
 
-    public void DeselectInvisibleMeals() 
+    public void DeselectInvisibleMeals()
     {
         int howMany = 0;
         foreach (var mealSummary in MealList.Where(ms => ms.FileSelected && !(ShowRemoteMeals || ms.IsLocal && ShowLocalMeals)))
@@ -791,7 +791,7 @@ public partial class MealListViewModel : ObservableObjectPlus
                 else // should never happen
                     return new ObservableCollection<MealSummary>();
             }
-            
+
             static IOrderedEnumerable<MealSummary> SortByDistance(IEnumerable<MealSummary> mealSummaries)
             {
                 if (App.MyLocation is null)
@@ -819,10 +819,10 @@ public partial class MealListViewModel : ObservableObjectPlus
                 // We could perhaps optimize this by sorting theList in place then deleting the duplicates,
                 // but the performance gain doesn't seem worth the trouble.
                 List<MealSummary> filteredList = theList.OrderBy(ms => ms.VenueName).ThenByDescending((ms) => ms.CreationTime).ToList();
-                for (int i = filteredList.Count-1; i > 0; i--)
+                for (int i = filteredList.Count - 1; i > 0; i--)
                 {
                     MealSummary ms = filteredList[i];
-                    if (ms.VenueName.Equals(filteredList[i-1].VenueName))
+                    if (ms.VenueName.Equals(filteredList[i - 1].VenueName))
                     {
                         // This is a later bill for the same venue, discard it
                         if (ms.FileSelected) // Make sure invisible meals are not selected
@@ -869,7 +869,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     }
     private bool UpsertIntoMealList(MealSummary ms)
     {
-        switch (SortOrder)  
+        switch (SortOrder)
         {
             case SortOrderType.byDistance:
                 return mealList.Upsert(ms, MealSummary.CompareDistanceTo);

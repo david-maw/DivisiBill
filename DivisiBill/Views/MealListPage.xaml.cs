@@ -1,7 +1,6 @@
 using DivisiBill.Models;
 using DivisiBill.Services;
 using DivisiBill.ViewModels;
-using static DivisiBill.Services.Utilities;
 
 namespace DivisiBill.Views;
 

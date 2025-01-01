@@ -1,13 +1,12 @@
-﻿using DivisiBill.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DivisiBill.ViewModels;
 
-partial class PeopleListViewModel: Services.ObservableObjectPlus
+partial class PeopleListViewModel : Services.ObservableObjectPlus
 {
     #region Globals and constructors
     public delegate void SelectPersonDelegate(Person person, PersonCost personCost);
@@ -51,7 +50,7 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
             IsAnyDeletedPerson = true;
             OnPropertyChanged(nameof(IsManyDeletedPeople));
             AllPeople.Remove(p);
-            await Person.SaveSettingsAsync(); 
+            await Person.SaveSettingsAsync();
         }
     }
 
@@ -76,7 +75,7 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
             while (deletedPeople.Any())
                 await UnDeletePersonAsync();
         }
-    } 
+    }
     public void ForgetDeletedPeople()
     {
         deletedPeople.Clear();
@@ -128,7 +127,7 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
             if (IsInUse(p))
                 await Utilities.ShowAppSnackBarAsync($"Failed: {p.Nickname} is already sharing the current bill");
             else
-                PersonSelected?.Invoke(p, personCost); 
+                PersonSelected?.Invoke(p, personCost);
         }
     }
 
@@ -139,7 +138,7 @@ partial class PeopleListViewModel: Services.ObservableObjectPlus
         Contact contact = null;
         try
         {
-            if (await Utilities.HasContactsReadPermissionAsync()) 
+            if (await Utilities.HasContactsReadPermissionAsync())
                 contact = await Contacts.Default.PickContactAsync();
         }
         catch (PermissionException)

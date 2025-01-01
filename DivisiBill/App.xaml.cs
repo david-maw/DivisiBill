@@ -1,9 +1,9 @@
 ﻿using DivisiBill.Models;
 using DivisiBill.Services;
-using System.ComponentModel;
-using System.Diagnostics;
 using DivisiBill.ViewModels;
 using Microsoft.Maui.Handlers;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace DivisiBill;
 
@@ -16,7 +16,7 @@ public partial class App : Application, INotifyPropertyChanged
     // Bing maps is only used on the Windows test version
     public static readonly bool BingMapsAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillBingMapsSecret);
     // Sentry us used in production to report problems
-    public static readonly bool SentryAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillSentryDsn); 
+    public static readonly bool SentryAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillSentryDsn);
     #endregion
     public static string MealLoadName;
     public static DateTime MealLoadTime;
@@ -124,7 +124,7 @@ public partial class App : Application, INotifyPropertyChanged
         static bool IsRepeated(string what)
         {
             bool result = string.Equals(priorWhat, what);
-            Utilities.DebugMsg("Main Window state = " + what + (result ? " (repeated)" : "")  + ", previously " + priorWhat);
+            Utilities.DebugMsg("Main Window state = " + what + (result ? " (repeated)" : "") + ", previously " + priorWhat);
             priorWhat = what;
             return result;
         }
@@ -167,7 +167,7 @@ public partial class App : Application, INotifyPropertyChanged
         // Outer block of CreateWindow
 
         Utilities.DebugMsg("In CreateWindow, assigning events");
-        
+
         App.Settings = new AppSettings();
         window.Created += (s, e) =>
         {
@@ -177,7 +177,7 @@ public partial class App : Application, INotifyPropertyChanged
 
         window.Activated += async (s, e) =>
         {
-            if(!IsRepeated("Activated"))
+            if (!IsRepeated("Activated"))
             {
                 Utilities.DebugMsg($"In window.Activated; initialization completed = {InitializationComplete.Task.IsCompleted}");
                 if (InitializationComplete.Task.IsCompleted)
@@ -290,7 +290,7 @@ public partial class App : Application, INotifyPropertyChanged
         }
     }
 
-    public static bool RecentlyUsed => DateTime.Now - Settings.LastUse < MinimumIdleTime; 
+    public static bool RecentlyUsed => DateTime.Now - Settings.LastUse < MinimumIdleTime;
     /// <summary>
     /// Handle changes in application status, either because an Internet connection comes or goes, or because
     /// the app itself is put in the background and we don't want to do anything (like backing up files)
@@ -394,9 +394,9 @@ public partial class App : Application, INotifyPropertyChanged
         await WsVersionTask.OrDelay();
         while (!WsVersionTask.IsCompleted)
         {
-            AskAboutLicense = AskAboutLicense && 
+            AskAboutLicense = AskAboutLicense &&
                 await Utilities.AskAsync("Slow Response", "DivisiBill web service check timed out, do you want to keep waiting or continue without licenses",
-                    "wait", "continue"); 
+                    "wait", "continue");
             if (!AskAboutLicense) break;
             await WsVersionTask.OrDelay();
         }
@@ -409,7 +409,7 @@ public partial class App : Application, INotifyPropertyChanged
             {
                 while (WsVersionTask.Result != System.Net.HttpStatusCode.OK)
                 {
-                    AskAboutLicense = AskAboutLicense && 
+                    AskAboutLicense = AskAboutLicense &&
                         await Utilities.AskAsync("Cloud Failure", $"Could not find the cloud licensing service ({WsVersionTask.Result}), do you want to try again or continue without licenses",
                             "try again", "continue");
                     if (!AskAboutLicense) break;
@@ -439,7 +439,7 @@ public partial class App : Application, INotifyPropertyChanged
             await LicenseTask.OrDelay();
             while (!LicenseTask.IsCompleted)
             {
-                AskAboutLicense = AskAboutLicense && 
+                AskAboutLicense = AskAboutLicense &&
                     await Utilities.AskAsync("Slow Response", "Professional Edition Check Timed Out, do you want to keep waiting or continue",
                         "wait", "continue");
                 if (!AskAboutLicense) break;
@@ -545,7 +545,7 @@ public partial class App : Application, INotifyPropertyChanged
         return Task.CompletedTask;
     }
 
-    public static Task GoToAsync(string location, string navigationParameterName, object navigationParameterValue) => 
+    public static Task GoToAsync(string location, string navigationParameterName, object navigationParameterValue) =>
         GoToAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
     public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter = null)
     {
@@ -695,7 +695,7 @@ public partial class App : Application, INotifyPropertyChanged
                     {
                         if (cancellationToken.IsCancellationRequested)
                             break;
-                        await Task.Delay(1000); 
+                        await Task.Delay(1000);
                     }
                 }
                 catch (TaskCanceledException)

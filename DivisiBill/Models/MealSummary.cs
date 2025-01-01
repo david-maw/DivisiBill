@@ -1,12 +1,12 @@
+using DivisiBill.Services;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Collections.ObjectModel;
-using DivisiBill.Services;
-using static DivisiBill.Services.Utilities;
-using System.Xml.Serialization;
-using System.Diagnostics;
 using System.Xml;
+using System.Xml.Serialization;
+using static DivisiBill.Services.Utilities;
 
 namespace DivisiBill.Models;
 
@@ -51,7 +51,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         get => venueName;
         set
         {
-            if (value is null) 
+            if (value is null)
                 throw new ArgumentNullException("value");
             SetProperty(ref venueName, value);
         }
@@ -136,7 +136,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     }
 
     public bool IsForCurrentMeal => CreationTime == Meal.CurrentMeal.CreationTime;
-    
+
     /// <summary>
     /// Last time a bill was changed unlike ActualLastChangeTime this defaults to creation time if not set
     /// </summary>
@@ -172,10 +172,10 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         }
     }
     [XmlIgnore]
-    public DateTime CreationTime 
-    { 
+    public DateTime CreationTime
+    {
         get => creationTime;
-        set => SetProperty(ref creationTime, value, () => 
+        set => SetProperty(ref creationTime, value, () =>
         {
             OnPropertyChanged(nameof(ApproximateAge));
             OnPropertyChanged(nameof(Id));
@@ -184,7 +184,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             OnPropertyChanged(nameof(ImagePath));
             OnPropertyChanged(nameof(DeletedImagePath));
             OnPropertyChanged(nameof(ImageName));
-        }); 
+        });
     }
     public bool IsDefault => CreationTime == DateTime.MinValue;
     [DataMember]
@@ -211,19 +211,19 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 
 
     public void CopySnapshotTo(Stream stream) => SnapshotStream.CopyTo(stream);
-    
+
     /// <summary>
     /// The identity of the MealSummary - actually a string of date+time to the second
     /// </summary>
     public string Id => NameFromDateTime(CreationTime);
-    
+
     /// <summary>
     /// The name of the file this MealSummary (or the Meal that points to it) is stored in, either
     /// in local storage, remote storage, or both. 
     /// </summary>
     [XmlIgnore]
     public string FileName => Id + ".xml";
-    
+
     /// <summary>
     /// The full path to the local file this MealSummary (or the Meal that points to it) is stored in.
     /// </summary>
@@ -237,7 +237,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     /// The (fixed) name of the stored image file 
     /// </summary>
     public string ImageName => Id + ".jpg";
-    
+
     /// <summary>
     /// The fully qualified path to the bill image for this bill
     /// </summary>
@@ -248,11 +248,11 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     public string DeletedImagePath => Path.Combine(Meal.DeletedItemFolderPath, ImageName);
     public void SetCreationTimeFromFileName(string fn)
     {
-         if (TryDateTimeFromName(fn, out DateTime dt))
+        if (TryDateTimeFromName(fn, out DateTime dt))
             CreationTime = dt;
     }
     private bool isRemote = false;
-    
+
     /// <summary>
     /// true if any version of the MealSummary file is in remote storage (it may not be the most current version, Meal.SavedToRemote will tell you that)
     /// </summary>
@@ -268,7 +268,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     /// </summary>
     [XmlIgnore]
     public bool IsLocal { get => isLocal; set => SetProperty(ref isLocal, value, () => OnPropertyChanged(nameof(IsFake))); }
-    
+
     /// <summary>
     /// Means the meal is not stored locally or remotely
     /// </summary>
@@ -316,7 +316,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         return false;
     }
     public bool DetermineHasImage() => HasImage = File.Exists(ImagePath);
-    public bool DetermineHasDeletedImage() => HasDeletedImage = File.Exists(DeletedImagePath); 
+    public bool DetermineHasDeletedImage() => HasDeletedImage = File.Exists(DeletedImagePath);
 
     // Deletes all local copies of meals with no option for recovery (used with archive restore)
     // Does NOT delete any corresponding image so that restoring a meal will restore access to the corresponding image 
@@ -529,7 +529,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         DebugExamineStream(sourceStream);
         return ms;
     }
-            
+
     /// <summary>
     /// Create a MealSummary from a Meal stored in XML. Note that a MealSummary is never used to create
     /// an XML stream, we only ever reconstitute a Meal XML as a MealSummary object.

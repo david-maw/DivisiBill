@@ -1,6 +1,5 @@
-﻿using System;
+﻿using DivisiBill.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DivisiBill.Models;
 
 namespace DivisiBill.Tests
 {
@@ -29,7 +28,7 @@ namespace DivisiBill.Tests
             decimal cost = (decimal)costParam;
             OrderLine orderLine = new OrderLine() { ItemName = name, ItemCost = costString };
             LineItem lineItem = orderLine.ToLineItem();
-            
+
             Assert.AreEqual(expectedName == null ? name : expectedName, lineItem.ItemName, "Item name was not transferred correctly");
             Assert.AreEqual(cost, lineItem.Amount, "Item cost was not scanned correctly");
         }

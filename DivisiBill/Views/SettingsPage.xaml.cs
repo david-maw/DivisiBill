@@ -8,15 +8,15 @@ public partial class SettingsPage : ContentPage
     MapPage mapPage = null;
     MealViewModel mvm;
     public SettingsPage()
-	{
-		InitializeComponent();
-	}
+    {
+        InitializeComponent();
+    }
 
     protected override async void OnAppearing()
     {
         Utilities.DebugMsg("In OnAppearing, perhaps returning from modifying subscription");
         if (Application.Current.Resources.TryGetValue("MealViewModel", out object mvmObject))
-        mvm = mvmObject as MealViewModel;
+            mvm = mvmObject as MealViewModel;
         MealSection.BindingContext = mvm;
         mvm.LoadSettings();
         base.OnAppearing();
@@ -29,11 +29,11 @@ public partial class SettingsPage : ContentPage
             if (mapPage.VenueLocation is not null && locationChanged)
             {
                 await CommunityToolkit.Maui.Alerts.Toast.Make("Will set fake location in 10s").Show();
-                await Task.Delay(10_000); 
+                await Task.Delay(10_000);
             }
             await App.SetFakeLocation(mapPage.VenueLocation);
         }
-        await App.StartMonitoringLocation(); 
+        await App.StartMonitoringLocation();
     }
 
     protected async override void OnDisappearing()
@@ -42,7 +42,7 @@ public partial class SettingsPage : ContentPage
         {
             mvm.UnloadSettings();
             await App.StopMonitoringLocation();
-            base.OnDisappearing(); 
+            base.OnDisappearing();
         }
     }
 

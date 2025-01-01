@@ -1,12 +1,12 @@
 // Ignore Spelling: Deserialize
 
+using DivisiBill.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Xml.Serialization;
-using System.Runtime.CompilerServices;
 using System.Diagnostics;
-using DivisiBill.Services;
+using System.Runtime.CompilerServices;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
@@ -16,7 +16,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     public const string VenueFolderName = "Venues";
     public const string TargetFileName = "Venues.xml";
     private static string TargetPathName = null;
-    private readonly Location MiddleOfNowhere = new Location(20, 170 ); // Middle of the Pacific, not close to anything
+    private readonly Location MiddleOfNowhere = new Location(20, 170); // Middle of the Pacific, not close to anything
 
     private static readonly ObservableCollection<Venue> allVenues = new ObservableCollection<Venue>();
     private static readonly ObservableCollection<Venue> allVenuesByDistance = new ObservableCollection<Venue>();
@@ -238,7 +238,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
         }
         // allVenuesDictionary is now fully populated with what will become the new list so populate AllVenues with it
-        foreach (var keyValuePair in allVenuesDictionary) 
+        foreach (var keyValuePair in allVenuesDictionary)
         {
             Venue venue = keyValuePair.Value;
             venue.IsLocationValid = App.UseLocation && venue.Accuracy <= Distances.AccuracyLimit;
@@ -288,17 +288,17 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     {
         int index = -1, newIndex = -1;
         if (allVenuesByDistanceIsSorted) foreach (var item in allVenuesByDistance)
-        {
-            index++;
-            int i = CompareDistanceTo(item);
-            if (i == 0)
-                return false;
-            else if (i < 0)
             {
-                newIndex = index;
-                break;
+                index++;
+                int i = CompareDistanceTo(item);
+                if (i == 0)
+                    return false;
+                else if (i < 0)
+                {
+                    newIndex = index;
+                    break;
+                }
             }
-        }
         if (newIndex < 0)
             allVenuesByDistance.Add(this); // Item should go at end
         else
@@ -383,7 +383,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         venues.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
         VenueRoot vr = new VenueRoot() { Venues = venues };
         using (StreamWriter sw = new(s, System.Text.Encoding.UTF8, -1, true))
-        using (var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true}))
+        using (var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
         {
             var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
@@ -477,7 +477,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     [XmlIgnore]
     public int Distance
     {
-        set 
+        set
         {
             if ((Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid)
             {
@@ -593,7 +593,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     {
         set
         {
-            if (value>=0 && accuracy != value)
+            if (value >= 0 && accuracy != value)
             {
                 accuracy = value <= 0 || value >= Distances.Inaccurate ? 0 : value;
                 IsLocationValid = (accuracy != 0);

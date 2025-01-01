@@ -49,7 +49,7 @@ internal class Saver
             await App.CloudAllowedSource.WaitWhilePausedAsync(); // Do not do this stuff if cloud is unavailable
             Meal currentMeal = Meal.CurrentMeal;
             currentMeal.SaveReason = "time";
-            await currentMeal.SaveIfChangedAsync(SaveFile: !remote, SaveRemote: remote); 
+            await currentMeal.SaveIfChangedAsync(SaveFile: !remote, SaveRemote: remote);
             // Do not save the image, reading it may confuse other threads
         }
     }
@@ -59,7 +59,7 @@ internal class Saver
         Task SaveRequestLoopTask = SaveRequestLoop();
         await App.InitializationComplete.Task; // let initialization sort itself out before starting timed saves
         Utilities.DebugMsg("Starting MainLoop Timed Tasks");
-        await Task.WhenAll(SaveRequestLoopTask, Meal.PeriodicSaveAsync(10), TimedLoop(30, remote:false), TimedLoop(120, remote: true));
+        await Task.WhenAll(SaveRequestLoopTask, Meal.PeriodicSaveAsync(10), TimedLoop(30, remote: false), TimedLoop(120, remote: true));
         Utilities.DebugMsg("Leave MainLoop");
     }
 

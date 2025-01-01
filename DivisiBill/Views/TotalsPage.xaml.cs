@@ -31,7 +31,7 @@ public partial class TotalsPage : ContentPage
             pc = boundPc;
         else if (sender is ToolbarItem tbi)
             pc = (PersonCost)tbi.CommandParameter;
-            
+
         if (pc is not null)
         {
             var v = new PeopleListPage(pc);

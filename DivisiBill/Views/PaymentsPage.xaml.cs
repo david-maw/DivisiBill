@@ -1,5 +1,3 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace DivisiBill.Views;
 
 public partial class PaymentsPage : CommunityToolkit.Maui.Views.Popup

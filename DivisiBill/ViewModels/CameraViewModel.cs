@@ -25,7 +25,7 @@ public partial class CameraViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsLightOn { get; set; } = false;
 
-    partial void OnIsLightOnChanged(bool value) 
+    partial void OnIsLightOnChanged(bool value)
     {
         LightGlyph = (FontImageSource)(value ? Application.Current.Resources["GlyphFlashlightOff"] : Application.Current.Resources["GlyphFlashlightOn"]);
     }

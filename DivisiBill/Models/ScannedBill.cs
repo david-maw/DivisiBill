@@ -96,7 +96,7 @@ public class ScannedBill
     }
     #endregion
 
-    
+
     /// <summary>
     /// Convert the scanned information from a ScannedBill object to a list of LineItem objects for insertion in a Meal.
     /// </summary>
@@ -217,7 +217,7 @@ public class OrderLine
         if (endInx < 0) // we did not find a decimal separator followed by NumberDecimalDigits 
         {
             // Try for an integral number instead
-            for (startInx = currencyTextLen-1; startInx >= 0; startInx--)
+            for (startInx = currencyTextLen - 1; startInx >= 0; startInx--)
             {
                 if (char.IsDigit(currencyText[startInx]))
                 {
@@ -225,10 +225,10 @@ public class OrderLine
                     break;
                 }
             }
-        }            
-        
+        }
+
         // Now just keep parsing the number, backing up by 1 each time until it doesn't parse any more
-        
+
         decimal result = 0;
         for (; startInx >= 0; startInx--)
         {
@@ -245,10 +245,10 @@ public class OrderLine
             leadingText = currencyText;
         else if (startInx >= 0)
         {
-            leadingText = currencyText.Substring(0, startInx+1).Trim();
+            leadingText = currencyText.Substring(0, startInx + 1).Trim();
             if (leadingText.EndsWith(nfi.CurrencySymbol)) // discard any trailing currency symbol
             {
-                leadingText = leadingText.Substring(0, leadingText.Length -  nfi.CurrencySymbol.Length).TrimEnd();
+                leadingText = leadingText.Substring(0, leadingText.Length - nfi.CurrencySymbol.Length).TrimEnd();
             }
         }
         else

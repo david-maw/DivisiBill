@@ -1,8 +1,6 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DivisiBill.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static DivisiBill.Models.Meal;
-using System;
-using System.Linq;
 
 namespace DivisiBill.Tests;
 
@@ -63,15 +61,15 @@ public class MealTests
     [DataRow(false, false, 0, 24.80)]
     [DataRow(false, false, 1, 19.50)]
     [DataRow(false, false, 2, 25.90)]
-    [DataRow(false, true , 0, 25.00)]
-    [DataRow(false, true , 1, 19.50)]
-    [DataRow(false, true , 2, 26.00)]
-    [DataRow(true , false, 0, 25.16)]
-    [DataRow(true , false, 1, 19.80)]
-    [DataRow(true , false, 2, 26.28)]
-    [DataRow(true , true , 0, 25.40)]
-    [DataRow(true , true , 1, 19.80)]
-    [DataRow(true , true , 2, 26.40)]
+    [DataRow(false, true, 0, 25.00)]
+    [DataRow(false, true, 1, 19.50)]
+    [DataRow(false, true, 2, 26.00)]
+    [DataRow(true, false, 0, 25.16)]
+    [DataRow(true, false, 1, 19.80)]
+    [DataRow(true, false, 2, 26.28)]
+    [DataRow(true, true, 0, 25.40)]
+    [DataRow(true, true, 1, 19.80)]
+    [DataRow(true, true, 2, 26.40)]
     public void CostCheck(bool tipOnTax, bool taxOnDiscount, int costIndex, double cost)
     {
         TestMeal.TipOnTax = tipOnTax;
@@ -81,10 +79,10 @@ public class MealTests
     }
 
     [TestMethod]
-    [DataRow(false,false, 52.00, 5.2, 0.00, 13.00)]
+    [DataRow(false, false, 52.00, 5.2, 0.00, 13.00)]
     [DataRow(false, true, 55.00, 5.5, 3.00, 13.00)]
     [DataRow(true, false, 52.00, 5.2, 0.00, 14.04)]
-    [DataRow(true,  true, 55.00, 5.5, 3.00, 14.10)]
+    [DataRow(true, true, 55.00, 5.5, 3.00, 14.10)]
     public void VerifyAmounts(bool tipOnTax, bool taxOnDiscount, double subTotal, double tax, double taxableDiscount, double tip)
     {
         TestMeal.TipOnTax = tipOnTax;
@@ -98,9 +96,9 @@ public class MealTests
     }
     [TestMethod]
     [DataRow(false, false)]
-    [DataRow(false, true )]
-    [DataRow(true, false )]
-    [DataRow(true, true  )]
+    [DataRow(false, true)]
+    [DataRow(true, false)]
+    [DataRow(true, true)]
     public void ValidateTotals(bool tipOnTax, bool taxOnDiscount = false)
     {
         TestMeal.TipOnTax = tipOnTax;
@@ -111,7 +109,7 @@ public class MealTests
         {
             sum += pc.Amount;
         }
-        Assert.AreEqual(TestMeal.TotalAmount, sum, 
+        Assert.AreEqual(TestMeal.TotalAmount, sum,
             $"Sum of amounts does not match total when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
         Assert.AreEqual(0, TestMeal.RoundingErrorAmount,
             $"Unshared amount nonzero when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
@@ -121,7 +119,7 @@ public class MealTests
         Meal m = new Meal()
         {
             VenueName = "FakeName",
-            CreationTime = new DateTime(2001,2,3,12,13,14),
+            CreationTime = new DateTime(2001, 2, 3, 12, 13, 14),
             TaxRate = 0, // Tax and tip are zero to simplify the calculations
             TipRate = 0,
             Costs =
@@ -216,9 +214,9 @@ public class MealTests
     /// <param name="expectedCosts">List of resultant costs to validate</param>
     [TestMethod]
     [DataRow(false, false, 8.50, 12.75, 12.75, 0)]
-    [DataRow(false,  true, 9.50, 14.25, 14.25, 0)]
-    [DataRow(true,  false, 8.60, 12.90, 12.90, 0)]
-    [DataRow(true,   true, 9.80, 14.70, 14.70, 0)]
+    [DataRow(false, true, 9.50, 14.25, 14.25, 0)]
+    [DataRow(true, false, 8.60, 12.90, 12.90, 0)]
+    [DataRow(true, true, 9.80, 14.70, 14.70, 0)]
     public void SharingEdgeCase2(bool tipOnTax, bool taxOnCoupon, params double[] expectedCosts)
     {
         Meal SharedMeal = GetEdgeCaseMeal();
@@ -260,9 +258,9 @@ public class MealTests
     /// <param name="expectedCosts">List of resultant costs to validate</param>
     [TestMethod]
     [DataRow(false, false, 3.00, 4.50, 4.50, 0)]
-    [DataRow(false,  true, 3.00, 4.50, 4.50, 0)]
-    [DataRow(true,  false, 3.00, 4.50, 4.50, 0)]
-    [DataRow(true,   true, 3.30, 4.35, 4.35, 0)]
+    [DataRow(false, true, 3.00, 4.50, 4.50, 0)]
+    [DataRow(true, false, 3.00, 4.50, 4.50, 0)]
+    [DataRow(true, true, 3.30, 4.35, 4.35, 0)]
     public void SharingEdgeCase3(bool tipOnTax, bool taxOnCoupon, params double[] expectedCosts)
     {
         Meal SharedMeal = GetEdgeCaseMeal();
@@ -289,10 +287,10 @@ public class MealTests
             $"Zero unallocated amount when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
         Decimal measuredTotal = 0;
-        
+
         foreach (var pc in SharedMeal.Costs)
         {
-            Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount, 
+            Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount,
                 $"Unexpected amount for {pc.Nickname}");
             measuredTotal += pc.Amount;
         }

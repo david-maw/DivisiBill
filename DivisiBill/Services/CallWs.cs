@@ -15,10 +15,10 @@ internal static class CallWs
     const string TokenHeaderName = "divisibill-token";
     const string KeyHeaderName = "x-functions-key";
 
-    static HttpClient client = new HttpClient() {BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri)};
+    static HttpClient client = new HttpClient() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri) };
 
-    public static Uri BaseAddress => client.BaseAddress; 
-    
+    public static Uri BaseAddress => client.BaseAddress;
+
     static CallWs()
     {
         if (!App.WsAllowed)
@@ -39,7 +39,7 @@ internal static class CallWs
         if (client.DefaultRequestHeaders.Contains(headerName))
             client.DefaultRequestHeaders.Remove(headerName);
         client.DefaultRequestHeaders.Add(headerName, headerValue);
-    } 
+    }
     #endregion
     #endregion
     #region Scan a Bill
@@ -215,7 +215,7 @@ internal static class CallWs
                 Utilities.DebugMsg("In VerifyAndroidPurchase, verify returned " + response.StatusCode);
         }
         return null;
-    } 
+    }
 #endif
     /// <summary>
     /// Verify that an InAppBilling purchase really is what it pretends to be by calling the issuer
@@ -299,7 +299,7 @@ internal static class CallWs
     /// <param name="itemData">Data associated with the item</param>
     /// <param name="itemSummary">Summary data for the item (valid only for meal items</param>
     /// <returns>true of the put worked, false if not</returns>
-    public static async Task<bool> PutItemAsync(string itemTypeName, string id, string itemData, string itemSummary=null)
+    public static async Task<bool> PutItemAsync(string itemTypeName, string id, string itemData, string itemSummary = null)
     {
         // Create a multipart form data content message body and send it
         using (var itemDataContent = new StringContent(itemData, Encoding.UTF8, "application/xml"))

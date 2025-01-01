@@ -8,7 +8,7 @@ namespace DivisiBill.Services;
 /// <summary>
 /// The public representation of data from the storage web service outside this 
 /// </summary>
-public partial class RemoteItemInfo:ObservableObject
+public partial class RemoteItemInfo : ObservableObject
 {
     public string Name { get; set; }
     public DateTime CreatedDateTime => Utilities.DateTimeFromName(Name);
@@ -167,7 +167,7 @@ public static class RemoteWs
     public static readonly Dictionary<string, string> ItemTypeNameToPlural;
     #endregion
     #region Meal
-    
+
     /// <summary>
     /// Reach out to the web service to get an updated list of meals, delete the ones that have gone away (rarely any),
     /// and add the ones we don't know about, That means we ignore most meals we already know about 
@@ -182,20 +182,20 @@ public static class RemoteWs
 
         // Remove any bills which are no longer present in the cloud - there will rarely be any, so this isn't optimized
         Dictionary<string, RemoteItemInfo> remoteItemsDict = remoteItems.ToDictionary(ri => ri.Name);
-        var missingList = Meal.RemoteMealList.Where(ms=>!remoteItemsDict.ContainsKey(ms.Id)).ToList(); // a separate list because we're changing RemoteMealList
+        var missingList = Meal.RemoteMealList.Where(ms => !remoteItemsDict.ContainsKey(ms.Id)).ToList(); // a separate list because we're changing RemoteMealList
         foreach (var ms in missingList)
         {
             ms.IsRemote = false;
             Meal.RemoteMealList.Remove(ms);
         }
-        
+
         // We have a list of the remote Meal items, so try and create a MealSummary for each of them
         int WholeFilesLoaded = 0;
         Dictionary<string, MealSummary> existingLocalMs = Meal.LocalMealList.ToDictionary(ms => ms.Id);
         Dictionary<string, MealSummary> existingRemoteMs = Meal.RemoteMealList.ToDictionary(ms => ms.Id);
-        
+
         // Iterate through the remote items which are not known to us 
-        foreach (var remoteItem in remoteItems.Where(ri=>!existingRemoteMs.ContainsKey(ri.Name)))
+        foreach (var remoteItem in remoteItems.Where(ri => !existingRemoteMs.ContainsKey(ri.Name)))
         {
             if (existingLocalMs.TryGetValue(remoteItem.Name, out var ms))
             {

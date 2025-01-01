@@ -191,7 +191,7 @@ public partial class Meal : ObservableObjectPlus
                 await StatusMsgAsync("Starting Meal.InitializeAsync");
                 if (App.Settings is null) // for testing
                     App.Settings = new AppSettings();
-                await GetLocalMealListAsync(); ; 
+                await GetLocalMealListAsync(); ;
                 if (LocalMealList.Count == 0 && Utilities.IsDebug)
                 {
                     await StatusMsgAsync("Creating fake bill list so we have something to work with");
@@ -260,12 +260,12 @@ public partial class Meal : ObservableObjectPlus
         if (!App.RecentlyUsed && CurrentMeal is not null && CurrentMeal.TooOldToContinue) // Maybe we need to replace the current meal with the closest one
         {
             MealSummary ClosestMealSummary = CurrentMeal.Summary;
-            foreach(var ms in LocalMealList.Where(ms1=>ms1.CompareDistanceTo(ClosestMealSummary) < 0))
+            foreach (var ms in LocalMealList.Where(ms1 => ms1.CompareDistanceTo(ClosestMealSummary) < 0))
                 ClosestMealSummary = ms;
             if (ClosestMealSummary != CurrentMeal.Summary)
             {
                 Meal closestMeal = LoadFromFile(ClosestMealSummary, true);
-                if (closestMeal!=null) 
+                if (closestMeal != null)
                     closestMeal.OverwriteCurrent();
             }
         }
@@ -443,7 +443,7 @@ public partial class Meal : ObservableObjectPlus
                         }
                         catch (Exception ex)
                         {
-                            var fileStream=File.Create(Path.Combine(Meal.MealFolderPath, fileName));
+                            var fileStream = File.Create(Path.Combine(Meal.MealFolderPath, fileName));
                             ReportCrash("Method", "GetLocalMealListAsync", fileStream, ex, fileName);
                         }
                         if (ms is null || ms.Size < 0) // it's a bad file
@@ -454,7 +454,7 @@ public partial class Meal : ObservableObjectPlus
             }
         }
         else // There's no folder for meals
-            LocalMealList.Clear ();
+            LocalMealList.Clear();
         await StatusMsgAsync("Established local meal list");
     }
 
@@ -465,7 +465,7 @@ public partial class Meal : ObservableObjectPlus
     public static void AddLocalMeals(IEnumerable<Meal> newMeals, bool replace)
     {
         var localMealDict = new Dictionary<string, object>(); // the value is always null, it's the presence of the key that matters
-        foreach(var ms in LocalMealList)
+        foreach (var ms in LocalMealList)
         {
             if (!ms.IsDefault)
                 localMealDict.Add(ms.Id, null);
@@ -479,12 +479,12 @@ public partial class Meal : ObservableObjectPlus
                 LocalMealList.Remove(meal.summary);
                 localMealDict.Remove(meal.summary.Id);
             }
-            if (!localMealDict.ContainsKey(meal.Summary.Id)) 
+            if (!localMealDict.ContainsKey(meal.Summary.Id))
             {
                 if (!meal.IsDefault) // never save the default meal to persistent storage
                 {
                     meal.SaveToFile();
-                    meal.Summary.IsLocal = true; 
+                    meal.Summary.IsLocal = true;
                 }
                 LocalMealList.Add(meal.summary);
                 localMealDict.Add(meal.summary.Id, null); // to ensure we do not add duplicates
@@ -540,13 +540,13 @@ public partial class Meal : ObservableObjectPlus
         StreamWriter sw = new StreamWriter(stream);
         try
         {
-            sw.WriteLine("DivisiBill " + Utilities.VersionName+"." + Utilities.Revision);
+            sw.WriteLine("DivisiBill " + Utilities.VersionName + "." + Utilities.Revision);
             #region Bill Properties
             if ((personCost is not null) && (personCost.Diner is not null))
                 sw.WriteLine("Calculation for {0}", personCost.Diner.DisplayName);
             sw.WriteLine("Venue " + VenueName);
             sw.WriteLine("Created {0:F}", CreationTime);
-            if (IsLastChangeTimeSet  && (LastChangeTime - CreationTime).Duration() > TimeSpan.FromSeconds(1))
+            if (IsLastChangeTimeSet && (LastChangeTime - CreationTime).Duration() > TimeSpan.FromSeconds(1))
                 sw.WriteLine($"Updated {LastChangeTime:F}");
             sw.WriteLine("Tax Rate {0:P2}    Tip Rate {1:P0}\r\n", TaxRate, TipRate);
             #endregion
@@ -579,7 +579,7 @@ public partial class Meal : ObservableObjectPlus
                         sw.Write(" ");
                 }
                 string lineItemText = lineItem.ItemName + (lineItem.Comped ? " (comped)" : "");
-                sw.Write($"  {lineItemText, -30} {lineItem.Amount, 10:C}"); // add an extra space to make negative numbers line up 
+                sw.Write($"  {lineItemText,-30} {lineItem.Amount,10:C}"); // add an extra space to make negative numbers line up 
                 if (personCost is not null)
                 {
                     decimal dinerAmount = lineItem.GetAmounts()[(int)personCost.DinerID - 1];
@@ -592,7 +592,7 @@ public partial class Meal : ObservableObjectPlus
             #region Per Bill Amounts and Totals
             sw.WriteLine();
             if (GetCompedAmount() != 0)
-                sw.WriteLine("            {0, -30} {1,10:C}", "Comped", GetCompedAmount()); 
+                sw.WriteLine("            {0, -30} {1,10:C}", "Comped", GetCompedAmount());
             if (GetCouponAmountBeforeTax() != 0)
                 sw.WriteLine("            {0, -30} {1,10:C}", "Coupons", GetCouponAmountBeforeTax());
             sw.Write("            {0, -30} {1,10:C}", "Subtotal", SubTotal);
@@ -694,7 +694,7 @@ public partial class Meal : ObservableObjectPlus
         }
         return false;
     }
-    
+
     /// <summary>
     /// Creates a fake bill
     /// </summary>
@@ -804,8 +804,8 @@ public partial class Meal : ObservableObjectPlus
                 // Copy the original image to the location expected by the new Summary, finding the original image is made
                 // difficult by the fact that the CreationTime has been changed but we can use the original FileName
                 if (string.IsNullOrEmpty(FileName))
-                { 
-                    if (Utilities.IsDebug) Debugger.Break(); 
+                {
+                    if (Utilities.IsDebug) Debugger.Break();
                 }
                 else
                 {
@@ -816,7 +816,7 @@ public partial class Meal : ObservableObjectPlus
                     }
                     catch (Exception)
                     {
-                        if (Debugger.IsAttached) 
+                        if (Debugger.IsAttached)
                             Debugger.Break();
                         // Not the end of the world if this fails, so just go on without it
                         Summary.DeleteImage();
@@ -918,7 +918,7 @@ public partial class Meal : ObservableObjectPlus
             MemoryStream s = new MemoryStream(buf);
             Meal m = LoadFromStream(s);
             DebugMsg("in Meal.LoadFromApp meal = " + m.Summary);
-            MealSummary existingMealSummary = LocalMealList.Where(ms=>ms.Id.Equals(m.Summary.Id)).FirstOrDefault();
+            MealSummary existingMealSummary = LocalMealList.Where(ms => ms.Id.Equals(m.Summary.Id)).FirstOrDefault();
             m.SavedToApp = true;
             m.SavedToFile = existingMealSummary is not null;
             if (m.SavedToFile)
@@ -947,8 +947,8 @@ public partial class Meal : ObservableObjectPlus
         string errmsg = $"Meal.ReportCrash reported What={What}, Who={Who}, Exception={ex.ToString()}";
         Debug.WriteLine(errmsg);
 
-        if  (!string.IsNullOrEmpty(errorDescription))
-            errmsg += "\n" + errorDescription +"\n";
+        if (!string.IsNullOrEmpty(errorDescription))
+            errmsg += "\n" + errorDescription + "\n";
 
         ex.ReportCrash(errmsg, sourceStream, streamName);
     }
@@ -1180,7 +1180,7 @@ public partial class Meal : ObservableObjectPlus
     {
         Stream s = Summary.SnapshotStream;
         if (s is null) // Enough memory for most (95%+) Meals - this should only be needed if the meal was the default and wasn't loaded from a stream
-             s = Summary.SnapshotStream = new MemoryStream(3000);
+            s = Summary.SnapshotStream = new MemoryStream(3000);
         // Clear out the snapshot
         s.Position = 0;
         s.SetLength(0);
@@ -1373,7 +1373,7 @@ public partial class Meal : ObservableObjectPlus
                 await TrySaveOldBillAsync();
         }
     }
-#endregion
+    #endregion
     #region Change Monitoring
     void OnLineItemChange(object sender, PropertyChangedEventArgs e)
     {
@@ -1584,7 +1584,7 @@ public partial class Meal : ObservableObjectPlus
     public bool IsCouponAfterTax
     {
         get => isCouponAfterTax;
-        set => SetProperty(ref isCouponAfterTax, value, () => 
+        set => SetProperty(ref isCouponAfterTax, value, () =>
         {
             UpdateAmounts();
             MarkAsChanged();
@@ -1644,7 +1644,7 @@ public partial class Meal : ObservableObjectPlus
     #endregion
     #region public interface
     [XmlIgnore]
-    public string DebugDisplay => "\"" + VenueName + "\"" + (IsDefault ? ", IsDefault" : $" at {CreationTime} {ApproximateAge} in {FileName}"); 
+    public string DebugDisplay => "\"" + VenueName + "\"" + (IsDefault ? ", IsDefault" : $" at {CreationTime} {ApproximateAge} in {FileName}");
     public string DiagnosticInfo
     {
         get
@@ -1712,7 +1712,7 @@ public partial class Meal : ObservableObjectPlus
         if (d == 0) // No amounts unallocated
         {
             // Check for unusual case where discounts exceed costs
-         decimal UnusedDiscount = GetOrderAmount() - GetRawCouponAmount()/(1M + (IsCouponAfterTax ? (decimal)TaxRate : 0));
+            decimal UnusedDiscount = GetOrderAmount() - GetRawCouponAmount() / (1M + (IsCouponAfterTax ? (decimal)TaxRate : 0));
             if (UnusedDiscount < 0)
                 d = UnusedDiscount;
         }
@@ -1816,7 +1816,7 @@ public partial class Meal : ObservableObjectPlus
     /// Negative values are not allowed and return zero.
     /// </summary>
     /// <returns>Subtotal of items</returns>
-    private decimal GetSubTotal() => Math.Max(0, 
+    private decimal GetSubTotal() => Math.Max(0,
         lineItems.Where(item => (item.Amount < 0 && !IsCouponAfterTax) // Coupon if applied pre-tax
             || (!item.Comped && item.Amount > 0)) // a simple entry for something that was purchased
             .Sum(item => item.Amount));
@@ -1891,7 +1891,7 @@ public partial class Meal : ObservableObjectPlus
             return;
         if (Math.Abs(Tip - value) >= 0.01M)
         { // recalculate rate based on new amount
-            double newTipRate = SimplestRate(tipBasis, value, App.Settings.DefaultTipRate,100);
+            double newTipRate = SimplestRate(tipBasis, value, App.Settings.DefaultTipRate, 100);
             TipRate = newTipRate;
             TipDelta = value - Math.Round(tipBasis * (decimal)newTipRate, 2);
             Tip = value;
@@ -1930,7 +1930,7 @@ public partial class Meal : ObservableObjectPlus
             TaxDelta = value - TaxWithoutDelta;
         }
     }
- 
+
     /// <summary>
     /// Return a simplified value describing the ratio between two numbers.
     /// We aim for a default rate if it is close enough, otherwise we just pick one.
@@ -2058,7 +2058,7 @@ public partial class Meal : ObservableObjectPlus
                         sharers[i] = pc;
                         Costs.Add(pc);
                     }
-                    if (amount < 0) 
+                    if (amount < 0)
                     {
                         pc.CouponAmount -= amount; // Amount is negative, so CouponAmount will be positive
                         // Notice that the comped flag is ignored on discounts
@@ -2110,7 +2110,7 @@ public partial class Meal : ObservableObjectPlus
             Tax = 0; // Because there will be no costs there can be no tax
             decimal ratio = amountSum / totalCouponAmount;
             foreach (var costItem in Costs.Where(pc => pc.PreTaxCouponAmount > 0))
-            {  
+            {
                 costItem.PreTaxCouponAmount *= ratio;
                 costItem.UnusedCouponAmount = costItem.PreTaxCouponAmount;
                 // prorate the coupon amount, but not the comped amount
@@ -2220,7 +2220,7 @@ public partial class Meal : ObservableObjectPlus
         // Make the original rounding error visible so the UI can present it as a dire warning if it is large
         if (UnallocatedAmount == 0)
             RoundingErrorAmount = roundingErrorLeft + remainingUnusedDiscount; // This produces the actual rounding error regardless of unused discount 
-        else    
+        else
             roundingErrorLeft = 0;
         /* At this point, there may be a few cents left over, caused by the difference between rounding individual totals 
          * after adding tax and tip and summing the results versus calculating the total, adding tax and tip, then rounding.
@@ -2253,7 +2253,7 @@ public partial class Meal : ObservableObjectPlus
                     roundingErrorLeft = totalForCluster - amountPerParticipant * cluster.SameOrderAmountCount;
                     foreach (var costItem in cluster.CostsWithSameOrderAmount)
                         costItem.Amount = amountPerParticipant;
-                } 
+                }
             }
             if (Math.Abs(roundingErrorLeft) >= 0.005m) // sharing among clusters of identical orders didn't do it, try giving it to any solo participant 
             {
@@ -2283,7 +2283,7 @@ public partial class Meal : ObservableObjectPlus
         if (UnallocatedAmount == 0 && ExcessDiscount != 0)
             UnallocatedAmount = -ExcessDiscount; // To make it obvious to the user
         // And note that distribution is now accurate
-        IsDistributed = true; 
+        IsDistributed = true;
         #endregion
     }
     /// <summary>
@@ -2387,7 +2387,7 @@ public partial class Meal : ObservableObjectPlus
         // but this is such an unlikely case it hardly seems worthwhile.
 
         // First, we get a list of the costs that were exceeded by a discount and zero them, adding up the unused discount.
-            decimal excessDiscount = 0;
+        decimal excessDiscount = 0;
         foreach (var costItem in Costs.Where(pc => pc.Discount > pc.OrderAmount))
         {
             excessDiscount += costItem.Discount - costItem.OrderAmount;
@@ -2451,10 +2451,10 @@ public partial class Meal : ObservableObjectPlus
     {
         decimal totalDifference = 0;
         DistributeCosts20230527();
-        string s =  JsonSerializer.Serialize<List<PersonCost>>(Costs.ToList());
+        string s = JsonSerializer.Serialize<List<PersonCost>>(Costs.ToList());
         List<PersonCost> OldCosts = JsonSerializer.Deserialize<List<PersonCost>>(s);
         DistributeCosts();
-        foreach ((PersonCost oldPc, PersonCost newPc) in OldCosts.Zip(Costs)) 
+        foreach ((PersonCost oldPc, PersonCost newPc) in OldCosts.Zip(Costs))
         {
             if (oldPc is null || newPc is null) break;
             totalDifference += Math.Abs(oldPc.Amount - newPc.Amount);
@@ -2826,7 +2826,7 @@ public partial class Meal : ObservableObjectPlus
         HashSet<string> remoteMealNames = [.. remoteFileInfoList.Select(x => x.Name)];
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
         var remoteFileInfoDict = remoteFileInfoList.ToDictionary(m => m.Name);
-        HashSet<string> localMealNames = new ();
+        HashSet<string> localMealNames = new();
         foreach (var ms in LocalMealList)
         {
             if (remoteMealNames.Contains(ms.Id))
@@ -2852,7 +2852,7 @@ public partial class Meal : ObservableObjectPlus
     /// <param name="cancellationToken">Set this to cancel the operation </param>
     /// <returns>A task to track the status of the operation.</returns>
     /// <exception cref="OperationCanceledException">Thrown if the task is canceled</exception>
-    public static async Task RecoverFromRemoteAsync(CancellationToken cancellationToken, Action<int,int,int> ReportProgress)
+    public static async Task RecoverFromRemoteAsync(CancellationToken cancellationToken, Action<int, int, int> ReportProgress)
     {
         DebugMsg("Entered RecoverFromRemoteAsync, waiting for CloudAllowedSource");
         await App.CloudAllowedSource.WaitWhilePausedAsync();
@@ -2949,7 +2949,7 @@ public partial class Meal : ObservableObjectPlus
         else if (filesWithoutError + filesInError < totalFiles)
             await Utilities.DisplayAlertAsync("Download Bills", $"The download was interrupted, {filesWithoutError} of {totalFiles} bills were downloaded without error");
         else
-            await Utilities.DisplayAlertAsync("Download Bills", 
+            await Utilities.DisplayAlertAsync("Download Bills",
                 $"{filesWithoutError} cloud-only bills have been downloaded, {filesInError} more had errors");
     }
     private static async Task BackupLoopAsync(CancellationToken cancellationToken)

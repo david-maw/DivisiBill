@@ -7,7 +7,6 @@ global using Microsoft.Maui.ApplicationModel.Communication;
 global using Microsoft.Maui.ApplicationModel.DataTransfer;
 global using Microsoft.Maui.Controls;
 global using Microsoft.Maui.Controls.Hosting;
-global using Microsoft.Maui.Controls.Xaml;
 global using Microsoft.Maui.Devices;
 global using Microsoft.Maui.Devices.Sensors;
 global using Microsoft.Maui.Graphics;

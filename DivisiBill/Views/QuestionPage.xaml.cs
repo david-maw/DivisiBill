@@ -48,7 +48,7 @@ public partial class QuestionPage : CommunityToolkit.Maui.Views.Popup
             }
         }
     }
-    
+
     private string title;
     public string Title
     {
