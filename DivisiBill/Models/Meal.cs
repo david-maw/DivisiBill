@@ -743,20 +743,17 @@ public partial class Meal : ObservableObjectPlus
         {
             VenueName = "Fake McDonalds",
             CreationTime = new DateTime(2021, 1, 2, 3, 4, 5),
-            RoundedAmount = 123
         });
         LocalMealList.Add(new MealSummary()
         {
             VenueName = "Fake California Pizza Kitchen",
             CreationTime = new DateTime(2010, 11, 12, 14, 43, 20),
-            RoundedAmount = 234,
             FileSelected = true
         });
         LocalMealList.Add(new MealSummary()
         {
             VenueName = "Fake McDonalds",
             CreationTime = new DateTime(2010, 11, 11, 11, 11, 11),
-            RoundedAmount = 456
         });
     }
 
@@ -924,7 +921,6 @@ public partial class Meal : ObservableObjectPlus
             if (m.SavedToFile)
             {
                 // The normal case where the meal is in local storage
-                existingMealSummary.RoundedAmount = m.Summary.RoundedAmount; // It probably will not be set in the one from the meal list
                 m.Summary = existingMealSummary;
             }
             else
@@ -967,10 +963,7 @@ public partial class Meal : ObservableObjectPlus
             DebugExamineStream(sourceStream);
             m = (Meal)MealSerializer.Deserialize(sourceStream);
             if (ms is not null)
-            {
-                ms.RoundedAmount = m.Summary.RoundedAmount; // for the check in Summary.set
                 m.Summary = ms; // Discard the one that was created as part of the deserialize operation in favor of the passed one 
-            }
             if (m.Summary.SnapshotStream is null)
                 m.Summary.SnapshotStream = new MemoryStream(3000);
             if (sourceStream != m.Summary.SnapshotStream)
@@ -1272,7 +1265,6 @@ public partial class Meal : ObservableObjectPlus
                     if (value is not null)
                     {
                         Debug.Assert(value.VenueName == summary.VenueName
-                            && value.RoundedAmount == summary.RoundedAmount
                             && Utilities.WithinOneSecond(value.CreationTime, summary.CreationTime),
                             "A Summary replacement would change significant properties");
                     }
@@ -1849,15 +1841,8 @@ public partial class Meal : ObservableObjectPlus
     }
 
     [XmlIgnore]
-    public decimal RoundedAmount
-    {
-        get => Summary.RoundedAmount;
-        private set
-        {
-            Summary.RoundedAmount = value;
-            OnPropertyChanged();
-        }
-    }
+    [ObservableProperty]
+    public partial decimal RoundedAmount { get; set; }
 
     private decimal totalAmount;
     [XmlIgnore]

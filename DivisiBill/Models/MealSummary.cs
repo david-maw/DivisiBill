@@ -187,9 +187,6 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         });
     }
     public bool IsDefault => CreationTime == DateTime.MinValue;
-    [DataMember]
-    [XmlIgnore]
-    public decimal RoundedAmount { get => roundedAmount; set => SetProperty(ref roundedAmount, value); }
     #endregion
     #region Member Data
     // This is just data stored with each object in memory, but not persisted when the object
@@ -437,7 +434,6 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     private string venueName = string.Empty;
     private DateTime creationTime = DateTime.MinValue;
     private DateTime lastChangeTime = DateTime.MinValue;
-    private decimal roundedAmount;
     private bool isLocal = false;
     private string imageID;
 

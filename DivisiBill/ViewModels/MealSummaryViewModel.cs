@@ -40,21 +40,22 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public DateTime CreationTime => ms.CreationTime;
     public string Id => ms.Id;
     public String ApproximateAge => ms.ApproximateAge;
-    public Decimal RoundedAmount => ms.RoundedAmount;
+    public Decimal RoundedAmount => HasMealInfo ? m.RoundedAmount : 0;
     public ObservableCollection<PersonCost> Costs => m?.Costs;
-    public int LineItemCount => m?.LineItems?.Count ?? 0;
+    public int LineItemCount => HasMealInfo ? m.LineItems.Count : 0;
     public bool HasImage => ms.HasImage;
     public bool HasDeletedImage => ms.HasDeletedImage;
-    public bool IsBad => m is not null && m.Size < 0;
+    public bool IsBad => HasMealInfo && m.Size < 0;
     public string ErrorMessage => IsBad ? m?.CreationReason : string.Empty;
     public string FileName => ms.FileName;
-    public decimal UnallocatedAmount => m is null ? 0 : m.UnallocatedAmount;
+    public decimal UnallocatedAmount => HasMealInfo ? m.UnallocatedAmount : 0;
     public bool IsAnyUnallocated => UnallocatedAmount != 0;
     public bool ShowStorage { get; set; }
     public bool IsLocal => ms.IsLocal;
     public bool IsRemote => ms.IsRemote;
     public bool IsFake => ms.IsFake;
     public bool IsForCurrentMeal => ms.IsForCurrentMeal;
+    public bool HasMealInfo => m is not null;
     /// <summary>
     /// Delete a local or remote stored meal but never both 
     /// </summary>

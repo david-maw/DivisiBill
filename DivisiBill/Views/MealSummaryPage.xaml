@@ -45,7 +45,7 @@
                Text="{Binding Id, StringFormat='Id: {0}'}"/>
         <!--#endregion-->
         <!--#region Amounts -->
-        <Label FontSize="Large" Text="{Binding RoundedAmount, StringFormat='Rounded total {0:C0}'}"
+        <Label FontSize="Large" Text="{Binding RoundedAmount, StringFormat='Rounded total {0:C0}'}" IsVisible="{Binding HasMealInfo}"
                HorizontalTextAlignment="Center"/>
         <Label FontSize="Large" Text="{Binding UnallocatedAmount, StringFormat='Unallocated {0:C0}'}" 
                HorizontalTextAlignment="Center" IsVisible="{Binding Path=IsAnyUnallocated}"/>
@@ -76,7 +76,7 @@
         </Label>
         <!--#endregion-->
         <!--#region Item Count -->
-        <Label Text="{Binding LineItemCount,StringFormat='Items = {0}'}" FontSize="Large" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+        <Label Text="{Binding LineItemCount,StringFormat='Items = {0}'}" IsVisible="{Binding HasMealInfo}" FontSize="Large" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
         <!--#endregion-->
         <!--#region Costs (Participant List) -->
         <Label Text="Participants" FontSize="Large" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
