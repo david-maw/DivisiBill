@@ -39,7 +39,7 @@ public partial class GettingStartedPage : ContentPage
                 splashInvoked = true;
 #endif
                 DebugMsg("In GettingStartedPage.OnAppearing, about to call GotoAsync to Splash");
-                await Task.Delay(1); // Needed to avoid crashes in Windows, see https://github.com/dotnet/maui/issues/12313
+                await Task.Delay(1); // Needed to avoid crashes in Windows, see https://github.com/dotnet/maui/issues/6653 (was 12313)
                 await App.GoToAsync(Routes.SplashPage);
             }
             else
