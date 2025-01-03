@@ -289,12 +289,11 @@
                     Text="{Binding FilteredSubTotal, StringFormat='{0:C}'}" FontSize="Large" HorizontalOptions="End"/>
                     <!--#endregion-->
                     <!--#region Post Tax Coupon (overall or individual) -->
-                    <!-- the frequent x:DataType="vm:MealViewModel" below is because it's not inherited, see https://github.com/dotnet/maui/issues/25141-->
                     <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
                         <Label.IsVisible>
                             <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
-                                <Binding Path="IsFiltered" Converter="{StaticResource Not}" x:DataType="vm:MealViewModel"/>
+                                <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                                <Binding Path="IsFiltered" Converter="{StaticResource Not}"/>
                             </MultiBinding>
                         </Label.IsVisible>
                     </Label>
@@ -302,16 +301,16 @@
                        Text="{Binding CouponAmountAfterTax, StringFormat='{0:C}'}">
                         <Label.IsVisible>
                             <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
-                                <Binding Path="IsFiltered" Converter="{StaticResource Not}" x:DataType="vm:MealViewModel"/>
+                                <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                                <Binding Path="IsFiltered" Converter="{StaticResource Not}"/>
                             </MultiBinding>
                         </Label.IsVisible>
                     </Label>
                     <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
                         <Label.IsVisible>
                             <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
-                                <Binding Path="IsFiltered" x:DataType="vm:MealViewModel"/>
+                                <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                                <Binding Path="IsFiltered"/>
                             </MultiBinding>
                         </Label.IsVisible>
                     </Label>
@@ -319,8 +318,8 @@
                        Text="{Binding FilteredCouponAmountAfterTax, StringFormat='{0:C}'}">
                         <Label.IsVisible>
                             <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}" x:DataType="vm:MealViewModel"/>
-                                <Binding Path="IsFiltered" x:DataType="vm:MealViewModel"/>
+                                <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                                <Binding Path="IsFiltered"/>
                             </MultiBinding>
                         </Label.IsVisible>
                     </Label>
