@@ -5,12 +5,9 @@ namespace DivisiBill.Views;
 
 public partial class SettingsPage : ContentPage
 {
-    MapPage mapPage = null;
-    MealViewModel mvm;
-    public SettingsPage()
-    {
-        InitializeComponent();
-    }
+    private MapPage mapPage = null;
+    private MealViewModel mvm;
+    public SettingsPage() => InitializeComponent();
 
     protected override async void OnAppearing()
     {
@@ -36,7 +33,7 @@ public partial class SettingsPage : ContentPage
         await App.StartMonitoringLocation();
     }
 
-    protected async override void OnDisappearing()
+    protected override async void OnDisappearing()
     {
         if (IsEnabled)
         {

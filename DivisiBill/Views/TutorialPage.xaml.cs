@@ -3,10 +3,7 @@
 namespace DivisiBill.Views;
 public partial class TutorialPage : ContentPage
 {
-    public TutorialPage()
-    {
-        InitializeComponent();
-    }
+    public TutorialPage() => InitializeComponent();
     public bool ShowTutorial
     {
         get => App.Settings.ShowTutorial;

@@ -25,11 +25,8 @@ public class LineItem : INotifyPropertyChanged
         first = 1,
         limit = maxSharers + 1
     }
-    decimal amount = 0;
-    string itemName;
-    ObservableCollection<bool> sharedBy;
-    byte[] extraShares;
-
+    private string itemName;
+    private ObservableCollection<bool> sharedBy;
     public static uint nextItemNumber = 1;
 
     public LineItem()
@@ -42,13 +39,12 @@ public class LineItem : INotifyPropertyChanged
         SetupSharedBy();
         itemName = li.itemName;
         AmountForSharerID = li.AmountForSharerID;
-        Amount = li.amount;
+        Amount = li.Amount;
         SharesList = li.SharesList;
         Comped = li.Comped;
     }
 
-
-    void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         OnPropertyChanged(nameof(SharedBy));
         OnPropertyChanged(nameof(Sharers));
@@ -115,7 +111,7 @@ public class LineItem : INotifyPropertyChanged
                     sharers++;
                     if (sharers == 1)
                         theSharer = (byte)inx;
-                    if (extraShares[inx] > 0)
+                    if (ExtraShares[inx] > 0)
                     {
                         multipleShares = true;
                         if (sharers > 1)
@@ -124,14 +120,10 @@ public class LineItem : INotifyPropertyChanged
                 }
                 inx++;
             }
-            if (sharers == 0)
-                return "";
-            else if (sharers == 1)
-                return ((char)('①' + theSharer)).ToString();
-            else if (multipleShares)
-                return "*";
-            else
-                return "+";
+            return sharers == 0 ? ""
+                : sharers == 1
+                    ? ((char)('①' + theSharer)).ToString()
+                    : multipleShares ? "*" : "+";
         }
     }
 
@@ -141,14 +133,8 @@ public class LineItem : INotifyPropertyChanged
     /// <param name="sharerID">The sharer we are asking about</param>
     /// <returns>The number of shares allocated to this sharer</returns>
     public byte GetShares(DinerID sharerID)
-    {
-        if (sharerID == DinerID.none)
-            return 0;
-        else if (sharedBy[(int)(sharerID - 1)])
-            return (byte)(1 + extraShares[(int)sharerID - 1]);
-        else
-            return 0;
-    }
+        => sharerID == DinerID.none ? (byte)0
+        : sharedBy[(int)(sharerID - 1)] ? (byte)(1 + ExtraShares[(int)sharerID - 1]) : (byte)0;
 
     /// <summary>
     /// Sets the total number of shares of this item allocated to this sharer. For historical
@@ -168,17 +154,17 @@ public class LineItem : INotifyPropertyChanged
         {
             sharingChanged = !SharedBy[sharerInx];
             SharedBy[sharerInx] = true;
-            if (!((extraShares[sharerInx] == 0) ^ (count > 1)))
+            if (!((ExtraShares[sharerInx] == 0) ^ (count > 1)))
                 extraChanged = true; // Used to be 0 now is not, or vice versa
-            extraShares[sharerInx] = (byte)(count - 1);
+            ExtraShares[sharerInx] = (byte)(count - 1);
         }
         else
         {
             sharingChanged = SharedBy[sharerInx];
             SharedBy[sharerInx] = false;
-            if (extraShares[sharerInx] > 0)
+            if (ExtraShares[sharerInx] > 0)
                 extraChanged = true;
-            extraShares[sharerInx] = (byte)0;
+            ExtraShares[sharerInx] = 0;
         }
         if (extraChanged || sharingChanged)
         {
@@ -201,8 +187,8 @@ public class LineItem : INotifyPropertyChanged
         int newInx = newSharerID.ToIndex();
         SharedBy[newInx] = SharedBy[oldInx];
         SharedBy[oldInx] = false;
-        extraShares[newInx] = extraShares[oldInx];
-        extraShares[oldInx] = 0;
+        ExtraShares[newInx] = ExtraShares[oldInx];
+        ExtraShares[oldInx] = 0;
         OnPropertyChanged(nameof(SharedBy));
         OnPropertyChanged(nameof(SharesList));
     }
@@ -316,7 +302,7 @@ public class LineItem : INotifyPropertyChanged
         if (howMany > 0)
         {
             // Figure out what each person pays toward that item
-            decimal eachShare = (decimal)Amount / howMany;
+            decimal eachShare = Amount / howMany;
             // Now go though the sharers, allocating an amount to each
             for (int i = 0; (i < maxSharers) && (howMany > 0); i++)
             {
@@ -352,11 +338,7 @@ public class LineItem : INotifyPropertyChanged
     /// The encoding in XML is handled by <see cref="SharesList"/> 
     /// </summary>
     [XmlIgnore]
-    public byte[] ExtraShares
-    {
-        get => extraShares;
-        set => extraShares = value;
-    }
+    public byte[] ExtraShares { get; set; }
 
     /// <summary>
     ///  A string encoding of the number of shares allocated to each participant with a single digit for each <see cref="DinerID"/>.
@@ -401,12 +383,11 @@ public class LineItem : INotifyPropertyChanged
     /// </summary>
     private void SetupSharedBy()
     {
-        sharedBy = new ObservableCollection<bool>();
+        sharedBy = [];
         for (int j = 0; j < maxSharers; j++)
             sharedBy.Add(false);
         sharedBy.CollectionChanged += Sharers_CollectionChanged;
-        if (extraShares is null)
-            extraShares = new byte[maxSharers];
+        ExtraShares ??= new byte[maxSharers];
     }
 
     /// <summary>
@@ -434,7 +415,7 @@ public class LineItem : INotifyPropertyChanged
                 itemName = value;
                 if (value.StartsWith("Item ")) // Maybe we need to update the next item number
                 {
-                    if (uint.TryParse(value.Substring(5), out uint itemNumber))
+                    if (uint.TryParse(value[5..], out uint itemNumber))
                     {
                         if (nextItemNumber <= itemNumber)
                             nextItemNumber = itemNumber + 1;
@@ -446,20 +427,6 @@ public class LineItem : INotifyPropertyChanged
         get => itemName;
     }
 
-    /// <summary>
-    /// Find out whether a LineItem has been changed or still has its default value.
-    /// </summary>
-    /// <returns>true of the LineItem has the default value</returns>
-    public bool IsEmpty()
-    {
-        if (Amount != 0) return false;
-        if (TotalSharers != 0) return false;
-        string name = ItemName;
-        if (string.IsNullOrWhiteSpace(name)) return true;
-        if (name.Length < 6) return false;
-        return name.StartsWith("Item ") && uint.TryParse(name.Remove(0, 5), out uint _);
-    }
-    private bool comped = false;
 
     /// <summary>
     /// Item is free, for example because it was food that was incorrectly prepared.
@@ -468,17 +435,17 @@ public class LineItem : INotifyPropertyChanged
     [XmlAttribute, DefaultValue(false)]
     public bool Comped
     {
-        get => comped;
+        get;
         set
         {
-            if (value != comped)
+            if (value != field)
             {
-                comped = value;
+                field = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FilteredAmount));
             }
         }
-    }
+    } = false;
 
     /// <summary>
     /// The cost of this item (or negative if this is a discount).
@@ -489,15 +456,15 @@ public class LineItem : INotifyPropertyChanged
         set
         {
             decimal v = Math.Round(value, 2);
-            if (amount != v)
+            if (field != v)
             {
-                amount = v;
+                field = v;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FilteredAmount));
             }
         }
-        get => amount;
-    }
+        get;
+    } = 0;
 
     /// <summary>
     /// Handy utility property used to show negative amounts in red.
@@ -511,8 +478,6 @@ public class LineItem : INotifyPropertyChanged
     [XmlIgnore]
     public string AmountText => Math.Abs(FilteredAmount).ToString("C");
 
-    private DinerID amountForSharerID;
-
     // Set this to constrain amounts to a particular sharer
     /// <summary>
     /// Used in implementing filtering for a single participant, set to a <see cref="DinerID"/> to filter for that participant
@@ -523,40 +488,26 @@ public class LineItem : INotifyPropertyChanged
     {
         set
         {
-            if (amountForSharerID != value)
+            if (field != value)
             {
-                amountForSharerID = value;
+                field = value;
                 OnPropertyChanged(nameof(FilteredAmount));
                 OnPropertyChanged(nameof(IsSharedByFilter));
             }
         }
-        get => amountForSharerID;
+        get;
     }
 
     /// <summary>
     /// The amount for a specific participant (or everyone if filtering by participant is off) 
     /// </summary>
     [XmlIgnore]
-    public decimal FilteredAmount
-    {
-        get
-        {
-            if (amountForSharerID == 0)
-                return amount;
-            else
-            {
-                return Math.Round(GetAmounts()[(int)AmountForSharerID - 1], 2);
-            }
-        }
-    }
+    public decimal FilteredAmount => AmountForSharerID == 0 ? Amount : Math.Round(GetAmounts()[(int)AmountForSharerID - 1], 2);
     /// <summary>
     /// Either there is no current sharer, or this item has one or more shares allocated to the current sharer
     /// </summary>
     [XmlIgnore]
-    public bool IsSharedByFilter
-    {
-        get => AmountForSharerID == DinerID.none || GetShares(AmountForSharerID) != 0;
-    }
+    public bool IsSharedByFilter => AmountForSharerID == DinerID.none || GetShares(AmountForSharerID) != 0;
 
     /// <summary>
     /// <see cref="INotifyPropertyChanged"/> implementation 

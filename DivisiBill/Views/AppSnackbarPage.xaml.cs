@@ -27,15 +27,14 @@ public partial class AppSnackBarPage : CommunityToolkit.Maui.Views.Popup
             Close();
     }
 
-    private string text;
     public string Text
     {
-        get => text;
+        get;
         set
         {
-            if (text != value)
+            if (field != value)
             {
-                text = value;
+                field = value;
                 OnPropertyChanged();
             }
         }

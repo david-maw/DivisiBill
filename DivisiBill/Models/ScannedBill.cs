@@ -23,26 +23,24 @@ public class ScannedBill
     /// </summary>
     public int ScansLeft { get; set; } = default;
 
-    public List<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
+    public List<OrderLine> OrderLines { get; set; } = [];
 
-    public List<FormElement> FormElements { get; set; } = new List<FormElement>();
+    public List<FormElement> FormElements { get; set; } = [];
     #endregion
 
     #region Serialization 
     /// <summary>
     /// Handle serialization and deserialization of scan results so debugging need not require round trips to the scanner
     /// </summary>
-    private static XmlSerializer itemsSerializer = new XmlSerializer(typeof(ScannedBill));
+    private static readonly XmlSerializer itemsSerializer = new(typeof(ScannedBill));
 
     private void Serialize(Stream s)
     {
-        using (StreamWriter sw = new StreamWriter(s, Encoding.UTF8, 512, true))
-        using (var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true }))
-        {
-            var namespaces = new XmlSerializerNamespaces();
-            namespaces.Add(string.Empty, string.Empty);
-            itemsSerializer.Serialize(xmlwriter, this, namespaces);
-        }
+        using StreamWriter sw = new(s, Encoding.UTF8, 512, true);
+        using var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true });
+        var namespaces = new XmlSerializerNamespaces();
+        namespaces.Add(string.Empty, string.Empty);
+        itemsSerializer.Serialize(xmlwriter, this, namespaces);
     }
 
     /// <summary>
@@ -50,22 +48,17 @@ public class ScannedBill
     /// </summary>
     public void StoreToFile()
     {
-        if (SourceName is null)
-            SourceName = Meal.CurrentMeal.FileName;
+        SourceName ??= Meal.CurrentMeal.FileName;
         string TargetFilePath = Path.Combine(Meal.ImageFolderPath, Path.ChangeExtension(SourceName, "xml"));
-        using (var stream = File.Open(TargetFilePath, FileMode.Create)) // Overwrites any existing file
-        {
-            Serialize(stream);
-            Utilities.DebugExamineStream(stream);
-        }
+        using var stream = File.Open(TargetFilePath, FileMode.Create); // Overwrites any existing file
+        Serialize(stream);
+        Utilities.DebugExamineStream(stream);
     }
     private static ScannedBill Deserialize(Stream s)
     {
-        using (StreamReader sr = new StreamReader(s, Encoding.UTF8, true, 512, true))
-        using (var xmlreader = XmlReader.Create(sr))
-        {
-            return (ScannedBill)itemsSerializer.Deserialize(xmlreader);
-        }
+        using StreamReader sr = new(s, Encoding.UTF8, true, 512, true);
+        using var xmlreader = XmlReader.Create(sr);
+        return (ScannedBill)itemsSerializer.Deserialize(xmlreader);
     }
 
     public static ScannedBill LoadFromFile(string fileName)
@@ -80,15 +73,13 @@ public class ScannedBill
         }
         else
         {
-            using (var stream = File.Open(TargetFilePath, FileMode.Open)) // Expect an existing file
+            using var stream = File.Open(TargetFilePath, FileMode.Open); // Expect an existing file
+            result = Deserialize(stream);
+            if (Debugger.IsAttached)
             {
-                result = Deserialize(stream);
-                if (Debugger.IsAttached)
-                {
-                    stream.Position = 0;
-                    StreamReader sr = new StreamReader(stream);
-                    string myString = sr.ReadToEnd(); // Allows the encoded version to be viewed in the debugger
-                }
+                stream.Position = 0;
+                StreamReader sr = new(stream);
+                string myString = sr.ReadToEnd(); // Allows the encoded version to be viewed in the debugger
             }
         }
         result.SourceName = fileName;
@@ -103,7 +94,7 @@ public class ScannedBill
     /// <returns>List of LineItem objects derived from the ScannedBill object</returns>
     public List<LineItem> ToLineItems()
     {
-        List<LineItem> lineItems = new List<LineItem>();
+        List<LineItem> lineItems = [];
 
         // Handle the situation where the description column and the cost column are off by one so the 
         // first or last line has a description with no cost and the last or first line has a cost with no description
@@ -245,10 +236,10 @@ public class OrderLine
             leadingText = currencyText;
         else if (startInx >= 0)
         {
-            leadingText = currencyText.Substring(0, startInx + 1).Trim();
+            leadingText = currencyText[..(startInx + 1)].Trim();
             if (leadingText.EndsWith(nfi.CurrencySymbol)) // discard any trailing currency symbol
             {
-                leadingText = leadingText.Substring(0, leadingText.Length - nfi.CurrencySymbol.Length).TrimEnd();
+                leadingText = leadingText[..^nfi.CurrencySymbol.Length].TrimEnd();
             }
         }
         else

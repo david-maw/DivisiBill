@@ -11,11 +11,10 @@ namespace DivisiBill.Services;
 internal static class CallWs
 {
     #region Shared
-    const string PurchaseHeaderName = "divisibill-android-purchase";
-    const string TokenHeaderName = "divisibill-token";
-    const string KeyHeaderName = "x-functions-key";
-
-    static HttpClient client = new HttpClient() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri) };
+    private const string PurchaseHeaderName = "divisibill-android-purchase";
+    private const string TokenHeaderName = "divisibill-token";
+    private const string KeyHeaderName = "x-functions-key";
+    private static readonly HttpClient client = new() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri) };
 
     public static Uri BaseAddress => client.BaseAddress;
 
@@ -53,7 +52,7 @@ internal static class CallWs
     internal static Task<ScannedBill> ImageToScannedBill(string ImagePath, CancellationToken cancel)
     {
         var readFile = File.ReadAllBytes(ImagePath);
-        MemoryStream stream = new MemoryStream(readFile);
+        MemoryStream stream = new(readFile);
         cancel.ThrowIfCancellationRequested();
         return ImageToScannedBill(stream, cancel);
     }
@@ -89,7 +88,7 @@ internal static class CallWs
         Billing.ScansLeft = sb.ScansLeft;
         return sb;
     }
-    private static async Task<String> PostFormToScanAsync(MultipartFormDataContent form, CancellationToken cancel)
+    private static async Task<string> PostFormToScanAsync(MultipartFormDataContent form, CancellationToken cancel)
     {
         // Check if there is Internet connectivity
         if (Connectivity.NetworkAccess != Microsoft.Maui.Networking.NetworkAccess.Internet)
@@ -302,35 +301,32 @@ internal static class CallWs
     public static async Task<bool> PutItemAsync(string itemTypeName, string id, string itemData, string itemSummary = null)
     {
         // Create a multipart form data content message body and send it
-        using (var itemDataContent = new StringContent(itemData, Encoding.UTF8, "application/xml"))
-        {
-            var multipartFormDataContent = new MultipartFormDataContent();
+        using var itemDataContent = new StringContent(itemData, Encoding.UTF8, "application/xml");
+        var multipartFormDataContent = new MultipartFormDataContent();
 
-            StringContent itemSummaryContent = null;
-            if (itemSummary is not null)
-                multipartFormDataContent.Add(itemSummaryContent = new StringContent(itemSummary, Encoding.UTF8, "application/json"), "summary");
-            multipartFormDataContent.Add(itemDataContent, "data");
-            // Call the web service and show the response 
-            string responseData = null;
-            try
-            {
-                HttpResponseMessage response = await client.PutAsync($"{itemTypeName}/{id}", multipartFormDataContent);
-                StoreTokenHeader(response);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                if (string.IsNullOrEmpty(responseData))
-                    throw;
-                else
-                    throw new HttpRequestException(ex.Message + "\n\n" + System.Text.RegularExpressions.Regex.Unescape(responseData), ex);
-            }
-            finally
-            {
-                if (itemSummaryContent is not null)
-                    itemSummaryContent.Dispose();
-                multipartFormDataContent.Dispose();
-            }
+        StringContent itemSummaryContent = null;
+        if (itemSummary is not null)
+            multipartFormDataContent.Add(itemSummaryContent = new StringContent(itemSummary, Encoding.UTF8, "application/json"), "summary");
+        multipartFormDataContent.Add(itemDataContent, "data");
+        // Call the web service and show the response 
+        string responseData = null;
+        try
+        {
+            HttpResponseMessage response = await client.PutAsync($"{itemTypeName}/{id}", multipartFormDataContent);
+            StoreTokenHeader(response);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            if (string.IsNullOrEmpty(responseData))
+                throw;
+            else
+                throw new HttpRequestException(ex.Message + "\n\n" + System.Text.RegularExpressions.Regex.Unescape(responseData), ex);
+        }
+        finally
+        {
+            itemSummaryContent?.Dispose();
+            multipartFormDataContent.Dispose();
         }
     }
     public static async Task<string> DeleteItemAsync(string itemTypeName, string id)

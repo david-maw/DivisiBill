@@ -5,7 +5,7 @@ namespace DivisiBill.Views;
 
 public partial class PropertiesPage : ContentPage
 {
-    private PropertiesViewModel viewModel;
+    private readonly PropertiesViewModel viewModel;
     public PropertiesPage()
     {
         InitializeComponent();

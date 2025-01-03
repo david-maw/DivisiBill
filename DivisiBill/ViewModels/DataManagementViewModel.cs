@@ -8,14 +8,14 @@ using DivisiBill.Services;
 
 namespace DivisiBill.ViewModels;
 
-partial class DataManagementViewModel : ObservableObject
+internal partial class DataManagementViewModel : ObservableObject
 {
 
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
 
-    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-    DateTime nextTime = DateTime.MinValue;
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private readonly DateTime nextTime = DateTime.MinValue;
 
     [RelayCommand]
     private async Task SelectOlder()
@@ -70,7 +70,7 @@ partial class DataManagementViewModel : ObservableObject
     [RelayCommand]
     public async Task ArchiveAsync()
     {
-        Archive archive = new Archive(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue);
+        Archive archive = new(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue);
         var filePath = Path.Combine(FileSystem.CacheDirectory, "DivisiBill" + archive.TimeName + ".xml");
         try
         {
@@ -104,7 +104,7 @@ partial class DataManagementViewModel : ObservableObject
         }
     }
     private static readonly PickOptions pickOptions
-        = new PickOptions
+        = new()
         {
             PickerTitle = "Please select an archive file",
             FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
@@ -130,36 +130,30 @@ partial class DataManagementViewModel : ObservableObject
                     // For convenience we allow individual files to be deserialized 
                     if (result.FileName.StartsWith("Venues"))
                     {
-                        using (Stream stream = await result.OpenReadAsync())
-                        {
-                            List<Venue> vl = Venue.DeserializeList(stream);
-                            if (vl is not null)
-                                archive = new Archive() { Venues = vl };
-                            else
-                                Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Venue.DeserializeList returned null");
-                        }
+                        using Stream stream = await result.OpenReadAsync();
+                        List<Venue> vl = Venue.DeserializeList(stream);
+                        if (vl is not null)
+                            archive = new Archive() { Venues = vl };
+                        else
+                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Venue.DeserializeList returned null");
                     }
                     else if (result.FileName.StartsWith("People"))
                     {
-                        using (Stream stream = await result.OpenReadAsync())
-                        {
-                            List<Person> pl = Person.DeserializeList(stream);
-                            if (pl is not null)
-                                archive = new Archive() { Persons = pl };
-                            else
-                                Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Person.DeserializeList returned null");
-                        }
+                        using Stream stream = await result.OpenReadAsync();
+                        List<Person> pl = Person.DeserializeList(stream);
+                        if (pl is not null)
+                            archive = new Archive() { Persons = pl };
+                        else
+                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Person.DeserializeList returned null");
                     }
                     else if (Utilities.TryDateTimeFromName(result.FileName, out _)) // Serialized Meal name format
                     {
-                        using (Stream stream = await result.OpenReadAsync())
-                        {
-                            Meal m = Meal.LoadFromStream(stream);
-                            if (m is not null)
-                                archive = new Archive() { Meals = new List<Meal>() { { m } } };
-                            else
-                                Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Meal.LoadFromStream returned null");
-                        }
+                        using Stream stream = await result.OpenReadAsync();
+                        Meal m = Meal.LoadFromStream(stream);
+                        if (m is not null)
+                            archive = new Archive() { Meals = new List<Meal>() { { m } } };
+                        else
+                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Meal.LoadFromStream returned null");
                     }
                     else // Assume it is an archive
                     {
@@ -239,22 +233,21 @@ partial class DataManagementViewModel : ObservableObject
     /// </summary>
     public DateTime StartDate
     {
-        get => startDate;
+        get;
         set
         {
-            SetProperty(ref startDate, value.Date);
+            SetProperty(ref field, value.Date);
             FilterByDate = true;
         }
-    }
-    private DateTime startDate = DateTime.Now.Date;
+    } = DateTime.Now.Date;
+
     public DateTime FinishDate
     {
-        get => finishDate;
+        get;
         set
         {
-            SetProperty(ref finishDate, value.Date);
+            SetProperty(ref field, value.Date);
             FilterByDate = true;
         }
-    }
-    private DateTime finishDate = DateTime.Now.Date;
+    } = DateTime.Now.Date;
 }

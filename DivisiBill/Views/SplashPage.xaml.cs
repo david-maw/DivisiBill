@@ -45,7 +45,7 @@ public partial class SplashPage : ContentPage
     /// accessibility) might have changed, but that's the moral equivalent of such changes happening while the
     /// program is active so we need to handle them anyway.
     /// </summary>
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         DebugMsg("In SplashPage.OnAppearing");
         base.OnAppearing();
@@ -74,8 +74,7 @@ public partial class SplashPage : ContentPage
             initializationStarted = true;
             Shell.Current.Navigating += Cancel_Navigation;
             statusLabel.Text = string.Empty;
-            if (App.Settings is null)
-                App.Settings = new AppSettings(); // allowed to be null for testing
+            App.Settings ??= new AppSettings(); // allowed to be null for testing
             await InitializeUtilitiesAsync();
             buildTimeDisplay.Text = BuildTime;
             if (App.SentryAllowed)
@@ -167,19 +166,17 @@ public partial class SplashPage : ContentPage
         IsPaused = !IsPaused;
     }
 
-    private bool isPaused = false;
-
     public bool IsPaused
     {
-        get => isPaused;
+        get;
         set
         {
-            if (isPaused != value)
+            if (field != value)
             {
-                isPaused = value;
+                field = value;
                 Utilities.PauseBeforeMessage = value;
                 OnPropertyChanged();
             }
         }
-    }
+    } = false;
 }

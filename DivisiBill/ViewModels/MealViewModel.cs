@@ -18,7 +18,7 @@ public partial class MealViewModel : ObservableObjectPlus
     internal class SavedCost
     {
         public PersonCost PersonCost;
-        public List<ShareInfo> ShareInfoList = new List<ShareInfo>();
+        public List<ShareInfo> ShareInfoList = [];
     }
     #endregion
     #region Initialization and Termination
@@ -41,14 +41,8 @@ public partial class MealViewModel : ObservableObjectPlus
         UnloadLineItemAmountString();
         UnloadLineItemNameString();
     }
-    public void LoadSettings()
-    {
-        LoadDefaultTaxRateString();
-    }
-    public void UnloadSettings()
-    {
-        UnloadDefaultTaxRateString();
-    }
+    public void LoadSettings() => LoadDefaultTaxRateString();
+    public void UnloadSettings() => UnloadDefaultTaxRateString();
     #endregion
     #region Property Change Events
     public void CurrentMeal_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -125,7 +119,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public async Task PushProperties() => await App.PushAsync(Routes.PropertiesPage);
     #endregion
     #region PersonCost
-    private Stack<SavedCost> deletedCosts = new Stack<SavedCost>();
+    private readonly Stack<SavedCost> deletedCosts = new();
     private bool InsertCost(PersonCost pc)
     {
         int endInx = Costs.Count - 1; // Last element
@@ -307,32 +301,30 @@ public partial class MealViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task ShowUnallocated() => await App.GoToAsync(Routes.LineItemsPage + "?command=SelectFirstUnallocatedLineItem");
 
-    private bool isAnyDeletedCost = false;
-
     public bool IsAnyDeletedCost
     {
-        get => isAnyDeletedCost;
+        get;
 
         set
         {
-            if (isAnyDeletedCost != value)
+            if (field != value)
             {
-                isAnyDeletedCost = value;
+                field = value;
                 OnPropertyChanged(nameof(IsAnyDeletedCost));
             }
             // Always recheck IsManyDeletedCosts because for it transitions between {0,1} and {2+} are what count 
             OnPropertyChanged(nameof(IsManyDeletedCosts));
         }
-    }
+    } = false;
     public bool IsManyDeletedCosts => deletedCosts.Count > 1;
     public ObservableCollection<PersonCost> Costs => Meal.CurrentMeal.Costs;
     public PersonCost CostListAdd(Person p) => Meal.CurrentMeal.CostListAdd(p);
     public void CostListDelete(PersonCost pc)
     {
-        SavedCost sc = new SavedCost() { PersonCost = pc };
+        SavedCost sc = new() { PersonCost = pc };
         foreach (var li in LineItems.Where((li) => li.SharedBy[pc.DinerIndex]))
         {
-            ShareInfo si = new ShareInfo() { LineItem = li, Shares = li.GetShares(pc.DinerID) };
+            ShareInfo si = new() { LineItem = li, Shares = li.GetShares(pc.DinerID) };
             sc.ShareInfoList.Add(si);
         }
         deletedCosts.Push(sc);
@@ -406,8 +398,7 @@ public partial class MealViewModel : ObservableObjectPlus
     private void DeselectAllLineItems(LineItem li) => SelectedLineItem = null;
     private LineItem AddItem(LineItem li)
     {
-        if (li is null)
-            li = new();
+        li ??= new();
         LineItems.InsertBefore(SelectedLineItem, li);
         if (IsFiltered)
         {
@@ -439,10 +430,7 @@ public partial class MealViewModel : ObservableObjectPlus
     /// <summary>
     /// Notify the UI that an add action has completed in case it wants to set focus.
     /// </summary>
-    private void NotifyLineItemAddCompleted(LineItem value)
-    {
-        LineItemAddCompletedInUi?.Invoke(value);
-    }
+    private void NotifyLineItemAddCompleted(LineItem value) => LineItemAddCompletedInUi?.Invoke(value);
     #endregion
     #region Item Amount
     private void LoadLineItemAmountString() => LineItemAmountString = string.Format("{0:0.00}", SelectedLineItem.Amount);
@@ -451,7 +439,7 @@ public partial class MealViewModel : ObservableObjectPlus
     private void UnloadLineItemAmountString()
     {
         if (SelectedLineItem is not null && IsValidLineItemAmountString)
-            SelectedLineItem.Amount = Decimal.Parse(LineItemAmountString);
+            SelectedLineItem.Amount = decimal.Parse(LineItemAmountString);
     }
     [RelayCommand]
     private void CompletedLineItemAmountString()
@@ -460,7 +448,7 @@ public partial class MealViewModel : ObservableObjectPlus
             return; // nothing to do
         // Store the value if it is valid
         if (IsValidLineItemAmountString)
-            SelectedLineItem.Amount = Decimal.Parse(LineItemAmountString);
+            SelectedLineItem.Amount = decimal.Parse(LineItemAmountString);
         // We only move to the next item on the desktop because the soft keyboard on a phone takes up so much space that it obscures the item list
         if (DeviceInfo.Current.Idiom == DeviceIdiom.Desktop)
         {
@@ -488,7 +476,7 @@ public partial class MealViewModel : ObservableObjectPlus
     #endregion
     #endregion
     #region Delete and UnDelete
-    private Stack<LineItem> deletedLineItems = new Stack<LineItem>();
+    private readonly Stack<LineItem> deletedLineItems = new();
     public LineItem DeleteItem(LineItem li)
     {
         LineItem alternate = LineItems.Alternate(li);
@@ -564,16 +552,14 @@ public partial class MealViewModel : ObservableObjectPlus
         deletedLineItems.Clear();
         IsAnyDeletedLineItem = false;
     }
-
-    private bool isAnyDeletedLineItem;
     public bool IsAnyDeletedLineItem
     {
-        get => isAnyDeletedLineItem;
+        get;
         set
         {
-            if (isAnyDeletedLineItem != value)
+            if (field != value)
             {
-                isAnyDeletedLineItem = value;
+                field = value;
                 OnPropertyChanged(nameof(IsAnyDeletedLineItem));
             }
             // Always recheck IsManyDeletedLineItems because for it transitions between {0,1} and {2+} are what count 
@@ -636,7 +622,7 @@ public partial class MealViewModel : ObservableObjectPlus
     #endregion
     #region Commands
     private ObservableCollection<LineItem> GetLineItems() => IsFiltered
-    ? new ObservableCollection<LineItem>(Meal.CurrentMeal.LineItems.Where(li => li.IsSharedByFilter))
+    ? [.. Meal.CurrentMeal.LineItems.Where(li => li.IsSharedByFilter)]
     : Meal.CurrentMeal.LineItems;
 
     [ObservableProperty]
@@ -664,10 +650,7 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             if (changeType == ChangeType.Cycle)
             {
-                if (li.TotalSharers == 0)
-                    changeType = ChangeType.Proportional;
-                else
-                    changeType = ChangeType.Clear;
+                changeType = li.TotalSharers == 0 ? ChangeType.Proportional : ChangeType.Clear;
             }
             switch (changeType)
             {
@@ -703,7 +686,7 @@ public partial class MealViewModel : ObservableObjectPlus
     [RelayCommand]
     public void ChangeSharing(object param)
     {
-        if (param is String changeTypeString && Enum.TryParse(changeTypeString, out ChangeType changeType))
+        if (param is string changeTypeString && Enum.TryParse(changeTypeString, out ChangeType changeType))
             ChangeSharing(SelectedOrFirstLineItem, changeType);
         else if (param is LineItem li)
             ChangeSharing(li, ChangeType.Cycle);
@@ -715,18 +698,19 @@ public partial class MealViewModel : ObservableObjectPlus
     #endregion
     #endregion
     #region Totals, meal amounts and properties
-    decimal VisiblePositive => LineItems.Where(l => l.FilteredAmount > 0 && !l.Comped).Sum(l => l.FilteredAmount);
-    decimal VisibleNegative => -LineItems.Where(l => l.FilteredAmount < 0).Sum(l => l.FilteredAmount);
+    private decimal VisiblePositive => LineItems.Where(l => l.FilteredAmount > 0 && !l.Comped).Sum(l => l.FilteredAmount);
+
+    private decimal VisibleNegative => -LineItems.Where(l => l.FilteredAmount < 0).Sum(l => l.FilteredAmount);
     public decimal SubTotal => Meal.CurrentMeal.SubTotal;
     private void SetFilteredSubtotal() => FilteredSubTotal = Math.Max(0, IsFiltered ? VisiblePositive - (IsCouponAfterTax ? 0 : VisibleNegative) : 0);
-    public decimal FilteredSubTotal { get => filteredSubTotal; private set => SetProperty(ref filteredSubTotal, value); }
+    public decimal FilteredSubTotal { get; private set => SetProperty(ref field, value); }
     public decimal TotalAmount => Meal.CurrentMeal.TotalAmount;
     public decimal RoundedAmount => Meal.CurrentMeal.RoundedAmount;
     public bool IsAnyUnallocated => Meal.CurrentMeal.UnallocatedAmount != 0;
     public decimal UnallocatedAmount => Meal.CurrentMeal.UnallocatedAmount;
     public Venue CurrentVenue => Venue.FindVenueByName(Meal.CurrentMeal.VenueName);
     public string ApproximateAge => Meal.CurrentMeal.ApproximateAge;
-    public String ApproximateChangeAge => Utilities.ApproximateAge(LastChangeTime);
+    public string ApproximateChangeAge => Utilities.ApproximateAge(LastChangeTime);
     public DateTime CreationTime => Meal.CurrentMeal.CreationTime;
     public DateTime LastChangeTime => Meal.CurrentMeal.LastChangeTime;
     public string LastChangeTimeText => Meal.CurrentMeal.Summary.GetLastChangeString();
@@ -749,7 +733,7 @@ public partial class MealViewModel : ObservableObjectPlus
     // Zeroing these out when unused makes the XAML simpler
     public decimal CouponAmountAfterTax => Meal.CurrentMeal.CouponAmountAfterTax;
     private void SetFilteredCouponAmountAfterTax() => FilteredCouponAmountAfterTax = IsFiltered && IsCouponAfterTax ? VisibleNegative : 0;
-    public decimal FilteredCouponAmountAfterTax { get => filteredCouponAmountAfterTax; private set => SetProperty(ref filteredCouponAmountAfterTax, value); }
+    public decimal FilteredCouponAmountAfterTax { get; private set => SetProperty(ref field, value); }
     public decimal ScannedSubTotal => Meal.CurrentMeal.ScannedSubTotal;
     public decimal ScannedTax => Meal.CurrentMeal.ScannedTax;
     #endregion    
@@ -807,21 +791,19 @@ public partial class MealViewModel : ObservableObjectPlus
     public void ClearFiltering() => AmountForSharerID = LineItem.DinerID.none;
     #endregion
     #region Hints
-    private bool showLineItemsHint = false;
     public bool ShowLineItemsHint
     {
-        get => showLineItemsHint;
+        get;
 
-        set => SetProperty(ref showLineItemsHint, value, () => App.Settings.ShowLineItemsHint = value);
-    }
-    private bool showTotalsHint = false;
+        set => SetProperty(ref field, value, () => App.Settings.ShowLineItemsHint = value);
+    } = false;
 
     public bool ShowTotalsHint
     {
-        get => showTotalsHint;
+        get;
 
-        set => SetProperty(ref showTotalsHint, value, () => App.Settings.ShowTotalsHint = value);
-    }
+        set => SetProperty(ref field, value, () => App.Settings.ShowTotalsHint = value);
+    } = false;
     #endregion
     #region Meal Manipulation
 
@@ -880,20 +862,14 @@ public partial class MealViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     public partial string DefaultTaxRateString { get; set; }
-
-    private decimal filteredSubTotal;
-    private decimal filteredCouponAmountAfterTax;
-    private void LoadDefaultTaxRateString()
-    {
-        DefaultTaxRateString = string.Format("{0:0.00}", DefaultTaxRate * 100);
-    }
+    private void LoadDefaultTaxRateString() => DefaultTaxRateString = string.Format("{0:0.00}", DefaultTaxRate * 100);
 
     [RelayCommand]
     private void UnloadDefaultTaxRateString()
     {
         if (IsDefaultTaxRateStringValid)
         {
-            DefaultTaxRate = Double.Parse(DefaultTaxRateString) / 100;
+            DefaultTaxRate = double.Parse(DefaultTaxRateString) / 100;
             LoadDefaultTaxRateString();
         }
     }

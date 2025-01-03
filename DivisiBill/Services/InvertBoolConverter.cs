@@ -2,7 +2,7 @@
 
 namespace DivisiBill.Services;
 
-class InvertBoolConverter : IValueConverter
+internal class InvertBoolConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => !(bool)value;
 

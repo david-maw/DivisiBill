@@ -6,21 +6,21 @@ using DivisiBill.Services;
 
 namespace DivisiBill.ViewModels;
 
-partial class PersonEditViewModel : ObservableObjectPlus
+internal partial class PersonEditViewModel : ObservableObjectPlus
 {
-    private readonly Person originalPerson, currentPerson;
+    private readonly Person originalPerson;
     private readonly Action ClosePage;
 
     public PersonEditViewModel(Person personParameter, Action ClosePageParam)
     {
         originalPerson = personParameter;
-        currentPerson = new Person(personParameter);
+        CurrentPerson = new Person(personParameter);
         ClosePage = ClosePageParam;
     }
 
-    public Person CurrentPerson => currentPerson;
+    public Person CurrentPerson { get; }
     public bool IsInUse => originalPerson.IsInUse;
-    public bool HasUnsavedChanges => !currentPerson.SameIdentityAs(originalPerson);
+    public bool HasUnsavedChanges => !CurrentPerson.SameIdentityAs(originalPerson);
 
     [RelayCommand]
     public async Task DeleteAsync()
@@ -44,14 +44,14 @@ partial class PersonEditViewModel : ObservableObjectPlus
         bool closePage = false;
         try
         {
-            bool updatingExistingPerson = Person.AllPeople.Any(p => currentPerson.PersonGUID.Equals(p.PersonGUID));
-            if (updatingExistingPerson && originalPerson.SameIdentityAs(currentPerson)) // Nothing has been changed
+            bool updatingExistingPerson = Person.AllPeople.Any(p => CurrentPerson.PersonGUID.Equals(p.PersonGUID));
+            if (updatingExistingPerson && originalPerson.SameIdentityAs(CurrentPerson)) // Nothing has been changed
                 closePage = true; // Just exit without doing anything else
-            else if (currentPerson.IsEmpty)
+            else if (CurrentPerson.IsEmpty)
             {
                 // Require the Person be non-null if it is in use, otherwise remove it from the global list
                 if (IsInUse)
-                    currentPerson.Nickname = originalPerson.DisplayName; // do not close the page since we could not do what the user asked
+                    CurrentPerson.Nickname = originalPerson.DisplayName; // do not close the page since we could not do what the user asked
                 else if (updatingExistingPerson && Person.AllPeople.Remove(originalPerson))
                     await Person.SaveSettingsIfChangedAsync();
                 else
@@ -59,11 +59,11 @@ partial class PersonEditViewModel : ObservableObjectPlus
             }
             else
             {
-                if (Person.AllPeople.Any(item => currentPerson.IsSame(item) && originalPerson != item))  // There is already another distinct entry that looks like this
+                if (Person.AllPeople.Any(item => CurrentPerson.IsSame(item) && originalPerson != item))  // There is already another distinct entry that looks like this
                     await Utilities.DisplayAlertAsync("Error", "This person would be the same as an existing person");
                 else
                 {
-                    originalPerson.CopyIdentityFrom(currentPerson);
+                    originalPerson.CopyIdentityFrom(CurrentPerson);
                     originalPerson.UpsertInAllPeople();
                     // If this person is in the current meal (meaning IsInUse would have been true if we had tested it) make sure the nicknames are consistent
                     PersonCost? originalPersonCost = Meal.CurrentMeal.Costs.FirstOrDefault(pc => pc.Diner is not null && pc.Diner == originalPerson);
@@ -85,5 +85,5 @@ partial class PersonEditViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
-    public void Restore() => currentPerson.CopyIdentityFrom(originalPerson);
+    public void Restore() => CurrentPerson.CopyIdentityFrom(originalPerson);
 }

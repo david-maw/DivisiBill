@@ -5,30 +5,23 @@ namespace DivisiBill.Services;
 public class IsNonZeroConverter : IValueConverter
 {
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo)
-    {
-        if (value is null)
-            return false;
+    public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo) => value is null
+            ? false
+            : value switch
+            {
+                sbyte x => x != 0,
+                byte x => x != 0,
+                short x => x != 0,
+                ushort x => x != 0,
+                int x => x != 0,
+                uint x => x != 0,
+                long x => x != 0,
+                ulong x => x != 0,
+                float x => x != 0,
+                double x => x != 0,
+                decimal x => x != 0,
+                _ => (object)false,
+            };
 
-        switch (value)
-        {
-            case sbyte x: return x != 0;
-            case byte x: return x != 0;
-            case short x: return x != 0;
-            case ushort x: return x != 0;
-            case int x: return x != 0;
-            case uint x: return x != 0;
-            case long x: return x != 0;
-            case ulong x: return x != 0;
-            case float x: return x != 0;
-            case double x: return x != 0;
-            case decimal x: return x != 0;
-            default: return false;
-        }
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo)
-    {
-        throw new NotImplementedException();
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo) => throw new NotImplementedException();
 }

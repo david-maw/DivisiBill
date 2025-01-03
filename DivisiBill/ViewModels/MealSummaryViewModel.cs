@@ -11,7 +11,6 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
 {
     public MealSummaryViewModel() { }
 
-    private Meal m;
     private MealSummary ms = new();
 
     public MealSummary Summary
@@ -25,10 +24,10 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     }
     public Meal CurrentMeal
     {
-        get => m;
+        get;
         set
         {
-            m = value;
+            field = value;
             ms = value?.Summary;
         }
     }
@@ -39,23 +38,23 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public string LastChangeTimeText => ms.GetLastChangeString();
     public DateTime CreationTime => ms.CreationTime;
     public string Id => ms.Id;
-    public String ApproximateAge => ms.ApproximateAge;
-    public Decimal RoundedAmount => HasMealInfo ? m.RoundedAmount : 0;
-    public ObservableCollection<PersonCost> Costs => m?.Costs;
-    public int LineItemCount => HasMealInfo ? m.LineItems.Count : 0;
+    public string ApproximateAge => ms.ApproximateAge;
+    public decimal RoundedAmount => HasMealInfo ? CurrentMeal.RoundedAmount : 0;
+    public ObservableCollection<PersonCost> Costs => CurrentMeal?.Costs;
+    public int LineItemCount => HasMealInfo ? CurrentMeal.LineItems.Count : 0;
     public bool HasImage => ms.HasImage;
     public bool HasDeletedImage => ms.HasDeletedImage;
-    public bool IsBad => HasMealInfo && m.Size < 0;
-    public string ErrorMessage => IsBad ? m?.CreationReason : string.Empty;
+    public bool IsBad => HasMealInfo && CurrentMeal.Size < 0;
+    public string ErrorMessage => IsBad ? CurrentMeal?.CreationReason : string.Empty;
     public string FileName => ms.FileName;
-    public decimal UnallocatedAmount => HasMealInfo ? m.UnallocatedAmount : 0;
+    public decimal UnallocatedAmount => HasMealInfo ? CurrentMeal.UnallocatedAmount : 0;
     public bool IsAnyUnallocated => UnallocatedAmount != 0;
     public bool ShowStorage { get; set; }
     public bool IsLocal => ms.IsLocal;
     public bool IsRemote => ms.IsRemote;
     public bool IsFake => ms.IsFake;
     public bool IsForCurrentMeal => ms.IsForCurrentMeal;
-    public bool HasMealInfo => m is not null;
+    public bool HasMealInfo => CurrentMeal is not null;
     /// <summary>
     /// Delete a local or remote stored meal but never both 
     /// </summary>
@@ -63,8 +62,8 @@ public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChange
     public async Task DeleteMeal()
     {
         if (ms.IsLocal)
-            await m.Summary.DeleteAsync(doLocal: true, doRemote: false);
+            await CurrentMeal.Summary.DeleteAsync(doLocal: true, doRemote: false);
         else if (ms.IsRemote)
-            await m.Summary.DeleteAsync(doLocal: false, doRemote: true);
+            await CurrentMeal.Summary.DeleteAsync(doLocal: false, doRemote: true);
     }
 }

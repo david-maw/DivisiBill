@@ -5,7 +5,7 @@ namespace DivisiBill.Views;
 
 public partial class MealSummaryPage : ContentPage
 {
-    readonly MealSummaryViewModel viewModel;
+    private readonly MealSummaryViewModel viewModel;
 
     public MealSummaryPage()
     {

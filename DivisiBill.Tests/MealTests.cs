@@ -7,10 +7,7 @@ namespace DivisiBill.Tests;
 [TestClass]
 public class MealTests
 {
-    public MealTests()
-    {
-        DivisiBill.App.Settings = new FakeAppSettings();
-    }
+    public MealTests() => DivisiBill.App.Settings = new FakeAppSettings();
     /// <summary>
     /// Verify correct results of rate calculation (closest multiple of 0.0025)
     /// </summary>
@@ -19,14 +16,12 @@ public class MealTests
     [DataRow(14.35, 0.93, 0.0650)] // 0.06481
     [DataRow(14.59, 0.93, 0.0625)] // 0.06374
     public void TestSimplestRate(double total, double part, double expected)
-    {
-        Assert.AreEqual(expected, SimplestRate(Convert.ToDecimal(total), Convert.ToDecimal(part)),
+        => Assert.AreEqual(expected, SimplestRate(Convert.ToDecimal(total), Convert.ToDecimal(part)),
             $"SimplestRate({total}, {part}) returned an unexpected value");
-    }
 
     private Meal GetBasicMeal()
     {
-        Meal m = new Meal()
+        Meal m = new()
         {
             VenueName = "FakeName",
             CreationTime = DateTime.Now,
@@ -116,7 +111,7 @@ public class MealTests
     }
     private Meal GetSharedMeal()
     {
-        Meal m = new Meal()
+        Meal m = new()
         {
             VenueName = "FakeName",
             CreationTime = new DateTime(2001, 2, 3, 12, 13, 14),
@@ -143,23 +138,23 @@ public class MealTests
     /// Validate correct sharing of equal amounts to multiple participants
     /// in a simple meal (no tax, tip, coupons or comped items).
     /// </summary>
-    /// <param name="costInx">Which resultant cost to validate</param>
+    /// <param name="costIndex">Which resultant cost to validate</param>
     /// <param name="amount">The value it should have</param>
     [TestMethod]
     [DataRow(0, 5.33)]
     [DataRow(1, 0.34)]
     [DataRow(2, 5.33)]
-    public void SimpleSharing(int costInx, double amount)
+    public void SimpleSharing(int costIndex, double amount)
     {
         Meal SharedMeal = GetSharedMeal();
         SharedMeal.FinalizeSetup();
-        Assert.AreEqual((decimal)amount, SharedMeal.Costs[costInx].Amount,
-            $"Unexpected amount for {SharedMeal.Costs[costInx].Nickname}");
+        Assert.AreEqual((decimal)amount, SharedMeal.Costs[costIndex].Amount,
+            $"Unexpected amount for {SharedMeal.Costs[costIndex].Nickname}");
     }
 
     private Meal GetEdgeCaseMeal()
     {
-        Meal m = new Meal()
+        Meal m = new()
         {
             VenueName = "FakeName",
             CreationTime = new DateTime(2001, 2, 3, 12, 13, 14),
@@ -187,14 +182,14 @@ public class MealTests
     {
         Meal SharedMeal = GetEdgeCaseMeal();
 
-        SharedMeal.LineItems = new()
-        {
+        SharedMeal.LineItems =
+        [
             // Note the layout of SharesList the leftmost digit is shares for person 1, the next for person 2,
             // and so on from left to right NOT, from right to left, like a normal number
             new LineItem {Amount = 40, SharesList = "0110"}, // 20 each
             new LineItem {Amount = 20, SharesList = "1001"}, // 10 each 
             new LineItem {Amount =-40, SharesList = "1111"}, // 20 of coupon share each 
-        };
+        ];
 
         SharedMeal.FinalizeSetup();
         int i = 0;
@@ -224,14 +219,14 @@ public class MealTests
         SharedMeal.TipOnTax = tipOnTax;
         SharedMeal.IsCouponAfterTax = taxOnCoupon;
 
-        SharedMeal.LineItems = new()
-        {
+        SharedMeal.LineItems =
+        [
             // Note the layout of SharesList the leftmost digit is shares for person 1, the next for person 2,
             // and so on from left to right NOT, from right to left, like a normal number
             new LineItem { Amount =  40, SharesList = "0110" }, // 20 each
             new LineItem { Amount =  20, SharesList = "3001" }, // 15/5 split 
             new LineItem { Amount = -40, SharesList = "1111" }, // 10 of coupon share each 
-        };
+        ];
 
         SharedMeal.FinalizeSetup();
         int i = 0;
@@ -268,14 +263,14 @@ public class MealTests
         SharedMeal.TipOnTax = tipOnTax;
         SharedMeal.IsCouponAfterTax = taxOnCoupon;
 
-        SharedMeal.LineItems = new()
-        {
+        SharedMeal.LineItems =
+        [
             // Note the layout of SharesList the leftmost digit is shares for person 1, the next for person 2,
             // and so on from left to right NOT, from right to left, like a normal number
             new LineItem { Amount =  40, SharesList = "0110" }, // 20 each
             new LineItem { Amount =  20, SharesList = "3001" }, // 15/5 split 
             new LineItem { Amount = -80, SharesList = "1111" }, // 20 of coupon share each 
-        };
+        ];
 
         SharedMeal.FinalizeSetup();
         int i = 0;
@@ -286,7 +281,7 @@ public class MealTests
         Assert.IsTrue(SharedMeal.UnallocatedAmount != 0,
             $"Zero unallocated amount when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
-        Decimal measuredTotal = 0;
+        decimal measuredTotal = 0;
 
         foreach (var pc in SharedMeal.Costs)
         {

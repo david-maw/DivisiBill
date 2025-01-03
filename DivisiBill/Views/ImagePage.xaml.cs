@@ -4,7 +4,7 @@ using DivisiBill.ViewModels;
 namespace DivisiBill.Views;
 public partial class ImagePage : ContentPage
 {
-    ImageViewModel viewModel;
+    private readonly ImageViewModel viewModel;
     public ImagePage()
     {
         InitializeComponent();

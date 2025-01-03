@@ -2,14 +2,14 @@ namespace DivisiBill.Views;
 
 public partial class FileListPage : ContentPage
 {
-    readonly ViewModels.FileListViewModel fileListViewModel;
+    private readonly ViewModels.FileListViewModel fileListViewModel;
     public FileListPage(ViewModels.FileListViewModel fileListViewModelParameter)
     {
         BindingContext = fileListViewModel = fileListViewModelParameter;
         InitializeComponent();
     }
 
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (await fileListViewModel.InitializeAsync())

@@ -52,8 +52,5 @@ public interface ISettings
         ShowVenuesHint = true;
         ShowPeopleHint = true;
     }
-    void ResetCheckboxes()
-    {
-        ShowTutorial = true;
-    }
+    void ResetCheckboxes() => ShowTutorial = true;
 }

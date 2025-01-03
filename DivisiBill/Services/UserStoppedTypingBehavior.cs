@@ -2,7 +2,7 @@
 
 internal partial class UserStoppedTypingBehavior : CommunityToolkit.Maui.Behaviors.UserStoppedTypingBehavior
 {
-    bool bindingWasSet = false;
+    private bool bindingWasSet = false;
     protected override void OnAttachedTo(BindableObject bindable)
     {
         if (bindingWasSet = (BindingContext is null))

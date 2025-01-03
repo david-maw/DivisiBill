@@ -9,8 +9,8 @@ namespace DivisiBill.Views;
 /// </summary>
 public partial class PeopleListPage : ContentPage
 {
-    readonly ViewModels.PeopleListViewModel context = null;
-    FlyoutBehavior savedFlyoutBehavior;
+    private readonly ViewModels.PeopleListViewModel context = null;
+    private FlyoutBehavior savedFlyoutBehavior;
     public PeopleListPage() : this(null)
     {
     }
@@ -21,7 +21,7 @@ public partial class PeopleListPage : ContentPage
         BindingContext = context;
     }
 
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         await Task.Delay(100); // nasty kludge to allow time for navigation to complete

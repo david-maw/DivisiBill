@@ -109,7 +109,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     {
         if (TipStringIsValid)
         {
-            Tip = Decimal.Parse(TipString);
+            Tip = decimal.Parse(TipString);
             LoadTipString();
         }
     }
@@ -217,10 +217,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial bool ScannedTaxStringIsValid { get; set; }
 
-    private void LoadScannedTax()
-    {
-        ScannedTaxString = (ScannedTax == 0) ? "" : string.Format("{0:0.00}", ScannedTax);
-    }
+    private void LoadScannedTax() => ScannedTaxString = (ScannedTax == 0) ? "" : string.Format("{0:0.00}", ScannedTax);
 
     [RelayCommand]
     private void UnloadScannedTax()

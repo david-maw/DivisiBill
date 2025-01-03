@@ -1,11 +1,11 @@
 ﻿namespace DivisiBill.Services;
 
-class PinchToZoomContainer : ContentView
+internal class PinchToZoomContainer : ContentView
 {
-    double currentScale = 1;
-    double startScale = 1;
-    double xOffset = 0;
-    double yOffset = 0;
+    private double currentScale = 1;
+    private double startScale = 1;
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     public PinchToZoomContainer()
     {
@@ -33,7 +33,7 @@ class PinchToZoomContainer : ContentView
 
     private void OnTapped(object sender, EventArgs e) => ResetImage();
 
-    void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
+    private void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
     {
         if (e.Status == GestureStatus.Started)
         {

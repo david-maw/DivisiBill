@@ -6,7 +6,7 @@ using Android.Runtime;
 using Android.Widget;
 using AndroidX.Activity;
 
-namespace DivisiBill;
+namespace DivisiBill.Platforms.Android;
 
 [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
@@ -25,20 +25,17 @@ public class MainActivity : MauiAppCompatActivity
         base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
-class BackPress : OnBackPressedCallback
+
+internal class BackPress : OnBackPressedCallback
 {
     private readonly Activity activity;
     private long backPressed;
 
-    public BackPress(Activity activity) : base(true)
-    {
-        this.activity = activity;
-    }
+    public BackPress(Activity activity) : base(true) => this.activity = activity;
 
     public override void HandleOnBackPressed()
     {
-        var shell = Shell.Current as AppShell;
-        if (shell is null || !shell.HandleBackRequest())
+        if (Shell.Current is not AppShell shell || !shell.HandleBackRequest())
         {
             const int delay = 2000; // same as the lifetime of the toast
             if (backPressed + delay > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())

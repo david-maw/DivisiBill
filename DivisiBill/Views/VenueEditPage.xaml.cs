@@ -7,13 +7,10 @@ namespace DivisiBill.Views;
 public partial class VenueEditPage : ContentPage
 {
     private bool needLocation;
-    private VenueEditViewModel venueEditViewModel;
-    private MapPage mapPage = new MapPage();
+    private readonly VenueEditViewModel venueEditViewModel;
+    private readonly MapPage mapPage = new();
 
-    public VenueEditPage()
-    {
-        InitializeComponent();
-    }
+    public VenueEditPage() => InitializeComponent();
     public VenueEditPage(Venue venueParam) : this()
     {
         BindingContext = venueEditViewModel = new VenueEditViewModel(venueParam, async () => await Navigation.PopAsync(), async (v) =>
@@ -40,7 +37,7 @@ public partial class VenueEditPage : ContentPage
             mapPage.VenueLocationHasChanged = false;
         }
     }
-    protected async override void OnDisappearing()
+    protected override async void OnDisappearing()
     {
         base.OnDisappearing();
         if (needLocation)

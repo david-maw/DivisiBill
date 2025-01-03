@@ -9,19 +9,12 @@ namespace DivisiBill.Models;
 public class PersonCost : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    Person diner;
-    LineItem.DinerID dinerID; // defined per bill
-    Guid personGUID; // in case there's no diner
-    string nickname; // in case there's no diner
+    private LineItem.DinerID dinerID; // defined per bill
+    private string nickname; // in case there's no diner
 
     // This is the GUID of the diner
     [XmlAttribute]
-    public Guid PersonGUID
-    {
-        set => personGUID = value;
-        get => personGUID;
-    }
+    public Guid PersonGUID { set; get; }
 
 
     // This is the name of the diner, or a default
@@ -32,13 +25,13 @@ public class PersonCost : INotifyPropertyChanged
         {
             if (string.IsNullOrEmpty(nickname) || !nickname.Equals(value))
             {
-                if (Debugger.IsAttached && diner is not null)
+                if (Debugger.IsAttached && Diner is not null)
                     Debugger.Break(); // It is useless to set a Nickname if a diner is set because it will be ignored  
                 nickname = value;
                 OnPropertyChanged();
             }
         }
-        get => (diner is null) ? (string.IsNullOrWhiteSpace(nickname) ? "Unknown" : nickname) : diner.Nickname;
+        get => (Diner is null) ? (string.IsNullOrWhiteSpace(nickname) ? "Unknown" : nickname) : Diner.Nickname;
     }
 
     /// <summary>
@@ -57,13 +50,13 @@ public class PersonCost : INotifyPropertyChanged
     {
         set
         {
-            if (diner != value)
+            if (field != value)
             {
                 if (value is null) // we must be resetting the diner value
                     nickname = null; // make sure no old value has been left lying around
                 else
                 {
-                    diner = value;
+                    field = value;
                     PersonGUID = value.PersonGUID;
                 }
                 OnPropertyChanged();
@@ -71,7 +64,7 @@ public class PersonCost : INotifyPropertyChanged
                 OnPropertyChanged(nameof(Nickname)); // No need to assign this as the presence of a diner value overrides it 
             }
         }
-        get => diner;
+        get;
     }
 
     /// <summary>
@@ -119,8 +112,6 @@ public class PersonCost : INotifyPropertyChanged
     /// </summary>
     [XmlIgnore]
     public decimal PreTaxCouponAmount { get; set; }
-
-    private decimal couponAmount;
     /// <summary>
     /// <para>The total value of any coupons assigned to this participant.</para>
     /// Coupons may be before or after tax (<see cref="Meal.IsCouponAfterTax"/>) and for calculation purposes taxable coupons
@@ -133,16 +124,14 @@ public class PersonCost : INotifyPropertyChanged
     {
         set
         {
-            if (couponAmount != value)
+            if (field != value)
             {
-                couponAmount = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
-        get => couponAmount;
+        get;
     }
-
-    private decimal discount;
     /// <summary>
     /// The sum of any comped items this participant got, and any coupons (possibly reduced if they are taxable).
     /// Coupon amounts (not reduced) and comped items are also tracked separately.
@@ -152,13 +141,13 @@ public class PersonCost : INotifyPropertyChanged
     {
         set
         {
-            if (discount != value)
+            if (field != value)
             {
-                discount = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
-        get => discount;
+        get;
     }
 
     /// <summary>
@@ -166,8 +155,6 @@ public class PersonCost : INotifyPropertyChanged
     /// This is the tax basis for this participant.
     /// </summary>
     public decimal ChargedAmount => OrderAmount - CompedAmount;
-
-    private decimal compedAmount;
     /// <summary>
     /// The sum of this participant's shares in comped items.
     /// </summary>
@@ -176,16 +163,14 @@ public class PersonCost : INotifyPropertyChanged
     {
         set
         {
-            if (compedAmount != value)
+            if (field != value)
             {
-                compedAmount = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
-        get => compedAmount;
+        get;
     }
-
-    private decimal orderAmount;
     /// <summary>
     /// The sum of shares in any items this participant ordered, including comped items, excluding coupons
     /// </summary>
@@ -194,16 +179,14 @@ public class PersonCost : INotifyPropertyChanged
     {
         set
         {
-            if (orderAmount != value)
+            if (field != value)
             {
-                orderAmount = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
-        get => orderAmount;
+        get;
     }
-
-    private decimal amount;
     /// <summary>
     /// The amount this participant will pay, so it has any coupons subtracted, comped items ignored and a 
     /// fair share of <see cref="Meal.Tip"/> and <see cref="Meal.Tax"/> added.
@@ -213,17 +196,17 @@ public class PersonCost : INotifyPropertyChanged
     {
         set
         {
-            if (amount != value)
+            if (field != value)
             {
-                amount = value;
+                field = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(AmountText));
             }
         }
-        get => amount;
+        get;
     }
     [XmlIgnore]
-    public string AmountText => Math.Abs(amount).ToString("C");
+    public string AmountText => Math.Abs(Amount).ToString("C");
 
     [XmlIgnore]
     public LineItem.DinerID DinerID
@@ -259,27 +242,10 @@ public class PersonCost : INotifyPropertyChanged
 
     // Diner ID values start at 1, this starts at 0 and is used as an array index usually
     [XmlIgnore]
-    public byte DinerIndex
-    {
-        get
-        {
-            return (byte)((int)dinerID - 1);
-        }
-    }
+    public byte DinerIndex => (byte)((int)dinerID - 1);
 
     [XmlIgnore]
-    public string DinerIDText
-    {
-        get
-        {
-            return ((char)('①' + DinerIndex)).ToString();
-        }
-    }
+    public string DinerIDText => ((char)('①' + DinerIndex)).ToString();
     protected virtual void OnPropertyChanged([CallerMemberName] string propChanged = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
-    public void SwapDinerID(PersonCost pc)
-    {
-        var temp = DinerID;
-        DinerID = pc.DinerID;
-        pc.DinerID = temp;
-    }
+    public void SwapDinerID(PersonCost pc) => (pc.DinerID, DinerID) = (DinerID, pc.DinerID);
 }

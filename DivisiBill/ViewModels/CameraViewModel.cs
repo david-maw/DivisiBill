@@ -30,10 +30,7 @@ public partial class CameraViewModel : ObservableObject
         LightGlyph = (FontImageSource)(value ? Application.Current.Resources["GlyphFlashlightOff"] : Application.Current.Resources["GlyphFlashlightOn"]);
     }
     [RelayCommand]
-    private void ChangeLightMode()
-    {
-        IsLightOn = !IsLightOn;
-    }
+    private void ChangeLightMode() => IsLightOn = !IsLightOn;
     #endregion
     #region Controlling the Camera Flash
     /// <summary>

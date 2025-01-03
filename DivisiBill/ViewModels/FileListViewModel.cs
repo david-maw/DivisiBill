@@ -7,7 +7,7 @@ namespace DivisiBill.ViewModels;
 
 public partial class FileListViewModel : ObservableObjectPlus
 {
-    private string itemTypeName;
+    private readonly string itemTypeName;
     public FileListViewModel(string itemTypeNameParameter)
     {
         Utilities.DebugMsg("In FileListViewModel constructor");
@@ -25,7 +25,7 @@ public partial class FileListViewModel : ObservableObjectPlus
         Utilities.DebugMsg($"In FileListViewModel.InitializeAsync FileList is {(FileList is null ? "" : "not ")} null");
         if (FileList is not null)
             return true; // already initialized
-        FileList = new ObservableCollection<RemoteItemInfo>(await RemoteWs.GetItemInfoListAsync(itemTypeName));
+        FileList = [.. await RemoteWs.GetItemInfoListAsync(itemTypeName)];
         if (FileList is null)
             return false;
         OnPropertyChanged(nameof(FileList));
@@ -46,7 +46,7 @@ public partial class FileListViewModel : ObservableObjectPlus
 
     public int FileListCount => FileList.Count;
 
-    public TaskCompletionSource<RemoteItemInfo> SelectionCompleted = new TaskCompletionSource<RemoteItemInfo>();
+    public TaskCompletionSource<RemoteItemInfo> SelectionCompleted = new();
 
     public string ItemTypePlural => RemoteWs.ItemTypeNameToPlural[itemTypeName];
 

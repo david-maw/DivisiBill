@@ -9,20 +9,16 @@ namespace DivisiBill.Views;
 public partial class PersonEditPage : ContentPage
 {
     private PersonEditViewModel? personEditViewModel;
-    private Person? targetPerson;
 
-    public PersonEditPage()
-    {
-        InitializeComponent();
-    }
+    public PersonEditPage() => InitializeComponent();
     public Person? TargetPerson
     {
-        get => targetPerson;
+        get;
         set
         {
-            if (targetPerson != value)
+            if (field != value)
             {
-                targetPerson = value;
+                field = value;
                 // If there's a new targetPerson update the view model
                 BindingContext = personEditViewModel = TargetPerson is null ? null : new PersonEditViewModel(TargetPerson, async () => await Navigation.PopAsync());
             }

@@ -3,16 +3,13 @@
 namespace DivisiBill.Views;
 public partial class GettingStartedPage : ContentPage
 {
-    public GettingStartedPage()
-    {
-        InitializeComponent();
-    }
+    public GettingStartedPage() => InitializeComponent();
     private bool helpInvoked = false;
     private int nesting = 0;
     private bool splashInvoked = false;
 
 
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         DebugMsg($"Enter GettingStartedPage.OnAppearing, helpInvoked={helpInvoked}, nesting={nesting}");
         if (nesting > 0)

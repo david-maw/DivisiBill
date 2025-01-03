@@ -24,10 +24,10 @@ public class Archive
             BillsToDate = finishDate < DateOnly.MaxValue ? finishDate.ToString() : null,
         };
         // Make a list of meals one by looping through list of local mealSummaries and creating a meal from each
-        Meals = new List<Meal>(Meal.LocalMealList
+        Meals = [.. Meal.LocalMealList
             .Where(ms => DateOnly.FromDateTime(ms.CreationTime) >= startDate && DateOnly.FromDateTime(ms.CreationTime) <= finishDate)
             .OrderByDescending(ms => ms.CreationTime)
-            .Select(ms => Meal.LoadFromFile(ms)));
+            .Select(ms => Meal.LoadFromFile(ms))];
         if (Utilities.IsDebug)
         {
             // this is a handy place to check for differences between the old and new DistributeCosts algorithms
@@ -37,15 +37,15 @@ public class Archive
         if (startDate == DateOnly.MinValue && finishDate == DateOnly.MaxValue)
         {
             // No date filtering, just include everything
-            Venues = new List<Venue>(Venue.AllVenues);
-            Persons = new List<Person>(Person.AllPeople);
+            Venues = [.. Venue.AllVenues];
+            Persons = [.. Person.AllPeople];
             AliasGuids = Person.AliasGuidList;
         }
         else
         {
-            Venues = new();
-            Persons = new();
-            AliasGuids = new();
+            Venues = [];
+            Persons = [];
+            AliasGuids = [];
             // figure out what is used by the meals in the list and just include that
             foreach (var meal in Meals)
             {
@@ -112,7 +112,7 @@ public class Archive
         }
     }
 
-    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(Archive));
+    private static readonly XmlSerializer xmlSerializer = new(typeof(Archive));
 
 
     public async Task<bool> RestoreAsync(DateOnly startDate, DateOnly finishDate)
@@ -128,7 +128,7 @@ public class Archive
             if (startDate > DateOnly.MinValue || finishDate < DateOnly.MaxValue)
             {
                 // Filter the meal list by date
-                Meals = new(Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate));
+                Meals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate)];
             }
             // If we're going to clear the current meal do it first so any side effects will be erased later
             if (DeleteBeforeRestore)
@@ -193,7 +193,7 @@ public class UserSettingsClass
     public bool ShowVenuesHint { get; set; }
     public bool ShowPeopleHint { get; set; }
     public SimpleLocation FakeLocation { get; set; }
-    public String BillsFromDate { get; set; }
-    public String BillsToDate { get; set; }
+    public string BillsFromDate { get; set; }
+    public string BillsToDate { get; set; }
     public bool HadProSubscription { get; set; }
 }

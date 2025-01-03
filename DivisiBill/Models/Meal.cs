@@ -156,11 +156,10 @@ namespace DivisiBill.Models;
 public partial class Meal : ObservableObjectPlus
 {
     #region Global
-    private ObservableCollection<PersonCost> costs = new ObservableCollection<PersonCost>();
-    private ObservableCollection<LineItem> lineItems = new ObservableCollection<LineItem>();
+    private ObservableCollection<PersonCost> costs = [];
+    private ObservableCollection<LineItem> lineItems = [];
     private double taxRate;
     private double tipRate;
-    private bool tipOnTax, isCouponAfterTax;
     private MealSummary summary;
 
     // Static items shared by all instances of the class
@@ -168,14 +167,14 @@ public partial class Meal : ObservableObjectPlus
     public const string SuspectFolderName = "Suspect";
     public const string DeletedItemFolderName = "Deleted";
     public const string ImageFolderName = "Images";
-    private static XmlSerializer mealSerializer = null;
-    private static XmlSerializer MealSerializer => mealSerializer ??= new XmlSerializer(typeof(Meal));
+
+    private static XmlSerializer MealSerializer { get => field ??= new XmlSerializer(typeof(Meal)); set; } = null;
     #endregion
     #region Construction
     public Meal() // public constructor needed for deserialization
     {
         // Set up required objects
-        savedLineItems = new List<LineItem>();
+        savedLineItems = [];
         MonitorChanges = false;
     }
 
@@ -189,8 +188,7 @@ public partial class Meal : ObservableObjectPlus
             {
                 classIsInitialized = true;
                 await StatusMsgAsync("Starting Meal.InitializeAsync");
-                if (App.Settings is null) // for testing
-                    App.Settings = new AppSettings();
+                App.Settings ??= new AppSettings();
                 await GetLocalMealListAsync(); ;
                 if (LocalMealList.Count == 0 && Utilities.IsDebug)
                 {
@@ -265,13 +263,12 @@ public partial class Meal : ObservableObjectPlus
             if (ClosestMealSummary != CurrentMeal.Summary)
             {
                 Meal closestMeal = LoadFromFile(ClosestMealSummary, true);
-                if (closestMeal != null)
-                    closestMeal.OverwriteCurrent();
+                closestMeal?.OverwriteCurrent();
             }
         }
     }
 
-    private static readonly PauseTokenSource SnapshotNeeded = new PauseTokenSource();
+    private static readonly PauseTokenSource SnapshotNeeded = new();
 
     public static void RequestSnapshot()
     {
@@ -434,7 +431,7 @@ public partial class Meal : ObservableObjectPlus
                     {
                         // This is a brand new Meal, not previously seen
                         ms = null;
-                        Task<MealSummary> T = new Task<MealSummary>(() => MealSummary.LoadFromMealFile(fileName));
+                        Task<MealSummary> T = new(() => MealSummary.LoadFromMealFile(fileName));
                         T.Start();
                         try
                         {
@@ -507,37 +504,35 @@ public partial class Meal : ObservableObjectPlus
         return true;
     }
 
-    private static readonly ObservableCollection<MealSummary> localMealList = new ObservableCollection<MealSummary>();
     /// <summary>
     /// List of locally resident meals (though it is actually a list of meal summaries each representing a meal) in reverse order of creation
     /// time (so, newest first). Where a Meal is present both locally and remotely a reference to the same MealSummary is in both this and the remote list. 
     /// </summary>
-    public static ObservableCollection<MealSummary> LocalMealList => localMealList;
+    public static ObservableCollection<MealSummary> LocalMealList { get; } = [];
 
-    private static readonly ObservableCollection<MealSummary> remoteMealList = new ObservableCollection<MealSummary>();
     /// <summary>
     /// List of cloud resident meals (though it is actually a list of meal summaries each representing a meal) in reverse order of creation
     /// time (so, newest first). Where a Meal is present both locally and remotely a reference to the same MealSummary is in both this and the local list. 
     /// </summary>
-    public static ObservableCollection<MealSummary> RemoteMealList => remoteMealList;
+    public static ObservableCollection<MealSummary> RemoteMealList { get; } = [];
     #endregion
     #region Shared
     public override string ToString() => ToString(null);
 
     public string ToString(PersonCost personCost)
     {
-        MemoryStream ms = new MemoryStream();
+        MemoryStream ms = new();
         TextToStream(ms, personCost);
         ms.Position = 0;
-        StreamReader reader = new StreamReader(ms);
+        StreamReader reader = new(ms);
 
         string text = reader.ReadToEnd();
         return text;
     }
 
-    void TextToStream(Stream stream, PersonCost personCost = null)
+    private void TextToStream(Stream stream, PersonCost personCost = null)
     {
-        StreamWriter sw = new StreamWriter(stream);
+        StreamWriter sw = new(stream);
         try
         {
             sw.WriteLine("DivisiBill " + Utilities.VersionName + "." + Utilities.Revision);
@@ -620,7 +615,7 @@ public partial class Meal : ObservableObjectPlus
     }
     public async Task CreateEmailMessageAsync(PersonCost personCost = null)
     {
-        List<string> recipients = new List<string>();
+        List<string> recipients = [];
         if (personCost is null) // send it to everyone
         {
             foreach (var pc in Costs.Where(pc => !string.IsNullOrWhiteSpace(pc.Diner?.Email)))
@@ -638,7 +633,7 @@ public partial class Meal : ObservableObjectPlus
             Body = body,
             To = recipients
         };
-        if (!String.IsNullOrEmpty(VenueName))
+        if (!string.IsNullOrEmpty(VenueName))
             message.Subject += " from " + VenueName;
 
         string tempFilePath = null;
@@ -670,7 +665,7 @@ public partial class Meal : ObservableObjectPlus
     private void SetupChangedEvents()
     {
         foreach (var item in lineItems)
-            ((LineItem)item).PropertyChanged += OnLineItemChange;
+            item.PropertyChanged += OnLineItemChange;
         lineItems.CollectionChanged += LineItems_CollectionChanged; // Will take care of any future additions and deletions from LineItems
         costs.CollectionChanged += Costs_CollectionChanged;
         Summary.PropertyChanged += Summary_PropertyChanged;
@@ -702,7 +697,7 @@ public partial class Meal : ObservableObjectPlus
     /// <returns></returns>
     public static Meal LoadFake(MealSummary ms)
     {
-        Meal m = new Meal() { Summary = ms };
+        Meal m = new() { Summary = ms };
         m.LoadFakeSettings();
         return m;
     }
@@ -757,8 +752,8 @@ public partial class Meal : ObservableObjectPlus
         });
     }
 
-    private void CreateFakeLineItems() => lineItems = new ObservableCollection<LineItem>()
-        {
+    private void CreateFakeLineItems() => lineItems =
+        [
             new LineItem(){Amount =  20, SharesList = "111", ItemName = "Appetizer" },
             new LineItem(){Amount = -10, SharesList = "111", ItemName = "Discount" },
             new LineItem(){Amount =  30, SharesList = "001", ItemName = "Tasty Chicken" },
@@ -766,14 +761,14 @@ public partial class Meal : ObservableObjectPlus
             new LineItem(){Amount =  60, SharesList = "210", ItemName = "Wine" },
             new LineItem(){Amount =  20, SharesList = "010", ItemName = "Fish & Chips" },
             new LineItem(){Amount =   5,                     ItemName = "Mystery item" },
-        };
+        ];
 
     private void CreateFakeCosts()
     {
-        costs = new ObservableCollection<PersonCost>();
+        costs = [];
         for (int i = 0; i < 3; i++)
         {
-            PersonCost pc = new PersonCost() { DinerID = (LineItem.DinerID)(i + 1), Diner = Person.AllPeople[i] };
+            PersonCost pc = new() { DinerID = (LineItem.DinerID)(i + 1), Diner = Person.AllPeople[i] };
             costs.Add(pc);
         }
     }
@@ -875,7 +870,7 @@ public partial class Meal : ObservableObjectPlus
                 personCost.Nickname += nextNumber; // Note the +=
                 nextNumber++;
             }
-            Person p = new Person(personCost.PersonGUID)
+            Person p = new(personCost.PersonGUID)
             {// Keep the guid in case we ever see it later
                 Nickname = personCost.Nickname,
                 LastName = Person.FromBill
@@ -904,7 +899,7 @@ public partial class Meal : ObservableObjectPlus
         else
         {
             byte[] buf = Encoding.UTF8.GetBytes(myString);
-            MemoryStream s = new MemoryStream(buf);
+            MemoryStream s = new(buf);
             Meal m = LoadFromStream(s);
             DebugMsg("in Meal.LoadFromApp meal = " + m.Summary);
             MealSummary existingMealSummary = LocalMealList.Where(ms => ms.Id.Equals(m.Summary.Id)).FirstOrDefault();
@@ -930,9 +925,9 @@ public partial class Meal : ObservableObjectPlus
         return null;
     }
     // Create a crash report - this will be sent immediately (it doesn't wait for a program restart)
-    public static void ReportCrash(String What, String Who, Stream sourceStream, Exception ex, string streamName, string errorDescription = "")
+    public static void ReportCrash(string What, string Who, Stream sourceStream, Exception ex, string streamName, string errorDescription = "")
     {
-        string errmsg = $"Meal.ReportCrash reported What={What}, Who={Who}, Exception={ex.ToString()}";
+        string errmsg = $"Meal.ReportCrash reported What={What}, Who={Who}, Exception={ex}";
         Debug.WriteLine(errmsg);
 
         if (!string.IsNullOrEmpty(errorDescription))
@@ -988,9 +983,12 @@ public partial class Meal : ObservableObjectPlus
         catch (Exception ex)
         {
             ReportCrash("MethodName", "LoadFromStream", sourceStream, ex, "suspect.xml");
-            m = new Meal() { CreationReason = ex.Message };
-            m.Size = -1; // flag that we have no clue
-            m.VenueName = "Bad bill";
+            m = new Meal
+            {
+                CreationReason = ex.Message,
+                Size = -1, // flag that we have no clue
+                VenueName = "Bad bill"
+            };
         }
         return m;
     }
@@ -1026,38 +1024,36 @@ public partial class Meal : ObservableObjectPlus
         string TargetFileName = ms.FileName;
         try
         {
-            using (var sourceStream = File.OpenRead(Path.Combine(MealFolderPath, TargetFileName)))
+            using var sourceStream = File.OpenRead(Path.Combine(MealFolderPath, TargetFileName));
+            LineItem.nextItemNumber = 1;
+            m = LoadFromStream(sourceStream, ms, setup);
+            if (m is null)
             {
-                LineItem.nextItemNumber = 1;
-                m = LoadFromStream(sourceStream, ms, setup);
-                if (m is null)
+                // The stream was bad so just return null
+                Utilities.DebugMsg($"In Meal.LoadFromFile: LoadFromStream returned null for {ms.FileName}");
+                if (Utilities.IsDebug)
+                    Debugger.Break();
+            }
+            else
+            {
+                if (m.CreationTime == DateTime.MinValue || m.Size < 0) // It's a file without a stored creation time
+                    m.Summary.SetCreationTimeFromFileName(TargetFileName);
+                m.CheckImageFiles();
+                m.Summary.IsLocal = true;
+                m.SavedToFile = true;
+                if (m.Size < 0)
                 {
-                    // The stream was bad so just return null
-                    Utilities.DebugMsg($"In Meal.LoadFromFile: LoadFromStream returned null for {ms.FileName}");
+                    MoveSuspectFile(TargetFileName);
+                    m.Summary.VenueName = "Suspect File - will hide";
                     if (Utilities.IsDebug)
                         Debugger.Break();
                 }
-                else
+                if (Utilities.IsDebug && App.InitializationComplete.Task.IsCompleted) // don't do this until we're well into initialization
                 {
-                    if (m.CreationTime == DateTime.MinValue || m.Size < 0) // It's a file without a stored creation time
-                        m.Summary.SetCreationTimeFromFileName(TargetFileName);
-                    m.CheckImageFiles();
-                    m.Summary.IsLocal = true;
-                    m.SavedToFile = true;
-                    if (m.Size < 0)
-                    {
-                        MoveSuspectFile(TargetFileName);
-                        m.Summary.VenueName = "Suspect File - will hide";
-                        if (Utilities.IsDebug)
-                            Debugger.Break();
-                    }
-                    if (Utilities.IsDebug && App.InitializationComplete.Task.IsCompleted) // don't do this until we're well into initialization
-                    {
-                        // this is a handy place to check for differences between the old and new DistributeCosts algorithms
-                        m.CompareCostDistribution();
-                    }
-                    m.MonitorChanges = true;
+                    // this is a handy place to check for differences between the old and new DistributeCosts algorithms
+                    m.CompareCostDistribution();
                 }
+                m.MonitorChanges = true;
             }
         }
         catch (FileNotFoundException)
@@ -1092,15 +1088,9 @@ public partial class Meal : ObservableObjectPlus
     }
     public static async Task<Meal> LoadAsync(MealSummary ms, bool setup = false)
     {
-        Meal m;
-        if (ms.SnapshotValid)
-            m = LoadFromSavedStream(ms, setup: setup);
-        else if (ms.IsLocal)
-            m = LoadFromFile(ms, setup: setup);
-        else if (ms.IsRemote)
-            m = await LoadFromRemoteAsync(ms, setup);
-        else
-            m = LoadFake(ms);
+        Meal m = ms.SnapshotValid
+            ? LoadFromSavedStream(ms, setup: setup)
+            : ms.IsLocal ? LoadFromFile(ms, setup: setup) : ms.IsRemote ? await LoadFromRemoteAsync(ms, setup) : LoadFake(ms);
         return m;
     }
     /// <summary>
@@ -1113,10 +1103,9 @@ public partial class Meal : ObservableObjectPlus
     [XmlIgnore]
     public bool SavedToFile
     {
-        get => savedToFile;
-        private set => SetProperty(ref savedToFile, value, () => OnPropertyChanged(nameof(DiagnosticInfo)));
+        get;
+        private set => SetProperty(ref field, value, () => OnPropertyChanged(nameof(DiagnosticInfo)));
     }
-    private bool savedToFile;
 
     /// <summary>
     /// Indicates that a current copy is saved to remote storage
@@ -1124,15 +1113,14 @@ public partial class Meal : ObservableObjectPlus
     [XmlIgnore]
     public bool SavedToRemote
     {
-        get => savedToRemote;
-        private set => SetProperty(ref savedToRemote, value, () => OnPropertyChanged(nameof(DiagnosticInfo)));
+        get;
+        private set => SetProperty(ref field, value, () => OnPropertyChanged(nameof(DiagnosticInfo)));
     }
-    private bool savedToRemote;
     private void SaveToApp()
     {
         Utilities.DebugMsg($"In Meal.SaveToApp");
         var buf = new byte[10000];
-        MemoryStream s = new MemoryStream(buf);
+        MemoryStream s = new(buf);
         SaveToStream(s);
         string myString = Encoding.UTF8.GetString(buf, 0, (int)s.Position);
         if (Utilities.IsUWP && myString.Length > 4096) // too large to store on Windows
@@ -1163,8 +1151,7 @@ public partial class Meal : ObservableObjectPlus
     public void SaveToSnapshot()
     {
         Stream s = Summary.SnapshotStream;
-        if (s is null) // Enough memory for most (95%+) Meals - this should only be needed if the meal was the default and wasn't loaded from a stream
-            s = Summary.SnapshotStream = new MemoryStream(3000);
+        s ??= Summary.SnapshotStream = new MemoryStream(3000);
         // Clear out the snapshot
         s.Position = 0;
         s.SetLength(0);
@@ -1209,21 +1196,19 @@ public partial class Meal : ObservableObjectPlus
             return;
         }
         Directory.CreateDirectory(MealFolderPath);
-        String TargetFilePath = FilePath;
-        using (var stream = File.Open(TargetFilePath, FileMode.Create)) // Overwrites any existing file
-        {
-            SaveToSnapshot();
-            Summary.SnapshotStream.Position = 0;
-            Summary.CopySnapshotTo(stream);
-            // Set some file attributes so they'll match the persisted data in the file
-            File.SetCreationTime(TargetFilePath, Summary.CreationTime);
-            File.SetLastWriteTime(TargetFilePath, Summary.LastChangeTime);
-            Size = stream.Length;
-            Summary.IsLocal = true;
-            SavedToFile = true;
-            if (SavedToApp)
-                App.Settings.MealSavedToFile = true;
-        }
+        string TargetFilePath = FilePath;
+        using var stream = File.Open(TargetFilePath, FileMode.Create); // Overwrites any existing file
+        SaveToSnapshot();
+        Summary.SnapshotStream.Position = 0;
+        Summary.CopySnapshotTo(stream);
+        // Set some file attributes so they'll match the persisted data in the file
+        File.SetCreationTime(TargetFilePath, Summary.CreationTime);
+        File.SetLastWriteTime(TargetFilePath, Summary.LastChangeTime);
+        Size = stream.Length;
+        Summary.IsLocal = true;
+        SavedToFile = true;
+        if (SavedToApp)
+            App.Settings.MealSavedToFile = true;
     }
     private async Task SaveToRemoteAsync()
     {
@@ -1265,13 +1250,13 @@ public partial class Meal : ObservableObjectPlus
                 MarkAsChanged();
             }
         }
-        get => summary ?? (summary = new MealSummary());
+        get => summary ??= new MealSummary();
     }
 
     private void Summary_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         OnPropertyChanged(e.PropertyName);
-        if (e.PropertyName == nameof(MealSummary.IsLocal) || e.PropertyName == nameof(MealSummary.IsRemote))
+        if (e.PropertyName is (nameof(MealSummary.IsLocal)) or (nameof(MealSummary.IsRemote)))
             OnPropertyChanged(nameof(DiagnosticInfo));
         else if (e.PropertyName == nameof(MealSummary.HasImage))
             OnPropertyChanged(nameof(HasImage));
@@ -1358,7 +1343,7 @@ public partial class Meal : ObservableObjectPlus
     }
     #endregion
     #region Change Monitoring
-    void OnLineItemChange(object sender, PropertyChangedEventArgs e)
+    private void OnLineItemChange(object sender, PropertyChangedEventArgs e)
     {
         MarkAsChanged();
         if (e.PropertyName.Equals(nameof(LineItem.Amount)) || e.PropertyName.Equals(nameof(LineItem.Comped)))
@@ -1367,16 +1352,16 @@ public partial class Meal : ObservableObjectPlus
             IsDistributed = false;
     }
 
-    void LineItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void LineItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        if ((e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add) ||
-            (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace))
+        if (e.Action is System.Collections.Specialized.NotifyCollectionChangedAction.Add or
+            System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
         { // Make sure the new items report any changes
             foreach (var item in e.NewItems)
                 ((LineItem)item).PropertyChanged += OnLineItemChange;
         }
-        if ((e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove) ||
-            (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace))
+        if (e.Action is System.Collections.Specialized.NotifyCollectionChangedAction.Remove or
+            System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
         { // Make sure the old items no longer report any changes
             foreach (var item in e.OldItems)
                 ((LineItem)item).PropertyChanged -= OnLineItemChange;
@@ -1387,7 +1372,7 @@ public partial class Meal : ObservableObjectPlus
         UpdateAmounts();
     }
 
-    void Costs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => MarkAsChanged();
+    private void Costs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => MarkAsChanged();
     #endregion
     #region Data Items
     #region persistent items
@@ -1476,13 +1461,9 @@ public partial class Meal : ObservableObjectPlus
     [XmlElement(ElementName = "LastChangeTime")]
     public string StoredLastChangeTime
     {
-        get
-        {
-            if (ActualLastChangeTime.DateTime == DateTime.MinValue)
-                return null;
-            else
-                return ActualLastChangeTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + ActualLastChangeTime.ToString("zzz", System.Globalization.CultureInfo.InvariantCulture);
-        }
+        get => ActualLastChangeTime.DateTime == DateTime.MinValue
+                ? null
+                : ActualLastChangeTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + ActualLastChangeTime.ToString("zzz", System.Globalization.CultureInfo.InvariantCulture);
 
         set => ActualLastChangeTime = DateTimeOffset.Parse(value);
     }
@@ -1533,11 +1514,6 @@ public partial class Meal : ObservableObjectPlus
     }
 
     /// <summary>
-    /// Storage for TipDelta property
-    /// </summary>
-    private decimal tipDelta;
-
-    /// <summary>
     /// The amount to add to (or subtract from) the calculated tip to get the actual amount
     /// charged, set manually, it is rarely large but is used to make up the difference when
     /// a specific amount (rather than a calculated percentage) is specified. It is reset to
@@ -1546,15 +1522,15 @@ public partial class Meal : ObservableObjectPlus
     [DefaultValue(typeof(decimal), "0")]
     public decimal TipDelta
     {
-        get => tipDelta;
-        set => SetProperty(ref tipDelta, value, () => { Tip = GetTip(); MarkAsChanged(); });
+        get;
+        set => SetProperty(ref field, value, () => { Tip = GetTip(); MarkAsChanged(); });
     }
 
     [XmlElement(ElementName = "TipOnTax")]
     public bool TipOnTax
     {
-        get => tipOnTax;
-        set => SetProperty(ref tipOnTax, value, () => { Tip = GetTip(); MarkAsChanged(); IsDistributed = false; });
+        get;
+        set => SetProperty(ref field, value, () => { Tip = GetTip(); MarkAsChanged(); IsDistributed = false; });
     }
 
 
@@ -1566,8 +1542,8 @@ public partial class Meal : ObservableObjectPlus
     [XmlElement(ElementName = "TaxOnDiscount")]
     public bool IsCouponAfterTax
     {
-        get => isCouponAfterTax;
-        set => SetProperty(ref isCouponAfterTax, value, () =>
+        get;
+        set => SetProperty(ref field, value, () =>
         {
             UpdateAmounts();
             MarkAsChanged();
@@ -1582,35 +1558,26 @@ public partial class Meal : ObservableObjectPlus
     }
 
     /// <summary>
-    /// Storage for TaxDelta property
-    /// </summary>
-    private decimal taxDelta;
-
-    /// <summary>
     /// The amount to add (or subtract) to the calculated tax to get the actual amount charged, set manually, 
     /// it should never be more than a few cents.
     /// </summary>
     [DefaultValue(typeof(decimal), "0")]
     public decimal TaxDelta
     {
-        get => taxDelta;
-        set => SetProperty(ref taxDelta, value, () => { Tax = GetTax(); MarkAsChanged(); });
+        get;
+        set => SetProperty(ref field, value, () => { Tax = GetTax(); MarkAsChanged(); });
     }
-
-    private decimal scannedTax;
     [DefaultValue(typeof(decimal), "0")]
     public decimal ScannedTax
     {
-        get => scannedTax;
-        set => SetProperty(ref scannedTax, value, MarkAsChanged);
+        get;
+        set => SetProperty(ref field, value, MarkAsChanged);
     }
-
-    private decimal scannedSubTotal;
     [DefaultValue(typeof(decimal), "0")]
     public decimal ScannedSubTotal
     {
-        get => scannedSubTotal;
-        set => SetProperty(ref scannedSubTotal, value, MarkAsChanged);
+        get;
+        set => SetProperty(ref field, value, MarkAsChanged);
     }
 
     public ObservableCollection<PersonCost> Costs
@@ -1632,7 +1599,7 @@ public partial class Meal : ObservableObjectPlus
     {
         get
         {
-            StringBuilder info = new StringBuilder(Frozen ? "Frozen" : "Thawed", 100);
+            StringBuilder info = new(Frozen ? "Frozen" : "Thawed", 100);
             if (Summary.IsLocal) info.Append(", IsLocal");
             if (SavedToFile) info.Append(", SavedToFile");
             if (Summary.IsRemote) info.Append(", IsRemote");
@@ -1642,8 +1609,6 @@ public partial class Meal : ObservableObjectPlus
             return info.ToString();
         }
     }
-
-    private bool frozen;
     /// <summary>
     /// Final values have been settled on for this bill, so any future attempt to change it is actually a 
     /// new bill (possibly for the same location) and should be given a new creation time. Any bill loaded from
@@ -1652,8 +1617,8 @@ public partial class Meal : ObservableObjectPlus
     [XmlIgnore]
     public bool Frozen
     {
-        get => frozen;
-        set => SetProperty(ref frozen, value, () => OnPropertyChanged(nameof(DiagnosticInfo)));
+        get;
+        set => SetProperty(ref field, value, () => OnPropertyChanged(nameof(DiagnosticInfo)));
     }
 
     [XmlIgnore]
@@ -1663,16 +1628,14 @@ public partial class Meal : ObservableObjectPlus
     public PersonCost selectedPersonCost = null;
 
     private bool IsAnyUnallocated => UnallocatedAmount != 0;
-
-    private decimal unallocatedAmount;
     [XmlIgnore]
     // The amount not allocated to any participant (so the sum of all the unallocated items). It's faintly possible
     // that a negative unallocated amount could offset a positive one but that's so unlikely it's not worth coding for.
     // Note that this is different from the Unshared amount.
     public decimal UnallocatedAmount
     {
-        get => unallocatedAmount;
-        private set => SetProperty(ref unallocatedAmount, value, () => { IsDistributed = false; });
+        get;
+        private set => SetProperty(ref field, value, () => { IsDistributed = false; });
     }
 
     public decimal GetUnallocatedAmount()
@@ -1714,16 +1677,14 @@ public partial class Meal : ObservableObjectPlus
                 accumulatedTotal += Math.Round(costItem.Amount + 0.001M, 0); // MidpointRounding.AwayFromZero);
         return accumulatedTotal;
     }
-
-    private decimal subTotal;
     /// <summary>
     /// Subtotal is the sum of all the individual items except those that are comped
     /// </summary>
     [XmlIgnore]
     public decimal SubTotal
     {
-        get => subTotal;
-        private set => SetProperty(ref subTotal, value, UpdateAmounts);
+        get;
+        private set => SetProperty(ref field, value, UpdateAmounts);
     }
 
     /// <summary>
@@ -1761,10 +1722,7 @@ public partial class Meal : ObservableObjectPlus
     /// <summary>
     /// The sum of all the individual coupons for the bill if they are applied before tax.
     /// </summary>
-    public decimal GetCouponAmountBeforeTax()
-    {
-        return IsCouponAfterTax ? 0 : GetModifiedCouponAmount();
-    }
+    public decimal GetCouponAmountBeforeTax() => IsCouponAfterTax ? 0 : GetModifiedCouponAmount();
 
     /// <summary>
     /// The sum of all the individual coupons for the bill if they are applied after tax.
@@ -1776,10 +1734,7 @@ public partial class Meal : ObservableObjectPlus
     /// <summary>
     /// Get the sum of all the individual coupons for the bill if they are applied after tax.
     /// </summary>
-    private decimal GetCouponAmountAfterTax()
-    {
-        return IsCouponAfterTax ? GetModifiedCouponAmount() : 0;
-    }
+    private decimal GetCouponAmountAfterTax() => IsCouponAfterTax ? GetModifiedCouponAmount() : 0;
 
     private decimal GetCompedAmount() => lineItems.Where(item => item.Comped).Sum(item => item.Amount);
 
@@ -1809,21 +1764,19 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     private decimal TaxedAmount => SubTotal;
 
-    private LineItem.DinerID amountForSharerID;
-
     // Set this to constrain amounts to a particular sharer
     [XmlIgnore]
     public LineItem.DinerID AmountForSharerID
     {
-        get => amountForSharerID;
+        get;
         set
         {
-            if (amountForSharerID != value)
+            if (field != value)
             {
-                amountForSharerID = value;
+                field = value;
                 foreach (var li in lineItems)
                 {
-                    li.AmountForSharerID = amountForSharerID;
+                    li.AmountForSharerID = field;
                 }
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(LineItems));
@@ -1834,13 +1787,11 @@ public partial class Meal : ObservableObjectPlus
     [XmlIgnore]
     [ObservableProperty]
     public partial decimal RoundedAmount { get; set; }
-
-    private decimal totalAmount;
     [XmlIgnore]
     public decimal TotalAmount
     {
-        get => totalAmount;
-        private set => SetProperty(ref totalAmount, value, () => { IsDistributed = false; });  // The grand total has changed, so the distribution must
+        get;
+        private set => SetProperty(ref field, value, () => { IsDistributed = false; });  // The grand total has changed, so the distribution must
     }
 
     public decimal GetTotalAmount() => SubTotal + Tax + Tip - CouponAmountAfterTax;
@@ -1849,13 +1800,11 @@ public partial class Meal : ObservableObjectPlus
     // so they are folded back in to the amount on which the tip is based
     private decimal GetTipBasis() => (GetOrderAmount() + (TipOnTax ? Tax : 0));
 
-    private decimal tip;
-
     [XmlIgnore]
     public decimal Tip
     {
-        get => tip;
-        private set => SetProperty(ref tip, value, () => { TotalAmount = GetTotalAmount(); });
+        get;
+        private set => SetProperty(ref field, value, () => { TotalAmount = GetTotalAmount(); });
     }
 
     private decimal GetTip() => Math.Round(GetTipBasis() * (decimal)TipRate, 2) + TipDelta;
@@ -1874,16 +1823,14 @@ public partial class Meal : ObservableObjectPlus
         }
     }
 
-    private decimal tax;
-
     /// <summary>
     /// Tax amount composed of tax calculated using TaxRate and an added TaxDelta to handle the case where simple arithmetic delivers a value different from the one in use
     /// </summary>
     [XmlIgnore]
     public decimal Tax
     {
-        get => tax;
-        private set => SetProperty(ref tax, value, () => { if (TipOnTax) Tip = GetTip(); TotalAmount = GetTotalAmount(); });
+        get;
+        private set => SetProperty(ref field, value, () => { if (TipOnTax) Tip = GetTip(); TotalAmount = GetTotalAmount(); });
     }
 
     public decimal TaxWithoutDelta => Tax - TaxDelta;
@@ -2498,8 +2445,6 @@ public partial class Meal : ObservableObjectPlus
     public static readonly string TempImageFilePath = Path.Combine(App.BaseFolderPath, ImageFolderName, "NewImage.jpg");
     public static string DeletedItemFolderPath = Path.Combine(App.BaseFolderPath, DeletedItemFolderName);
 
-    private decimal unsharedAmount;
-
     /// <summary>
     /// This is the 'smush' left over when all the costs have been allocated to participants. It is supposed to be a few cents 
     /// at most caused by inevitable rounding errors as we share items amongst participants. We generally only expose it to the
@@ -2508,22 +2453,20 @@ public partial class Meal : ObservableObjectPlus
     [XmlIgnore]
     public decimal RoundingErrorAmount
     {
-        get => unsharedAmount;
+        get;
         private set
         {
-            SetProperty(ref unsharedAmount, value);
+            SetProperty(ref field, value);
             IsUnsharedAmountSignificant = value != 0 && !IsAnyUnallocated && value * 100 > (Costs.Count(pc => pc.Amount > 0) + 1);
         }
     }
-
-    private bool isUnsharedAmountSignificant;
 
     [XmlIgnore]
     // The UnsharedAmount is too large indicating there is some sort of calculation problem.
     public bool IsUnsharedAmountSignificant
     {
-        get => isUnsharedAmountSignificant;
-        private set => SetProperty(ref isUnsharedAmountSignificant, value);
+        get;
+        private set => SetProperty(ref field, value);
     }
 
 
@@ -2611,10 +2554,7 @@ public partial class Meal : ObservableObjectPlus
         }
     }
 
-    public PersonCost GetNextPersonCost(PersonCost currentPc)
-    {
-        return currentPc is null ? Costs.FirstOrDefault() : Costs.SkipWhile(pc => pc != currentPc).Skip(1).FirstOrDefault();
-    }
+    public PersonCost GetNextPersonCost(PersonCost currentPc) => currentPc is null ? Costs.FirstOrDefault() : Costs.SkipWhile(pc => pc != currentPc).Skip(1).FirstOrDefault();
     #endregion
     #region Manipulating cost list
 
@@ -2679,11 +2619,7 @@ public partial class Meal : ObservableObjectPlus
     public static void SimplifyShares(byte[] shares)
     {
         int gcd(int a, int b) // Greatest Common Divisor - look it up 
-        {
-            if (a == 0)
-                return b;
-            return gcd(b % a, a);
-        }
+=> a == 0 ? b : gcd(b % a, a);
 
         int GCD = 0;
 
@@ -2767,13 +2703,9 @@ public partial class Meal : ObservableObjectPlus
     #region Cloud Backup
     // Also see Saver.RemoteLoop
     private static Task BackupTask = null;
-    private static readonly CancellationTokenSource BackupCancellationTokenSource = new CancellationTokenSource();
-    private static readonly AwaitableQueue<MealSummary> backupQueue = new AwaitableQueue<MealSummary>();
-    internal static void StartBackupToRemote()
-    {
-        if (BackupTask is null)
-            BackupTask = BackupToRemoteAsync(BackupCancellationTokenSource.Token);
-    }
+    private static readonly CancellationTokenSource BackupCancellationTokenSource = new();
+    private static readonly AwaitableQueue<MealSummary> backupQueue = new();
+    internal static void StartBackupToRemote() => BackupTask ??= BackupToRemoteAsync(BackupCancellationTokenSource.Token);
     internal static async Task StopBackupToRemoteAsync()
     {
         if (BackupTask is null)
@@ -2803,7 +2735,7 @@ public partial class Meal : ObservableObjectPlus
         HashSet<string> remoteMealNames = [.. remoteFileInfoList.Select(x => x.Name)];
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
         var remoteFileInfoDict = remoteFileInfoList.ToDictionary(m => m.Name);
-        HashSet<string> localMealNames = new();
+        HashSet<string> localMealNames = [];
         foreach (var ms in LocalMealList)
         {
             if (remoteMealNames.Contains(ms.Id))
@@ -2811,7 +2743,7 @@ public partial class Meal : ObservableObjectPlus
             localMealNames.Add(ms.Id);
         }
         // Queue each MealSummary that is not remote for transmission
-        HashSet<string> localOnlyMealNames = new(localMealNames);
+        HashSet<string> localOnlyMealNames = [.. localMealNames];
         localOnlyMealNames.ExceptWith(remoteMealNames);
         foreach (string mealName in localOnlyMealNames)
         {
@@ -2849,72 +2781,70 @@ public partial class Meal : ObservableObjectPlus
         ReportProgress(totalFiles, filesWithoutError, filesInError);
         foreach (var rfi in remoteOnlyFileInfoList)
         {
-            using (Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name))
+            using Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name);
+            if (cancellationToken.IsCancellationRequested)
+                throw new OperationCanceledException();
+            LineItem.nextItemNumber = 1;
+            try // if one file fails, just report it and go on to the next 
             {
-                if (cancellationToken.IsCancellationRequested)
-                    throw new OperationCanceledException();
-                LineItem.nextItemNumber = 1;
-                try // if one file fails, just report it and go on to the next 
+                Meal m = LoadFromStream(sourceStream);
+                if (m is null)
                 {
-                    Meal m = LoadFromStream(sourceStream);
-                    if (m is null)
-                    {
-                        // The stream was bad so do not store it
-                        DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned null for {rfi.Name}");
-                        filesInError++;
-                        if (Utilities.IsDebug)
-                            Debugger.Break();
-                    }
-                    else if (m.Size <= 0)
-                    {
-                        // The stream was bad so do not store it
-                        DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned a negative size for {rfi.Name}");
-                        // This could represent a networking error, in which case all subsequent files will probably fail too, so just give up
-                        filesInError++;
-                        if (!App.IsCloudAccessible)
-                        {
-                            DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream detected the cloud was no longer accessible, so exit the loop");
-                            break;
-                        }
-                        if (Utilities.IsDebug)
-                            Debugger.Break();
-                    }
-                    else
-                    {
-                        if (m.Summary.FileNameInconsistent(rfi.Name))
-                        {
-                            // The creation time stored in the stream did not match the file name 
-                            DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned a mismatched name for {rfi.Name + ".xml"} not {m.DebugDisplay}");
-                            // TODO: Move the file so it will not cause trouble in future 
-                            filesInError++;
-                        }
-                        else // The MealSummary is good as far as we can tell
-                        {
-                            // this is a handy place to scan multiple bills to check for differences between the old and new DistributeCosts algorithms
-                            decimal difference = m.CompareCostDistribution(report: false);
-                            if (Utilities.IsDebug && (difference) > 0)
-                            {
-                                DebugMsg($"In Meal.RecoverFromRemoteAsync: Cost Mismatch of {difference:C} in {m.DebugDisplay}");
-                                costMismatches++;
-                                totalDifference += difference;
-                            }
-                            m.SavedToRemote = true;
-                            m.Summary.IsRemote = true;
-                            m.SaveToFile();
-                            m.Summary.LocationChanged(isLocal: true);
-                            filesWithoutError++;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    DebugMsg($"In Meal.RecoverFromRemoteAsync, exception: {ex.Message}");
+                    // The stream was bad so do not store it
+                    DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned null for {rfi.Name}");
                     filesInError++;
+                    if (Utilities.IsDebug)
+                        Debugger.Break();
                 }
-                finally
+                else if (m.Size <= 0)
                 {
-                    ReportProgress(totalFiles, filesWithoutError, filesInError);
+                    // The stream was bad so do not store it
+                    DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned a negative size for {rfi.Name}");
+                    // This could represent a networking error, in which case all subsequent files will probably fail too, so just give up
+                    filesInError++;
+                    if (!App.IsCloudAccessible)
+                    {
+                        DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream detected the cloud was no longer accessible, so exit the loop");
+                        break;
+                    }
+                    if (Utilities.IsDebug)
+                        Debugger.Break();
                 }
+                else
+                {
+                    if (m.Summary.FileNameInconsistent(rfi.Name))
+                    {
+                        // The creation time stored in the stream did not match the file name 
+                        DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned a mismatched name for {rfi.Name + ".xml"} not {m.DebugDisplay}");
+                        // TODO: Move the file so it will not cause trouble in future 
+                        filesInError++;
+                    }
+                    else // The MealSummary is good as far as we can tell
+                    {
+                        // this is a handy place to scan multiple bills to check for differences between the old and new DistributeCosts algorithms
+                        decimal difference = m.CompareCostDistribution(report: false);
+                        if (Utilities.IsDebug && (difference) > 0)
+                        {
+                            DebugMsg($"In Meal.RecoverFromRemoteAsync: Cost Mismatch of {difference:C} in {m.DebugDisplay}");
+                            costMismatches++;
+                            totalDifference += difference;
+                        }
+                        m.SavedToRemote = true;
+                        m.Summary.IsRemote = true;
+                        m.SaveToFile();
+                        m.Summary.LocationChanged(isLocal: true);
+                        filesWithoutError++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugMsg($"In Meal.RecoverFromRemoteAsync, exception: {ex.Message}");
+                filesInError++;
+            }
+            finally
+            {
+                ReportProgress(totalFiles, filesWithoutError, filesInError);
             }
         }
         if (costMismatches > 0)

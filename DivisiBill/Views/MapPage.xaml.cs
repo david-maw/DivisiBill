@@ -8,17 +8,12 @@ namespace DivisiBill.Views;
 
 public partial class MapPage : ContentPage
 {
-    private Location venueLocation;
     private Location originalVenueLocation;
-    private readonly Pin pin = new Pin() { Type = PinType.Place }; // No location or name yet
-    private string venueName;
+    private readonly Pin pin = new() { Type = PinType.Place }; // No location or name yet
 
-    public MapPage()
-    {
-        InitializeComponent();
-    }
+    public MapPage() => InitializeComponent();
 
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         await App.StartMonitoringLocation();
         base.OnAppearing();
@@ -41,7 +36,7 @@ public partial class MapPage : ContentPage
         App.MyLocationChanged += App_MyLocationChanged;
     }
 
-    protected async override void OnDisappearing()
+    protected override async void OnDisappearing()
     {
         App.MyLocationChanged -= App_MyLocationChanged;
         base.OnDisappearing();
@@ -97,35 +92,34 @@ public partial class MapPage : ContentPage
     // BindingContext
     public string VenueName
     {
-        get => venueName;
+        get;
         set
         {
             ArgumentNullException.ThrowIfNull(value);
-            SetProperty(ref venueName, value);
+            SetProperty(ref field, value);
             pin.Label = VenueName;
         }
     }
     public Location VenueLocation
     {
-        get => venueLocation;
+        get;
         set
         {
-            if ((value is null && venueLocation is not null) || value.GetDistanceTo(venueLocation) > 0)
+            if ((value is null && field is not null) || value.GetDistanceTo(field) > 0)
             {
-                venueLocation = value;
-                VenueDistance = App.Current.GetDistanceTo(venueLocation);
+                field = value;
+                VenueDistance = App.Current.GetDistanceTo(field);
                 MovePin();
                 VenueLocationHasChanged = true;
                 OnPropertyChanged();
             }
         }
     }
-    private int venueDistance = Distances.Unknown;
     public int VenueDistance
     {
-        get => venueDistance;
-        set => SetProperty(ref venueDistance, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = Distances.Unknown;
 
     public bool MapIsShowingUser => App.UseLocation;
 

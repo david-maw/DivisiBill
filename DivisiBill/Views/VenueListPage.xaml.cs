@@ -8,7 +8,7 @@ namespace DivisiBill.Views;
 public partial class VenueListPage : ContentPage
 {
     protected ViewModels.VenueListViewModel context;
-    private MapPage mapPage = new MapPage();
+    private readonly MapPage mapPage = new();
     private FlyoutBehavior savedFlyoutBehavior;
 
     public VenueListPage()
@@ -19,7 +19,7 @@ public partial class VenueListPage : ContentPage
             NavigateToHome: async () => { await App.GoToHomeAsync(); });
         BindingContext = context;
     }
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         await App.StartMonitoringLocation();
@@ -52,7 +52,7 @@ public partial class VenueListPage : ContentPage
         catch (Exception) { } // Don't care if the selection fails
 #endif
     }
-    protected async override void OnDisappearing()
+    protected override async void OnDisappearing()
     {
         context.ForgetDeletedVenues();
         if (!Venue.IsSaved)

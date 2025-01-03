@@ -5,21 +5,18 @@ namespace DivisiBill.Services;
 
 public class ColumnLayoutManager : ILayoutManager
 {
-    readonly ColumnLayout _columnLayout;
-    IGridLayout _gridLayout;
-    GridLayoutManager _manager;
+    private readonly ColumnLayout _columnLayout;
+    private IGridLayout _gridLayout;
+    private GridLayoutManager _manager;
 
-    public ColumnLayoutManager(ColumnLayout layout)
-    {
-        _columnLayout = layout;
-    }
+    public ColumnLayoutManager(ColumnLayout layout) => _columnLayout = layout;
 
-    IGridLayout ToColumnGrid(VerticalStackLayout stackLayout)
+    private IGridLayout ToColumnGrid(VerticalStackLayout stackLayout)
     {
         Grid grid = new LayoutGrid
         {
-            ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition { Width = GridLength.Star } },
-            RowDefinitions = new RowDefinitionCollection()
+            ColumnDefinitions = [new ColumnDefinition { Width = GridLength.Star }],
+            RowDefinitions = []
         };
 
         for (int n = 0; n < stackLayout.Count; n++)
@@ -57,7 +54,7 @@ public class ColumnLayoutManager : ILayoutManager
 
     public Size ArrangeChildren(Rect bounds) => _manager?.ArrangeChildren(bounds) ?? Size.Zero;
 
-    class LayoutGrid : Grid
+    private class LayoutGrid : Grid
     {
         protected override void OnChildAdded(Element child)
         {

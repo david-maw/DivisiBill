@@ -48,11 +48,11 @@ public partial class App : Application, INotifyPropertyChanged
     // The 'magic number' is the package.appxmanifest 'package family name'.
     public static Location MyLocation;
     private static Task LocationMonitorTask;
-    private static CancellationTokenSource LocationMonitorCancellationTokenSource = new CancellationTokenSource();
-    public static CancellationTokenSource SaveProcessCancellationTokenSource = new CancellationTokenSource();
-    public static readonly TaskCompletionSource<bool> InitializationComplete = new TaskCompletionSource<bool>();
-    public static readonly PauseTokenSource IsRunningSource = new PauseTokenSource();
-    public static readonly PauseTokenSource CloudAllowedSource = new PauseTokenSource();
+    private static CancellationTokenSource LocationMonitorCancellationTokenSource = new();
+    public static CancellationTokenSource SaveProcessCancellationTokenSource = new();
+    public static readonly TaskCompletionSource<bool> InitializationComplete = new();
+    public static readonly PauseTokenSource IsRunningSource = new();
+    public static readonly PauseTokenSource CloudAllowedSource = new();
     public static ISettings Settings = null; // This (rather than direct app properties) enables fake settings to be injected for testing
     public static CancellationTokenSource RequestBackupLoopStop;
     public static Task MainBackupLoopTask;
@@ -61,8 +61,8 @@ public partial class App : Application, INotifyPropertyChanged
     public static bool pauseInitialization = false;
     public static bool isTutorialMode = false;
     public static Style RedLabelText = null;
-    const int WindowWidth = 600;
-    const int WindowHeight = 1200;
+    private const int WindowWidth = 600;
+    private const int WindowHeight = 1200;
     #endregion
     #region Initialization
     public App()
@@ -92,10 +92,11 @@ public partial class App : Application, INotifyPropertyChanged
     }
 
     public static new App Current => (App)Application.Current;
+
     /// <summary>
     /// Update all Entry controls so they initially select all text when focused
     /// </summary>
-    void ModifyEntry()
+    private void ModifyEntry()
     {
         EntryHandler.Mapper.AppendToMapping("MyCustomization", (handler, view) =>
         {
@@ -116,10 +117,10 @@ public partial class App : Application, INotifyPropertyChanged
     }
     #endregion
     #region Lifecycle and window management
-    static string priorWhat = "unknown";
+    private static string priorWhat = "unknown";
     protected override Window CreateWindow(IActivationState activationState)
     {
-        Window window = new Window(new AppShell());
+        Window window = new(new AppShell());
 
         static bool IsRepeated(string what)
         {
@@ -255,7 +256,6 @@ public partial class App : Application, INotifyPropertyChanged
 
     public void Initialize_Connectivity() => Connectivity_ConnectivityChanged(this, null); // set initial values
 
-    private static bool isCloudAccessible = false;
     /// <summary>
     /// Can we physically reach the Internet via an acceptable interfaces, so perhaps we require WiFi, even if it is not to be used for backup.
     /// The user can limit access by setting: <see cref="AppSettings.IsCloudAccessAllowed"/> and <see cref="AppSettings.WiFiOnly"/>
@@ -266,16 +266,16 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     public static bool IsCloudAccessible
     {
-        get => isCloudAccessible;
+        get;
         set
         {
-            if (isCloudAccessible != value)
+            if (field != value)
             {
-                isCloudAccessible = value;
+                field = value;
                 HandleActivityChanges();
             }
         }
-    }
+    } = false;
 
     /// <summary>
     /// Is the cloud accessible (<see cref="App.IsCloudAccessible"/>) and are we permitted to use it (<see cref="AppSettings.IsCloudAccessAllowed"/>).
@@ -300,10 +300,7 @@ public partial class App : Application, INotifyPropertyChanged
     {
         if (appIsPaused is not null)
             IsRunningSource.IsPaused = (bool)appIsPaused;
-        if (appIsPaused == true)
-            IsCloudAllowed = false;
-        else
-            IsCloudAllowed = Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
+        IsCloudAllowed = appIsPaused != true && Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
     }
     #endregion
     #region Debug Features
@@ -318,7 +315,7 @@ public partial class App : Application, INotifyPropertyChanged
 
         if (Directory.Exists(debugRoot))
             Utilities.DebugMsg("Found " + debugRoot);
-        DirectoryInfo di = new DirectoryInfo(debugRoot);
+        DirectoryInfo di = new(debugRoot);
         if (di.Exists)
         {
             try
@@ -533,31 +530,17 @@ public partial class App : Application, INotifyPropertyChanged
     #region Navigation
     public static Task PushAsync(string location, string navigationParameterName, object navigationParameterValue) =>
         PushAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
-    public static Task PushAsync(string location, ShellNavigationQueryParameters navigationParameter = null)
-    {
-        if (Shell.Current is not null)
-        {
-            if (navigationParameter is null)
-                return Shell.Current.GoToAsync(location);
-            else
-                return Shell.Current.GoToAsync(location, navigationParameter);
-        }
-        return Task.CompletedTask;
-    }
+    public static Task PushAsync(string location, ShellNavigationQueryParameters navigationParameter = null) => Shell.Current is not null
+            ? navigationParameter is null ? Shell.Current.GoToAsync(location) : Shell.Current.GoToAsync(location, navigationParameter)
+            : Task.CompletedTask;
 
     public static Task GoToAsync(string location, string navigationParameterName, object navigationParameterValue) =>
         GoToAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
-    public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter = null)
-    {
-        if (Shell.Current is not null)
-        {
-            if (navigationParameter is null)
-                return Shell.Current.GoToAsync("//" + location);
-            else
-                return Shell.Current.GoToAsync("//" + location, navigationParameter);
-        }
-        return Task.CompletedTask;
-    }
+    public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter = null) => Shell.Current is not null
+            ? navigationParameter is null
+                ? Shell.Current.GoToAsync("//" + location)
+                : Shell.Current.GoToAsync("//" + location, navigationParameter)
+            : Task.CompletedTask;
 
     public static async Task GoToHomeAsync() => await GoToAsync(isTutorialMode ? Routes.TutorialPage : Routes.LineItemsPage);
 
@@ -598,16 +581,16 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     private static Location FakeLocation
     {
-        get => fakeLocation;
+        get;
         set
         {
-            if (fakeLocation != value)
+            if (field != value)
             //Needs a better test
             {
-                Settings.FakeLocation = fakeLocation = value;
+                Settings.FakeLocation = field = value;
             }
         }
-    }
+    } = null;
     /// <summary>
     /// Set, reset, or change the fake location to a specified value
     /// Notify the user so as to allow app page switching. 
@@ -616,7 +599,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <returns></returns>
     public static async Task SetFakeLocation(Location newFakeLocation)
     {
-        bool fakeLocationIsValid = fakeLocation is not null;
+        bool fakeLocationIsValid = FakeLocation is not null;
         bool myLocationIsValid = MyLocation is not null;
         FakeLocation = newFakeLocation;
         await GetMyLocationAsync(CancellationToken.None);
@@ -624,8 +607,6 @@ public partial class App : Application, INotifyPropertyChanged
             (fakeLocationIsValid && myLocationIsValid && MyLocation.GetDistanceTo(FakeLocation) > 1))
             await Utilities.ShowAppSnackBarAsync("Location changed");
     }
-
-    private static Location fakeLocation = null;
     /// <summary>
     /// If location use is permitted try and initialize App.Location from a fake one stored in app settings
     /// </summary>
@@ -704,7 +685,7 @@ public partial class App : Application, INotifyPropertyChanged
                 }
         }
     }
-    private static readonly Counter MonitoringLocationCounter = new Counter();
+    private static readonly Counter MonitoringLocationCounter = new();
     public static async Task StartMonitoringLocation()
     {
         if (!UseLocation)

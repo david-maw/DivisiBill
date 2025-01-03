@@ -12,8 +12,8 @@ public partial class VenueListViewModel : ObservableObjectPlus
 {
     #region Initialization
     #region UI Parameters
-    readonly private Action<Venue> NavigateToDetails;
-    readonly private Action NavigateToHome;
+    private readonly Action<Venue> NavigateToDetails;
+    private readonly Action NavigateToHome;
     #endregion
     public VenueListViewModel(Action<Venue> NavigateToDetails, Action NavigateToHome)
     {
@@ -31,7 +31,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
     #endregion
     #region General Commands
     [RelayCommand]
-    private void Sort() { NextSortOrder(); }
+    private void Sort() => NextSortOrder();
 
     [RelayCommand]
     private void Add()
@@ -72,11 +72,10 @@ public partial class VenueListViewModel : ObservableObjectPlus
     private async Task UnDeleteAllVenues() => await UndeleteAllVenuesAsync();
     #endregion
     #region Properties
-    private Venue? selectedVenue;
     public Venue? CurrentItem
     {
-        get => selectedVenue;
-        set => SetProperty(ref selectedVenue, value);
+        get;
+        set => SetProperty(ref field, value);
     }
 
 #if WINDOWS
@@ -107,13 +106,11 @@ public partial class VenueListViewModel : ObservableObjectPlus
             CurrentItem = venueParam;
 #endif
     }
-
-    private bool showVenuesHint = false;
     public bool ShowVenuesHint
     {
-        get => showVenuesHint;
-        set => SetProperty(ref showVenuesHint, value, () => App.Settings.ShowVenuesHint = value);
-    }
+        get;
+        set => SetProperty(ref field, value, () => App.Settings.ShowVenuesHint = value);
+    } = false;
     #endregion
     #region Venues
     [RelayCommand]
@@ -143,7 +140,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
             await Utilities.DisplayAlertAsync("Error", "Cloud is enabled but currently inaccessible");
     }
     #region Venue Delete/Undelete
-    private Stack<Venue> deletedVenues = new Stack<Venue>();
+    private readonly Stack<Venue> deletedVenues = new();
 
     [RelayCommand]
     public async Task UndeleteVenueAsync()
@@ -170,21 +167,20 @@ public partial class VenueListViewModel : ObservableObjectPlus
         deletedVenues.Clear();
         IsAnyDeletedVenue = false;
     }
-    private bool isAnyDeletedVenue = false;
     public bool IsAnyDeletedVenue
     {
-        get => isAnyDeletedVenue;
+        get;
         set
         {
-            if (isAnyDeletedVenue != value)
+            if (field != value)
             {
-                isAnyDeletedVenue = value;
+                field = value;
                 OnPropertyChanged(nameof(IsAnyDeletedVenue));
             }
             // Always recheck IsManyDeletedVenues because for it transitions between {0,1} and {2+} are what count 
             OnPropertyChanged(nameof(IsManyDeletedVenues));
         }
-    }
+    } = false;
     public bool IsManyDeletedVenues => deletedVenues.Count > 1;
     private async Task DeleteVenueAsync(Venue venueParam)
     {
@@ -207,18 +203,13 @@ public partial class VenueListViewModel : ObservableObjectPlus
     }
     #endregion
     public int VenueCount => Venue.AllVenues.Count;
-    private async void App_MyLocationChanged(object? sender, EventArgs e)
-    {
-        await Venue.UpdateAllDistances();
-    }
-    public ObservableCollection<Venue> VenueList => (sortOrder == SortOrderType.byName) ? Venue.AllVenues : Venue.AllVenuesByDistance;
+    private async void App_MyLocationChanged(object? sender, EventArgs e) => await Venue.UpdateAllDistances();
+    public ObservableCollection<Venue> VenueList => (SortOrder == SortOrderType.byName) ? Venue.AllVenues : Venue.AllVenuesByDistance;
     #endregion
     #region Sorting
     public string SortOrderName => SortOrder == SortOrderType.byName ? "Name" : SortOrder == SortOrderType.byDistance ? "Distance" : "Unknown";
 
     public enum SortOrderType { byDistance, byName };
-
-    private SortOrderType sortOrder = SortOrderType.byName;
     private void NextSortOrder()
     {
         if (SortOrder == Enum.GetValues(typeof(SortOrderType)).Cast<SortOrderType>().Max())
@@ -229,16 +220,16 @@ public partial class VenueListViewModel : ObservableObjectPlus
 
     public SortOrderType SortOrder
     {
-        get => sortOrder;
+        get;
         set
         {
-            if (sortOrder != value)
+            if (field != value)
             {
-                sortOrder = value;
+                field = value;
                 OnPropertyChanged(nameof(SortOrderName));
                 OnPropertyChanged(nameof(VenueList));
             }
         }
-    }
+    } = SortOrderType.byName;
     #endregion
 }

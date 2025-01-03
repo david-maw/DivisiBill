@@ -8,8 +8,5 @@ public partial class PaymentsPage : CommunityToolkit.Maui.Views.Popup
         InitializeComponent();
     }
 
-    private void ClosePopup(object sender, System.EventArgs e)
-    {
-        Close();
-    }
+    private void ClosePopup(object sender, System.EventArgs e) => Close();
 }

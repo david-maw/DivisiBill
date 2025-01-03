@@ -17,7 +17,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(Routes.VenueListByNamePage, typeof(VenueListByNamePage));
         Routing.RegisterRoute(Routes.MealSummaryPage, typeof(MealSummaryPage));
     }
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         if (FlyoutBehavior != FlyoutBehavior.Flyout) // Initially disabled so Play Store testing cannot mess with it early

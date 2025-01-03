@@ -23,10 +23,8 @@ internal class CurrencyLabelBehavior : Behavior<Label>
 
     public static readonly BindableProperty TestEqualityProperty =
         BindableProperty.Create(nameof(TestEquality), typeof(bool), typeof(CurrencyLabelBehavior), true, propertyChanged: OnSomePropertyChanged);
-
-
-    bool bindingWasSet = false;
-    Label? savedLabel;
+    private bool bindingWasSet = false;
+    private Label? savedLabel;
     protected override void OnAttachedTo(Label label)
     {
         savedLabel = label;
@@ -52,7 +50,8 @@ internal class CurrencyLabelBehavior : Behavior<Label>
         if (e?.PropertyName?.Equals("Text") ?? false)
             ValidateLabel();
     }
-    void ValidateLabel()
+
+    private void ValidateLabel()
     {
         if (savedLabel is null)
         {
@@ -61,10 +60,9 @@ internal class CurrencyLabelBehavior : Behavior<Label>
         }
         if (!(TestEquality && IsSet(UnequalStyleProperty) && IsSet(EqualValueProperty)))
             IsEqual = true; // if we are not testing just treat it as matching
-        else if (IsSet(TargetValueProperty))
-            IsEqual = TargetValue == EqualValue;
-        else
-            IsEqual = decimal.TryParse(savedLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal d) && d == EqualValue;
+        else IsEqual = IsSet(TargetValueProperty)
+            ? TargetValue == EqualValue
+            : decimal.TryParse(savedLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal d) && d == EqualValue;
 #pragma warning disable CS8601 // Possible null reference assignment.
         savedLabel.Style = IsEqual ? ValidStyle : UnequalStyle; // Warning here from .NET 9 is a bug because Style should be nullable, see https://github.com/dotnet/maui/issues/25227
 #pragma warning restore CS8601 // Possible null reference assignment.
@@ -130,8 +128,5 @@ internal class CurrencyLabelBehavior : Behavior<Label>
     /// <param name="bindable">The relevant behavior object</param>
     /// <param name="oldValue">Value before change</param>
     /// <param name="newValue">Value to be set</param>
-    protected static void OnSomePropertyChanged(BindableObject bindable, object oldValue, object newValue)
-    {
-        ((CurrencyLabelBehavior)bindable).ValidateLabel();
-    }
+    protected static void OnSomePropertyChanged(BindableObject bindable, object oldValue, object newValue) => ((CurrencyLabelBehavior)bindable).ValidateLabel();
 }

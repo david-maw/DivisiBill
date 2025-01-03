@@ -7,15 +7,12 @@ namespace DivisiBill.ViewModels;
 
 public partial class SettingsViewModel : ObservableObjectPlus
 {
-    Application currentApp;
+    private readonly Application currentApp;
     public SettingsViewModel()
     {
         if (!App.LicenseChecked)
             App.ProEditionVerified += App_ProEditionVerified;
-        if (Application.Current is null)
-            throw new NullReferenceException();
-        else
-            currentApp = Application.Current;
+        currentApp = Application.Current is null ? throw new NullReferenceException() : Application.Current;
         ScanOption = 2;
         App.MyLocationChanged += App_MyLocationChanged;
     }
@@ -164,7 +161,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
             if (value != Dark)
                 currentApp.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
         }
-        get => currentApp.UserAppTheme == AppTheme.Dark ? true : currentApp.RequestedTheme == AppTheme.Dark;
+        get => currentApp.UserAppTheme == AppTheme.Dark || currentApp.RequestedTheme == AppTheme.Dark;
     }
     public bool UseLocation => App.UseLocation;
     public Location AppLocation => App.MyLocation;

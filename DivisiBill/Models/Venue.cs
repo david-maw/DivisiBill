@@ -16,22 +16,22 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     public const string VenueFolderName = "Venues";
     public const string TargetFileName = "Venues.xml";
     private static string TargetPathName = null;
-    private readonly Location MiddleOfNowhere = new Location(20, 170); // Middle of the Pacific, not close to anything
+    private readonly Location MiddleOfNowhere = new(20, 170); // Middle of the Pacific, not close to anything
 
-    private static readonly ObservableCollection<Venue> allVenues = new ObservableCollection<Venue>();
-    private static readonly ObservableCollection<Venue> allVenuesByDistance = new ObservableCollection<Venue>();
+    private static readonly ObservableCollection<Venue> allVenues = [];
+    private static readonly ObservableCollection<Venue> allVenuesByDistance = [];
     private static bool allVenuesByDistanceIsSorted = true;
-    static public Venue Current = null;
+    public static Venue Current = null;
 
-    static void LoadDefaultVenues()
+    private static void LoadDefaultVenues()
     {
         var initialVenues = new List<Venue>() {
-            new Venue() {Name = "California Pizza Kitchen", Latitude= 33.6120, Longitude = -117.7080, Accuracy = 10},
-            new Venue() {Name = "Claim Jumper"},
-            new Venue() {Name = "Kings",                    Latitude= 33.6132, Longitude = -117.7084, Accuracy = 10},
-            new Venue() {Name = "MacDonalds"},
-            new Venue() {Name = "Queasy Diner",             Latitude= 20.79, Longitude = -156.24, Accuracy = 700},
-            new Venue() {Name = "Wendys"},
+            new() {Name = "California Pizza Kitchen", Latitude= 33.6120, Longitude = -117.7080, Accuracy = 10},
+            new() {Name = "Claim Jumper"},
+            new() {Name = "Kings",                    Latitude= 33.6132, Longitude = -117.7084, Accuracy = 10},
+            new() {Name = "MacDonalds"},
+            new() {Name = "Queasy Diner",             Latitude= 20.79, Longitude = -156.24, Accuracy = 700},
+            new() {Name = "Wendys"},
         };
         initialVenues.Sort();
         foreach (Venue v in initialVenues)
@@ -47,7 +47,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         await Task.Run(() => LoadSettings());
     }
 
-    private static readonly XmlSerializer allVenuesSerializer = new XmlSerializer(typeof(VenueRoot));
+    private static readonly XmlSerializer allVenuesSerializer = new(typeof(VenueRoot));
     private static async Task<bool> LoadFromStreamAsync(Stream stream, bool replace)
     {
         if (stream is null)
@@ -134,47 +134,46 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 
     public static async Task SaveSettingsAsync(bool remote = true)
     {
-        using (MemoryStream stream = new MemoryStream(10000))
+        using MemoryStream stream = new(10000);
+        SerializeVenues(stream);
+        Utilities.DebugExamineStream(stream);
+        // Initiate local backup if it is permitted
+        bool failed = true;
+        Directory.CreateDirectory(Path.GetDirectoryName(TargetPathName));
+        try
         {
-            SerializeVenues(stream);
-            Utilities.DebugExamineStream(stream);
-            // Initiate local backup if it is permitted
-            bool failed = true;
-            Directory.CreateDirectory(Path.GetDirectoryName(TargetPathName));
-            try
-            {
-                using (Stream sfile = new FileStream(TargetPathName, FileMode.Create, FileAccess.Write))
-                {
-                    stream.Position = 0;
-                    await stream.CopyToAsync(sfile);
-                }
-                App.Settings.VenueUpdateTime = UpdateTime;
-                App.Settings.VenueUpdater = Updater;
-                failed = false;
-            }
-            catch (IOException ex)
-            {
-                Debug.WriteLine($">>>>> In Venue.{nameof(SaveSettingsAsync)}, exception {ex}");
-                // Put it in the output stream, but just go on
-            }
-            catch (Exception ex)
-            {
-                ex.ReportCrash();
-            }
-            if (failed)
-                File.Delete(TargetPathName);
-            // Initiate backup to cloud if it is permitted, do not wait for result
-            if (remote && App.IsCloudAllowed)
+            using (Stream sfile = new FileStream(TargetPathName, FileMode.Create, FileAccess.Write))
             {
                 stream.Position = 0;
-                bool worked = await RemoteWs.PutItemStreamAsync(RemoteWs.VenueListTypeName, stream);
-                if (worked && App.Settings.VenueUpdateTime < UpdateTime) // This update has not been noted yet, so do so
-                {
-                    App.Settings.VenueUpdateTime = UpdateTime;
-                    App.Settings.VenueUpdater = Updater;
-                }
+                await stream.CopyToAsync(sfile);
             }
-        } // end using stream
+            App.Settings.VenueUpdateTime = UpdateTime;
+            App.Settings.VenueUpdater = Updater;
+            failed = false;
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine($">>>>> In Venue.{nameof(SaveSettingsAsync)}, exception {ex}");
+            // Put it in the output stream, but just go on
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+        }
+        if (failed)
+            File.Delete(TargetPathName);
+        // Initiate backup to cloud if it is permitted, do not wait for result
+        if (remote && App.IsCloudAllowed)
+        {
+            stream.Position = 0;
+            bool worked = await RemoteWs.PutItemStreamAsync(RemoteWs.VenueListTypeName, stream);
+            if (worked && App.Settings.VenueUpdateTime < UpdateTime) // This update has not been noted yet, so do so
+            {
+                App.Settings.VenueUpdateTime = UpdateTime;
+                App.Settings.VenueUpdater = Updater;
+            }
+        }
+        // end using stream
     }
 
     public static List<Venue> DeserializeList(Stream stream)
@@ -205,7 +204,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     }
     public static void MergeVenues(List<Venue> newVenues, bool replace)
     {
-        var allVenuesDictionary = new SortedDictionary<String, Venue>();
+        var allVenuesDictionary = new SortedDictionary<string, Venue>();
         if (!replace)
             foreach (var r in allVenues)
                 allVenuesDictionary.Add(r.Name, r);
@@ -246,7 +245,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         }
         // Now we deal with the list of venues by location by sorting the AllVenues list by location and then adding them in order to AllVenuesByDistance 
         // Future Distance updates will cause the venue to be relocated to the correct spot in the list
-        List<Venue> listByDistance = new List<Venue>(allVenues.ToList());
+        List<Venue> listByDistance = [.. allVenues.ToList()];
         listByDistance.Sort((v1, v2) => v1.CompareDistanceTo(v2));
         foreach (Venue v in listByDistance)
             allVenuesByDistance.Add(v);
@@ -310,7 +309,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     /// Used to re-sort the whole list by distance because the location has changed
     /// </summary>
     /// <returns></returns>
-    public async static Task UpdateAllDistances()
+    public static async Task UpdateAllDistances()
     {
         allVenuesByDistanceIsSorted = false;
         foreach (var v in allVenuesByDistance)
@@ -332,7 +331,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     /// <returns>Reference to the venue with the specified name</returns>
     public static Venue SelectOrAddVenue(string VenueName, string notesParam = null)
     {
-        Venue v = new Venue() { name = VenueName, Notes = notesParam };
+        Venue v = new() { name = VenueName, Notes = notesParam };
         if (allVenues is null) // initializing
             return null;
         int index = -1, newIndex = -1;
@@ -381,7 +380,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     {
         var venues = new List<Venue>(allVenues);
         venues.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
-        VenueRoot vr = new VenueRoot() { Venues = venues };
+        VenueRoot vr = new() { Venues = venues };
         using (StreamWriter sw = new(s, System.Text.Encoding.UTF8, -1, true))
         using (var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
         {
@@ -395,25 +394,13 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     public static ObservableCollection<Venue> AllVenues { get; } = allVenues;
     public static ObservableCollection<Venue> AllVenuesByDistance { get; } = allVenuesByDistance;
 
-    private static DateTime updateTime;
-
-    public static DateTime UpdateTime
-    {
-        get => updateTime;
-        set => updateTime = value;
-    }
+    public static DateTime UpdateTime { get; set; }
 
     public static bool IsSaved => App.Settings.VenueUpdateTime == UpdateTime;
     public static void MarkSaved() => UpdateTime = App.Settings.VenueUpdateTime;
     public static bool IsDefaultList => UpdateTime == DateTime.MinValue;
 
-    private static Guid updater;
-
-    public static Guid Updater
-    {
-        get => updater;
-        set => updater = value;
-    }
+    public static Guid Updater { get; set; }
     /// <summary>
     /// Use a new location if it is more accurate than the old one and within the same area
     /// </summary>
@@ -445,13 +432,9 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     [XmlIgnore]
     public Location Location
     {
-        get
-        {
-            if ((Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid)
-                return MiddleOfNowhere;
-            else
-                return new Location(this.Latitude, this.Longitude) { Accuracy = Accuracy };
-        }
+        get => (Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid
+                ? MiddleOfNowhere
+                : new Location(this.Latitude, this.Longitude) { Accuracy = Accuracy };
         set
         {
             if (value is null)
@@ -472,8 +455,6 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         }
     }
 
-    private int distance = Distances.Inaccurate;
-
     [XmlIgnore]
     public int Distance
     {
@@ -485,20 +466,20 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
                 //if (Utilities.IsDebug)
                 //    throw new ArgumentException("Attempt to set Distance to an invalid Venue Location");
             }
-            if (distance != value)
+            if (field != value)
             {
-                distance = value;
+                field = value;
                 if (allVenuesByDistanceIsSorted & allVenuesByDistance.Contains(this))
                     MoveToCorrectPlaceByDistance();
                 OnPropertyChanged();
             }
         }
-        get => distance;
-    }
+        get;
+    } = Distances.Inaccurate;
     [XmlIgnore]
-    public int SimplifiedDistance => Distances.Simplified(distance);
+    public int SimplifiedDistance => Distances.Simplified(Distance);
 
-    string name;
+    private string name;
 
     [XmlAttribute]
     public string Name
@@ -519,8 +500,6 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         get => name;
     }
 
-    string notes;
-
     [XmlAttribute]
     public string Notes
     {
@@ -529,16 +508,16 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             string newValue = null;
             if (!string.IsNullOrEmpty(value))
                 newValue = value.Trim();
-            if (notes != newValue)
+            if (field != newValue)
             {
-                notes = newValue;
+                field = newValue;
                 OnPropertyChanged();
             }
         }
-        get => notes;
+        get;
     }
 
-    public bool IsCurrentMeal => string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Meal.CurrentMeal.VenueName) ? false : Name == Meal.CurrentMeal.VenueName;
+    public bool IsCurrentMeal => !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Meal.CurrentMeal.VenueName) && Name == Meal.CurrentMeal.VenueName;
 
     [XmlAttribute(AttributeName = "Latitude"), DefaultValue(0.0)]
     public double AdjustedLatitude
@@ -559,17 +538,15 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 
     private double Longitude { get; set; } = 0.0;
 
-    private bool isLocationValid;
-
     [XmlIgnore]
     public bool IsLocationValid
     {
-        get => App.UseLocation && Accuracy <= Distances.AccuracyLimit && isLocationValid;
+        get => App.UseLocation && Accuracy <= Distances.AccuracyLimit && field;
         set
         {
-            if (value != isLocationValid)
+            if (value != field)
             {
-                isLocationValid = value;
+                field = value;
                 if (value)
                     Distance = App.Current.GetDistanceTo(Location);
                 else
@@ -586,32 +563,19 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         }
     }
 
-    private int accuracy;
-
     [XmlAttribute, DefaultValue(0)]
     public int Accuracy
     {
         set
         {
-            if (value >= 0 && accuracy != value)
+            if (value >= 0 && field != value)
             {
-                accuracy = value <= 0 || value >= Distances.Inaccurate ? 0 : value;
-                IsLocationValid = (accuracy != 0);
+                field = value is <= 0 or >= Distances.Inaccurate ? 0 : value;
+                IsLocationValid = (field != 0);
             }
         }
 
-        get
-        {
-            if (accuracy > 0)
-                return accuracy;
-            else
-            {
-                if (Latitude == 0 && Longitude == 0)
-                    return Distances.Inaccurate;
-                else
-                    return Distances.AccuracyLimit;
-            }
-        }
+        get => field > 0 ? (field) : Latitude == 0 && Longitude == 0 ? Distances.Inaccurate : Distances.AccuracyLimit;
     }
     public bool Forget() => allVenues.Remove(this) && allVenuesByDistance.Remove(this);
     public static void ForgetAllVenues()
@@ -622,10 +586,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     private void MoveToCorrectPlace() => allVenues.Upsert(this);
     private void MoveToCorrectPlaceByDistance() => allVenuesByDistance.Upsert(this, CompareDistances);
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propChanged = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
-    }
+    protected virtual void OnPropertyChanged([CallerMemberName] string propChanged = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
 }
 
 // The VenueRoot class is needed because 'Venue' used to be 'Restaurant' and so the persisted XML has to use
@@ -633,7 +594,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 [XmlRoot("ArrayOfRestaurant")]
 public class VenueRoot
 {
-    public VenueRoot() { this.Venues = new List<Venue>(); }
+    public VenueRoot() => this.Venues = [];
 
     [XmlElement("Restaurant")]
     public List<Venue> Venues { get; set; }

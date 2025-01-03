@@ -15,12 +15,12 @@ public partial class MealListPage : ContentPage
         viewModel.UseMealParam = UseMeal;
         viewModel.ShowDetailsParam = ShowSummary;
     }
-    protected async override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         await viewModel.OnAppearing();
     }
-    protected async override void OnDisappearing()
+    protected override async void OnDisappearing()
     {
         await viewModel.OnDisappearing();
         base.OnDisappearing();

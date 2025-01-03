@@ -6,10 +6,7 @@ namespace DivisiBill.Views;
 public partial class TotalsPage : ContentPage
 {
     private MealViewModel viewModel;
-    public TotalsPage()
-    {
-        InitializeComponent();
-    }
+    public TotalsPage() => InitializeComponent();
     protected override void OnAppearing()
     {
         base.OnAppearing();

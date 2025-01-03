@@ -2,7 +2,7 @@
 
 public partial class QuestionPage : CommunityToolkit.Maui.Views.Popup
 {
-    IQuestionDisposition questionDisposition;
+    private readonly IQuestionDisposition questionDisposition;
     public QuestionPage(IQuestionDisposition questionDisposition)
     {
         InitializeComponent();
@@ -20,58 +20,50 @@ public partial class QuestionPage : CommunityToolkit.Maui.Views.Popup
         Close(questionDisposition);
     }
 
-    // Bound items
-
-    private bool yes = false;
-    private bool askAgain;
     public bool Yes
     {
-        get => yes;
+        get;
         set
         {
-            if (yes != value)
+            if (field != value)
             {
-                yes = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
-    }
+    } = false;
     public bool AskAgain
     {
-        get => askAgain;
+        get;
         set
         {
-            if (askAgain != value)
+            if (field != value)
             {
-                askAgain = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
-
-    private string title;
     public string Title
     {
-        get => title;
+        get;
         set
         {
-            if (title != value)
+            if (field != value)
             {
-                title = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
-
-    private string text;
     public string Text
     {
-        get => text;
+        get;
         set
         {
-            if (text != value)
+            if (field != value)
             {
-                text = value;
+                field = value;
                 OnPropertyChanged();
             }
         }

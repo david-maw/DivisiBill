@@ -18,10 +18,8 @@ namespace DivisiBill.ViewModels;
 [QueryProperty(nameof(ShowRemoteMeals), "ShowRemote")]
 public partial class MealListViewModel : ObservableObjectPlus
 {
-    private Func<MealSummary, Task> showDetailsParam;
-    private Func<MealSummary, Task> useMealParam;
-    public Func<MealSummary, Task> UseMealParam { get => useMealParam; set => useMealParam = value; }
-    public Func<MealSummary, Task> ShowDetailsParam { get => showDetailsParam; set => showDetailsParam = value; }
+    public Func<MealSummary, Task> UseMealParam { get; set; }
+    public Func<MealSummary, Task> ShowDetailsParam { get; set; }
 
     public MealListViewModel()
     {
@@ -31,7 +29,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     }
     private void App_MyLocationChanged(object sender, EventArgs e)
     {
-        if (sortOrder == SortOrderType.byDistance)
+        if (SortOrder == SortOrderType.byDistance)
             InvalidateMealList();
     }
     ~MealListViewModel()
@@ -235,10 +233,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// <summary>
     /// Notify the user that they attempted something that requires remote access and it's not available
     /// </summary>
-    private async Task ShowRemoteAccessWarning()
-    {
-        await Utilities.ShowAppSnackBarAsync("Warning: Remote Access is not currently available");
-    }
+    private async Task ShowRemoteAccessWarning() => await Utilities.ShowAppSnackBarAsync("Warning: Remote Access is not currently available");
 
     /// <summary>
     /// Make the Meal corresponding to this MealSummary the current one (which may 
@@ -271,11 +266,11 @@ public partial class MealListViewModel : ObservableObjectPlus
     {
         if (IsSelectableList)
         {
-            List<MealSummary> list = new();
+            List<MealSummary> list = [];
             int failed = 0;
             try
             {
-                list = new(MealList.Where(ms => ms.FileSelected && ((tryLocal && (ms.IsLocal || ms.IsFake)) || (tryRemote && ms.IsRemote) && !ms.IsBusy))); // need a separate list so as not to disturb the iterator
+                list = [.. MealList.Where(ms => ms.FileSelected && ((tryLocal && (ms.IsLocal || ms.IsFake)) || (tryRemote && ms.IsRemote) && !ms.IsBusy))]; // need a separate list so as not to disturb the iterator
                 Task<int> task = DeleteMultipleMeals(list, tryLocal, tryRemote);
                 Task whichTask = await Task.WhenAny(Task.Delay(500), task);
                 // Deletes, especially local ones, are really fast, so don't bother to show a busy indication unless they take a while
@@ -496,7 +491,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         int attempted = 0;
         cancellationTokenSource = new CancellationTokenSource();
         AwaitableQueue<MealSummary> downloadedQueue = new();
-        Task locationChanger = new Task(async () =>
+        Task locationChanger = new(async () =>
             {
                 while (true)
                 {
@@ -639,10 +634,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// <summary>
     /// Force future callers to reevaluate the list because we know it has changed
     /// </summary>
-    public void InvalidateMealList()
-    {
-        MealList = null; // The list is not accurate any more
-    }
+    public void InvalidateMealList() => MealList = null; // The list is not accurate any more
 
     public void DeselectInvisibleMeals()
     {
@@ -657,8 +649,6 @@ public partial class MealListViewModel : ObservableObjectPlus
 
     public string SortOrderName => SortOrder == SortOrderType.byName ? "name" : SortOrder == SortOrderType.byDate ? "age" : SortOrder == SortOrderType.byDistance ? "distance" : "unknown";
     public enum SortOrderType { byDate, byDistance, byName };
-
-    private SortOrderType sortOrder = SortOrderType.byDate;
     public void NextSortOrder()
     {
         if (SortOrder == Enum.GetValues(typeof(SortOrderType)).Cast<SortOrderType>().Max())
@@ -668,12 +658,12 @@ public partial class MealListViewModel : ObservableObjectPlus
     }
     public SortOrderType SortOrder
     {
-        get => sortOrder;
-        set => SetProperty(ref sortOrder, value, () => { InvalidateMealList(); OnPropertyChanged(nameof(SortOrderName)); });
-    }
+        get;
+        set => SetProperty(ref field, value, () => { InvalidateMealList(); OnPropertyChanged(nameof(SortOrderName)); });
+    } = SortOrderType.byDate;
     private string Sort
     {
-        get => Enum.GetName(typeof(SortOrderType), sortOrder);
+        get => Enum.GetName(typeof(SortOrderType), SortOrder);
         set
         {
             string sortRequest = Uri.UnescapeDataString(value ?? string.Empty);
@@ -737,20 +727,18 @@ public partial class MealListViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     public partial MealSummary SelectedMealSummary { get; set; }
-
-    int selectedMealSummariesCount = 0;
     public int SelectedMealSummariesCount
     {
-        get => selectedMealSummariesCount;
+        get;
         private set
         {
-            if (selectedMealSummariesCount != value)
+            if (field != value)
             {
-                selectedMealSummariesCount = value;
+                field = value;
                 SetSelectedMealSummariesCountText();
             }
         }
-    }
+    } = 0;
     public bool SetCount { get => false; set => SetSelectedMealSummariesCount(); }
     private void SetSelectedMealSummariesCount() => SelectedMealSummariesCount = MealList.Count(ms => ms.FileSelected);
     private void SetSelectedMealSummariesCountText() => SelectedMealSummariesCountText = SelectedMealSummariesCount > 0 & IsSelectableList ? SelectedMealSummariesCount.ToString() : null;
@@ -782,22 +770,16 @@ public partial class MealListViewModel : ObservableObjectPlus
                 if (ShowLocalMeals)
                 {
                     if (ShowRemoteMeals)
-                        return new ObservableCollection<MealSummary>(Meal.LocalMealList.Union(Meal.RemoteMealList).OrderByDescending(ms => ms.CreationTime)); // merge the two lists
+                        return [.. Meal.LocalMealList.Union(Meal.RemoteMealList).OrderByDescending(ms => ms.CreationTime)]; // merge the two lists
                     else
-                        return new ObservableCollection<MealSummary>(Meal.LocalMealList);
+                        return [.. Meal.LocalMealList];
                 }
-                else if (ShowRemoteMeals)
-                    return new ObservableCollection<MealSummary>(Meal.RemoteMealList);
-                else // should never happen
-                    return new ObservableCollection<MealSummary>();
+                else return ShowRemoteMeals ? [.. Meal.RemoteMealList] : [];
             }
 
-            static IOrderedEnumerable<MealSummary> SortByDistance(IEnumerable<MealSummary> mealSummaries)
-            {
-                if (App.MyLocation is null)
-                    return mealSummaries.OrderBy((ms) => ms.VenueName);
-                return mealSummaries.OrderBy((ms) => ms.Distance).ThenBy((ms) => ms.VenueName).ThenByDescending((ms) => ms.CreationTime);
-            }
+            static IOrderedEnumerable<MealSummary> SortByDistance(IEnumerable<MealSummary> mealSummaries) => App.MyLocation is null
+                    ? mealSummaries.OrderBy((ms) => ms.VenueName)
+                    : mealSummaries.OrderBy((ms) => ms.Distance).ThenBy((ms) => ms.VenueName).ThenByDescending((ms) => ms.CreationTime);
 
             // Begin MealList 'get' code
 
@@ -830,7 +812,7 @@ public partial class MealListViewModel : ObservableObjectPlus
                         filteredList.RemoveAt(i);
                     }
                 }
-                theList = new(filteredList);
+                theList = [.. filteredList];
                 // At this point all the duplicate dates for the same venue are gone and we just have a list in venue name order
                 // now fill in the distances in case we need to sort on them.
                 if (App.MyLocation is not null)
@@ -840,12 +822,9 @@ public partial class MealListViewModel : ObservableObjectPlus
                         ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
                     }
                 // Now we have the correct list, sort it
-                if (SortOrder == SortOrderType.byName)
-                    mealList = theList;
-                else if (SortOrder == SortOrderType.byDistance)
-                    mealList = new ObservableCollection<MealSummary>(SortByDistance(theList));
-                else //  SortOrder == SortOrderType.byDate (creation time order)
-                    mealList = new ObservableCollection<MealSummary>(theList.OrderByDescending((ms) => ms.CreationTime));
+                mealList = SortOrder == SortOrderType.byName
+                    ? theList
+                    : SortOrder == SortOrderType.byDistance ? [.. SortByDistance(theList)] : [.. theList.OrderByDescending((ms) => ms.CreationTime)];
             }
             else // Not filtered
             {
@@ -855,29 +834,19 @@ public partial class MealListViewModel : ObservableObjectPlus
                         Venue v = Venue.FindVenueByName(ms.VenueName);
                         ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
                     }
-                if (SortOrder == SortOrderType.byName)
-                    mealList = new ObservableCollection<MealSummary>(theList.OrderBy((ms) => ms.VenueName));
-                else if (SortOrder == SortOrderType.byDistance)
-                    mealList = new ObservableCollection<MealSummary>(SortByDistance(theList));
-                else // SortOrder == SortOrderType.byDate (creation time order)
-                    mealList = theList;
+                mealList = SortOrder == SortOrderType.byName
+                    ? [.. theList.OrderBy((ms) => ms.VenueName)]
+                    : SortOrder == SortOrderType.byDistance ? [.. SortByDistance(theList)] : theList;
             }
             SelectedMealSummariesCount = mealList.Count(ms => ms.FileSelected);
             return mealList;
         }
         private set => SetProperty(ref mealList, value);
     }
-    private bool UpsertIntoMealList(MealSummary ms)
+    private bool UpsertIntoMealList(MealSummary ms) => SortOrder switch
     {
-        switch (SortOrder)
-        {
-            case SortOrderType.byDistance:
-                return mealList.Upsert(ms, MealSummary.CompareDistanceTo);
-            case SortOrderType.byName:
-                return mealList.Upsert(ms, MealSummary.CompareVenueTo);
-            case SortOrderType.byDate:
-            default:
-                return mealList.Upsert(ms, MealSummary.CompareCreationTimeTo);
-        }
-    }
+        SortOrderType.byDistance => mealList.Upsert(ms, MealSummary.CompareDistanceTo),
+        SortOrderType.byName => mealList.Upsert(ms, MealSummary.CompareVenueTo),
+        _ => mealList.Upsert(ms, MealSummary.CompareCreationTimeTo),
+    };
 }

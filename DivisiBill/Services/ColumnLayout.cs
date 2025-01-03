@@ -20,21 +20,6 @@ public class ColumnLayout : VerticalStackLayout
     public static void SetFill(BindableObject bindableObject, bool fill) => bindableObject.SetValue(FillProperty, fill);
 
     // Convenience method for use from the layout manager
-    internal static bool IsFillSetForView(IView view)
-    {
-        if (view is BindableObject bindableObject)
-        {
-            return bindableObject.IsSet(FillProperty);
-        }
-        return false;
-    }
-    internal static bool GetFillForView(IView view)
-    {
-        if (view is BindableObject bindableObject)
-        {
-            return GetFill(bindableObject);
-        }
-
-        return false;
-    }
+    internal static bool IsFillSetForView(IView view) => view is BindableObject bindableObject && bindableObject.IsSet(FillProperty);
+    internal static bool GetFillForView(IView view) => view is BindableObject bindableObject && GetFill(bindableObject);
 }

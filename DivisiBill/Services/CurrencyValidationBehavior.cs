@@ -36,10 +36,8 @@ public class CurrencyValidationBehavior : Behavior<Entry>
 
     public static readonly BindableProperty AllowBlankProperty =
         BindableProperty.Create(nameof(AllowBlank), typeof(bool), typeof(CurrencyValidationBehavior), false, propertyChanged: OnSomePropertyChanged);
-
-
-    bool bindingWasSet = false;
-    Entry? savedEntry;
+    private bool bindingWasSet = false;
+    private Entry? savedEntry;
     protected override void OnAttachedTo(Entry entry)
     {
         savedEntry = entry;
@@ -62,16 +60,17 @@ public class CurrencyValidationBehavior : Behavior<Entry>
         savedEntry = null;
         base.OnDetachingFrom(entry);
     }
-    private static NumberFormatInfo nfi = new();
+    private static readonly NumberFormatInfo nfi = new();
     // Optional leading minus then either an integer or floating point number with two digits of precision
     private static readonly Regex NumberRegex = new(@"^-?\d{1,15}(" + ((nfi.CurrencyDecimalSeparator[0] == '.') ? @"\." : ",") + @"\d{" + nfi.CurrencyDecimalDigits + "})?$");
-    void OnEntryTextChanged(object? sender, TextChangedEventArgs args)
+
+    private void OnEntryTextChanged(object? sender, TextChangedEventArgs args)
     {
         if (sender is Entry entry && (ValidStyle ?? InvalidStyle ?? UnequalStyle) is not null)
             ValidateEntry();
     }
 
-    void ValidateEntry()
+    private void ValidateEntry()
     {
         if (savedEntry is null)
         {
@@ -81,10 +80,7 @@ public class CurrencyValidationBehavior : Behavior<Entry>
         }
         else if (string.IsNullOrWhiteSpace(savedEntry.Text))
         {
-            if (IsValid = AllowBlank)
-                IsEqual = !TestEquality || (UnequalStyle is null || (IsSet(EqualValueProperty) && 0 == EqualValue));
-            else
-                IsEqual = false;
+            IsEqual = (IsValid = AllowBlank) && (!TestEquality || (UnequalStyle is null || (IsSet(EqualValueProperty) && 0 == EqualValue)));
 #pragma warning disable CS8601 // Possible null reference assignment.
             // Warning here from .NET 9 is a bug because Style should be nullable, see https://github.com/dotnet/maui/issues/25227
             savedEntry.Style = IsValid ? IsEqual ? ValidStyle : UnequalStyle : InvalidStyle;

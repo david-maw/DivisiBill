@@ -401,15 +401,15 @@ internal static class Billing
             // No Internet, don't even bother trying
             return false;
         }
-        var billing = await OpenBilling();
-        if (billing.Interface is null)
+        var (Status, Interface) = await OpenBilling();
+        if (Interface is null)
         {
             //we are off line or can't connect, don't try to do anything
             return false;
         }
         try
         {
-            var consumedItem = await billing.Interface.ConsumePurchaseAsync(productId, purchaseToken);
+            var consumedItem = await Interface.ConsumePurchaseAsync(productId, purchaseToken);
 
             return consumedItem;
         }
@@ -464,15 +464,15 @@ internal static class Billing
             Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, no Internet, returning null");
             return (BillingStatusType.noInternet, null);
         }
-        var billing = await OpenBilling();
-        if (billing.Interface == null)
+        var (Status, Interface) = await OpenBilling();
+        if (Interface == null)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, no billing connection, returning null");
-            return (billing.Status, null);
+            return (Status, null);
         }
         try
         {
-            var purchaseList = await billing.Interface.GetPurchasesAsync(isSubscription ? ItemType.Subscription : ItemType.InAppPurchase);
+            var purchaseList = await Interface.GetPurchasesAsync(isSubscription ? ItemType.Subscription : ItemType.InAppPurchase);
 
             var purchase = purchaseList?.Where(p => p.ProductId == productId).FirstOrDefault();
 
@@ -488,7 +488,7 @@ internal static class Billing
                 Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} found in play store purchase list, verifying with web service");
 
             if (purchase.IsAcknowledged == false) // Probably there was an unfortunately timed interruption during the purchase attempt, but the client has paid, so finalize it
-                await FinalizePurchaseAsync(purchase, billing.Interface, isSubscription);
+                await FinalizePurchaseAsync(purchase, Interface, isSubscription);
 
             string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
 

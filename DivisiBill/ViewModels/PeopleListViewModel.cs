@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace DivisiBill.ViewModels;
 
-partial class PeopleListViewModel : Services.ObservableObjectPlus
+internal partial class PeopleListViewModel : Services.ObservableObjectPlus
 {
     #region Globals and constructors
     public delegate void SelectPersonDelegate(Person person, PersonCost personCost);
@@ -54,7 +54,7 @@ partial class PeopleListViewModel : Services.ObservableObjectPlus
         }
     }
 
-    private Stack<Person> deletedPeople = new Stack<Person>();
+    private readonly Stack<Person> deletedPeople = new();
 
     [RelayCommand]
     public async Task UnDeletePersonAsync()
@@ -134,7 +134,7 @@ partial class PeopleListViewModel : Services.ObservableObjectPlus
     [RelayCommand]
     private async Task Add()
     {
-        Person p = new Person(Guid.NewGuid());
+        Person p = new(Guid.NewGuid());
         Contact contact = null;
         try
         {

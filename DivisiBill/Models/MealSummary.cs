@@ -25,37 +25,28 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 
     public MealSummary ShallowCopy() => MemberwiseClone() as MealSummary;
 
-    public override bool Equals(object obj)
-    {
-        if (obj is null)
-            return false;
-        if (ReferenceEquals(this, obj))
-            return true;
-        if (this.GetType() != obj.GetType())
-            return false;
-        return FileName == ((MealSummary)obj).FileName;
-    }
+    public override bool Equals(object obj) => obj is not null && (ReferenceEquals(this, obj)
+        || this.GetType() == obj.GetType() && FileName == ((MealSummary)obj).FileName);
     public override int GetHashCode() => FileName.GetHashCode();
     public override string ToString() => FileName + " (" + VenueName + ")";
     #endregion
     #region Persisted Data
     [DataMember(Order = 9, EmitDefaultValue = false)]
     [DefaultValue(0)]
-    public int StoredVersion { get => mealSummaryVersion; set => mealSummaryVersion = value; }
-    private int mealSummaryVersion = 2;
+    public int StoredVersion { get; set; } = 2;
 
     [DataMember(Name = "Restaurant", Order = 1)]
     [XmlElement(ElementName = "Restaurant")]
     public string VenueName
     {
-        get => venueName;
+        get;
         set
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            SetProperty(ref venueName, value);
+            SetProperty(ref field, value);
         }
-    }
+    } = string.Empty;
 
     /// <summary>
     /// The curious layout of the xxxTime and ActualxxxTime properties is because we want to store the times accurately
@@ -72,18 +63,13 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     [XmlElement(ElementName = "LastChangeTime")]
     public string StoredLastChangeTime
     {
-        get
-        {
-            if (ActualLastChangeTime.DateTime == DateTime.MinValue)
-                return null;
-            else
-                return ActualLastChangeTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + ActualLastChangeTime.ToString("zzz", System.Globalization.CultureInfo.InvariantCulture);
-        }
+        get => ActualLastChangeTime.DateTime == DateTime.MinValue
+                ? null
+                : ActualLastChangeTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + ActualLastChangeTime.ToString("zzz", System.Globalization.CultureInfo.InvariantCulture);
 
         set
         {
-            DateTimeOffset result;
-            if (!DateTimeOffset.TryParse(value, out result) && !TryParseJsonDate(value, out result))
+            if (!DateTimeOffset.TryParse(value, out DateTimeOffset result) && !TryParseJsonDate(value, out result))
                 result = DateTimeOffset.MinValue;
             ActualLastChangeTime = result;
         }
@@ -107,7 +93,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             {
                 if (lastChangeTime != DateTime.MinValue)
                     Utilities.DebugMsg($"LastChangeTime updated, delta = {sinceLastUpdate}");
-                lastChangeTime = lastChangeTime + sinceLastUpdate;
+                lastChangeTime += sinceLastUpdate;
                 OnPropertyChanged(nameof(LastChangeTime));
             }
         }
@@ -122,14 +108,13 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             if (untilUpdate.TotalSeconds < 0) // Weird special case, updated before creation
                 return LastChangeTime.ToString("g"); // Just display the date and time
 
-            if (untilUpdate.TotalSeconds <= 119)
-                ago = untilUpdate.TotalSeconds.ToString("F0") + " s";
-            else if (untilUpdate.TotalMinutes <= 119)
-                ago = untilUpdate.TotalMinutes.ToString("F0") + " min";
-            else if (untilUpdate.TotalHours <= 47)
-                ago = untilUpdate.TotalHours.ToString("F1") + " hours";
-            else
-                ago = untilUpdate.ToString("g");
+            ago = untilUpdate.TotalSeconds <= 119
+                ? untilUpdate.TotalSeconds.ToString("F0") + " s"
+                : untilUpdate.TotalMinutes <= 119
+                ? untilUpdate.TotalMinutes.ToString("F0") + " min"
+                : untilUpdate.TotalHours <= 47
+                ? untilUpdate.TotalHours.ToString("F1") + " hours"
+                : untilUpdate.ToString("g");
             return ago + " later";
         }
         return null;
@@ -151,8 +136,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         get => ActualCreationTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + ActualCreationTime.ToString("zzz", System.Globalization.CultureInfo.InvariantCulture);
         set
         {
-            DateTimeOffset result;
-            if (!DateTimeOffset.TryParse(value, out result) && !TryParseJsonDate(value, out result))
+            if (!DateTimeOffset.TryParse(value, out DateTimeOffset result) && !TryParseJsonDate(value, out result))
                 result = DateTimeOffset.MinValue;
             ActualCreationTime = result;
         }
@@ -248,23 +232,18 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         if (TryDateTimeFromName(fn, out DateTime dt))
             CreationTime = dt;
     }
-    private bool isRemote = false;
 
     /// <summary>
     /// true if any version of the MealSummary file is in remote storage (it may not be the most current version, Meal.SavedToRemote will tell you that)
     /// </summary>
     [XmlIgnore]
-    public bool IsRemote
-    {
-        get => isRemote;
-        set => SetProperty(ref isRemote, value, () => OnPropertyChanged(nameof(IsFake)));
-    }
+    public bool IsRemote { get; set => SetProperty(ref field, value, () => OnPropertyChanged(nameof(IsFake))); } = false;
 
     /// <summary>
     /// true if any version of the MealSummary file is in local storage  (it may have been updated since - Meal.SavedToFile will tell you that)
     /// </summary>
     [XmlIgnore]
-    public bool IsLocal { get => isLocal; set => SetProperty(ref isLocal, value, () => OnPropertyChanged(nameof(IsFake))); }
+    public bool IsLocal { get; set => SetProperty(ref field, value, () => OnPropertyChanged(nameof(IsFake))); } = false;
 
     /// <summary>
     /// Means the meal is not stored locally or remotely
@@ -277,11 +256,10 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     /// same name then the ImageID would be stale
     /// </summary>
     [XmlIgnore]
-    public String ImageID { get => imageID; set => SetProperty(ref imageID, value); }
-    public String ApproximateAge => ApproximateAge(CreationTime);
+    public string ImageID { get; set => SetProperty(ref field, value); }
+    public string ApproximateAge => ApproximateAge(CreationTime);
 
-    private static readonly Stack<MealSummary> deletedStack = new Stack<MealSummary>();
-    public static Stack<MealSummary> DeletedStack => deletedStack;
+    public static Stack<MealSummary> DeletedStack { get; } = new();
 
     public static void ForgetDeleted()
     {
@@ -429,19 +407,14 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
                 Meal.RemoteMealList.Remove(this);
         }
     }
-
-    private bool fileSelected;
-    private string venueName = string.Empty;
     private DateTime creationTime = DateTime.MinValue;
     private DateTime lastChangeTime = DateTime.MinValue;
-    private bool isLocal = false;
-    private string imageID;
 
     [XmlIgnore]
     public bool FileSelected
     {
-        get => fileSelected;
-        set => SetProperty(ref fileSelected, value);
+        get;
+        set => SetProperty(ref field, value);
     }
 
     [XmlIgnore]
@@ -449,29 +422,25 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     {
         get; set;
     }
-
-    private bool hasImage = false;
     [XmlIgnore]
     public bool HasImage
     {
-        get => hasImage;
-        private set => SetProperty(ref hasImage, value);
-    }
-
-    private bool hasDeletedImage = false;
+        get;
+        private set => SetProperty(ref field, value);
+    } = false;
     [XmlIgnore]
     public bool HasDeletedImage
     {
-        get => hasDeletedImage;
-        private set => SetProperty(ref hasDeletedImage, value);
-    }
+        get;
+        private set => SetProperty(ref field, value);
+    } = false;
 
     [XmlIgnore]
     public int Distance { get; set; } = Distances.Inaccurate;
     #endregion
     #region Persistence
-    private static readonly DataContractJsonSerializer mealSummarySerializer = new DataContractJsonSerializer(typeof(MealSummary));
-    private static readonly XmlSerializer mealSummaryXmlSerializer = new XmlSerializer(typeof(MealSummary));
+    private static readonly DataContractJsonSerializer mealSummarySerializer = new(typeof(MealSummary));
+    private static readonly XmlSerializer mealSummaryXmlSerializer = new(typeof(MealSummary));
     public static MealSummary LoadJsonFromStream(Stream sourceStream)
     {
         MealSummary ms = null;
@@ -494,7 +463,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     public string GetJsonString()
     {
         var buf = new byte[10000];
-        MemoryStream s = new MemoryStream(buf);
+        MemoryStream s = new(buf);
         SaveJsonToStream(s);
         string myString = System.Text.Encoding.UTF8.GetString(buf, 0, (int)s.Position);
         return myString;

@@ -200,13 +200,7 @@ public class AppSettings : ISettings
     /// </summary>
     public Location FakeLocation
     {
-        get
-        {
-            if (FakeAccuracy >= Distances.AccuracyLimit)
-                return null;
-            else
-                return new Location(FakeLatitude, FakeLongitude) { Accuracy = FakeAccuracy };
-        }
+        get => FakeAccuracy >= Distances.AccuracyLimit ? null : new Location(FakeLatitude, FakeLongitude) { Accuracy = FakeAccuracy };
         set
         {
             FakeAccuracy = value.AccuracyOrDefault();
@@ -222,24 +216,24 @@ public class AppSettings : ISettings
             }
         }
     }
-    private int fakeAccuracy = Distances.Inaccurate;
+
     private int FakeAccuracy
     {
-        get => fakeAccuracy;
+        get;
         set
         {
-            if (value == 0 || value >= Distances.AccuracyLimit) // clear it
+            if (value is 0 or >= Distances.AccuracyLimit) // clear it
             {
                 Preferences.Clear(nameof(FakeAccuracy)); // invalidates FakeLatitude/Longitude as well
-                fakeAccuracy = Distances.Inaccurate;
+                field = Distances.Inaccurate;
             }
             else
             {
                 Preferences.Set(nameof(FakeAccuracy), value);
-                fakeAccuracy = value;
+                field = value;
             }
         }
-    }
+    } = Distances.Inaccurate;
 
     private double FakeLatitude
     {

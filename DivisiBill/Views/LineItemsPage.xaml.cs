@@ -10,7 +10,7 @@ namespace DivisiBill.Views;
 public partial class LineItemsPage : ContentPage
 {
     private MealViewModel mealViewModel;
-    readonly Button[] ShareButtons;
+    private readonly Button[] ShareButtons;
     public LineItemsPage()
     {
         InitializeComponent();
@@ -18,9 +18,10 @@ public partial class LineItemsPage : ContentPage
         // Initialize the shares buttons
         ShareButtons = SharesContainer.Children.Select(v => (Button)v).ToArray();
     }
-    PersonCost CurrentPersonCost = null;
-    private string command = null;
-    public string Command { get => command; set => command = value; }
+
+    private PersonCost CurrentPersonCost = null;
+
+    public string Command { get; set; } = null;
 
     /// <summary>
     /// Redraw the button only after it is released in order not to create a flash on the fake long press
@@ -49,10 +50,7 @@ public partial class LineItemsPage : ContentPage
             byte shares = CurrentShares = li.GetShares(sharer);
             if (!SharesCountContainer.IsVisible)
             {
-                if (shares == 0)
-                    shares = 1;
-                else
-                    shares = 0;
+                shares = shares == 0 ? (byte)1 : (byte)0;
                 li.SetShares(sharer, shares);
             }
             UpdateSharesInfoHeaderText(CurrentShares);
@@ -93,7 +91,7 @@ public partial class LineItemsPage : ContentPage
     {
         base.OnAppearing();
         mealViewModel = BindingContext as MealViewModel; // It may have changed
-        mealViewModel.ShowLineItemsHint = App.Settings is null ? false : App.Settings.ShowLineItemsHint;
+        mealViewModel.ShowLineItemsHint = App.Settings is not null && App.Settings.ShowLineItemsHint;
         mealViewModel.LineItemAddCompletedInUi = LineItemAddCompletedInUi;
         ArrangeSharesButtons(); // In case the sharer list changed
         if (Command is not null && Command.Equals("SelectFirstUnallocatedLineItem"))
@@ -217,8 +215,8 @@ public partial class LineItemsPage : ContentPage
         }
     }
 
-    Button CurrentSharesButton = null;
-    byte CurrentShares = 0;
+    private Button CurrentSharesButton = null;
+    private byte CurrentShares = 0;
     private void OnSharesCountButtonClicked(object sender, EventArgs e)
     {
         var li = (LineItem)LineItemsListView.SelectedItem;
@@ -247,9 +245,7 @@ public partial class LineItemsPage : ContentPage
 
     #region Collection Scrolling
     private void ScrollLineItemsTo(int index, bool toEnd) // Passed in to viewModel
-    {
-        LineItemsListView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
-    }
+=> LineItemsListView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
     private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
     {
         mealViewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;

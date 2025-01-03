@@ -12,19 +12,16 @@ public partial class ScanPage : ContentPage, IQueryAttributable
     /// or a permanent one containing a browsed picture
     /// </summary>
     private string ImagePath = null;
+
     /// <summary>
     /// Normally null, but for debug builds it can be a stored analysis of an image from a previous call 
     /// It also may be the name of an image file being scanned so that an analysis of that image can be stored
     /// which means a debug build need not call the scanning web service again for the same picture.
     /// </summary>
-    ScannedBill scannedBill = null;
-
-    CancellationTokenSource tokenSource = null;
-    public ScanPage()
-    {
-        InitializeComponent();
-    }
-    protected async override void OnAppearing()
+    private ScannedBill scannedBill = null;
+    private CancellationTokenSource tokenSource = null;
+    public ScanPage() => InitializeComponent();
+    protected override async void OnAppearing()
     {
         loading.IsVisible = true;
         ErrorMessage = "";
@@ -33,7 +30,7 @@ public partial class ScanPage : ContentPage, IQueryAttributable
 
         if (!string.IsNullOrWhiteSpace(ImagePath))
         {
-            lineItems = new List<LineItem>();
+            lineItems = [];
             try
             {
                 await Task.Run(DecodeLineItems);
@@ -81,7 +78,7 @@ public partial class ScanPage : ContentPage, IQueryAttributable
         }
         else if (scannedBill.OrderLines.Count == 0) // The normal case, probably as a result of taking a picture or scanning a new image
         {
-            String sourceName = scannedBill.SourceName; // get the name of the image this came from, if there is one
+            string sourceName = scannedBill.SourceName; // get the name of the image this came from, if there is one
             scannedBill = await CallWs.ImageToScannedBill(ImagePath, tokenSource.Token);
             if (scannedBill is not null)
             {
@@ -109,17 +106,16 @@ public partial class ScanPage : ContentPage, IQueryAttributable
     /// <summary>
     /// Line items scanned from the image in "ImagePath" passed in navigation as a URI value
     /// </summary>
-    public ObservableCollection<LineItem> LineItems => new ObservableCollection<LineItem>(lineItems);
+    public ObservableCollection<LineItem> LineItems => [.. lineItems];
 
-    private string errorMessage;
     public string ErrorMessage
     {
-        get => errorMessage;
+        get;
         set
         {
-            if (errorMessage != value)
+            if (field != value)
             {
-                errorMessage = value;
+                field = value;
                 OnPropertyChanged();
             }
         }

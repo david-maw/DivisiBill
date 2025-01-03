@@ -4,10 +4,7 @@ namespace DivisiBill.ViewModels;
 
 public class CloudViewModel : ObservableObjectPlus
 {
-    public CloudViewModel()
-    {
-        Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
-    }
+    public CloudViewModel() => Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
 
     ~CloudViewModel()
     {
@@ -51,19 +48,13 @@ public class CloudViewModel : ObservableObjectPlus
     /// <summary>
     /// Whether or not Internet access exists
     /// </summary>
-    public bool InternetEnabled
-    {
-        get => Connectivity.NetworkAccess == NetworkAccess.Internet;
-    }
+    public bool InternetEnabled => Connectivity.NetworkAccess == NetworkAccess.Internet;
 
     /// <summary>
     /// Whether or not Internet access exists and we are running the Professional edition
     /// Note that cloud archiving may still not be allowed by the user
     /// </summary>
-    public bool InternetEnabledAndLicensed
-    {
-        get => InternetEnabled && !App.IsLimited;
-    }
+    public bool InternetEnabledAndLicensed => InternetEnabled && !App.IsLimited;
     public string WiFiStatus
     {
         get

@@ -57,12 +57,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
 
             PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.TempImageFilePath));
         }
-        else if (Meal.CurrentMeal.HasImage)
-            PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath));
-        else
-        {
-            PreviewImageSource = null;
-        }
+        else PreviewImageSource = Meal.CurrentMeal.HasImage ? ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath)) : null;
         // Make sure Image File Status is initialized to correct value
         Meal.CurrentMeal.CheckImageFiles();
         // Track subsequent changes
@@ -110,10 +105,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// Switch to the camera page so it can provide an image (either from the camera or by browsing) 
     /// </summary>
     [RelayCommand]
-    private async Task TakePicture()
-    {
-        await App.PushAsync(Routes.CameraPage);
-    }
+    private async Task TakePicture() => await App.PushAsync(Routes.CameraPage);
 
     /// <summary>
     /// Pop up UI to browse through the file system for a bill image. If one is selected load it as the current image. 
@@ -325,30 +317,28 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     }
     private static async Task ImageSharpConvert(Stream stream, FileStream newStream)
     {
-        using (var image = await SixLabors.ImageSharp.Image.LoadAsync(stream))
+        using var image = await SixLabors.ImageSharp.Image.LoadAsync(stream);
+        // We have to do a little dance here because it is possible that the EXIF orientation data says to rotate this image by 90 degrees
+        // meaning the bitmap width is actually the height of the final image and vice versa
+        int exifOrientation = 0;
+        if (image.Metadata.ExifProfile is not null)
         {
-            // We have to do a little dance here because it is possible that the EXIF orientation data says to rotate this image by 90 degrees
-            // meaning the bitmap width is actually the height of the final image and vice versa
-            int exifOrientation = 0;
-            if (image.Metadata.ExifProfile is not null)
-            {
-                foreach (var item in image.Metadata.ExifProfile.Values)
-                    if (item.Tag == SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.Orientation)
-                    {
-                        exifOrientation = (UInt16)item.GetValue();
-                        break;
-                    }
-            }
-            int newBitmapWidth = 0, newBitmapHeight = 0;
-            if (exifOrientation > 4) // 6 is common but 5,7 & 8 all transpose width and height
-                newBitmapWidth = 1000;
-            else
-                newBitmapHeight = 1000;
-            image.Mutate(x => x
-                .Resize(newBitmapWidth, newBitmapHeight) // Set the width because setting height works strangely
-                .Grayscale());
-            await image.SaveAsync(newStream, new JpegEncoder() { ColorType = JpegEncodingColor.Luminance });
+            foreach (var item in image.Metadata.ExifProfile.Values)
+                if (item.Tag == SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.Orientation)
+                {
+                    exifOrientation = (ushort)item.GetValue();
+                    break;
+                }
         }
+        int newBitmapWidth = 0, newBitmapHeight = 0;
+        if (exifOrientation > 4) // 6 is common but 5,7 & 8 all transpose width and height
+            newBitmapWidth = 1000;
+        else
+            newBitmapHeight = 1000;
+        image.Mutate(x => x
+            .Resize(newBitmapWidth, newBitmapHeight) // Set the width because setting height works strangely
+            .Grayscale());
+        await image.SaveAsync(newStream, new JpegEncoder() { ColorType = JpegEncodingColor.Luminance });
     }
 
     /// <summary>
@@ -374,16 +364,14 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
 
         bitmap.ScalePixels(newBitmap, new SKSamplingOptions(SKFilterMode.Linear));
 
-        using (var image = SKImage.FromBitmap(newBitmap))
-        using (var data = image.Encode(SKEncodedImageFormat.Jpeg, 100))
-        {
-            data.SaveTo(newStream);
+        using var image = SKImage.FromBitmap(newBitmap);
+        using var data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+        data.SaveTo(newStream);
 #if WINDOWS
-            // Save the bytes to a file for testing
-            var bytes = data.ToArray();
-            File.WriteAllBytes(@"c:\temp\divisibilltest.jpg", bytes);
+        // Save the bytes to a file for testing
+        var bytes = data.ToArray();
+        File.WriteAllBytes(@"c:\temp\divisibilltest.jpg", bytes);
 #endif
-        }
     }
     #endregion
     #region IQueryAttributable Implementation

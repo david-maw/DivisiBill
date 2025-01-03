@@ -33,9 +33,9 @@ public static class Utilities
     internal static string GenerateToken(int size = 50)
     {
         Guard.IsLessThan(size, 1000);
-        StringBuilder randomString = new StringBuilder();
+        StringBuilder randomString = new();
 
-        Random random = new Random();
+        Random random = new();
 
         // String that contain both alphabets and numbers
         string digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -151,10 +151,7 @@ public static class Utilities
     /// <param name="targetItem"></param>
     public static bool Upsert<T>(this IList<T> list, T targetItem) where T : class, IComparable<T>
     {
-        static int compareTo(T item1, T item2)
-        {
-            return item1.CompareTo(item2);
-        }
+        static int compareTo(T item1, T item2) => item1.CompareTo(item2);
         return Upsert(list, targetItem, compareTo);
     }
 
@@ -229,7 +226,7 @@ public static class Utilities
                 return (item, index);
             index++;
         }
-        return (default(T), -1);
+        return (default, -1);
     }
 
     /// <summary>
@@ -238,7 +235,7 @@ public static class Utilities
     /// <returns>text describing the current app build.</returns>
     public static string GetAppInformation()
     {
-        StringBuilder s = new StringBuilder("DivisiBill ", 1000);
+        StringBuilder s = new("DivisiBill ", 1000);
         s.AppendLine((App.IsLimited ? "Basic" : "Professional") + " Edition");
         s.AppendLine("Version " + VersionName + " build " + Revision + " at " + BuildTime);
         if (Billing.ProPurchase is not null)
@@ -329,7 +326,7 @@ public static class Utilities
         [CallerFilePath] string sourceFilePath = "",
         [CallerLineNumber] int sourceLineNumber = 0)
     {
-        string fullMsg = sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1) + "@" + sourceLineNumber + " (" + callerName + "): " + msg;
+        string fullMsg = sourceFilePath[(sourceFilePath.LastIndexOf(@"\") + 1)..] + "@" + sourceLineNumber + " (" + callerName + "): " + msg;
         SentrySdk.AddBreadcrumb(
             type: "debug",
             category: "Record." + callerName,
@@ -344,16 +341,16 @@ public static class Utilities
 
     public static event SendMsg StatusMsgInvoked;
 
-    private static readonly PauseTokenSource PauseBeforeMessageSource = new PauseTokenSource();
-    private static bool pauseBeforeMessage;
+    private static readonly PauseTokenSource PauseBeforeMessageSource = new();
+
     public static bool PauseBeforeMessage
     {
-        get => pauseBeforeMessage;
+        get;
         set
         {
-            if (pauseBeforeMessage != value)
+            if (field != value)
             {
-                pauseBeforeMessage = value;
+                field = value;
                 PauseBeforeMessageSource.IsPaused = value;
             }
         }
@@ -363,14 +360,14 @@ public static class Utilities
     /// Send a status message to subscribers of StatusMsgInvoked (used to report progress during initialization).
     /// These messages are also put in the breadcrumb trail for context in case there's an unexpected failure.
     /// </summary>
-    public async static Task StatusMsgAsync(string msg,
+    public static async Task StatusMsgAsync(string msg,
         [CallerFilePath] string sourceFilePath = "",
         [CallerLineNumber] int sourceLineNumber = 0)
     {
         await PauseBeforeMessageSource.WaitWhilePausedAsync();
         StatusMsgInvoked?.Invoke(msg);
         // Extract just the file name - has to be done manually because this may be an Android build compiled on Windows
-        var sourceFileName = sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1);
+        var sourceFileName = sourceFilePath[(sourceFilePath.LastIndexOf(@"\") + 1)..];
         SentrySdk.AddBreadcrumb(
             type: "debug",
             category: "Utilities.StatusMsg",
@@ -439,9 +436,10 @@ public static class Utilities
     public static bool IsAndroid => DeviceInfo.Platform == DevicePlatform.Android;
 
     // Stops the count of milliseconds before the first message getting silly.
-    static DateTime startTime = DateTime.Now;
+    private static readonly DateTime startTime = DateTime.Now;
+
     // A timer for use with diagnostic messages
-    static double lastSeconds = 0;
+    private static double lastSeconds = 0;
 
     [Conditional("DEBUG")]
     public static void DebugExamineStream(Stream streamParameter)
@@ -536,10 +534,7 @@ public static class Utilities
     /// </summary>
     /// <param name="paymentsViewModel">A <see cref="PaymentsViewModel"/> populated with the required payment information</param>
     /// <returns></returns>
-    public static async Task ShowPayments(PaymentsViewModel paymentsViewModel)
-    {
-        await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel));
-    }
+    public static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel));
     /// <summary>
     /// Show an application message that will go away by itself if not acknowledged
     /// </summary>
@@ -557,7 +552,7 @@ public static class Utilities
     /// <param name="path1">Path to first file</param>
     /// <param name="path2">Path to second file</param>
     /// <returns></returns>
-    public static bool AreFileContentsEqual(String path1, String path2) =>
+    public static bool AreFileContentsEqual(string path1, string path2) =>
         File.Exists(path1) && File.Exists(path2)
         && File.ReadAllBytes(path1).SequenceEqual(File.ReadAllBytes(path2));
 
@@ -646,7 +641,7 @@ public static class Utilities
     {
         string s = Path.GetFileNameWithoutExtension(name);
         if (s.Length == 14
-            && int.TryParse(s.Substring(0, 4), out int y)
+            && int.TryParse(s[..4], out int y)
             && y > 2010 && y < 2030
             && int.TryParse(s.Substring(4, 2), out int m)
             && m >= 1 && m <= 12
@@ -672,7 +667,7 @@ public static class Utilities
     {
         string s = Path.GetFileNameWithoutExtension(name);
         if (s.Length == 14
-            && int.TryParse(s.Substring(0, 4), out int y)
+            && int.TryParse(s[..4], out int y)
             && y > 2010 && y < 2030
             && int.TryParse(s.Substring(4, 2), out int m)
             && m >= 1 && m <= 12
@@ -690,7 +685,7 @@ public static class Utilities
     }
     public static bool WithinOneSecond(DateTime t1, DateTime t2) => Math.Abs((t1 - t2).TotalMilliseconds) < 1000;
 
-    private static Regex JsonDateRegex = new Regex(@"^/Date\((\d+)(-\d{2})(\d{2})\)/$");
+    private static readonly Regex JsonDateRegex = new(@"^/Date\((\d+)(-\d{2})(\d{2})\)/$");
 
     /// <summary>
     /// Parse a Json time serialized by a DataContractJsonSerializer returning a DateTimeOffset 
@@ -713,7 +708,7 @@ public static class Utilities
             {
                 int tzOffset = offsetHH >= 0 ? offsetHH * 60 + offsetMM : offsetHH * 60 - offsetMM;
 
-                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified);
+                DateTime epoch = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified);
                 dateTimeOffset = new DateTimeOffset(epoch.AddMilliseconds(unixTs) + TimeSpan.FromMinutes(tzOffset), TimeSpan.FromMinutes(tzOffset));
                 return true;
             }
@@ -728,14 +723,9 @@ public static class Utilities
     /// <param name="fullString">The string to be fitted</param>
     /// <param name="maxLen">the length within which it should fit</param>
     /// <returns></returns>
-    public static string TruncatedTo(this string fullString, int maxLen)
-    {
-        if (fullString.Length <= maxLen)
-            return fullString;
-        if (maxLen <= 3)
-            return "...";
-        return fullString.Substring(0, Math.Min(fullString.Length - 1, maxLen - 3)) + "...";
-    }
+    public static string TruncatedTo(this string fullString, int maxLen) => fullString.Length <= maxLen
+            ? fullString
+            : maxLen <= 3 ? "..." : fullString[..Math.Min(fullString.Length - 1, maxLen - 3)] + "...";
 
     /// <summary>
     /// Determine if two strings are either equal or both NullOrEmpty
@@ -778,12 +768,12 @@ public static class Utilities
     public static async Task InitializeUtilitiesAsync()
     {
         using var notesStream = await FileSystem.OpenAppPackageFileAsync("Release Notes.html");
-        using (var reader = new StreamReader(notesStream))
-            ReleaseNotes = new HtmlWebViewSource { Html = reader.ReadToEnd() };
+        using var reader = new StreamReader(notesStream);
+        ReleaseNotes = new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
     public static string CurrencySymbol = System.Globalization.NumberFormatInfo.CurrentInfo.CurrencySymbol;
     public static string EditionName => App.IsLimited ? "Basic" : "Professional";
-    private static Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+    private static readonly Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
     public static string VersionName { get; } = $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}";
     public static string DebugString { get; } = IsDebug ? "DEBUG" : null;
     public static string Revision { get; } = assemblyVersion.Revision.ToString();
@@ -792,8 +782,8 @@ public static class Utilities
     {
         var assembly = Assembly.GetExecutingAssembly();
         var stream = assembly.GetManifestResourceStream("DivisiBill.Release Notes.html");
-        using (var reader = new StreamReader(stream))
-            return new HtmlWebViewSource { Html = reader.ReadToEnd() };
+        using var reader = new StreamReader(stream);
+        return new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
     public static HtmlWebViewSource ReleaseNotes { get; private set; }
     #region Geo
@@ -850,15 +840,8 @@ public static class Utilities
         string fmt;
         if (accuracy < 11)
             fmt = "0000";
-        else if (accuracy < 111)
-            fmt = "000";
-        else if (accuracy < 1111)
-            fmt = "00";
-        else if (accuracy < 11111)
-            fmt = "0";
-        else
-            fmt = "";
-        return String.Format("{0:0." + fmt + "}", d);
+        else fmt = accuracy < 111 ? "000" : accuracy < 1111 ? "00" : accuracy < 11111 ? "0" : "";
+        return string.Format("{0:0." + fmt + "}", d);
     }
     public static double Adjusted(double d, double accuracy)
     {
@@ -866,14 +849,7 @@ public static class Utilities
         // So 1 degree is roughly 111,111 and that means 0.0001 degrees is about 11 meters
         if (accuracy < 11)
             return Math.Round(d, 4);
-        else if (accuracy < 111)
-            return Math.Round(d, 3);
-        else if (accuracy < 1111)
-            return Math.Round(d, 2);
-        else if (accuracy < 11111)
-            return Math.Round(d, 1);
-        else
-            return Math.Round(d);
+        else return accuracy < 111 ? Math.Round(d, 3) : accuracy < 1111 ? Math.Round(d, 2) : accuracy < 11111 ? Math.Round(d, 1) : Math.Round(d);
     }
     #endregion
 }
@@ -920,9 +896,9 @@ public static class Distances
 /// <typeparam name="T">The type of object to be placed in the queue</typeparam>
 public class AwaitableQueue<T>
 {
-    private readonly SemaphoreSlim semaphore = new SemaphoreSlim(0);
-    private readonly object queueLock = new object();
-    private readonly Queue<T> queue = new Queue<T>();
+    private readonly SemaphoreSlim semaphore = new(0);
+    private readonly object queueLock = new();
+    private readonly Queue<T> queue = new();
 
     public void Clear()
     {

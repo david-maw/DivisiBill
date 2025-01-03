@@ -5,17 +5,11 @@ namespace DivisiBill.Services;
 public class CurrencyConverter : IValueConverter
 {
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo)
-    {
-        if (targetType == typeof(string))
-        {
-            if ((parameter is null) || (parameter.GetType() != typeof(string)))
-                return String.Format(CultureInfo.CurrentCulture, "{0:C}", value);
-            else
-                return String.Format(CultureInfo.CurrentCulture, (string)parameter, value);
-        }
-        return value;
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo) => targetType == typeof(string)
+            ? (parameter is null) || (parameter.GetType() != typeof(string))
+                ? string.Format(CultureInfo.CurrentCulture, "{0:C}", value)
+                : (object)string.Format(CultureInfo.CurrentCulture, (string)parameter, value)
+            : value;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo) =>
           // The method converts only to decimal type.

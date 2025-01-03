@@ -4,7 +4,7 @@ namespace DivisiBill.Services;
 
 internal class Saver
 {
-    public static TaskCompletionSource<bool> SaveNowRequested = new TaskCompletionSource<bool>();
+    public static TaskCompletionSource<bool> SaveNowRequested = new();
     public static bool SavedRemote = false;
     /// <summary>
     /// Save current meal on request
@@ -64,7 +64,7 @@ internal class Saver
     }
 
     // Used to allow SaveNow to give an Async response only after the save actually happens
-    private static TaskCompletionSource<bool> SaveHappenedTCS = new TaskCompletionSource<bool>();
+    private static TaskCompletionSource<bool> SaveHappenedTCS = new();
 
     /// <summary>
     /// Save to the App and Locally as soon as possible

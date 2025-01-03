@@ -41,15 +41,15 @@ public class PauseTokenSource
 
     internal static readonly Task s_completedTask = Task.FromResult(true);
 
-    public PauseToken Token { get { return new PauseToken(this); } }
+    public PauseToken Token => new(this);
 }
 
 public struct PauseToken
 {
     private readonly PauseTokenSource m_source;
-    internal PauseToken(PauseTokenSource source) { m_source = source; }
+    internal PauseToken(PauseTokenSource source) => m_source = source;
 
-    public bool IsPaused { get { return m_source is not null && m_source.IsPaused; } }
+    public bool IsPaused => m_source is not null && m_source.IsPaused;
 
     public Task WaitWhilePausedAsync() => IsPaused ?
             m_source.WaitWhilePausedAsync() :

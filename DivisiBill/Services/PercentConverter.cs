@@ -14,17 +14,11 @@ public class PercentConverter : IValueConverter
             d = (double)value;
         else
             return value;
-        if (Math.Abs(d) > 1)
-            return (d < 0) ? -100 : 100;
-
-        if (targetType == typeof(string))
-        {
-            if (value.GetType() == typeof(int))
-                return String.Format("{0:##0%}", d);
-            else
-                return String.Format("{0:##0.00#%}", d);
-        }
-        return value;
+        return Math.Abs(d) > 1
+            ? (d < 0) ? -100 : 100
+            : targetType == typeof(string)
+            ? value.GetType() == typeof(int) ? string.Format("{0:##0%}", d) : (object)string.Format("{0:##0.00#%}", d)
+            : value;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo)

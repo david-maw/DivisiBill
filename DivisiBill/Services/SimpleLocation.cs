@@ -6,11 +6,9 @@ namespace DivisiBill.Services;
 
 public class SimpleLocation : IEquatable<SimpleLocation>
 {
-    private double latitude = 0;
-    private double longitude = 0;
     private int accuracy = Distances.Inaccurate;
 
-    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(SimpleLocation));
+    private static readonly XmlSerializer xmlSerializer = new(typeof(SimpleLocation));
 
     public SimpleLocation() { } // for XML deserialization
     public SimpleLocation(Location location)
@@ -18,23 +16,20 @@ public class SimpleLocation : IEquatable<SimpleLocation>
         if (location is not null)
         {
             this.accuracy = location.AccuracyOrDefault();
-            this.latitude = Utilities.Adjusted(location.Latitude, accuracy);
-            this.longitude = Utilities.Adjusted(location.Longitude, accuracy);
+            this.Latitude = Utilities.Adjusted(location.Latitude, accuracy);
+            this.Longitude = Utilities.Adjusted(location.Longitude, accuracy);
         }
     }
-    public bool Equals(SimpleLocation other)
-    {
-        return latitude == other.latitude && longitude == other.longitude && accuracy == other.accuracy;
-    }
+    public bool Equals(SimpleLocation other) => Latitude == other.Latitude && Longitude == other.Longitude && accuracy == other.accuracy;
 
-    public static implicit operator Location(SimpleLocation simpleLocation) => new Location(simpleLocation.Latitude, simpleLocation.Longitude) { Accuracy = simpleLocation.Accuracy };
+    public static implicit operator Location(SimpleLocation simpleLocation) => new(simpleLocation.Latitude, simpleLocation.Longitude) { Accuracy = simpleLocation.Accuracy };
 
     public string ToXml()
     {
-        MemoryStream stream = new MemoryStream();
+        MemoryStream stream = new();
         ToStream(stream);
         stream.Position = 0;
-        StreamReader reader = new StreamReader(stream);
+        StreamReader reader = new(stream);
         return reader.ReadToEnd();
     }
 
@@ -42,13 +37,11 @@ public class SimpleLocation : IEquatable<SimpleLocation>
     {
         try
         {
-            using (StreamWriter sw = new(stream, System.Text.Encoding.UTF8, -1, true))
-            using (var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { OmitXmlDeclaration = true }))
-            {
-                var namespaces = new XmlSerializerNamespaces();
-                namespaces.Add(string.Empty, string.Empty);
-                xmlSerializer.Serialize(xmlwriter, this, namespaces);
-            }
+            using StreamWriter sw = new(stream, System.Text.Encoding.UTF8, -1, true);
+            using var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { OmitXmlDeclaration = true });
+            var namespaces = new XmlSerializerNamespaces();
+            namespaces.Add(string.Empty, string.Empty);
+            xmlSerializer.Serialize(xmlwriter, this, namespaces);
             return true;
         }
         catch (Exception)
@@ -70,9 +63,9 @@ public class SimpleLocation : IEquatable<SimpleLocation>
 
 
     [XmlAttribute, DefaultValue(0.0)]
-    public double Latitude { get => latitude; set => latitude = value; }
+    public double Latitude { get; set; } = 0;
     [XmlAttribute, DefaultValue(0.0)]
-    public double Longitude { get => longitude; set => longitude = value; }
+    public double Longitude { get; set; } = 0;
     [XmlAttribute, DefaultValue(Distances.Inaccurate)]
     public int Accuracy
     {

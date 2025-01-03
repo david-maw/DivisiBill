@@ -26,10 +26,7 @@ public partial class RemoteItemInfo : ObservableObject
 /// </summary>
 public static class RemoteWs
 {
-    static RemoteWs()
-    {
-        ItemTypeNameToPlural = new Dictionary<string, string>() { { PersonListTypeName, "People Lists" }, { VenueListTypeName, "Venue Lists" } };
-    }
+    static RemoteWs() => ItemTypeNameToPlural = new Dictionary<string, string>() { { PersonListTypeName, "People Lists" }, { VenueListTypeName, "Venue Lists" } };
     #region Item Handling
     /// <summary>
     /// The layout of the data for each item delivered from the web service
@@ -58,7 +55,7 @@ public static class RemoteWs
         const int MaxItems = 1000;
         if (string.IsNullOrWhiteSpace(itemTypeName))
             return null;
-        List<RemoteItemInfo> remoteItemInfos = new List<RemoteItemInfo>();
+        List<RemoteItemInfo> remoteItemInfos = [];
         string latestName = "30000000000000"; // Start at the year 3000 or earlier 
         try
         {
@@ -104,7 +101,7 @@ public static class RemoteWs
             await App.CloudAllowedSource.WaitWhilePausedAsync();
             string name = Utilities.NameFromDateTime(DateTime.Now);
             string content = null;
-            using (StreamReader reader = new StreamReader(stream, System.Text.Encoding.UTF8, true, 4096, true))
+            using (StreamReader reader = new(stream, System.Text.Encoding.UTF8, true, 4096, true))
             {
                 content = reader.ReadToEnd();
             }
@@ -209,7 +206,7 @@ public static class RemoteWs
                 if (!string.IsNullOrEmpty(description))
                 {
                     var buf = System.Text.Encoding.UTF8.GetBytes(description);
-                    MemoryStream s = new MemoryStream(buf);
+                    MemoryStream s = new(buf);
                     ms = MealSummary.LoadJsonFromStream(s);
                     if (ms is null)
                         Utilities.DebugMsg($"JSON load of description metadata failed, description = \"{description.TruncatedTo(30)}\"");
@@ -238,7 +235,7 @@ public static class RemoteWs
                     continue;
                 }
                 else
-                    ms.Size = (long)remoteItem.Size;
+                    ms.Size = remoteItem.Size;
             }
             Meal.RemoteMealList.Add(ms);
         }
@@ -247,7 +244,7 @@ public static class RemoteWs
     internal static async Task<bool> PutMealStreamAsync(MealSummary ms, Stream stream)
     {
         string mealData;
-        using (StreamReader sr = new StreamReader(stream, System.Text.Encoding.UTF8, true, 4096, true))
+        using (StreamReader sr = new(stream, System.Text.Encoding.UTF8, true, 4096, true))
         {
             mealData = sr.ReadToEnd();
         }
