@@ -17,16 +17,7 @@
         </ContentView>
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="16,10,16,20">
-                <Label FontSize="22" HorizontalOptions="Center">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span Text="DivisiBill " />
-                                <Span Text="{x:Static services:Utilities.VersionName}" />
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+                <Label FontSize="22" Text="{Binding Source={x:Static services:Utilities.VersionName}, x:DataType=x:String, StringFormat='DivisiBill {0}'}" HorizontalOptions="Center"/>
                 <Label FontSize="22" HorizontalOptions="Center" Text="by Autoplus Software"/>
                 <!--Note that only one of the next two lines is visible-->
                 <Label FontSize="22" HorizontalOptions="Center" Text="Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
@@ -65,8 +56,8 @@
                     <FormattedString>
                         <FormattedString.Spans>
                             <Span Text="This app is written in C# and native APIs using the " />
-                            <Span Text=".NET MAUI Platform" FontAttributes="Bold" />
-                            <Span Text="." />
+                            <Span Text=".NET MAUI" FontAttributes="Bold" />
+                            <Span Text=" Platform." />
                         </FormattedString.Spans>
                     </FormattedString>
                 </Label.FormattedText>

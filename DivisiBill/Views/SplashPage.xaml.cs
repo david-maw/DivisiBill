@@ -76,7 +76,6 @@ public partial class SplashPage : ContentPage
             statusLabel.Text = string.Empty;
             App.Settings ??= new AppSettings(); // allowed to be null for testing
             await InitializeUtilitiesAsync();
-            buildTimeDisplay.Text = BuildTime;
             if (App.SentryAllowed)
             {
                 if (Utilities.IsDebug)

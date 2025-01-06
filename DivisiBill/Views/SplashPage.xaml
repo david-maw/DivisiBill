@@ -43,10 +43,8 @@
                     <FormattedString>
                         <FormattedString.Spans>
                             <Span Text="{x:Static services:Utilities.DebugString}"/>
-                            <Span Text=" Build "/>
-                            <Span Text="{x:Static appmodel:AppInfo.BuildString}"/>
-                            <Span Text=" at "/>
-                            <Span x:Name="buildTimeDisplay" Text="{x:Static services:Utilities.BuildTime}"/>
+                            <Span Text="{Binding Source={x:Static appmodel:AppInfo.BuildString}, x:DataType=x:String, StringFormat=' Build {0}'}"/>
+                            <Span Text="{Binding Source={x:Static services:Utilities.BuildTime}, x:DataType=x:String, StringFormat=' at {0}'}"/>
                         </FormattedString.Spans>
                     </FormattedString>
                 </Label.FormattedText>
