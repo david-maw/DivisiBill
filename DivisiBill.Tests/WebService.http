@@ -1,0 +1,62 @@
+﻿# Get the URI currently in use
+@wsUri={{$processEnv DIVISIBILL_WS_URI}} 
+
+# The simplest call, and the only one not requiring a license in a header or the body 
+GET {{wsUri}}version
+###
+# Validate an OCR license 
+POST {{wsUri}}verify 
+Content-Type: application/json
+{
+    "orderId": "GPA.3343-0291-7684-97997",
+    "packageName": "com.autoplus.divisibill",
+    "productId": "ocr.calls",
+    "purchaseTime": 1690670575811,
+    "purchaseState": 0,
+    "purchaseToken": "pdjjaliboaokdikogjaanfda.AO-J1OzwIW41zP3JKI4EYEuIshDHktxdgUt0p8LyumNM4zKPwRGk8NlIIeV5cqDJzHBFqRFfRdCofzjnCjcdBRCuiXQALE7mAReGUPnZRV2DNl04LFPfBqk",
+    "obfuscatedAccountId": "VM2UM7jbkJVSv2XDovdyEQ392jjTtrRNSVDmB7AP0dfQdy004v",
+    "quantity": 1,
+    "acknowledged": true
+}
+
+###
+# Validate a Professional license (these are no longer available)
+POST {{wsUri}}verify?subscription=0 
+Content-Type: application/json
+{
+    "orderId": "GPA.3349-9523-9124-10936",
+    "packageName": "com.autoplus.divisibill",
+    "acknowledged": true,
+    "quantity": 1,
+    "purchaseTime": 1683813473674,
+    "productId": "pro.upgrade",
+    "purchaseToken": "cgijkfkmdkhekiknemgeenhc.AO-J1OxGmo9AEpP7FyHUzBnbhrCuFD5WBYfyKYLEmPJBjYILivIuedBJLrStbQCrGZhfINWRCXDk6wj5g7NWXCC53ee7SjgH8PVSC2qb35qkD2WYAQEdeHk",
+    "purchaseState": 0
+}
+
+###
+# Validate a professional subscription (this will still validate ok even after the subscription has expired)
+POST {{wsUri}}verify?subscription=1 
+Content-Type: application/json
+{
+    "orderId": "GPA.3345-4172-1309-85367",
+    "packageName": "com.autoplus.divisibill",
+    "productId": "pro.subscription",
+    "purchaseTime": 1736463380926,
+    "purchaseState": 0,
+    "purchaseToken": "dlkapgcomdjkpcngmpkbggmk.AO-J1OwxUYorCg0fkdnBCA3VL_Epan3y-w7JtU3SmHsew-Z469nmFmn2dDGlICtaRb839x_EbqLckWc7FfOzpKy5vDp8zYrh9JpN2bfdIUpi1IVvjlqjNrc",
+    "obfuscatedAccountId": "VM2UM7jbkJVSv2XDovdyEQ392jjTtrRNSVDmB7AP0dfQdy004v",
+    "quantity": 1,
+    "autoRenewing": true,
+    "acknowledged": true
+}
+
+###
+# A JSON Formatted list of the newest meals
+GET {{wsUri}}meals?top=5
+Divisibill-Android-Purchase: {"orderId":"GPA.3349-9523-9124-10936","packageName":"com.autoplus.divisibill","acknowledged":true,"quantity":1,"purchaseTime":1683813473674,"productId":"pro.upgrade","purchaseToken":"cgijkfkmdkhekiknemgeenhc.AO-J1OxGmo9AEpP7FyHUzBnbhrCuFD5WBYfyKYLEmPJBjYILivIuedBJLrStbQCrGZhfINWRCXDk6wj5g7NWXCC53ee7SjgH8PVSC2qb35qkD2WYAQEdeHk","purchaseState":0}
+###
+# A list of Person entries, note that this goes straight to the local web service, not via ngrok
+GET {{wsUri}}personlist/20241126211152
+Divisibill-Android-Purchase: {"orderId":"GPA.3349-9523-9124-10936","packageName":"com.autoplus.divisibill","acknowledged":true,"quantity":1,"purchaseTime":1683813473674,"productId":"pro.upgrade","purchaseToken":"cgijkfkmdkhekiknemgeenhc.AO-J1OxGmo9AEpP7FyHUzBnbhrCuFD5WBYfyKYLEmPJBjYILivIuedBJLrStbQCrGZhfINWRCXDk6wj5g7NWXCC53ee7SjgH8PVSC2qb35qkD2WYAQEdeHk","purchaseState":0}
+Divisibill-Token: HoaHOqJ0DwlRkAWZKC2EKvU93bhz0Z413q1MyJ5EINqw7otOIZ
