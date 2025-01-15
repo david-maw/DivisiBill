@@ -19,25 +19,23 @@ public class ColumnLayoutManager : ILayoutManager
             RowDefinitions = []
         };
 
-        for (int n = 0; n < stackLayout.Count; n++)
+        int row = -1;
+        for (int childIndex = 0; childIndex < stackLayout.Count; childIndex++)
         {
-            var child = stackLayout[n];
+            var child = stackLayout[childIndex];
 
             bool useStar = ColumnLayout.IsFillSetForView(child) ?
                 ColumnLayout.GetFillForView(child) : // it's set, just use it
                 child.GetType() == typeof(CollectionView); // not set, pick a default
 
-            if (useStar)
+            bool sameRow = row >= 0 && ColumnLayout.IsSameRowSetForView(child) && ColumnLayout.GetSameRowForView(child);
+            if (!sameRow)
             {
-                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+                row++;
+                grid.RowDefinitions.Add(new RowDefinition { Height = useStar ? GridLength.Star : GridLength.Auto });
             }
-            else
-            {
-                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            }
-
             grid.Add(child);
-            grid.SetRow(child, n);
+            grid.SetRow(child, row);
         }
 
         return grid;
