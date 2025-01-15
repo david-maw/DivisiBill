@@ -96,9 +96,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <summary>
     /// Update all Entry controls so they initially select all text when focused
     /// </summary>
-    private void ModifyEntry()
-    {
-        EntryHandler.Mapper.AppendToMapping("MyCustomization", (handler, view) =>
+    private void ModifyEntry() => EntryHandler.Mapper.AppendToMapping("MyCustomization", (handler, view) =>
         {
 #if ANDROID
             handler.PlatformView.SetSelectAllOnFocus(true);
@@ -114,7 +112,6 @@ public partial class App : Application, INotifyPropertyChanged
             };
 #endif
         });
-    }
     #endregion
     #region Lifecycle and window management
     private static string priorWhat = "unknown";
@@ -190,7 +187,7 @@ public partial class App : Application, INotifyPropertyChanged
             }
         };
 
-        window.Deactivated += (s, e) =>
+        window.Deactivated += (s, e) => // Called on Android when shutting down the app on on Windows and Android when switching apps
         {
             if (!IsRepeated("Deactivated"))
             {
@@ -209,7 +206,7 @@ public partial class App : Application, INotifyPropertyChanged
             IsRepeated("Resumed");
         };
 
-        window.Destroying += (s, e) =>
+        window.Destroying += (s, e) => // Called on windows when shutting down the app
         {
             if (!IsRepeated("Destroying"))
             {
@@ -513,13 +510,12 @@ public partial class App : Application, INotifyPropertyChanged
 
             if (string.IsNullOrEmpty(App.Settings.UserKey))
             {
-                // Probably a clean install, so the UserKey has not been set yet
-                if (!string.IsNullOrEmpty(Billing.ProPurchase?.ObfuscatedAccountId))
-                    App.Settings.UserKey = Billing.ProPurchase?.ObfuscatedAccountId;
-                else if (!string.IsNullOrEmpty(Billing.OcrPurchase?.ObfuscatedAccountId))
-                    App.Settings.UserKey = Billing.OcrPurchase?.ObfuscatedAccountId;
-                else
-                    App.Settings.UserKey = Utilities.GenerateToken();
+                // Probably a clean install, so the UserKey has not been set yet, generate a token if we must, but prefer to use an existing one
+                App.Settings.UserKey = string.IsNullOrEmpty(Billing.ProPurchase?.ObfuscatedAccountId)
+                    ? string.IsNullOrEmpty(Billing.OcrPurchase?.ObfuscatedAccountId)
+                        ? Utilities.GenerateToken()
+                        : (Billing.OcrPurchase.ObfuscatedAccountId)
+                    : Billing.ProPurchase.ObfuscatedAccountId;
             }
             Utilities.DebugMsg("Exiting CheckLicenses, found Pro Subscription = " + FoundProSubscription + ", scans left = " + Billing.ScansLeft);
         }
