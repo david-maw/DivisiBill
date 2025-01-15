@@ -2,7 +2,7 @@
 
 The Basic Edition of DivisiBill is free and does not show ads. It can handle most bills, but it is possible to purchase a couple of additional features on the [settings](settingspagebasic.html) page. You can use this page to [upgrade to the Professional Edition](settingsglossary.html#upgrade) or [buy packages of OCR scans](settingsglossary.html#scans) (for more details on OCR, see below).
 
-The Professional Edition subscription enables automated cloud storage and backup for bills, venue lists, people lists, and selected program properties. In the Basic Edition, you can use the archive and restore buttons on the [settings](settingspagebasic.html) page to back these things up. The [settings](settingspage.html) page for the Professional Edition has some additional options in order to support automated cloud backup.
+The Professional Edition subscription enables automated cloud storage and backup for bills, venue lists, people lists, and selected program properties. In the Basic Edition, you can use the archive and restore buttons on the [settings](settingspagebasic.html) page to back these things up. The [settings](settingspage.html) page for the Professional Edition has some additional options in order to support automated cloud backup. In practice most users can rely on [Android AutoBackup](https://developer.android.com/identity/data/autobackup) to store copies of all DivisiBill data stored on an Android device. 
 
 ## OCR
 
@@ -10,4 +10,4 @@ OCR stands for Optical Character Recognition. In DivisiBill it is used by a clou
 
 Each OCR scan costs a few cents. You can buy them in blocks in both Pro and Basic Edition. You will retain any OCR credits through an upgrade or if you uninstall and reinstall DivisiBill.
 
-Modern mobile phones can take very high resolution pictures, which are unnecessarily large and detailed for OCR. DivisiBill reduces the resolution and converts the images to black and white to save storage space and analysis time. Despite this compression, bill images are relatively large and so are not saved in a cloud backup or in an archive.
+Modern mobile phones can take very high resolution pictures, which are unnecessarily large and detailed for OCR. DivisiBill reduces the resolution and converts the images to black and white to save storage space and analysis time. Despite this compression, bill images are relatively large and so are not saved by DivisiBill cloud backup or in an archive. These files will be saved along with all the other device state by [Android AutoBackup](https://developer.android.com/identity/data/autobackup)
