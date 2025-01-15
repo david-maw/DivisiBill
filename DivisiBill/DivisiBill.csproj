@@ -112,12 +112,6 @@
       <PackageReference Include="System.Text.Encodings.Web" Version="9.0.0" />
    </ItemGroup>
 
-   <ItemGroup>
-     <MauiXaml Update="Views\PaymentsPage.xaml">
-       <Generator>MSBuild:Compile</Generator>
-     </MauiXaml>
-   </ItemGroup>
- 
   <!-- Build Properties must be defined within these property groups to ensure successful publishing
        to the Mac App Store. See: https://aka.ms/maui-publish-app-store#define-build-properties-in-your-project-file -->
    <PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Debug'">
