@@ -52,10 +52,11 @@ jobs:
         DIVISIBILL_WS_KEY: ${{ secrets.DIVISIBILL_WS_KEY }}
         DIVISIBILL_SENTRY_DSN: ${{ secrets.DIVISIBILL_SENTRY_DSN }}
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_UPLOAD: 'true'
         DIVISIBILL_VERSION_INCREMENT: ${{ github.run_number }}
       run: dotnet build DivisiBill/DivisiBill.csproj -c Release -f net9.0-android --no-restore /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=keystore /p:AndroidSigningkeyAlias="DivisiBill Upload" /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}"
 
-    # Upload Just the Signed Artifacts (apk and aab)
+    # Upload Just the Signed Artifacts (apk and aab) to github storage
     - name: Upload Android Artifact
       uses: actions/upload-artifact@v4
       with:

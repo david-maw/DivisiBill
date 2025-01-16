@@ -124,7 +124,7 @@
    </PropertyGroup>
 
   <!-- Sentry setup for PDB Upload -->
-  <PropertyGroup Condition="'$(Configuration)' == 'Release' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(DIVISIBILL_SENTRY_DSN)' != ''">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(SENTRY_UPLOAD)' == 'true' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(DIVISIBILL_SENTRY_DSN)' != ''">
 
     <!-- Configure Sentry org and project -->
     <SentryOrg>autoplus</SentryOrg>
