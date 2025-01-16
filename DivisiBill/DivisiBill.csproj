@@ -98,18 +98,18 @@
       <PackageReference Include="epj.RouteGenerator" Version="1.0.4" />
       <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
       <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.30" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
       <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
       <PackageReference Include="CommunityToolkit.Maui" Version="10.0.0" />
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="9.0.30" />
       <PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
-      <PackageReference Include="Sentry.Maui" Version="5.0.0" />
+      <PackageReference Include="Sentry.Maui" Version="5.0.1" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
-      <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="5.0.0" />
+      <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="5.0.1" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
       <PackageReference Include="SkiaSharp" Version="3.118.0-preview.2.3" />
-      <PackageReference Include="System.Text.Encodings.Web" Version="9.0.0" />
+      <PackageReference Include="System.Text.Encodings.Web" Version="9.0.1" />
    </ItemGroup>
 
   <!-- Build Properties must be defined within these property groups to ensure successful publishing
