@@ -178,12 +178,12 @@
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>
-    <Grid RowDefinitions="auto, auto, *, auto">
+    <services:ColumnLayout>
         <!--#region Page Switch Shortcut -->
-        <Grid.GestureRecognizers>
+        <services:ColumnLayout.GestureRecognizers>
             <!--Swipes are intercepted by the CollectionView below, so these take effect only outside that view-->
             <SwipeGestureRecognizer Direction="Left" Command="{Binding GoToTotalsCommand}"/>
-        </Grid.GestureRecognizers>
+        </services:ColumnLayout.GestureRecognizers>
         <!--#endregion-->
         <!--#region Venue Name Heading -->
         <Border Margin="5" Padding="5" 
@@ -199,7 +199,7 @@
         </Border>
         <!--#endregion-->
         <!--#region Filter Information -->
-        <Label Grid.Row="1" IsVisible="{Binding IsFiltered}"
+        <Label IsVisible="{Binding IsFiltered}"
                 FontSize="Title" HorizontalOptions="Center">
             <Label.FormattedText>
                 <FormattedString>
@@ -212,7 +212,7 @@
         </Label>
         <!--#endregion-->
         <!--#region List of Items in CollectionView -->
-        <CollectionView Grid.Row="2" x:Name="LineItemsListView"
+        <CollectionView x:Name="LineItemsListView"
             ItemsSource="{Binding LineItems}"
             ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
             SelectionMode="Single"
@@ -234,189 +234,187 @@
             </CollectionView.GestureRecognizers>
             <!--#endregion-->
         </CollectionView>
-        <Button Grid.Row="2" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
                 Text="&#xF0CE2;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
                 HorizontalOptions="Center" VerticalOptions="Start" 
                 IsVisible="{Binding IsLineItemSwipeDownAllowed}"/>
-        <Button Grid.Row="2" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
                 Text="&#xF0CDC;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" 
                 HorizontalOptions="Center" VerticalOptions="End" 
                 IsVisible="{Binding IsLineItemSwipeUpAllowed}"/>
         <!--#endregion-->
-        <services:ColumnLayout Grid.Row="3">
-            <!--#region Hint -->
-            <Border IsVisible="{Binding ShowLineItemsHint}" Style="{StaticResource HintStyle}">
-                <VerticalStackLayout Padding ="5">
-                    <Label Text="Swipe items or page" FontSize="Large" HorizontalOptions="Center"/>
-                    <Label Text="Double tap changes Title" FontSize="Large" HorizontalOptions="Center"/>
-                    <Label Text="See Help for more info" FontSize="Large" HorizontalOptions="Center"/>
-                    <HorizontalStackLayout HorizontalOptions="Center">
-                        <CheckBox IsChecked="{Binding ShowLineItemsHint, Converter={StaticResource Not}}"/>
-                        <Label Text="Hide this hint" VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
-            <!--#endregion-->
-            <!--#region Undelete -->
-            <HorizontalStackLayout HorizontalOptions="Center" Margin="0,0,0,5" Spacing="10">
-                <Button Text="UnDelete" Command="{Binding UndeleteLineItemCommand}" IsVisible="{Binding IsAnyDeletedLineItem}"/>
-                <Button Text="UnDelete All" Command="{Binding UndeleteAllLineItemsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" IsVisible="{Binding IsManyDeletedLineItems}"/>
-            </HorizontalStackLayout>
-            <!--#endregion-->
-            <!--#region Subtotal Block-->
-            <!--This is the block of numbers at the bottom of the page containing a SubTotal and any nonzero taxable coupon amount-->
-            <Border x:Name="totalsContainer" Margin="5" Padding="5" 
-                Stroke="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}">
-                <Grid ColumnSpacing="0" RowSpacing="0" ColumnDefinitions ="*,Auto" RowDefinitions="Auto, Auto" x:DataType="vm:MealViewModel">
-                    <Grid.GestureRecognizers>
-                        <SwipeGestureRecognizer Direction="Left"  Command="{Binding GoToTotalsCommand}"/>
-                        <TapGestureRecognizer Command="{Binding PushPropertiesCommand}"/>
-                    </Grid.GestureRecognizers>
-                    <!--#region Subtotal (Overall or Individual) -->
-                    <Label Grid.Row="0" FontSize="Large" LineBreakMode="TailTruncation" Text="Bill Subtotal" IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"/>
-                    <Label Grid.Row="0" Grid.Column="1" IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
-                    Text="{Binding SubTotal, StringFormat='{0:C}'}" FontSize="Large" HorizontalOptions="End">
-                        <Label.Behaviors>
-                            <services:CurrencyLabelBehavior
-                                ValidStyle="{StaticResource ValidLabelStyle}"
-                                UnequalStyle="{StaticResource UnequalLabelStyle}"
-                                EqualValue="{Binding ScannedSubTotal}"
-                                TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"/>
-                        </Label.Behaviors>
-                    </Label>
-                    <Label Grid.Row="0" FontSize="Large" LineBreakMode="TailTruncation" Text="Person Subtotal" IsVisible="{Binding IsFiltered}"/>
-                    <Label Grid.Row="0" Grid.Column="1" IsVisible="{Binding IsFiltered}" 
-                    Text="{Binding FilteredSubTotal, StringFormat='{0:C}'}" FontSize="Large" HorizontalOptions="End"/>
-                    <!--#endregion-->
-                    <!--#region Post Tax Coupon (overall or individual) -->
-                    <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
-                        <Label.IsVisible>
-                            <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
-                                <Binding Path="IsFiltered" Converter="{StaticResource Not}"/>
-                            </MultiBinding>
-                        </Label.IsVisible>
-                    </Label>
-                    <Label Grid.Row="1" Grid.Column="1" FontSize="Large" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}" 
-                       Text="{Binding CouponAmountAfterTax, StringFormat='{0:C}'}">
-                        <Label.IsVisible>
-                            <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
-                                <Binding Path="IsFiltered" Converter="{StaticResource Not}"/>
-                            </MultiBinding>
-                        </Label.IsVisible>
-                    </Label>
-                    <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
-                        <Label.IsVisible>
-                            <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
-                                <Binding Path="IsFiltered"/>
-                            </MultiBinding>
-                        </Label.IsVisible>
-                    </Label>
-                    <Label Grid.Row="1" Grid.Column="1" FontSize="Large" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}" 
-                       Text="{Binding FilteredCouponAmountAfterTax, StringFormat='{0:C}'}">
-                        <Label.IsVisible>
-                            <MultiBinding Converter="{StaticResource All}">
-                                <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
-                                <Binding Path="IsFiltered"/>
-                            </MultiBinding>
-                        </Label.IsVisible>
-                    </Label>
-                    <!--#endregion-->
-                </Grid>
-            </Border>
-            <!--#endregion-->
-            <!--#region Shares Count Buttons-->
-            <!--The number of shares held by the selected person-->
-            <VerticalStackLayout x:Name="SharesCountContainer" IsVisible="False" Margin="0,0,0,5">
-                <Label x:Name="SharesCountHeader" FontSize="Large" HorizontalOptions="Center"/>
-                <HorizontalStackLayout HorizontalOptions="Center" >
-                    <HorizontalStackLayout.Resources>
-                        <Style TargetType="Button">
-                            <Setter Property="WidthRequest" Value="30"/>
-                            <Setter Property="BorderWidth" Value="2"/>
-                            <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-                            <Setter Property="Padding" Value="1"/>
-                            <Setter Property="BackgroundColor" Value="Transparent"/>
-                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-                        </Style>
-                    </HorizontalStackLayout.Resources>
-                    <Button Text="0" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="1" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="2" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="3" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="4" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="5" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="6" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="7" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="8" Clicked="OnSharesCountButtonClicked"/>
-                    <Button Text="9" Clicked="OnSharesCountButtonClicked"/>
+        <!--#region Hint -->
+        <Border IsVisible="{Binding ShowLineItemsHint}" Style="{StaticResource HintStyle}">
+            <VerticalStackLayout Padding ="5">
+                <Label Text="Swipe items or page" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="Double tap changes Title" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="See Help for more info" FontSize="Large" HorizontalOptions="Center"/>
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <CheckBox IsChecked="{Binding ShowLineItemsHint, Converter={StaticResource Not}}"/>
+                    <Label Text="Hide this hint" VerticalOptions="Center"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
-            <!--#endregion-->
-            <!--#region Sharer Buttons -->
-            <!--The initial letters of the names of each sharer inside buttons-->
-            <HorizontalStackLayout x:Name="SharesContainer" Margin="5,0,5,0" HeightRequest="40" Spacing="2" IsVisible="false">
+        </Border>
+        <!--#endregion-->
+        <!--#region Undelete -->
+        <HorizontalStackLayout HorizontalOptions="Center" Margin="0,0,0,5" Spacing="10">
+            <Button Text="UnDelete" Command="{Binding UndeleteLineItemCommand}" IsVisible="{Binding IsAnyDeletedLineItem}"/>
+            <Button Text="UnDelete All" Command="{Binding UndeleteAllLineItemsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" IsVisible="{Binding IsManyDeletedLineItems}"/>
+        </HorizontalStackLayout>
+        <!--#endregion-->
+        <!--#region Subtotal Block-->
+        <!--This is the block of numbers at the bottom of the page containing a SubTotal and any nonzero taxable coupon amount-->
+        <Border x:Name="totalsContainer" Margin="5" Padding="5" 
+            Stroke="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}">
+            <Grid ColumnSpacing="0" RowSpacing="0" ColumnDefinitions ="*,Auto" RowDefinitions="Auto, Auto" x:DataType="vm:MealViewModel">
+                <Grid.GestureRecognizers>
+                    <SwipeGestureRecognizer Direction="Left"  Command="{Binding GoToTotalsCommand}"/>
+                    <TapGestureRecognizer Command="{Binding PushPropertiesCommand}"/>
+                </Grid.GestureRecognizers>
+                <!--#region Subtotal (Overall or Individual) -->
+                <Label Grid.Row="0" FontSize="Large" LineBreakMode="TailTruncation" Text="Bill Subtotal" IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"/>
+                <Label Grid.Row="0" Grid.Column="1" IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
+                Text="{Binding SubTotal, StringFormat='{0:C}'}" FontSize="Large" HorizontalOptions="End">
+                    <Label.Behaviors>
+                        <services:CurrencyLabelBehavior
+                            ValidStyle="{StaticResource ValidLabelStyle}"
+                            UnequalStyle="{StaticResource UnequalLabelStyle}"
+                            EqualValue="{Binding ScannedSubTotal}"
+                            TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"/>
+                    </Label.Behaviors>
+                </Label>
+                <Label Grid.Row="0" FontSize="Large" LineBreakMode="TailTruncation" Text="Person Subtotal" IsVisible="{Binding IsFiltered}"/>
+                <Label Grid.Row="0" Grid.Column="1" IsVisible="{Binding IsFiltered}" 
+                Text="{Binding FilteredSubTotal, StringFormat='{0:C}'}" FontSize="Large" HorizontalOptions="End"/>
+                <!--#endregion-->
+                <!--#region Post Tax Coupon (overall or individual) -->
+                <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
+                    <Label.IsVisible>
+                        <MultiBinding Converter="{StaticResource All}">
+                            <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                            <Binding Path="IsFiltered" Converter="{StaticResource Not}"/>
+                        </MultiBinding>
+                    </Label.IsVisible>
+                </Label>
+                <Label Grid.Row="1" Grid.Column="1" FontSize="Large" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}" 
+                    Text="{Binding CouponAmountAfterTax, StringFormat='{0:C}'}">
+                    <Label.IsVisible>
+                        <MultiBinding Converter="{StaticResource All}">
+                            <Binding Path="CouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                            <Binding Path="IsFiltered" Converter="{StaticResource Not}"/>
+                        </MultiBinding>
+                    </Label.IsVisible>
+                </Label>
+                <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax">
+                    <Label.IsVisible>
+                        <MultiBinding Converter="{StaticResource All}">
+                            <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                            <Binding Path="IsFiltered"/>
+                        </MultiBinding>
+                    </Label.IsVisible>
+                </Label>
+                <Label Grid.Row="1" Grid.Column="1" FontSize="Large" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}" 
+                    Text="{Binding FilteredCouponAmountAfterTax, StringFormat='{0:C}'}">
+                    <Label.IsVisible>
+                        <MultiBinding Converter="{StaticResource All}">
+                            <Binding Path="FilteredCouponAmountAfterTax" Converter="{StaticResource IsNonZero}"/>
+                            <Binding Path="IsFiltered"/>
+                        </MultiBinding>
+                    </Label.IsVisible>
+                </Label>
+                <!--#endregion-->
+            </Grid>
+        </Border>
+        <!--#endregion-->
+        <!--#region Shares Count Buttons-->
+        <!--The number of shares held by the selected person-->
+        <VerticalStackLayout x:Name="SharesCountContainer" IsVisible="False" Margin="0,0,0,5">
+            <Label x:Name="SharesCountHeader" FontSize="Large" HorizontalOptions="Center"/>
+            <HorizontalStackLayout HorizontalOptions="Center" >
                 <HorizontalStackLayout.Resources>
                     <Style TargetType="Button">
                         <Setter Property="WidthRequest" Value="30"/>
-                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
+                        <Setter Property="BorderWidth" Value="2"/>
+                        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+                        <Setter Property="Padding" Value="1"/>
+                        <Setter Property="BackgroundColor" Value="Transparent"/>
                         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-                        <Setter Property="BorderColor" Value="Red"/>
-                        <Setter Property="BorderWidth" Value="1"/>
-                        <Setter Property="IsVisible" Value="False" />
-                        <Setter Property="Text" Value="b"/>
                     </Style>
                 </HorizontalStackLayout.Resources>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
-                <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+                <Button Text="0" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="1" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="2" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="3" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="4" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="5" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="6" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="7" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="8" Clicked="OnSharesCountButtonClicked"/>
+                <Button Text="9" Clicked="OnSharesCountButtonClicked"/>
             </HorizontalStackLayout>
-            <!--#endregion-->
-            <!--#region Data entry area-->
-            <Grid x:Name="ItemEntryContainer" IsVisible="False"
-                  ColumnDefinitions="2*,1*" RowDefinitions="60" Margin="12,0,12,0">
-                <Entry x:Name="SelectedNameEntry"
-                       Text="{Binding LineItemNameString}"
-                       toolkit:SetFocusOnEntryCompletedBehavior.NextElement="{x:Reference SelectedAmountEntry}"
-                       ReturnCommand="{Binding UnloadLineItemNameStringCommand}"
-                       VerticalOptions="Center"
-                       Placeholder="Name" ReturnType="Next">
-                    <Entry.Behaviors>
-                        <services:UserStoppedTypingBehavior 
-                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
-                            Command="{Binding UnloadLineItemNameStringCommand}"/>
-                    </Entry.Behaviors>
-                </Entry>
-                <Entry x:Name="SelectedAmountEntry" Grid.Column="1" Placeholder="Value"
-                       FontSize="Large"
-                       Text="{Binding LineItemAmountString}"
-                       ReturnCommand="{Binding CompletedLineItemAmountStringCommand}"
-                       HorizontalTextAlignment="End"
-                       Keyboard="Numeric"
-                       ReturnType="Done">
-                    <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior
-                            InvalidStyle="{StaticResource InvalidEntryStyle}"
-                            ValidStyle="{StaticResource ValidEntryStyle}"
-                            IsValid="{Binding  IsValidLineItemAmountString}"
-                            MinimumValue="-999999.99"
-                            MaximumValue="999999.99"/>
-                        <services:UserStoppedTypingBehavior 
-                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
-                            Command="{Binding UnloadLineItemAmountStringCommand}"/>
-                    </Entry.Behaviors>
-                </Entry>
-            </Grid>
-            <!--#endregion-->
-        </services:ColumnLayout>
-    </Grid>
+        </VerticalStackLayout>
+        <!--#endregion-->
+        <!--#region Sharer Buttons -->
+        <!--The initial letters of the names of each sharer inside buttons-->
+        <HorizontalStackLayout x:Name="SharesContainer" Margin="5,0,5,0" HeightRequest="40" Spacing="2" IsVisible="false">
+            <HorizontalStackLayout.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="WidthRequest" Value="30"/>
+                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
+                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+                    <Setter Property="BorderColor" Value="Red"/>
+                    <Setter Property="BorderWidth" Value="1"/>
+                    <Setter Property="IsVisible" Value="False" />
+                    <Setter Property="Text" Value="b"/>
+                </Style>
+            </HorizontalStackLayout.Resources>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased"/>
+        </HorizontalStackLayout>
+        <!--#endregion-->
+        <!--#region Data entry area-->
+        <Grid x:Name="ItemEntryContainer" IsVisible="False"
+                ColumnDefinitions="2*,1*" RowDefinitions="60" Margin="12,0,12,0">
+            <Entry x:Name="SelectedNameEntry"
+                    Text="{Binding LineItemNameString}"
+                    toolkit:SetFocusOnEntryCompletedBehavior.NextElement="{x:Reference SelectedAmountEntry}"
+                    ReturnCommand="{Binding UnloadLineItemNameStringCommand}"
+                    VerticalOptions="Center"
+                    Placeholder="Name" ReturnType="Next">
+                <Entry.Behaviors>
+                    <services:UserStoppedTypingBehavior 
+                        StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
+                        Command="{Binding UnloadLineItemNameStringCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Entry x:Name="SelectedAmountEntry" Grid.Column="1" Placeholder="Value"
+                    FontSize="Large"
+                    Text="{Binding LineItemAmountString}"
+                    ReturnCommand="{Binding CompletedLineItemAmountStringCommand}"
+                    HorizontalTextAlignment="End"
+                    Keyboard="Numeric"
+                    ReturnType="Done">
+                <Entry.Behaviors>
+                    <services:CurrencyValidationBehavior
+                        InvalidStyle="{StaticResource InvalidEntryStyle}"
+                        ValidStyle="{StaticResource ValidEntryStyle}"
+                        IsValid="{Binding  IsValidLineItemAmountString}"
+                        MinimumValue="-999999.99"
+                        MaximumValue="999999.99"/>
+                    <services:UserStoppedTypingBehavior 
+                        StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
+                        Command="{Binding UnloadLineItemAmountStringCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+        </Grid>
+        <!--#endregion-->
+    </services:ColumnLayout>
 </ContentPage>
