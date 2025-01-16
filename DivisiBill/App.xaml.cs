@@ -434,7 +434,7 @@ public partial class App : Application, INotifyPropertyChanged
             while (!LicenseTask.IsCompleted)
             {
                 AskAboutLicense = AskAboutLicense &&
-                    await Utilities.AskAsync("Slow Response", "Professional Edition Check Timed Out, do you want to keep waiting or continue",
+                    await Utilities.AskAsync("Slow Response", "Professional Edition Check Timed Out, do you want to keep waiting or continue without a license",
                         "wait", "continue");
                 if (!AskAboutLicense) break;
                 await LicenseTask.OrDelay();
@@ -468,12 +468,12 @@ public partial class App : Application, INotifyPropertyChanged
                     case Billing.BillingStatusType.notFound:
                         if (Settings.HadProSubscription)
                         {
-                            await Utilities.DisplayAlertAsync("Not Found", "Subscription check failed because there was no record of the subscription");
+                            await Utilities.DisplayAlertAsync("Not Found", "Subscription check failed because there was no record of the subscription, licenses are not available");
                             Settings.HadProSubscription = false;
                         }
                         break;
                     default:
-                        await Utilities.DisplayAlertAsync("Subscription Error", "Subscription check failed");
+                        await Utilities.DisplayAlertAsync("Subscription Error", "Subscription check failed, licenses are not available");
                         break; // treat all other errors as subscription not found
                 }
             }
