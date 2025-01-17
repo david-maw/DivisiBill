@@ -14,7 +14,10 @@ public partial class MealListPage : ContentPage
         viewModel = (MealListViewModel)BindingContext;
         viewModel.UseMealParam = UseMeal;
         viewModel.ShowDetailsParam = ShowSummary;
+        viewModel.ScrollItemsTo = ScrollItemsTo;
     }
+
+    ~MealListPage() { viewModel.ScrollItemsTo = null; }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -59,4 +62,13 @@ public partial class MealListPage : ContentPage
             }
         }
     }
+    #region Collection Scrolling
+    private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
+        => CurrentCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    {
+        viewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
+        viewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;
+    }
+    #endregion
 }

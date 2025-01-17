@@ -11,11 +11,13 @@ namespace DivisiBill.ViewModels;
 /// This manages the list of bills sorted and filtered in various ways. The contents of the list (MealList) is composed of the same set of MealSummaries that other instances see so setting some
 /// property on one propagates to other views.
 /// </summary>
+#region Query Properties
 [QueryProperty(nameof(Sort), "sort")]
 [QueryProperty(nameof(IsSelectableList), "IsSelectableList")]
 [QueryProperty(nameof(SetCount), "count")]
 [QueryProperty(nameof(ShowLocalMeals), "ShowLocal")]
 [QueryProperty(nameof(ShowRemoteMeals), "ShowRemote")]
+#endregion
 public partial class MealListViewModel : ObservableObjectPlus
 {
     public Func<MealSummary, Task> UseMealParam { get; set; }
@@ -849,4 +851,50 @@ public partial class MealListViewModel : ObservableObjectPlus
         SortOrderType.byName => mealList.Upsert(ms, MealSummary.CompareVenueTo),
         _ => mealList.Upsert(ms, MealSummary.CompareCreationTimeTo),
     };
+    #region Scrolling Item list
+    [ObservableProperty]
+    public partial bool IsSwipeUpAllowed { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSwipeDownAllowed { get; set; }
+
+    [ObservableProperty]
+    public partial int FirstVisibleItemIndex { get; set; }
+
+    partial void OnFirstVisibleItemIndexChanged(int value) => IsSwipeDownAllowed = value > 0;
+
+    [ObservableProperty]
+    public partial int LastVisibleItemIndex { get; set; }
+
+    partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < MealList.Count - 1;
+
+    public Action<int, bool> ScrollItemsTo = null;
+
+    [RelayCommand]
+    private void ScrollItems(string whereTo)
+    {
+        if (FirstVisibleItemIndex == LastVisibleItemIndex || ScrollItemsTo is null || MealList is null)
+            return;
+        int lastItemIndex = MealList.Count - 1;
+        if (lastItemIndex < 2)
+            return;
+        try
+        {
+            switch (whereTo)
+            {
+                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
+                case "Down": if (FirstVisibleItemIndex > 0) ScrollItemsTo(FirstVisibleItemIndex, true); break;
+                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(lastItemIndex, false); break;
+                case "Start": if (FirstVisibleItemIndex > 0) ScrollItemsTo(0, true); break;
+                default: break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash("fault attempting to scroll");
+            // Do nothing, we do not really care if a scroll attempt fails
+        }
+    }
+    #endregion
+
 }
