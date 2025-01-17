@@ -7,6 +7,12 @@ public partial class FileListPage : ContentPage
     {
         BindingContext = fileListViewModel = fileListViewModelParameter;
         InitializeComponent();
+        fileListViewModel.ScrollItemsTo = ScrollItemsTo;
+    }
+
+    ~FileListPage()
+    {
+        fileListViewModel.ScrollItemsTo = null;
     }
 
     protected override async void OnAppearing()
@@ -27,4 +33,13 @@ public partial class FileListPage : ContentPage
         fileListViewModel.SelectionCompleted.TrySetResult(null);
         base.OnDisappearing();
     }
+    #region Collection Scrolling
+    private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
+        => ItemsCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    {
+        fileListViewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
+        fileListViewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;
+    }
+    #endregion
 }

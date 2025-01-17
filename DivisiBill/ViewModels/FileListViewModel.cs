@@ -150,4 +150,49 @@ public partial class FileListViewModel : ObservableObjectPlus
             SelectedItems.Clear();
         }
     }
+    #region Scrolling Item list
+    [ObservableProperty]
+    public partial bool IsSwipeUpAllowed { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSwipeDownAllowed { get; set; }
+
+    [ObservableProperty]
+    public partial int FirstVisibleItemIndex { get; set; }
+
+    partial void OnFirstVisibleItemIndexChanged(int value) => IsSwipeDownAllowed = value > 0;
+
+    [ObservableProperty]
+    public partial int LastVisibleItemIndex { get; set; }
+
+    partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < FileList.Count - 1;
+
+    public Action<int, bool> ScrollItemsTo = null;
+
+    [RelayCommand]
+    private void ScrollItems(string whereTo)
+    {
+        if (FirstVisibleItemIndex == LastVisibleItemIndex || ScrollItemsTo is null || FileList is null)
+            return;
+        int lastItemIndex = FileList.Count - 1;
+        if (lastItemIndex < 2)
+            return;
+        try
+        {
+            switch (whereTo)
+            {
+                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
+                case "Down": if (FirstVisibleItemIndex > 0) ScrollItemsTo(FirstVisibleItemIndex, true); break;
+                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(lastItemIndex, false); break;
+                case "Start": if (FirstVisibleItemIndex > 0) ScrollItemsTo(0, true); break;
+                default: break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash("fault attempting to scroll");
+            // Do nothing, we do not really care if a scroll attempt fails
+        }
+    }
+    #endregion
 }

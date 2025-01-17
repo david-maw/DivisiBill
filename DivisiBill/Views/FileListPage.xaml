@@ -116,19 +116,32 @@
         </Style>
     </ContentPage.Resources>
 
-    <CollectionView 
+    <services:ColumnLayout>
+        <CollectionView x:Name="ItemsCollectionView"
+        Scrolled="OnCollectionViewScrolled"
         ItemsSource="{Binding FileList}"
         SelectedItem="{Binding SelectedItem}"
         SelectedItems="{Binding SelectedItems}">
-        <CollectionView.Header>
-            <VerticalStackLayout>
-                <VerticalStackLayout  IsVisible="{Binding ItemsFound}">
-                    <Label Text="{Binding FileListCount, StringFormat='{0} lists, tap to select'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ShowAsSelectableList}"/>
-                    <Label Text="{Binding FileListCount, StringFormat='{0} lists, swipe or tap'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ShowAsSelectableList, Converter={StaticResource Not}}"/>
+            <CollectionView.Header>
+                <VerticalStackLayout>
+                    <VerticalStackLayout  IsVisible="{Binding ItemsFound}">
+                        <Label Text="{Binding FileListCount, StringFormat='{0} lists, tap to select'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ShowAsSelectableList}"/>
+                        <Label Text="{Binding FileListCount, StringFormat='{0} lists, swipe or tap'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ShowAsSelectableList, Converter={StaticResource Not}}"/>
+                    </VerticalStackLayout>
+                    <Label Text="{Binding ItemTypePlural, StringFormat='No {0} Found'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ItemsFound, Converter={StaticResource Not}}"/>
+                    <BoxView HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
                 </VerticalStackLayout>
-                <Label Text="{Binding ItemTypePlural, StringFormat='No {0} Found'}" HorizontalOptions="Center" FontSize="Large" Margin="0,5" IsVisible="{Binding ItemsFound, Converter={StaticResource Not}}"/>
-                <BoxView HeightRequest="2" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}"/>
-            </VerticalStackLayout>
-        </CollectionView.Header>
-    </CollectionView>
+            </CollectionView.Header>
+        </CollectionView>
+        <!--#region Scroll Up/Down -->
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
+                Text="&#xF0CE2;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                HorizontalOptions="Center" VerticalOptions="Start" 
+                IsVisible="{Binding IsSwipeDownAllowed}"/>
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
+                Text="&#xF0CDC;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" 
+                HorizontalOptions="Center" VerticalOptions="End" 
+                IsVisible="{Binding IsSwipeUpAllowed}"/>
+        <!--#endregion-->
+    </services:ColumnLayout>
 </ContentPage>
