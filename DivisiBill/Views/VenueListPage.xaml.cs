@@ -18,7 +18,9 @@ public partial class VenueListPage : ContentPage
             NavigateToDetails: (v) => Navigation.PushAsync(new VenueEditPage(v)),
             NavigateToHome: async () => { await App.GoToHomeAsync(); });
         BindingContext = context;
+        context.ScrollItemsTo = ScrollItemsTo;
     }
+    ~VenueListPage() { context.ScrollItemsTo = null; }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -75,4 +77,13 @@ public partial class VenueListPage : ContentPage
                 await Navigation.PushAsync(mapPage);
         }
     }
+    #region Collection Scrolling
+    private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
+        => CurrentCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    {
+        context.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
+        context.LastVisibleItemIndex = e.LastVisibleItemIndex;
+    }
+    #endregion
 }

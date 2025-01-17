@@ -96,7 +96,6 @@
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>
-    
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding AssignCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Command="{Binding AddCommand}"/>
@@ -105,11 +104,11 @@
         <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"        Order="Secondary"/>
         <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}" Order="Secondary"/>
     </ContentPage.ToolbarItems>
-
     <services:ColumnLayout>
         <!--#region List of Venues -->
         <CollectionView x:Name="CurrentCollectionView"
             x:DataType="vm:VenueListViewModel"
+            Scrolled="OnCollectionViewScrolled"
             ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
             SelectionMode="Single"
             SelectedItem="{Binding CurrentItem}"
@@ -131,6 +130,16 @@
                 </VerticalStackLayout>
             </CollectionView.Header>
         </CollectionView>
+        <!--#region Scroll Up/Down -->
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
+                Text="&#xF0CE2;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                HorizontalOptions="Center" VerticalOptions="Start" 
+                IsVisible="{Binding IsSwipeDownAllowed}"/>
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
+                Text="&#xF0CDC;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" 
+                HorizontalOptions="Center" VerticalOptions="End" 
+                IsVisible="{Binding IsSwipeUpAllowed}"/>
+        <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint -->
         <Border IsVisible="{Binding ShowVenuesHint}" Style="{StaticResource HintStyle}">
