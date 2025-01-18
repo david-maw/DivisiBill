@@ -1,3 +1,13 @@
+# 6.2.11
+
+## Implement Scroll Up/Down Indicator Buttons for Long Lists
+
+Wherever a list is longer than a page an indicator button shows at the top and/or bottom of the visible items to indicate that there are more items off-screen in that direction. Either scroll the list or click the button to see more items. This applies to all but the totals list (which is too short to need it). 
+
+## Clarify 'Continue' Choice
+
+Make it clear that if there's a problem accessing the web service the 'continue' option always means 'continue without a license'.
+
 # 6.2.10
 
 ## Load Rounded Amount in Existing Bill
