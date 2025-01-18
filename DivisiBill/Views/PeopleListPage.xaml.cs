@@ -19,7 +19,9 @@ public partial class PeopleListPage : ContentPage
         InitializeComponent();
         context = new ViewModels.PeopleListViewModel(SelectPerson, ShowPerson, personCost);
         BindingContext = context;
+        context.ScrollItemsTo = ScrollItemsTo;
     }
+    ~PeopleListPage() { context.ScrollItemsTo = null; }
 
     protected override async void OnAppearing()
     {
@@ -68,4 +70,13 @@ public partial class PeopleListPage : ContentPage
         context.ForgetDeletedPeople();
         Shell.Current.FlyoutBehavior = savedFlyoutBehavior;
     }
+    #region Collection Scrolling
+    private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
+        => CurrentCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    {
+        context.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
+        context.LastVisibleItemIndex = e.LastVisibleItemIndex;
+    }
+    #endregion
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:DivisiBill.Models"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:services="clr-namespace:DivisiBill.Services"
              x:Class="DivisiBill.Views.PeopleListPage"
              x:DataType="vm:PeopleListViewModel"
              Title="People List">
@@ -80,19 +81,30 @@
         </DataTemplate>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="auto,*, auto, auto, auto">
+    <services:ColumnLayout>
         <!--#region People List -->
-        <BoxView Grid.Row="1" HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" VerticalOptions="Start"/>
+        <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" VerticalOptions="Start"/>
         <CollectionView
-            Grid.Row="1"
+            x:Name="CurrentCollectionView"
+            Scrolled="OnCollectionViewScrolled"
             SelectionMode="Single"
             SelectedItem="{Binding SelectedPerson}"
             ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
             ItemSizingStrategy="MeasureFirstItem"
             ItemsSource="{Binding AllPeople}"/>
+        <!--#region Scroll Up/Down -->
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
+                Text="&#xF0CE2;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                HorizontalOptions="Center" VerticalOptions="Start" 
+                IsVisible="{Binding IsSwipeDownAllowed}"/>
+        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
+                Text="&#xF0CDC;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" 
+                HorizontalOptions="Center" VerticalOptions="End" 
+                IsVisible="{Binding IsSwipeUpAllowed}"/>
+        <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint -->
-        <Border Grid.Row="2" IsVisible="{Binding ShowPeopleHint}" Style="{StaticResource HintStyle}">
+        <Border IsVisible="{Binding ShowPeopleHint}" Style="{StaticResource HintStyle}">
             <VerticalStackLayout>
                 <Label Text="Swipe Person left deletes" FontSize="Large" HorizontalOptions="Center"/>
                 <Label Text="Swipe Person right uses" FontSize="Large" HorizontalOptions="Center"/>
@@ -105,10 +117,10 @@
         </Border>
         <!--#endregion-->
         <!--#region Undelete -->
-        <HorizontalStackLayout Grid.Row="3" HorizontalOptions="Center" Spacing="10">
+        <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
             <Button Text="UnDelete" Command="{Binding UnDeletePersonCommand}" IsVisible="{Binding IsAnyDeletedPerson}"/>
             <Button Text="UnDelete All" Command="{Binding UnDeleteAllPeopleCommand}" IsVisible="{Binding IsManyDeletedPeople}"/>
         </HorizontalStackLayout>
         <!--#endregion-->
-    </Grid>
+    </services:ColumnLayout>
 </ContentPage>
