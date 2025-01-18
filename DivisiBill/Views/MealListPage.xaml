@@ -249,15 +249,8 @@
                 ItemSizingStrategy="MeasureAllItems">
         </CollectionView>
         <!--#region Scroll Up/Down -->
-        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
-                Text="&#xF0CE2;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
-                HorizontalOptions="Center" VerticalOptions="Start" 
-                IsVisible="{Binding IsSwipeDownAllowed}"/>
-        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
-                Text="&#xF0CDC;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" 
-                HorizontalOptions="Center" VerticalOptions="End" 
-                IsVisible="{Binding IsSwipeUpAllowed}"/>
-        <!--#endregion-->
+        <Button Style="{StaticResource ScrollUpButtonStyle}" services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" IsVisible="{Binding IsSwipeDownAllowed}"/>
+        <Button Style="{StaticResource ScrollDownButtonStyle}" services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" IsVisible="{Binding IsSwipeUpAllowed}"/>
         <!--#endregion-->
         <!--#region Undelete -->
         <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">

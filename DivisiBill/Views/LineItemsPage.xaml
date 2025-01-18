@@ -233,14 +233,10 @@
             </CollectionView.GestureRecognizers>
             <!--#endregion-->
         </CollectionView>
-        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
-                Text="&#xF0CE2;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
-                HorizontalOptions="Center" VerticalOptions="Start" 
-                IsVisible="{Binding IsLineItemSwipeDownAllowed}"/>
-        <Button services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
-                Text="&#xF0CDC;" FontSize="50" FontFamily="mdicons" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" 
-                HorizontalOptions="Center" VerticalOptions="End" 
-                IsVisible="{Binding IsLineItemSwipeUpAllowed}"/>
+        <!--#region Scroll Up/Down -->
+        <Button Style="{StaticResource ScrollUpButtonStyle}" services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" IsVisible="{Binding IsLineItemSwipeDownAllowed}"/>
+        <Button Style="{StaticResource ScrollDownButtonStyle}" services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" IsVisible="{Binding IsLineItemSwipeUpAllowed}"/>
+        <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint -->
         <Border IsVisible="{Binding ShowLineItemsHint}" Style="{StaticResource HintStyle}">
