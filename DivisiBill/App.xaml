@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:viewModels="clr-namespace:DivisiBill.ViewModels"
-             xmlns:local="clr-namespace:DivisiBill"
-             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
-             android:Application.WindowSoftInputModeAdjust="Resize"
-             x:Class="DivisiBill.App">
+<Application
+    x:Class="DivisiBill.App"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:local="clr-namespace:DivisiBill"
+    xmlns:services="clr-namespace:DivisiBill.Services"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewModels="clr-namespace:DivisiBill.ViewModels"
+    android:Application.WindowSoftInputModeAdjust="Resize">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,13 +19,14 @@
             <services:TrueToStringConverter x:Key="TrueToString" />
             <services:CurrencyConverter x:Key="Currency" />
             <services:PercentConverter x:Key="Percent" />
-            <services:InvertBoolConverter x:Key="Not"/>
-            <services:DistanceConverter x:Key="Distance"/>
-            <services:LocationConverter x:Key="Location"/>
-            <services:IsNonZeroConverter x:Key="IsNonZero"/>
+            <services:InvertBoolConverter x:Key="Not" />
+            <services:DistanceConverter x:Key="Distance" />
+            <services:LocationConverter x:Key="Location" />
+            <services:IsNonZeroConverter x:Key="IsNonZero" />
 
-            <viewModels:CloudViewModel x:Key="CloudViewModel"/>
-            <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> <!--This is defined in code-->
+            <viewModels:CloudViewModel x:Key="CloudViewModel" />
+            <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> 
+            <!--  This is defined in code  -->
 
             <Color x:Key="PrimaryColor">#512bdf</Color>
             <Color x:Key="SecondaryColor">White</Color>
@@ -38,8 +40,9 @@
             <Color x:Key="FileGlyphDark">Blue</Color>
             <Color x:Key="ImageGlyphLight">LightGreen</Color>
             <Color x:Key="ImageGlyphDark">Green</Color>
-            <Color x:Key="SelectedBackGroundColor">#f17b01</Color> <!--Same color that Android uses by default-->
-            <!-- ICON NAME -->
+            <Color x:Key="SelectedBackGroundColor">#f17b01</Color> 
+            <!--  Same color that Android uses by default  -->
+            <!--  ICON NAME  -->
 
             <FontImageSource x:Key="FileGlyphLocalOutline"       Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
             <FontImageSource x:Key="FileGlyphRemoteOutline"      Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
@@ -96,10 +99,10 @@
             <FontImageSource x:Key="GlyphUndo"                  Color="White" Glyph="&#xF054C;" FontFamily="mdicons"/> <!--undo-->
 
             <Style x:Key="HintStyle" TargetType="Border">
-                <Setter Property="Padding" Value="5"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Blue100Accent}}"/>
-                <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Blue100Accent}}" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 10" />
             </Style>
 
             <Style x:Key="RedLabelTextStyle" TargetType="Label">
@@ -118,13 +121,13 @@
             <Style x:Key="ScrollUpButtonStyle" TargetType="Button">
                 <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" />
-                <Setter Property="FontFamily" Value="mdicons"/>
-                <Setter Property="FontSize" Value="50"/>
-                <Setter Property="BorderWidth" Value="0"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="14,10"/>
-                <Setter Property="MinimumHeightRequest" Value="44"/>
-                <Setter Property="MinimumWidthRequest" Value="44"/>
+                <Setter Property="FontFamily" Value="mdicons" />
+                <Setter Property="FontSize" Value="50" />
+                <Setter Property="BorderWidth" Value="0" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="14,10" />
+                <Setter Property="MinimumHeightRequest" Value="44" />
+                <Setter Property="MinimumWidthRequest" Value="44" />
                 <Setter Property="CommandParameter" Value="Down" />
                 <Setter Property="Text" Value="&#xF0CE2;" />
                 <Setter Property="VerticalOptions" Value="Start" />
@@ -144,7 +147,10 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
-            <Style x:Key="ScrollDownButtonStyle" TargetType="Button" BasedOn="{StaticResource ScrollUpButtonStyle}">
+            <Style
+                x:Key="ScrollDownButtonStyle"
+                BasedOn="{StaticResource ScrollUpButtonStyle}"
+                TargetType="Button">
                 <Setter Property="CommandParameter" Value="Up" />
                 <Setter Property="Text" Value="&#xF0CDC;" />
                 <Setter Property="VerticalOptions" Value="End" />
