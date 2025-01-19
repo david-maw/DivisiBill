@@ -13,7 +13,32 @@ public partial class CameraViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
+    [ObservableProperty]
+    public partial bool IsCameraAvailable { get; set; }
     #endregion
+    internal async Task SetCameraAvailabilityAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.Camera>();
+            }
+
+            IsCameraAvailable = status == PermissionStatus.Granted && MediaPicker.IsCaptureSupported;
+        }
+        catch (Exception ex)
+        {
+            IsCameraAvailable = false;
+            await Utilities.DisplayAlertAsync("Camera Availability", "Could not check camera availability: " + ex.Message, "cancel");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
     #region Controlling the light (which is also the Camera Flash)
     /// <summary>
     /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is

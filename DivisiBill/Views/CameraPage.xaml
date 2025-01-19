@@ -13,18 +13,20 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphImages}" Command="{Binding BrowseCommand}"/>
         <ToolbarItem IconImageSource="{Binding FlashGlyph}" Command="{Binding ChangeFlashModeCommand}"/>
     </ContentPage.ToolbarItems>
+     <!--It's a grid but everything is in the same row and column-->
     <Grid>
         <toolkit:CameraView x:Name="MyCamera"
+            IsVisible="{Binding IsCameraAvailable}"
             CameraFlashMode="{Binding FlashMode}"
             IsTorchOn="{Binding IsLightOn}"
             MediaCaptured="OnPictureTaken"/>
-        <!--Have to specify x:DataType to avoid a warning, see https://github.com/dotnet/maui/issues/25272-->
+        <!--Have to specify x:DataType until issue https://github.com/dotnet/maui/issues/21834 is implemented -->
         <Ellipse Stroke="Red"
                  Fill="White"
                  StrokeThickness="5"
                  WidthRequest="80"
-                 x:DataType="Ellipse"
-                 HeightRequest="{Binding Source={RelativeSource Self},Path=WidthRequest}"
+                 IsVisible="{Binding IsCameraAvailable}"
+                 HeightRequest="{Binding Source={RelativeSource Self},Path=WidthRequest, x:DataType=Ellipse}"
                  HorizontalOptions="Center"
                  VerticalOptions="End"
                  Margin="20">
@@ -32,5 +34,10 @@
                 <TapGestureRecognizer Tapped="OnTakePicture"/>
             </Ellipse.GestureRecognizers>
         </Ellipse>
+        <Label Text="No camera available"
+               FontSize="Header"
+               IsVisible="{Binding IsCameraAvailable, Converter={StaticResource Not}}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"/>
     </Grid>
 </ContentPage>

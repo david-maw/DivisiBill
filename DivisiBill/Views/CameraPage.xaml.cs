@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Core;
+using DivisiBill.ViewModels;
 using System.Runtime.Versioning;
 
 namespace DivisiBill.Views;
@@ -9,14 +10,21 @@ namespace DivisiBill.Views;
 public partial class CameraPage : ContentPage
 {
     private readonly ICameraProvider cameraProvider;
+    private readonly CameraViewModel viewModel;
     public CameraPage(ICameraProvider cameraProviderParam)
     {
         cameraProvider = cameraProviderParam;
         InitializeComponent();
+        viewModel = BindingContext as CameraViewModel;
     }
     ~CameraPage()
     {
         // For debug of lifetime
+    }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await viewModel?.SetCameraAvailabilityAsync();
     }
     private void OnPictureTaken(object sender, CommunityToolkit.Maui.Views.MediaCapturedEventArgs e)
     {
