@@ -1,12 +1,8 @@
 using CommunityToolkit.Maui.Core;
 using DivisiBill.ViewModels;
-using System.Runtime.Versioning;
 
 namespace DivisiBill.Views;
 
-// Inhibit warnings
-[SupportedOSPlatform("windows10.0.10240.0")]
-[SupportedOSPlatform("android21.1")]
 public partial class CameraPage : ContentPage
 {
     private readonly ICameraProvider cameraProvider;
