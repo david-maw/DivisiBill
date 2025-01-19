@@ -1,3 +1,9 @@
+# 6.2.12
+
+## Camera Availability Checks
+
+The app now explicitly handles the case where no camera is present (or where the camera permission has been denied by the user).
+
 # 6.2.11
 
 ## Implement Scroll Up/Down Indicator Buttons for Long Lists
