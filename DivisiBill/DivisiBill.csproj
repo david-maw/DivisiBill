@@ -13,7 +13,7 @@
       <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
       <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
-     <NoWarn>NU1608;XC0103;MVVMTK0045</NoWarn>
+     <NoWarn>NU1608;MVVMTK0045</NoWarn>
      <!--NU1608 Because Plugin.InAppBilling 8.x triggers it-->
      <!--XC0103 Because https://github.com/dotnet/docs-maui/issues/2486 has not been put in Community Toolkit yet, so this gets a warning in .NET9-->
      <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
