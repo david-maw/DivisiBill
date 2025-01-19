@@ -1,5 +1,6 @@
 ﻿using DivisiBill.Models;
 using Plugin.InAppBilling;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 
@@ -14,6 +15,7 @@ internal static class CallWs
     private const string PurchaseHeaderName = "divisibill-android-purchase";
     private const string TokenHeaderName = "divisibill-token";
     private const string KeyHeaderName = "x-functions-key";
+    private static string KeyString = Generated.BuildInfo.DivisiBillWsKey;
     private static readonly HttpClient client = new() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri) };
 
     public static Uri BaseAddress => client.BaseAddress;
@@ -23,9 +25,8 @@ internal static class CallWs
         if (!App.WsAllowed)
             throw new ArgumentNullException("App.WsAllowed");
         if (!string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsKey))
-            UpsertHttpClientHeader(KeyHeaderName, Generated.BuildInfo.DivisiBillWsKey);
+            UpsertHttpClientHeader(KeyHeaderName, KeyString);
     }
-
     #region Header Management
     private static void StoreTokenHeader(this HttpResponseMessage response)
     {
@@ -40,6 +41,17 @@ internal static class CallWs
         client.DefaultRequestHeaders.Add(headerName, headerValue);
     }
     #endregion
+    #endregion
+    #region Select Alternate Web Service (debug only) 
+    [Conditional("DEBUG")]
+    internal static void SelectAlternateWs(bool useAlternateWs)
+    {
+        if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsUri) // There is no defined URI
+            || string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillAlternateWsUri)) // There is no defined alternate URI
+            return;
+        client.BaseAddress = useAlternateWs ? new Uri(Generated.BuildInfo.DivisiBillAlternateWsUri) : new Uri(Generated.BuildInfo.DivisiBillWsUri);
+        KeyString = useAlternateWs ? Generated.BuildInfo.DivisiBillAlternateWsKey : Generated.BuildInfo.DivisiBillWsKey;
+    }
     #endregion
     #region Scan a Bill
     /// <summary>
@@ -357,5 +369,4 @@ internal static class CallWs
         return temp;
     }
     #endregion
-
 }

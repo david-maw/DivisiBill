@@ -32,6 +32,18 @@ public class CloudViewModel : ObservableObjectPlus
             }
         }
     }
+    public bool UseAlternateWs
+    {
+        get => App.Settings.UseAlternateWs;
+        set
+        {
+            if (App.Settings.UseAlternateWs != value) // The value changed
+            {
+                App.Settings.UseAlternateWs = value;
+                OnPropertyChanged();
+            }
+        }
+    }
     public bool WiFiOnly
     {
         get => App.Settings.WiFiOnly;

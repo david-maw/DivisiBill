@@ -153,6 +153,8 @@ namespace DivisiBill.Generated
     {
         internal const string DivisiBillWsUri = "$(DivisiBillWsUri)"%3b
         internal const string DivisiBillWsKey = "$(DivisiBillWsKey)"%3b
+        internal const string DivisiBillAlternateWsUri = "$(DIVISIBILL_ALTERNATE_WS_URI)"%3b
+        internal const string DivisiBillAlternateWsKey = "$(DIVISIBILL_ALTERNATE_WS_KEY)"%3b
         internal const string DivisiBillSentryDsn = "$(DIVISIBILL_SENTRY_DSN)"%3b
         internal const string DivisiBillBingMapsSecret = "$(DIVISIBILL_BING_MAPS_SECRET)"%3b
         internal const string DivisiBillTestProJsonB64 = "$(DIVISIBILL_TEST_PRO_JSON_B64)"%3b

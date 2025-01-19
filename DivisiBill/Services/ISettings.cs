@@ -31,6 +31,10 @@ public interface ISettings
     /// <summary>
     /// Is WiFi access required before the Internet can be used
     /// </summary>
+    bool UseAlternateWs { get; set; }
+    /// <summary>
+    /// Use the alternate Web Service not the primary one (debug only)
+    /// </summary>
     bool WiFiOnly { get; set; }
     bool FirstUse { get; set; }
     DateTime LastUse { get; set; }

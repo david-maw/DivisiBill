@@ -145,6 +145,13 @@
                 <!--#region Show Last Use -->
                 <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
                 <!--#endregion-->
+                <!--#region Use Alternate Web Service -->
+                <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}"
+                      x:DataType="vm:CloudViewModel" BindingContext="{StaticResource CloudViewModel}" IsVisible="{Binding InternetEnabledAndLicensed}">
+                    <Label Grid.Row="0" Text="Start With Alternate Web Service" VerticalOptions="Center" HorizontalOptions="End"/>
+                    <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding UseAlternateWs}"/>
+                </Grid>
+                <!--#endregion-->
                 <!--#region Scan Options -->
                 <Picker Title="Select a scan option below:" SelectedIndex="{Binding ScanOption}" HorizontalOptions="Center" FontSize="Small">
                     <Picker.ItemsSource>

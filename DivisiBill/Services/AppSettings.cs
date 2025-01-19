@@ -90,6 +90,15 @@ public class AppSettings : ISettings
             App.HandleActivityChanges();
         }
     }
+    public bool UseAlternateWs
+    {
+        get => Preferences.Get(nameof(UseAlternateWs), false);
+        set
+        {
+            Preferences.Set(nameof(UseAlternateWs), value);
+            App.HandleActivityChanges();
+        }
+    }
     public bool WiFiOnly
     {
         get => Preferences.Get(nameof(WiFiOnly), DeviceInfo.Current.Idiom != DeviceIdiom.Desktop);
