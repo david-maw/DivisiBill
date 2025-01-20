@@ -1,3 +1,9 @@
+# 6.2.13
+
+## Add Licensing Help Button
+
+The Settings page now has a button to open up the help text licensing page so you can get more information on licensing before purchasing a license or subscription.
+
 # 6.2.12
 
 ## Camera Availability Checks
