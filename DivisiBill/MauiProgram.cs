@@ -39,6 +39,8 @@ public static class MauiProgram
                 options.IncludeTextInBreadcrumbs = true;
                 options.IncludeTitleInBreadcrumbs = true;
 
+                options.AttachScreenshot = true;
+
                 // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
                 // We recommend adjusting this value in production.
                 options.TracesSampleRate = 1.0;
