@@ -65,6 +65,9 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
+    private async Task LicensingHelp() => await App.PushAsync($"{Routes.HelpPage}?page=licensing");
+
+    [RelayCommand]
     private async Task PurchaseUpgradeAsync()
     {
         if (Billing.HasOldProProductId)

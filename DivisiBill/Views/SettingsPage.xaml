@@ -97,6 +97,7 @@
             <Label Text="Program built without web services" IsVisible="{Binding WsAllowed, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
             <Grid IsVisible="{Binding WsAllowed}">
                 <VerticalStackLayout IsVisible="{Binding LicenseChecked}">
+                    <Button Text="Licensing Help" Command="{Binding LicensingHelpCommand}" HorizontalOptions="Center" Margin="0,5"/>
                     <!--#region Pro Subscription -->
                     <VerticalStackLayout IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}">
                         <Label Text="Purchase Pro Subscription" HorizontalOptions="Center"/>
