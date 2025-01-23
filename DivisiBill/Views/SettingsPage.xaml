@@ -26,9 +26,9 @@
             <!--#endregion-->
             <!--#region Regular Application Settings -->
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <!--Everything in this Grid is in the current meal data context-->
+            <!--Everything in this Grid is in the current meal data context although they are defaults that apply to all new meals-->
             <Grid ColumnDefinitions ="*, auto, *, auto, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto" ColumnSpacing="{OnPlatform 10, Android=0}" x:Name="MealSection"
-                   x:DataType="vm:MealViewModel">
+                   x:DataType="vm:MealViewModel" BindingContext="{StaticResource MealViewModel}">
                 <Label Grid.Row="1" Grid.Column="0" Text="Tip on Tax" VerticalOptions="Center" HorizontalOptions="End"/>
                 <Switch Grid.Row="1" Grid.Column="1" IsToggled="{Binding DefaultTipOnTax}" HorizontalOptions="End"/>
                 <Label Grid.Row="1" Grid.Column="2" Text="Tip Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
@@ -43,7 +43,7 @@
                 </Entry>
                 <Label Grid.Row="1" Grid.Column="4" Text="%" VerticalOptions="Center"/>
                 <Label Grid.Row="2" Text="Coupon After Tax" VerticalOptions="Center" HorizontalOptions="End"/>
-                <Switch Grid.Row="2" Grid.Column="1" IsToggled="{Binding IsCouponAfterTax}"/>
+                <Switch Grid.Row="2" Grid.Column="1" IsToggled="{Binding DefaultTaxOnCoupon}"/>
                 <Label Grid.Row="2" Grid.Column="2" Text="Tax Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
                 <Entry Grid.Row="2" Grid.Column="3" Text="{Binding DefaultTaxRateString}" ReturnCommand="{Binding UnloadDefaultTaxRateStringCommand}"
                        Keyboard="Numeric" HorizontalTextAlignment="End" WidthRequest="80">
