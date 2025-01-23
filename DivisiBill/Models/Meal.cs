@@ -1299,6 +1299,7 @@ public partial class Meal : ObservableObjectPlus
     /// Called whenever a user tells us it's time to persist a file. This is a special action - it persists a snapshot of the
     /// current bill right now, but tries not to otherwise disturb the bill. We clone the 
     /// current Meal and work exclusively on the clone sidestepping any issues of where the current bill may be stored.
+    /// If there claims to be an image but actually isn't, we just ignore it so as to be as resilient as possible
     /// </summary>
     public async Task SaveSnapshotAsync()
     {
@@ -1316,7 +1317,7 @@ public partial class Meal : ObservableObjectPlus
         m.SavedToRemote = false;
         m.Summary.IsLocal = false;
         m.Summary.IsRemote = false;
-        if (HasImage)
+        if (HasImage && File.Exists(ImagePath)) // Copy the image file to the new location if it exists
             File.Copy(ImagePath, m.ImagePath, true);
         await m.SaveToFileAsync();
         // Now make the snapshot visible
