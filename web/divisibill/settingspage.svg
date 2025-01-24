@@ -38,13 +38,13 @@
      inkscape:pagecheckerboard="1"
      showgrid="false"
      inkscape:zoom="0.51316815"
-     inkscape:cx="539.78408"
-     inkscape:cy="1228.6421"
-     inkscape:window-width="1154"
-     inkscape:window-height="1453"
-     inkscape:window-x="27"
-     inkscape:window-y="33"
-     inkscape:window-maximized="0"
+     inkscape:cx="538.80974"
+     inkscape:cy="1142.9002"
+     inkscape:window-width="2560"
+     inkscape:window-height="1529"
+     inkscape:window-x="1192"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
      inkscape:current-layer="g842"
      inkscape:document-rotation="0"
      inkscape:showpageshadow="2"
@@ -58,7 +58,7 @@
        inkscape:label="settings page"
        id="image844"
        style="fill:#00ff00;fill-opacity:0.25;image-rendering:optimizeQuality"
-       preserveAspectRatio="none"
+       preserveAspectRatio="xMidYMid"
        height="2220"
        width="1080" />
     <a
@@ -138,7 +138,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#status"
-       transform="matrix(0.61697206,0,0,0.51712773,214.66624,710.9568)"
+       transform="matrix(0.61697206,0,0,0.51712773,214.66624,750.9568)"
        inkscape:label="wifi"
        xlink:title="Current Purchase Status"
        target="_parent"
@@ -168,7 +168,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#modify-button"
-       transform="matrix(0.49279487,0,0,1.4454978,284.13475,-897.3563)"
+       transform="matrix(0.49279487,0,0,1.4454978,284.13475,-857.3563)"
        inkscape:label="wifi"
        xlink:title="Change Professional Subscription"
        target="_parent"
@@ -176,6 +176,21 @@
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect846-9-1-9"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#licensing-help"
+       transform="matrix(0.60988113,0,0,0.82859166,213.42333,-34.04259)"
+       inkscape:label="wifi"
+       xlink:title="Change Professional Subscription"
+       target="_parent"
+       id="a938-8-9-8-0">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-9-8"
          width="1031.8726"
          height="88.446213"
          x="35.378487"
@@ -228,7 +243,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#scans"
-       transform="matrix(0.74873934,0,0,0.53039369,154.72687,679.9241)"
+       transform="matrix(0.84658042,0,0,0.49105019,99.593352,776.64458)"
        inkscape:label="scans"
        xlink:title="OCR Scan Status"
        target="_parent"
@@ -243,7 +258,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#send-crash-data"
-       transform="matrix(0.53348897,0,0,0.38088838,28.440601,1041.7263)"
+       transform="matrix(0.53348897,0,0,0.38088838,28.440601,1081.7263)"
        inkscape:label="scans"
        xlink:title="Send Crash Data on Fault"
        target="_parent"
@@ -258,7 +273,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#ask-after-restart"
-       transform="matrix(0.53348897,0,0,0.27072657,516.19522,1216.8547)"
+       transform="matrix(0.53348897,0,0,0.27072657,516.19522,1256.8547)"
        inkscape:label="scans"
        xlink:title="Ask about sending telemetry after restart"
        target="_parent"

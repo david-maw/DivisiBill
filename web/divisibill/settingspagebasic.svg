@@ -39,7 +39,7 @@
      showgrid="false"
      inkscape:zoom="1.01"
      inkscape:cx="502.9703"
-     inkscape:cy="715.34653"
+     inkscape:cy="1269.802"
      inkscape:window-width="2560"
      inkscape:window-height="1529"
      inkscape:window-x="1192"
@@ -64,8 +64,38 @@
        height="2220"
        width="1080" />
     <a
+       xlink:href="settingsglossary.html#send-crash-data"
+       transform="matrix(0.53348897,0,0,0.38088838,3.1006263,908.53687)"
+       inkscape:label="scans"
+       xlink:title="Send Crash Data on Fault"
+       target="_parent"
+       id="a941-8-6">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5-4"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#ask-after-restart"
+       transform="matrix(0.53348897,0,0,0.27072657,490.85524,1083.6653)"
+       inkscape:label="scans"
+       xlink:title="Ask about sending telemetry after restart"
+       target="_parent"
+       id="a941-8-6-6">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5-4-7"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+    <a
        xlink:href="settingsglossary.html#purchase-scans"
-       transform="matrix(2.0248379,0,0,0.86451265,-564.28633,359.43072)"
+       transform="matrix(2.0248379,0,0,0.86451265,-548.28633,465.43072)"
        inkscape:label="upgrade"
        xlink:title="Buy a set of OCR scans"
        target="_parent"
@@ -80,7 +110,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#subscribe"
-       transform="matrix(0.82089019,0,0,0.86007046,93.850821,145.6524)"
+       transform="matrix(1.8155894,0,0,0.93003522,-441.72674,182.96428)"
        inkscape:label="upgrade"
        xlink:title="Buy a Professional Subscription"
        target="_parent"
@@ -95,7 +125,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#scans"
-       transform="matrix(1.63521,0,0,0.41599808,-342.8462,733.7831)"
+       transform="matrix(1.63521,0,0,0.41599808,-342.8462,839.7831)"
        inkscape:label="upgrade"
        xlink:title="OCR Scans Remaining"
        target="_parent"
@@ -212,6 +242,21 @@
          height="88.446213"
          x="35.378487"
          y="1450.4404" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#licensing-help"
+       transform="matrix(0.60988113,0,0,0.82859166,218.67085,-193.60389)"
+       inkscape:label="wifi"
+       xlink:title="Change Professional Subscription"
+       target="_parent"
+       id="a938-8-9-8-0">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-9-8"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
     </a>
   </g>
 </svg>
