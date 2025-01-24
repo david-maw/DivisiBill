@@ -1,3 +1,13 @@
+# 6.2.14
+
+## Change Licensing Help to a Hyperlinked Text
+
+The Settings page now has text to tap to open up the help text licensing page and the licensing user interface has been simplified.
+
+## Reference to Default Coupon After Tax
+
+The Settings page was referring to the Coupon After Tax setting for the current bill rather than the default value for all new bills. this has been corrected.
+
 # 6.2.13
 
 ## Add Licensing Help Button
