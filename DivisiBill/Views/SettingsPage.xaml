@@ -97,16 +97,21 @@
             <Label Text="Program built without web services" IsVisible="{Binding WsAllowed, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
             <Grid IsVisible="{Binding WsAllowed}">
                 <VerticalStackLayout IsVisible="{Binding LicenseChecked}">
-                    <Button Text="Licensing Help" Command="{Binding LicensingHelpCommand}" HorizontalOptions="Center" Margin="0,5"/>
+                    <Label HorizontalOptions="Center" Margin="0,5">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding LicensingHelpCommand}"/>
+                        </Label.GestureRecognizers>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Tap " FontSize="Medium"/>
+                                <Span Text="here" TextDecorations="Underline" FontSize="Medium"/>
+                                <Span Text=" for licensing help" FontSize="Medium"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
                     <!--#region Pro Subscription -->
-                    <VerticalStackLayout IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}">
-                        <Label Text="Purchase Pro Subscription" HorizontalOptions="Center"/>
-                        <Button Text="Subscribe" Command="{Binding PurchaseUpgradeCommand}" HorizontalOptions="Center"/>
-                    </VerticalStackLayout>
-                    <VerticalStackLayout IsVisible="{Binding Path=HasProSubscription}">
-                        <Label Text="Remove or Change Pro Subscription" HorizontalOptions="Center"/>
-                        <Button Text="Modify Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5"/>
-                    </VerticalStackLayout>
+                    <Button Text="Purchase Pro Subscription" Command="{Binding PurchaseUpgradeCommand}" HorizontalOptions="Center" IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}"/>
+                    <Button Text="Modify Pro Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{Binding Path=HasProSubscription}"/>
                     <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
                     <Label Text="{Binding ProSubscriptionId, StringFormat='Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
                     <!--#endregion-->
