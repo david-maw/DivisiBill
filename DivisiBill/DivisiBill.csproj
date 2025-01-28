@@ -15,7 +15,6 @@
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
      <NoWarn>NU1608;MVVMTK0045</NoWarn>
      <!--NU1608 Because Plugin.InAppBilling 8.x triggers it-->
-     <!--XC0103 Because https://github.com/dotnet/docs-maui/issues/2486 has not been put in Community Toolkit yet, so this gets a warning in .NET9-->
      <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
 
      <!-- Display name -->
@@ -26,7 +25,7 @@
       <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
  
       <!-- Versions -->
-      <ApplicationDisplayVersion>6.2.14</ApplicationDisplayVersion>
+      <ApplicationDisplayVersion>6.2.15</ApplicationDisplayVersion>
       <ApplicationVersion>300</ApplicationVersion>
 
       <ApplicationVersion Condition="'$(DIVISIBILL_VERSION_INCREMENT)' != ''">$([MSBuild]::Add($(ApplicationVersion), $(DIVISIBILL_VERSION_INCREMENT)))</ApplicationVersion>
