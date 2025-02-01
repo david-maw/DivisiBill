@@ -131,6 +131,7 @@ public partial class SplashPage : ContentPage
             await Task.Delay(1000);
             Utilities.PauseBeforeMessage = false; // Just to be sure it wasn't set at the last possible second
             App.Settings.FirstUse = false;
+            App.Settings.UseAlternateWs = false; // You have to set this again if you want it
             Shell.Current.Navigating -= Cancel_Navigation;
             App.InitializationComplete.SetResult(true);
         }
