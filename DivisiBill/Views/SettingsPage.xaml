@@ -153,7 +153,7 @@
                 <!--#endregion-->
                 <!--#region Use Alternate Web Service -->
                 <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}"
-                      x:DataType="vm:CloudViewModel" BindingContext="{StaticResource CloudViewModel}" IsVisible="{Binding InternetEnabledAndLicensed}">
+                      x:DataType="vm:CloudViewModel" BindingContext="{StaticResource CloudViewModel}">
                     <Label Grid.Row="0" Text="Start With Alternate Web Service" VerticalOptions="Center" HorizontalOptions="End"/>
                     <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding UseAlternateWs}"/>
                 </Grid>
