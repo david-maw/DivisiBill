@@ -57,7 +57,7 @@ internal static class Billing
     internal static bool HasOldProProductId { get; private set; } = false;
 
     /// <summary>
-    /// Check for a pro subscription (or the test pro product) and return a value indicating the outcome.
+    /// Check the license service for a pro subscription (or the test pro product) and return a value indicating the outcome.
     /// </summary>
     /// <returns>
     /// One of the BillingStatus enumerated types

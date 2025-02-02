@@ -4,6 +4,7 @@ using DivisiBill.ViewModels;
 using Microsoft.Maui.Handlers;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
 
 namespace DivisiBill;
 
@@ -383,31 +384,35 @@ public partial class App : Application, INotifyPropertyChanged
             return;
         }
 
-        #region Check that we can reach the web service
+        #region Try to reach the web service until the user tells us to give up
         var WsVersionTask = CallWs.GetVersion();
         bool WsVersionChecked = false;
+        // Call the 'version' web service and wait for a response or until the user gives up 
         await WsVersionTask.OrDelay();
         while (!WsVersionTask.IsCompleted)
         {
             AskAboutLicense = AskAboutLicense &&
-                await Utilities.AskAsync("Slow Response", "DivisiBill web service check timed out, do you want to keep waiting or continue without licenses",
+                await Utilities.AskAsync("Slow Response", "DivisiBill web service has not responded, do you want to keep waiting or continue without licenses",
                     "wait", "continue");
             if (!AskAboutLicense) break;
             await WsVersionTask.OrDelay();
         }
+        // If the 'version' call has completed, check the result (if it has not completed, there's no more we can do)
         if (WsVersionTask.IsCompleted)
         {
             Utilities.DebugMsg("In CheckLicenses, WsVersionTask.IsCompleted and result = " + WsVersionTask.Result);
-            if (WsVersionTask.Result == System.Net.HttpStatusCode.OK)
+            if (WsVersionTask.Result == HttpStatusCode.OK)
                 WsVersionChecked = true;
             else
             {
-                while (WsVersionTask.Result != System.Net.HttpStatusCode.OK)
+                // The request completed but returned an error, ask the user if they wish to try again or just go on without licenses
+                while (WsVersionTask.Result != HttpStatusCode.OK)
                 {
                     AskAboutLicense = AskAboutLicense &&
-                        await Utilities.AskAsync("Cloud Failure", $"Could not find the cloud licensing service ({WsVersionTask.Result}), do you want to try again or continue without licenses",
+                        await Utilities.AskAsync("Cloud Failure",
+                        $"Could not use the cloud licensing service ({(int)WsVersionTask.Result}-{WsVersionTask.Result}), do you want to try again or continue without licenses",
                             "try again", "continue");
-                    if (!AskAboutLicense) break;
+                    if (!AskAboutLicense) break; // The user has elected to stop waiting
                     if (WsVersionTask.IsCompleted)
                         WsVersionTask = CallWs.GetVersion();
                     await WsVersionTask.OrDelay();
@@ -416,12 +421,11 @@ public partial class App : Application, INotifyPropertyChanged
                 }
                 if (WsVersionTask.IsCompleted)
                 {
-                    Utilities.DebugMsg("In CheckLicenses, retried version call, WsVersionTask.IsCompleted and result = " + WsVersionTask.Result);
-                    if (WsVersionTask.Result == System.Net.HttpStatusCode.OK)
+                    if (!AskAboutLicense)
+                        Utilities.DebugMsg("In CheckLicenses, abandoned retried version call but the request completed anyway with " + WsVersionTask.Result);
+                    if (WsVersionTask.Result == HttpStatusCode.OK)
                         WsVersionChecked = true;
                 }
-                else if (Utilities.IsDebug)
-                    await Utilities.DisplayAlertAsync("GetVersion Failed", "Retry of remote call on GetVersion failed, request returned " + WsVersionTask.Result);
             }
         }
         #endregion
@@ -430,6 +434,7 @@ public partial class App : Application, INotifyPropertyChanged
         if (WsVersionChecked)
         {
             Utilities.DebugMsg("In CheckLicenses, WsVersionChecked true");
+            // Check whether the license store knows about us
             Task<Billing.BillingStatusType> LicenseTask = Billing.GetHasProSubscriptionAsync();
             await LicenseTask.OrDelay();
             while (!LicenseTask.IsCompleted)
@@ -660,21 +665,21 @@ public partial class App : Application, INotifyPropertyChanged
         await InitializationComplete.Task;
         if (!UseLocation)
             return;
-            PauseToken IsRunning = IsRunningSource.Token;
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                await IsRunning.WaitWhilePausedAsync();
-                if (!cancellationToken.IsCancellationRequested)
-                    try
-                    {
-                        await GetMyLocationAsync(cancellationToken);
-                        await Task.Delay(60000, cancellationToken);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        // Just ignore this, it's the normal shutdown mechanism
-                    }
-            }
+        PauseToken IsRunning = IsRunningSource.Token;
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await IsRunning.WaitWhilePausedAsync();
+            if (!cancellationToken.IsCancellationRequested)
+                try
+                {
+                    await GetMyLocationAsync(cancellationToken);
+                    await Task.Delay(60000, cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    // Just ignore this, it's the normal shutdown mechanism
+                }
+        }
     }
     private static readonly Counter MonitoringLocationCounter = new();
     public static async Task StartMonitoringLocation()
