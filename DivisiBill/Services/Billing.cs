@@ -1,6 +1,7 @@
 ﻿using Plugin.InAppBilling;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Nodes;
 
 namespace DivisiBill.Services;
 
@@ -9,17 +10,27 @@ namespace DivisiBill.Services;
 /// (the Plugin.InAppBilling nuget package) and the DivisiBill web service. For the purposes of this
 /// discussion the license may be for a product or a subscription.</para>
 /// 
+/// <para>Professional licenses (usually subscriptions) enable cloud features, OCR licenses enable scans, 
+/// you can buy an OCR license one whenever your scan counts drop below a threshold. Buying one adds a
+/// fixed number of scans which then decrement as you perform OCR scans on individual bills. When the scan count
+/// reaches zero we notify the store that the license has been consumed and you must buy another before more 
+/// scans are allowed. The tracking is mostly done by the web service, but we keep a local copy of how many scans
+/// we think are left for convenience even though the web service value is definitive.</para>
+/// 
 /// <para>The flow is that a user buys a license through the program using the store for the platform (only Android at
 /// present) and then presents it to a web service for validation. The web service ALSO calls the store to validate the
-/// license it was given is a new one (an unacknowledged one) and also that is not in its list of known licenses. if that
+/// license it was given was issued by the store and also checks that it is not in its list of known licenses. if that
 /// validation passes, the license is stored in a table (so it's now a known one) and a value is returned to the caller
-/// to tell it to /// acknowledge the license with the store.
+/// to tell it to acknowledge the license with the store.
 /// If it is an OCR license we also return a count of OCR scans it enables the user to consume, and persist the new total
 /// including unused scans from a previous license.</para>
 /// 
+/// <para>In the unlikely event that a purchase is interrupted in the middle the user might end up with a legitimate license
+/// we've never seen. In that case the license is added to our store just as if it had gone through the normal purchase flow.</para>
+/// 
 /// <para>The pro license is checked at startup and intermittently thereafter <see cref="GetHasProSubscriptionAsync"/>. 
 /// The OCR license management is mostly in the web service but it is occasionally checked 
-/// <see cref="GetHasOcrLicenseAsync"/> against the web service, where the count of remaining scans for each license is kept. 
+/// <see cref="GetHasOcrLicenseAsync"/> against the web service to get the count of remaining scans for that license. 
 /// The number of scans left is decremented whenever a scan is done by the web service and once the number left drops below a
 /// threshold <see cref="ScansWarningLevel"/> the user is allowed to purchase a new license and we delete the old one (on 
 /// Android you have to do that before you can buy another), see <see cref="ConsumeDepletedOcrLicense"/>. Any scans remaining on 
@@ -37,6 +48,9 @@ namespace DivisiBill.Services;
 /// </summary>
 internal static class Billing
 {
+    /// <summary>
+    /// The status of a billing operation, typically returned from a method that performs some billing operation.
+    /// </summary>
     public enum BillingStatusType
     {
         ok,
@@ -61,9 +75,11 @@ internal static class Billing
     /// </summary>
     /// <returns>
     /// One of the BillingStatus enumerated types
-    ///  ok - everything worked, the subscription is good
-    ///  notfound - no evidence of the subscription - normal for users who have not purchased it
-    ///  notVerified - we found a subscription (Android handed us one when asked) but could not verify it was legitimate
+    /// <list type="table">
+    ///  <item>ok - everything worked, the subscription is good</item>
+    ///  <item>notFound - no evidence of the subscription - normal for users who have not purchased it</item>
+    ///  <item>notVerified - we found a subscription (Android handed us one when asked) but could not verify it was legitimate</item>
+    /// </list>
     /// </returns>
     internal static async Task<BillingStatusType> GetHasProSubscriptionAsync()
     {
@@ -80,7 +96,7 @@ internal static class Billing
             else
             {
                 string json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json, Billing.OldProProductId);
+                string resultString = await GetInAppBillingPurchaseFakeAsync(json);
                 ProPurchase = new InAppBillingPurchase()
                 {
                     ProductId = OldProProductId, // temporary
@@ -141,8 +157,7 @@ internal static class Billing
         return BillingStatusType.notFound;
     }
     /// <summary>
-    /// Purchase a Pro license from Google then check it against our web service to see how many
-    /// scans it permits
+    /// Purchase a Pro license from an app store then check it against our web service to make sure it is legitimate.
     /// </summary>
     /// <returns>True if purchase worked, false otherwise</returns>
     internal static async Task<bool> PurchaseProSubscriptionAsync()
@@ -164,11 +179,6 @@ internal static class Billing
     }
     #endregion
     #region OCR License
-    // OCR licenses hold scan counts, you can buy one whenever your scan counts drop to zero. Buying one adds a
-    // fixed number of scans which then decrement as you perform OCR scans on individual bills. When the scan count
-    // reaches zero we notify the store that the license has been consumed and you can must buy another before more 
-    // scans are allowed. The tracking is mostly done by the web service, but we keep a local copy of how many scans
-    // we think are left for convenience even though the web service value is definitive.
 
     public static readonly string OcrLicenseProductId = "ocr.calls";
     internal static int ScansLeft { get; set; }
@@ -176,7 +186,7 @@ internal static class Billing
     /// <summary>
     /// Check whether the user has an OCR license, if it is valid, and if it has scans left
     /// </summary>
-    /// <returns>Scans remaining</returns>
+    /// <returns>Scans remaining or a negative number if the license was invalid</returns>
     internal static async Task<int> GetHasOcrLicenseAsync()
     {
 #if DEBUG
@@ -191,7 +201,7 @@ internal static class Billing
             else
             {
                 string json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestOcrJsonB64));
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json, Billing.OcrLicenseProductId);
+                string resultString = await GetInAppBillingPurchaseFakeAsync(json);
                 OcrPurchase = new InAppBillingPurchase() // Set regardless of whether verification works or fails
                 {
                     ProductId = OcrLicenseProductId,
@@ -226,6 +236,10 @@ internal static class Billing
         }
         return -1;
     }
+    /// <summary>
+    /// Purchase an OCR license from an app store then check it against our web service to make sure it is legitimate.
+    /// </summary>
+    /// <returns>Scans remaining or a negative number if the purchase failed</returns>
     internal static async Task<int> PurchaseOcrLicenseAsync()
     {
         Debug.Assert(App.Settings is not null);
@@ -263,7 +277,7 @@ internal static class Billing
         }
     }
     #endregion
-    #region Communication with Play Store
+    #region Communication with App Store
     #region Connection Management
     public static int BillingConnections = 0;
     private static async Task<(BillingStatusType Status, IInAppBilling Interface)> OpenBilling([CallerMemberName] string methodName = "UnknownMethod")
@@ -305,7 +319,7 @@ internal static class Billing
     #endregion
 
     /// <summary>
-    /// Purchase either a product or a subscription from the Play store.
+    /// Purchase either a product or a subscription from the app store (just the Google play Store for now).
     /// </summary>
     /// <param name="productId">The ID of the product or subscription to be purchased</param>
     /// <param name="isSubscription">Whether it is a subscription (true) or a product (false)</param>
@@ -370,6 +384,13 @@ internal static class Billing
         return null;
     }
 
+    /// <summary>
+    /// Finalize/Acknowledge a purchase by calling the app store then validate it by calling our web service
+    /// </summary>
+    /// <param name="purchase">The purchase to finalize</param>
+    /// <param name="inAppBilling">Am IInAppBilling interface pointer</param>
+    /// <param name="isSubscription">True if 'purchase' represents a subscription, false if it is a product</param>
+    /// <returns></returns>
     private static async Task<InAppBillingPurchase> FinalizePurchaseAsync(InAppBillingPurchase purchase, IInAppBilling inAppBilling, bool isSubscription)
     {
         // Need to finalize only if on Android - unless you turn off auto finalize on iOS
@@ -425,9 +446,28 @@ internal static class Billing
     }
 
 #if DEBUG
-    private static async Task<string> GetInAppBillingPurchaseFakeAsync(string androidJson, string productId)
+    /// <summary>
+    /// A fake version of GetInAppBillingPurchaseAsync that uses a pre-formatted JSON string to simulate a purchase.
+    /// Only compiled in DEBUG builds and only used on Windows for testing.
+    /// </summary>
+    /// <param name="androidJson">JSON representation of a license</param>
+    /// <returns></returns>
+    private static async Task<string> GetInAppBillingPurchaseFakeAsync(string androidJson)
     {
         Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync");
+        JsonNode androidJsonObject = JsonNode.Parse(androidJson);
+        if (androidJsonObject is null)
+        {
+            Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, androidJsonObject was null, returning null");
+            return null;
+        }
+        JsonNode productIdNode = androidJsonObject["productId"];
+        if (productIdNode is null || productIdNode.GetValue<string>() is not string productId)
+        {
+            Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, productIdNode was not a string, returning null");
+            return null;
+        }
+
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, no Internet, returning null");
@@ -455,7 +495,12 @@ internal static class Billing
     }
 #endif
 
-
+    /// <summary>
+    /// Get a license object for a named product by checking the store for a record of it, then verifying the returned license with the web service.
+    /// </summary>
+    /// <param name="productId">The product Id we need a license for</param>
+    /// <param name="isSubscription">Whether it is a subscription or a one-time product</param>
+    /// <returns></returns>
     private static async Task<(BillingStatusType, InAppBillingPurchase)> GetInAppBillingPurchaseAsync(string productId, bool isSubscription = false)
     {
         Utilities.DebugMsg("In GetInAppBillingPurchaseAsync for " + productId + (isSubscription ? " subscription" : " license"));
