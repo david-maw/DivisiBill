@@ -364,7 +364,10 @@ internal static class Billing
                 bool recorded = await CallWs.RecordPurchaseAsync(purchase, isSubscription);
 
                 if (recorded)
-                    return await FinalizePurchaseAsync(purchase, inAppBilling, isSubscription);
+                {
+                    purchase.IsAcknowledged = true; // Because the web service acknowledges the purchase 
+                    return purchase;
+                }
                 else
                 {
                     // Something suspicious happened, we got an alleged new license from Google, but were unable to record it (meaning it was not really new)
@@ -383,38 +386,6 @@ internal static class Billing
         Utilities.DebugMsg("In Billing.PurchaseItemAsync:  Attempt to record license failed");
         return null;
     }
-
-    /// <summary>
-    /// Finalize/Acknowledge a purchase by calling the app store then validate it by calling our web service
-    /// </summary>
-    /// <param name="purchase">The purchase to finalize</param>
-    /// <param name="inAppBilling">Am IInAppBilling interface pointer</param>
-    /// <param name="isSubscription">True if 'purchase' represents a subscription, false if it is a product</param>
-    /// <returns></returns>
-    private static async Task<InAppBillingPurchase> FinalizePurchaseAsync(InAppBillingPurchase purchase, IInAppBilling inAppBilling, bool isSubscription)
-    {
-        // Need to finalize only if on Android - unless you turn off auto finalize on iOS
-        try
-        {
-            var ack = await inAppBilling.FinalizePurchaseAsync(new[] { purchase.TransactionIdentifier });
-            if (!ack.Any(item => item.Id.Equals(purchase.PurchaseToken) && item.Success))
-                return null;
-        }
-        catch (InAppBillingPurchaseException pe)
-        {
-            Utilities.DebugMsg("In FinalizePurchaseAsync, inAppBilling.FinalizePurchaseAsync threw a PurchaseException: " + pe.Message + ", " + pe.PurchaseError.ToString());
-        }
-
-        // Here we have a license from Google and have recorded it, setting IsAcknowledged = 1, so now validate it through our web service
-        string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
-        if (validationResult is not null && int.TryParse(validationResult, out int scans))
-        {
-            purchase.Quantity = scans;
-            return purchase;
-        }
-        return null;
-    }
-
     private static async Task<bool> ConsumeItemAsync(string productId, string purchaseToken)
     {
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
@@ -532,8 +503,6 @@ internal static class Billing
             else
                 Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} found in play store purchase list, verifying with web service");
 
-            if (purchase.IsAcknowledged == false) // Probably there was an unfortunately timed interruption during the purchase attempt, but the client has paid, so finalize it
-                await FinalizePurchaseAsync(purchase, Interface, isSubscription);
 
             string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
 
