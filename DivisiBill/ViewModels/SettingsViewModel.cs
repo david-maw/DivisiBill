@@ -75,10 +75,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
             await Utilities.DisplayAlertAsync("Tester", "You have a perpetual professional license and do not need a subscription");
             return;
         }
+        App.Settings.HadProSubscription = true; // Avoid the "professional license found" warning on returning
         IsBusy = true;
         bool subscriptionPurchased = await Billing.PurchaseProSubscriptionAsync();
         IsBusy = false;
-        Utilities.DebugMsg("PurchaseProSubscriptionAsync, returned scans = " + subscriptionPurchased);
+        Utilities.DebugMsg("In PurchaseUpgradeAsync, PurchaseProSubscriptionAsync returned " + subscriptionPurchased);
         IsLimited = !subscriptionPurchased;
         if (IsLimited)
             await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire a professional subscription");
