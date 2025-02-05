@@ -53,7 +53,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     {
         IsBusy = true;
         int scans = await Billing.PurchaseOcrLicenseAsync();
-        Utilities.DebugMsg("OCR licenses purchased, scans = " + scans);
+        Utilities.DebugMsg("OCR licenses purchased, total remaining scans = " + scans);
         IsBusy = false;
         if (scans == -1)
             await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire any additional OCR licenses");

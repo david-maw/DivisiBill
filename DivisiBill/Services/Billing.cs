@@ -249,10 +249,10 @@ internal static class Billing
         if (OcrPurchase is null) return -1;
         string validationResult = await CallWs.VerifyPurchase(OcrPurchase, isSubscription: false);
         if (validationResult is null) return -2;
-        int.TryParse(validationResult, out int ocrLicenseScansAdded);
-        ScansLeft += ocrLicenseScansAdded;
-        Utilities.DebugMsg($"In PurchaseOcrLicenseAsync, OCR scans purchased = {ocrLicenseScansAdded}, scans left = {ScansLeft}");
-        return ocrLicenseScansAdded;
+        int.TryParse(validationResult, out int ocrLicenseScans);
+        ScansLeft = ocrLicenseScans;
+        Utilities.DebugMsg($"In PurchaseOcrLicenseAsync, OCR scans purchased = {ocrLicenseScans}, scans left = {ScansLeft}");
+        return ocrLicenseScans;
     }
     /// <summary>
     /// Remove an OCR license from the store (but not from our list of used licenses) once it has no scans attached any more
