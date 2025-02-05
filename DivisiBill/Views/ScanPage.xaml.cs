@@ -83,11 +83,11 @@ public partial class ScanPage : ContentPage, IQueryAttributable
             if (scannedBill is not null)
             {
                 if (scannedBill.ScansLeft == 0)
-                    await Utilities.DisplayAlertAsync("Warning", "You have used your last OCR license");
+                    await Utilities.DisplayAlertAsync("Warning", "You have used your last scan");
                 else if (scannedBill.ScansLeft == 1)
-                    await Utilities.DisplayAlertAsync("Warning", "You have only one OCR license remaining");
+                    await Utilities.DisplayAlertAsync("Warning", "You have only one scan remaining");
                 else if (scannedBill.ScansLeft < Billing.ScansWarningLevel)
-                    await Utilities.DisplayAlertAsync("Warning", $"You have only {scannedBill.ScansLeft} OCR licenses remaining");
+                    await Utilities.DisplayAlertAsync("Warning", $"You have only {scannedBill.ScansLeft} scans remaining");
                 // Store the ScannedBill object in case we can use it later
                 if (string.IsNullOrEmpty(scannedBill.SourceName) && !string.IsNullOrEmpty(sourceName))
                     scannedBill.SourceName = sourceName;
