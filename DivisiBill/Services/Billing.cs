@@ -386,6 +386,13 @@ internal static class Billing
         Utilities.DebugMsg("In Billing.PurchaseItemAsync:  Attempt to record license failed");
         return null;
     }
+
+    /// <summary>
+    /// Consume a license that has been used up, so the user can buy another one, used with OCR licenses.
+    /// </summary>
+    /// <param name="productId">The product the license is for</param>
+    /// <param name="purchaseToken">The token provided by the store when issuing the license</param>
+    /// <returns>True if the license was consumed, false otherwise</returns>
     private static async Task<bool> ConsumeItemAsync(string productId, string purchaseToken)
     {
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
