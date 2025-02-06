@@ -1,3 +1,17 @@
+# 6.2.15
+
+## Correct OCR License Purchase Message
+
+When purchasing additional scans the message showed an incorrect number remaining, this has been corrected.
+
+## Remove Extra message Buying a Subscription
+
+Purchasing a subscription showed two messages after switching back from the "purchase a subscription" UI. Now only one is shown.
+
+## Update OCR Scan Messages for Clarity
+
+Replaced "OCR license" with "scan" in user alerts to better reflect the functionality for consistency and clarity.
+
 # 6.2.14
 
 ## Change Licensing Help to a Hyperlinked Text
