@@ -209,10 +209,9 @@ internal static class Billing
                     Id = "GPA.XXXX-XXXX-XXXX-34067",
                     OriginalJson = json
                 };
-                if (resultString is not null)
+                if (resultString is not null && int.TryParse(resultString, out int scans))
                 {
                     OcrPurchase.State = PurchaseState.Purchased;
-                    int.TryParse(resultString, out int scans);
                     ScansLeft = scans;
                     return scans;
                 }
@@ -248,8 +247,8 @@ internal static class Billing
         OcrPurchase = await PurchaseItemAsync(OcrLicenseProductId, App.Settings.UserKey);
         if (OcrPurchase is null) return -1;
         string validationResult = await CallWs.VerifyPurchase(OcrPurchase, isSubscription: false);
-        if (validationResult is null) return -2;
-        int.TryParse(validationResult, out int ocrLicenseScans);
+        if (validationResult is null || !int.TryParse(validationResult, out int ocrLicenseScans))
+            return -2;
         ScansLeft = ocrLicenseScans;
         Utilities.DebugMsg($"In PurchaseOcrLicenseAsync, OCR scans purchased = {ocrLicenseScans}, scans left = {ScansLeft}");
         return ocrLicenseScans;
@@ -400,7 +399,7 @@ internal static class Billing
             // No Internet, don't even bother trying
             return false;
         }
-        var (Status, Interface) = await OpenBilling();
+        var (_, Interface) = await OpenBilling();
         if (Interface is null)
         {
             //we are off line or can't connect, don't try to do anything
@@ -501,10 +500,10 @@ internal static class Billing
 
             if (purchase is null)
             {
-                if (purchaseList.Count() == 0)
-                    Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} not found, play store purchase list was empty, returning null");
-                else
+                if (purchaseList.Any())
                     Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} not found in play store purchase list, returning null");
+                else
+                    Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} not found, play store purchase list was empty, returning null");
                 return (BillingStatusType.notFound, null);
             }
             else
@@ -513,14 +512,12 @@ internal static class Billing
 
             string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
 
-            if (validationResult is null)
+            if (validationResult is null || !int.TryParse(validationResult, out int scans))
             {
-                Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, VerifyPurchase returned null, returning failed purchase");
+                Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, VerifyPurchase did not return an int, returning failed purchase");
                 purchase.State = PurchaseState.Failed;
                 return (BillingStatusType.notVerified, purchase);
             }
-
-            int.TryParse(validationResult, out int scans);
 
             purchase.Quantity = scans;
 
