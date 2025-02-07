@@ -496,7 +496,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     /// <param name="baseString"></param>
     /// <param name="includedString"></param>
     /// <returns></returns>
-    private bool StringIncludes(string baseString, string includedString) => string.IsNullOrEmpty(includedString)
+    private static bool StringIncludes(string baseString, string includedString) => string.IsNullOrEmpty(includedString)
                   || (!string.IsNullOrEmpty(baseString)
                     & baseString.Equals(includedString, StringComparison.CurrentCulture));
 

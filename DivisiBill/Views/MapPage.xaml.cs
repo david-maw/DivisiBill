@@ -43,7 +43,7 @@ public partial class MapPage : ContentPage
         await App.StopMonitoringLocation();
     }
 
-    private void App_MyLocationChanged(object sender, EventArgs e) => VenueDistance = App.Current.GetDistanceTo(VenueLocation);
+    private void App_MyLocationChanged(object sender, EventArgs e) => VenueDistance = App.GetDistanceTo(VenueLocation);
 
     /// <summary>
     /// Takes a number and returns the nearest 'simpler' one. A simpler number has all zeros, except the first digit
@@ -108,7 +108,7 @@ public partial class MapPage : ContentPage
             if ((value is null && field is not null) || value.GetDistanceTo(field) > 0)
             {
                 field = value;
-                VenueDistance = App.Current.GetDistanceTo(field);
+                VenueDistance = App.GetDistanceTo(field);
                 MovePin();
                 VenueLocationHasChanged = true;
                 OnPropertyChanged();

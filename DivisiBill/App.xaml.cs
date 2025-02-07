@@ -97,7 +97,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <summary>
     /// Update all Entry controls so they initially select all text when focused
     /// </summary>
-    private void ModifyEntry() => EntryHandler.Mapper.AppendToMapping("MyCustomization", (handler, view) =>
+    private static void ModifyEntry() => EntryHandler.Mapper.AppendToMapping("MyCustomization", (handler, view) =>
         {
 #if ANDROID
             handler.PlatformView.SetSelectAllOnFocus(true);
@@ -504,7 +504,7 @@ public partial class App : Application, INotifyPropertyChanged
             else if (IsLimited && !wasLimited) // Downgrade, an unusual case but not impossible
                 await Utilities.DisplayAlertAsync("Removed", "The professional subscription for DivisiBill has ended");
             // Nice, there's no message if we found a pro subscription because that is 
-            if (IsLimited != wasLimited) // it changed, tell the viewmodel
+            if (IsLimited != wasLimited) // it changed, tell the ViewModel
             {
                 ProEditionVerified?.Invoke(null, null);
                 (Application.Current.Resources["CloudViewModel"] as CloudViewModel)?.NotifyProPurchase();
@@ -564,7 +564,7 @@ public partial class App : Application, INotifyPropertyChanged
     }
     #endregion
     #region Location Handling
-    public int GetDistanceTo(Location l) => MyLocation is null || l is null || MyLocation.Accuracy.GetValueOrDefault(Distances.Inaccurate) >= Distances.Inaccurate ? Distances.Inaccurate : MyLocation.GetDistanceTo(l);
+    public static int GetDistanceTo(Location l) => MyLocation is null || l is null || MyLocation.Accuracy.GetValueOrDefault(Distances.Inaccurate) >= Distances.Inaccurate ? Distances.Inaccurate : MyLocation.GetDistanceTo(l);
     private static async Task TryGetMyLocationAsync(CancellationToken cancellationToken)
     {
         var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
@@ -627,9 +627,8 @@ public partial class App : Application, INotifyPropertyChanged
     {
         try
         {
-            Location L = FakeLocation is not null ? FakeLocation :
-                await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);
-            if (L?.Accuracy.GetValueOrDefault(Distances.Inaccurate) <= Distances.AccuracyLimit && L.GetDistanceTo(MyLocation) > 20) // Don't report on small changes, it's needlessly disruptive
+            Location L = FakeLocation ?? await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);
+            if (L.Accuracy.GetValueOrDefault(Distances.Inaccurate) <= Distances.AccuracyLimit && L.GetDistanceTo(MyLocation) > 20) // Don't report on small changes, it's needlessly disruptive
             {
                 MyLocation = L;
                 MyLocationChanged?.Invoke(null, null);

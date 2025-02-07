@@ -155,7 +155,7 @@ public partial class LineItemsPage : ContentPage
             return; // The button layout may be messed up, but the program will run just fine
         }
     }
-    private void DrawSharesButton(Button btn, byte? shares)
+    private static void DrawSharesButton(Button btn, byte? shares)
     {
         btn.BorderWidth = shares > 0 ? 2 : 0;
         btn.CornerRadius = shares > 1 ? 20 : 0;

@@ -37,7 +37,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     {
         App.MyLocationChanged -= App_MyLocationChanged;
     }
-    private void App_MyLocationChanged(object? sender, EventArgs e) => Distance = App.Current.GetDistanceTo(MyLocation);
+    private void App_MyLocationChanged(object? sender, EventArgs e) => Distance = App.GetDistanceTo(MyLocation);
 
     #region Properties
 
@@ -53,7 +53,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial Location? MyLocation { get; set; } = null;
 
-    partial void OnMyLocationChanged(Location? value) => Distance = App.Current.GetDistanceTo(value);
+    partial void OnMyLocationChanged(Location? value) => Distance = App.GetDistanceTo(value);
 
     [ObservableProperty]
     public partial int Distance { get; set; } = Distances.Unknown;

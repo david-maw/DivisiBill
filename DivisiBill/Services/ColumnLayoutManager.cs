@@ -11,7 +11,7 @@ public class ColumnLayoutManager : ILayoutManager
 
     public ColumnLayoutManager(ColumnLayout layout) => _columnLayout = layout;
 
-    private IGridLayout ToColumnGrid(VerticalStackLayout stackLayout)
+    private static IGridLayout ToColumnGrid(VerticalStackLayout stackLayout)
     {
         Grid grid = new LayoutGrid
         {

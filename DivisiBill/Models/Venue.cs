@@ -313,7 +313,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     {
         allVenuesByDistanceIsSorted = false;
         foreach (var v in allVenuesByDistance)
-            v.Distance = Distances.Simplified(App.Current.GetDistanceTo(v.Location));
+            v.Distance = Distances.Simplified(App.GetDistanceTo(v.Location));
         await Task.Yield();
         var sortableList = new List<Venue>(allVenuesByDistance);
         sortableList.Sort(CompareDistances);
@@ -448,7 +448,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
                 Longitude = value.Longitude;
                 Accuracy = value.AccuracyOrDefault();
                 IsLocationValid = true;
-                Distance = App.Current.GetDistanceTo(Location);
+                Distance = App.GetDistanceTo(Location);
                 UpdateTime = DateTime.Now;
             }
             // else the location has not changed, do nothing
@@ -548,7 +548,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             {
                 field = value;
                 if (value)
-                    Distance = App.Current.GetDistanceTo(Location);
+                    Distance = App.GetDistanceTo(Location);
                 else
                 {
                     // Reset these because they are persisted
