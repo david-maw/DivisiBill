@@ -13,6 +13,7 @@
       <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
       <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
+     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
      <NoWarn>NU1608;MVVMTK0045</NoWarn>
      <!--NU1608 Because Plugin.InAppBilling 8.x triggers it-->
      <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
