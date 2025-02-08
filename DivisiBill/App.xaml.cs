@@ -160,7 +160,8 @@ public partial class App : Application, INotifyPropertyChanged
         void StoreWindowLocation(double x, double y, double w, double h)
         {
             if (Utilities.IsUWP)
-                App.Settings.InitialPosition = new Rect(x, y, w, h);
+                MainThread.BeginInvokeOnMainThread(() => Settings.InitialPosition = new Rect(x, y, w, h));
+            // TODO: Only on the main thread to work around https://github.com/dotnet/maui/issues/27167
         }
 
         // Outer block of CreateWindow
