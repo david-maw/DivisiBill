@@ -71,6 +71,32 @@
                         ColumnDefinitions="20,*,Auto,20"
                         IsVisible="{Binding IsSharedByFilter}"
                         RowDefinitions="Auto">
+                        <Grid.Resources>
+                            <Style x:Key="SignedLabelStyle" TargetType="Label">
+                                <Setter Property="VisualStateManager.VisualStateGroups">
+                                    <VisualStateGroupList>
+                                        <VisualStateGroup>
+                                            <VisualState x:Name="Negative">
+                                                <VisualState.StateTriggers>
+                                                    <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="True" />
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Property="TextColor" Value="{StaticResource NegativeNumber}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Default">
+                                                <VisualState.StateTriggers>
+                                                    <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="False" />
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateGroupList>
+                                </Setter>
+                            </Style>
+                        </Grid.Resources>
                         <Label
                             Grid.Column="0"
                             FontSize="15"
@@ -84,7 +110,6 @@
                             LineBreakMode="TailTruncation"
                             Text="{Binding ItemName}" />
 
-                        <!--  TODO MAUI WORKAROUND The obvious thing to do here is use a Visual State but it doesn't work as of .NET8 RC2  -->
                         <Label
                             x:Name="amountLabel"
                             Grid.Column="2"
@@ -92,7 +117,7 @@
                             HorizontalTextAlignment="End"
                             IsEnabled="True"
                             LineBreakMode="NoWrap"
-                            Style="{Binding RedIfNegative}"
+                            Style="{StaticResource SignedLabelStyle}"
                             Text="{Binding Path=AmountText}" />
 
                         <Label
@@ -132,6 +157,32 @@
         </DataTemplate>
         <DataTemplate x:Key="NoSwipe" x:DataType="model:LineItem">
             <Grid ColumnDefinitions="35,*,80,*,30">
+                <Grid.Resources>
+                <Style x:Key="SignedLabelStyle" TargetType="Label">
+                    <Setter Property="VisualStateManager.VisualStateGroups">
+                        <VisualStateGroupList>
+                            <VisualStateGroup>
+                                <VisualState x:Name="Negative">
+                                    <VisualState.StateTriggers>
+                                            <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="True" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
+                                        <Setter Property="TextColor" Value="{StaticResource NegativeNumber}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                    <VisualState x:Name="Default">
+                                        <VisualState.StateTriggers>
+                                            <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="False" />
+                                        </VisualState.StateTriggers>
+                                        <VisualState.Setters>
+                                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                        </VisualStateGroupList>
+                    </Setter>
+                </Style>
+                </Grid.Resources>
                 <!--#region Item information-->
                 <Grid
                     Grid.ColumnSpan="5"
@@ -152,7 +203,6 @@
                         LineBreakMode="TailTruncation"
                         Text="{Binding ItemName}" />
 
-                    <!--  TODO MAUI WORKAROUND The obvious thing to do here is use a Visual State but it doesn't work as of .NET8 RC2  -->
                     <Label
                         x:Name="amountLabel"
                         Grid.Column="2"
@@ -160,7 +210,7 @@
                         HorizontalTextAlignment="End"
                         IsEnabled="True"
                         LineBreakMode="NoWrap"
-                        Style="{Binding RedIfNegative}"
+                        Style="{StaticResource SignedLabelStyle}"
                         Text="{Binding Path=AmountText}" />
 
                     <Label

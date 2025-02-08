@@ -23,6 +23,7 @@
             <services:DistanceConverter x:Key="Distance" />
             <services:LocationConverter x:Key="Location" />
             <services:IsNonZeroConverter x:Key="IsNonZero" />
+            <services:IsNegativeConverter x:Key="IsNegative" />
 
             <viewModels:CloudViewModel x:Key="CloudViewModel" />
             <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> 
@@ -40,6 +41,7 @@
             <Color x:Key="FileGlyphDark">Blue</Color>
             <Color x:Key="ImageGlyphLight">LightGreen</Color>
             <Color x:Key="ImageGlyphDark">Green</Color>
+            <Color x:Key="NegativeNumber">Red</Color>
             <Color x:Key="SelectedBackGroundColor">#f17b01</Color> 
             <!--  Same color that Android uses by default  -->
             <!--  ICON NAME  -->
