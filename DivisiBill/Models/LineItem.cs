@@ -470,12 +470,6 @@ public class LineItem : INotifyPropertyChanged
     /// Handy utility property used to show negative amounts in red.
     /// </summary>
     [XmlIgnore]
-    public Style RedIfNegative => (FilteredAmount < 0) ? App.RedLabelText : null;
-
-    /// <summary>
-    /// Handy utility property used to show negative amounts in red.
-    /// </summary>
-    [XmlIgnore]
     public string AmountText => Math.Abs(FilteredAmount).ToString("C");
 
     // Set this to constrain amounts to a particular sharer
@@ -519,7 +513,6 @@ public class LineItem : INotifyPropertyChanged
         if (propChanged.Equals(nameof(FilteredAmount)))
         {
             OnPropertyChanged(nameof(AmountText));
-            OnPropertyChanged(nameof(RedIfNegative));
         }
     }
 }

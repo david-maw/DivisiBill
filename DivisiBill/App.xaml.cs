@@ -61,7 +61,6 @@ public partial class App : Application, INotifyPropertyChanged
     public static int ScanOption = 2;
     public static bool pauseInitialization = false;
     public static bool isTutorialMode = false;
-    public static Style RedLabelText = null;
     private const int WindowWidth = 600;
     private const int WindowHeight = 1200;
     #endregion
@@ -80,8 +79,6 @@ public partial class App : Application, INotifyPropertyChanged
                 h.PlatformView.MinWidth = 0;
             });
 #endif
-        if (Resources.TryGetValue("RedLabelTextStyle", out object value) && value is Style)
-            RedLabelText = (Style)value;        // Start up the location monitoring loop
         // Change all Entry controls to auto-select text
         ModifyEntry();
         // Enable connectivity monitoring
