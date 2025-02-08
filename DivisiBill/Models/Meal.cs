@@ -1208,7 +1208,7 @@ public partial class Meal : ObservableObjectPlus
         Summary.IsLocal = true;
         SavedToFile = true;
         if (SavedToApp)
-            App.Settings.MealSavedToFile = true;
+            MainThread.BeginInvokeOnMainThread(() => App.Settings.MealSavedToFile = true);
     }
     private async Task SaveToRemoteAsync()
     {
@@ -1267,7 +1267,8 @@ public partial class Meal : ObservableObjectPlus
             OnPropertyChanged(nameof(Age));
             OnPropertyChanged(nameof(FileName));
             OnPropertyChanged(nameof(IsDefault));
-        };
+        }
+        ;
     }
 
     [XmlIgnore]
