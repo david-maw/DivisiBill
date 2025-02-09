@@ -852,20 +852,12 @@ public static class Utilities
     {
         // The earth is about 40,000 km in circumference and there are 360 degrees of arc in a circle
         // So 1 degree is roughly 111,111 and that means 0.0001 degrees is about 11 meters
-        string fmt;
-        if (accuracy < 11)
-            fmt = "0000";
-        else fmt = accuracy < 111 ? "000" : accuracy < 1111 ? "00" : accuracy < 11111 ? "0" : "";
+        string fmt = accuracy < 11 ? "0000" : accuracy < 111 ? "000" : accuracy < 1111 ? "00" : accuracy < 11111 ? "0" : "";
         return string.Format("{0:0." + fmt + "}", d);
     }
-    public static double Adjusted(double d, double accuracy)
-    {
-        // The earth is about 40,000 km in circumference and there are 360 degrees of arc in a circle
-        // So 1 degree is roughly 111,111 and that means 0.0001 degrees is about 11 meters
-        if (accuracy < 11)
-            return Math.Round(d, 4);
-        else return accuracy < 111 ? Math.Round(d, 3) : accuracy < 1111 ? Math.Round(d, 2) : accuracy < 11111 ? Math.Round(d, 1) : Math.Round(d);
-    }
+    public static double Adjusted(double d, double accuracy) => Math.Round(d, accuracy < 11 ? 4 : accuracy < 111 ? 3 : accuracy < 1111 ? 2 : accuracy < 11111 ? 1 : 0);
+    // The earth is about 40,000 km in circumference and there are 360 degrees of arc in a circle
+    // So 1 degree is roughly 111,111 meters and that means 0.0001 degrees is about 11 meters
     #endregion
 }
 public static class Distances
