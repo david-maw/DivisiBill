@@ -503,15 +503,30 @@ public static class Utilities
     /// </summary>
     /// <param name="title">The title of the requested dialog</param>
     /// <param name="message">The message body to show</param>
-    /// <param name="accept">Text for a 'yes' answer</param>
-    /// <param name="cancel">Text for a 'no' answer</param>
-    /// <returns></returns>
-    public delegate Task<bool> AskAsyncType(string title, string message, string accept = null, string cancel = null);
+    /// <param name="yesCaption">Text for a 'yes' answer</param>
+    /// <param name="noCaption">Text for a 'no' answer</param>
+    /// <returns>True of the user selected yes, false if they selected no</returns>
+    public delegate Task<bool> AskAsyncType(string title, string message, string yesCaption = "yes", string noCaption = "no");
     public static AskAsyncType AskAsync = ActualAskAsync;
-    public static async Task<bool> ActualAskAsync(string title, string message, string accept = null, string cancel = null)
+    /// <summary>
+    /// Provide a default implementation of asking a simple yes/no question but deal with the fact that Android reverses the question order
+    /// </summary>
+    /// <param name="title">The title of the requested dialog</param>
+    /// <param name="message">The message body to show</param>
+    /// <param name="yesCaption">Text for a 'yes' answer</param>
+    /// <param name="noCaption">Text for a 'no' answer</param>
+    /// <returns>True of the user selected yes, false if they selected no</returns>
+    public static async Task<bool> ActualAskAsync(string title, string message, string yesCaption, string noCaption)
     {
         DebugMsg("Question to user: " + message);
-        return await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, accept, cancel));
+#if ANDROID
+        // The captions appear in reverse order in Android, so swap them round
+        bool androidAnswer = await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, noCaption, yesCaption));
+        return !androidAnswer;
+#else
+        // The captions appear in reverse order in Android, so swap them round
+        return await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, yesCaption, noCaption));
+#endif
     }
 
     /// <summary>

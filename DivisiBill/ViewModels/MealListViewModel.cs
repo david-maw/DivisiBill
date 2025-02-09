@@ -214,7 +214,7 @@ public partial class MealListViewModel : ObservableObjectPlus
                 else
                 {
                     App.Settings.IsCloudAccessAllowed = await Utilities.AskAsync("Cloud Archive is Off", "The 'Allow Archive to " +
-                        "Cloud' program setting is off. Do you want to turn it on?", "Yes", "No");
+                        "Cloud' program setting is off. Do you want to turn it on?");
                     if (App.Settings.IsCloudAccessAllowed)
                         await ChangeShowRemoteMeals();
                 }

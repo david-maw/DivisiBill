@@ -195,7 +195,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
             v.Forget();
             _ = Venue.SaveSettingsAsync();
             var mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == v.Name);
-            if (mealsForVenue.Any() && await Utilities.AskAsync("Question", "Do you want to delete local bills for " + v.Name, "yes", "no"))
+            if (mealsForVenue.Any() && await Utilities.AskAsync("Question", "Do you want to delete local bills for " + v.Name))
             {
                 foreach (MealSummary sum in mealsForVenue.OrderBy((ms) => ms.CreationTime))
                     await sum.DeleteAsync(doLocal: true, doRemote: false);
