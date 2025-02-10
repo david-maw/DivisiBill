@@ -2622,7 +2622,7 @@ public partial class Meal : ObservableObjectPlus
     /// <param name="shares">An array of individual share values (positive integers or zero)</param>
     public static void SimplifyShares(byte[] shares)
     {
-        int gcd(int a, int b) // Greatest Common Divisor - look it up 
+        static int gcd(int a, int b) // Greatest Common Divisor - look it up 
 => a == 0 ? b : gcd(b % a, a);
 
         int GCD = 0;
@@ -2765,7 +2765,7 @@ public partial class Meal : ObservableObjectPlus
     /// <param name="cancellationToken">Set this to cancel the operation </param>
     /// <returns>A task to track the status of the operation.</returns>
     /// <exception cref="OperationCanceledException">Thrown if the task is canceled</exception>
-    public static async Task RecoverFromRemoteAsync(CancellationToken cancellationToken, Action<int, int, int> ReportProgress)
+    public static async Task RecoverFromRemoteAsync(Action<int, int, int> ReportProgress, CancellationToken cancellationToken)
     {
         DebugMsg("Entered RecoverFromRemoteAsync, waiting for CloudAllowedSource");
         await App.CloudAllowedSource.WaitWhilePausedAsync();
