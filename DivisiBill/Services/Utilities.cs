@@ -907,7 +907,7 @@ public static class Distances
 public class AwaitableQueue<T>
 {
     private readonly SemaphoreSlim semaphore = new(0);
-    private readonly object queueLock = new();
+    private readonly Lock queueLock = new();
     private readonly Queue<T> queue = new();
 
     public void Clear()
