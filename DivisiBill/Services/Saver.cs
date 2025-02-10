@@ -5,7 +5,7 @@ namespace DivisiBill.Services;
 internal class Saver
 {
     public static TaskCompletionSource<bool> SaveNowRequested = new();
-    public static bool SavedRemote = false;
+    internal static bool SavedRemote = false;
     /// <summary>
     /// Save current meal on request
     /// </summary>

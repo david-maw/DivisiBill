@@ -219,10 +219,10 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public static DateTime UpdateTime { get; set; }
+    internal static DateTime UpdateTime { get; set; }
 
-    public static bool IsDefaultList => UpdateTime == DateTime.MinValue;
-    public static bool IsSaved => IsDefaultList || App.Settings.PeopleUpdateTime == UpdateTime;
+    internal static bool IsDefaultList => UpdateTime == DateTime.MinValue;
+    internal static bool IsSaved => IsDefaultList || App.Settings.PeopleUpdateTime == UpdateTime;
 
     public static Guid Updater { get; set; }
     public static Person FindByNickname(string targetNickname) => AllPeople.FirstOrDefault(person => person.Nickname.Equals(targetNickname, StringComparison.OrdinalIgnoreCase));

@@ -27,7 +27,7 @@ public class LineItem : INotifyPropertyChanged
     }
     private string itemName;
     private ObservableCollection<bool> sharedBy;
-    public static uint nextItemNumber = 1;
+    internal static uint nextItemNumber = 1;
 
     public LineItem()
     {

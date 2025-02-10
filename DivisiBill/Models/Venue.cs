@@ -394,11 +394,11 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     public static ObservableCollection<Venue> AllVenues { get; } = allVenues;
     public static ObservableCollection<Venue> AllVenuesByDistance { get; } = allVenuesByDistance;
 
-    public static DateTime UpdateTime { get; set; }
+    internal static DateTime UpdateTime { get; set; }
 
-    public static bool IsSaved => App.Settings.VenueUpdateTime == UpdateTime;
+    internal static bool IsSaved => App.Settings.VenueUpdateTime == UpdateTime;
     public static void MarkSaved() => UpdateTime = App.Settings.VenueUpdateTime;
-    public static bool IsDefaultList => UpdateTime == DateTime.MinValue;
+    internal static bool IsDefaultList => UpdateTime == DateTime.MinValue;
 
     public static Guid Updater { get; set; }
     /// <summary>

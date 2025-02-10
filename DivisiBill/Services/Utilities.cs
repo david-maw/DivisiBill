@@ -64,7 +64,7 @@ public static class Utilities
     /// <param name="targetItem">The item to insert or move</param>
     /// <param name="compareTo">The comparison function to determine where the item should be</param>
     /// <returns>True if a new item was inserted false if not (one was already there or the list was null)</returns>
-    public static bool Upsert<T>(this IList<T> list, T targetItem, Func<T, T, int> compareTo) where T : class
+    internal static bool Upsert<T>(this IList<T> list, T targetItem, Func<T, T, int> compareTo) where T : class
     {
         // First, handle the trivial cases
         if (list is null) // initializing
@@ -149,7 +149,7 @@ public static class Utilities
     /// <typeparam name="T">The item type</typeparam>
     /// <param name="list"></param>
     /// <param name="targetItem"></param>
-    public static bool Upsert<T>(this IList<T> list, T targetItem) where T : class, IComparable<T>
+    internal static bool Upsert<T>(this IList<T> list, T targetItem) where T : class, IComparable<T>
     {
         static int compareTo(T item1, T item2) => item1.CompareTo(item2);
         return Upsert(list, targetItem, compareTo);
@@ -233,7 +233,7 @@ public static class Utilities
     /// Return a block of text describing the current app build. Used for diagnostic messages.
     /// </summary>
     /// <returns>text describing the current app build.</returns>
-    public static string GetAppInformation()
+    internal static string GetAppInformation()
     {
         StringBuilder s = new("DivisiBill ", 1000);
         s.AppendLine((App.IsLimited ? "Basic" : "Professional") + " Edition");
@@ -343,7 +343,7 @@ public static class Utilities
 
     private static readonly PauseTokenSource PauseBeforeMessageSource = new();
 
-    public static bool PauseBeforeMessage
+    internal static bool PauseBeforeMessage
     {
         get;
         set
@@ -429,11 +429,11 @@ public static class Utilities
     /// <summary>
     /// True if we're running on Windows
     /// </summary>
-    public static bool IsUWP => DeviceInfo.Platform == DevicePlatform.WinUI;
+    internal static bool IsUWP => DeviceInfo.Platform == DevicePlatform.WinUI;
     /// <summary>
     /// True if we're running on Android
     /// </summary>
-    public static bool IsAndroid => DeviceInfo.Platform == DevicePlatform.Android;
+    internal static bool IsAndroid => DeviceInfo.Platform == DevicePlatform.Android;
 
     // Stops the count of milliseconds before the first message getting silly.
     private static readonly DateTime startTime = DateTime.Now;
@@ -496,7 +496,7 @@ public static class Utilities
         DebugMsg("Action Sheet to user: " + title);
         return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayActionSheet(title, cancel, null, FlowDirection.MatchParent, buttons));
     }
-    public static DisplayActionSheetAsyncType DisplayActionSheetAsync = ActualDisplayActionSheetAsync;
+    internal static DisplayActionSheetAsyncType DisplayActionSheetAsync = ActualDisplayActionSheetAsync;
 
     /// <summary>
     /// Ask a simple yes/no question in a way that lets testing intercept it by assigning to AskAsync
@@ -506,8 +506,8 @@ public static class Utilities
     /// <param name="yesCaption">Text for a 'yes' answer</param>
     /// <param name="noCaption">Text for a 'no' answer</param>
     /// <returns>True of the user selected yes, false if they selected no</returns>
-    public delegate Task<bool> AskAsyncType(string title, string message, string yesCaption = "yes", string noCaption = "no");
-    public static AskAsyncType AskAsync = ActualAskAsync;
+    internal delegate Task<bool> AskAsyncType(string title, string message, string yesCaption = "yes", string noCaption = "no");
+    internal static AskAsyncType AskAsync = ActualAskAsync;
     /// <summary>
     /// Provide a default implementation of asking a simple yes/no question but deal with the fact that Android reverses the question order
     /// </summary>
@@ -516,7 +516,7 @@ public static class Utilities
     /// <param name="yesCaption">Text for a 'yes' answer</param>
     /// <param name="noCaption">Text for a 'no' answer</param>
     /// <returns>True of the user selected yes, false if they selected no</returns>
-    public static async Task<bool> ActualAskAsync(string title, string message, string yesCaption, string noCaption)
+    private static async Task<bool> ActualAskAsync(string title, string message, string yesCaption, string noCaption)
     {
         DebugMsg("Question to user: " + message);
 #if ANDROID
@@ -537,8 +537,8 @@ public static class Utilities
     /// <param name="accept">Text to acknowledge the message</param>
     /// <returns></returns>
     public delegate Task DisplayAlertAsyncType(string title, string message, string accept = null);
-    public static DisplayAlertAsyncType DisplayAlertAsync = ActualDisplayAlertAsync;
-    public static Task ActualDisplayAlertAsync(string title, string message, string accept = null)
+    internal static DisplayAlertAsyncType DisplayAlertAsync = ActualDisplayAlertAsync;
+    private static Task ActualDisplayAlertAsync(string title, string message, string accept = null)
     {
         DebugMsg("Alert to user: " + message);
         return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, "OK"));
@@ -549,13 +549,13 @@ public static class Utilities
     /// </summary>
     /// <param name="paymentsViewModel">A <see cref="PaymentsViewModel"/> populated with the required payment information</param>
     /// <returns></returns>
-    public static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel));
+    internal static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel));
     /// <summary>
     /// Show an application message that will go away by itself if not acknowledged
     /// </summary>
     /// <param name="message">The message to show the user</param>
     /// <returns></returns>
-    public static Task ShowAppSnackBarAsync(string message)
+    internal static Task ShowAppSnackBarAsync(string message)
     {
         DebugMsg("Snack message to user: " + message);
         return Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message));
@@ -567,7 +567,7 @@ public static class Utilities
     /// <param name="path1">Path to first file</param>
     /// <param name="path2">Path to second file</param>
     /// <returns></returns>
-    public static bool AreFileContentsEqual(string path1, string path2) =>
+    internal static bool AreFileContentsEqual(string path1, string path2) =>
         File.Exists(path1) && File.Exists(path2)
         && File.ReadAllBytes(path1).SequenceEqual(File.ReadAllBytes(path2));
 
@@ -617,7 +617,7 @@ public static class Utilities
     /// <param name="millisecondsTimeout">how long to wait for it to finish before continuing</param>
     /// <returns></returns>
     public static Task OrDelay(this Task task, int millisecondsTimeout = 15000) => Task.WhenAny(task, Task.Delay(millisecondsTimeout));
-    public static string ApproximateAge(DateTime dt)
+    internal static string ApproximateAge(DateTime dt)
     {
         string s = string.Empty;
         bool MakeText(double amount, string unit)
@@ -651,8 +651,8 @@ public static class Utilities
     /// <summary>
     /// Given a DateTime value return a string which uses it as a name. DateTimeFromName is the inverse of this method.
     /// </summary>
-    public static string NameFromDateTime(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
-    public static bool TryDateTimeFromName(string name, out DateTime dateTime)
+    internal static string NameFromDateTime(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
+    internal static bool TryDateTimeFromName(string name, out DateTime dateTime)
     {
         string s = Path.GetFileNameWithoutExtension(name);
         if (s.Length == 14
@@ -678,7 +678,7 @@ public static class Utilities
             return false;
         }
     }
-    public static DateTime DateTimeFromName(string name)
+    internal static DateTime DateTimeFromName(string name)
     {
         string s = Path.GetFileNameWithoutExtension(name);
         if (s.Length == 14
@@ -698,7 +698,7 @@ public static class Utilities
         else
             return DateTime.MinValue;
     }
-    public static bool WithinOneSecond(DateTime t1, DateTime t2) => Math.Abs((t1 - t2).TotalMilliseconds) < 1000;
+    internal static bool WithinOneSecond(DateTime t1, DateTime t2) => Math.Abs((t1 - t2).TotalMilliseconds) < 1000;
 
     private static readonly Regex JsonDateRegex = new(@"^/Date\((\d+)(-\d{2})(\d{2})\)/$");
 
@@ -710,7 +710,7 @@ public static class Utilities
     /// small one is the time zone offset in HHMM form</param>
     /// <param name="dateTimeOffset"></param>
     /// <returns></returns>
-    public static bool TryParseJsonDate(string myJson, out DateTimeOffset dateTimeOffset)
+    internal static bool TryParseJsonDate(string myJson, out DateTimeOffset dateTimeOffset)
     {
 
         Match match = JsonDateRegex.Match(myJson);
@@ -738,7 +738,7 @@ public static class Utilities
     /// <param name="fullString">The string to be fitted</param>
     /// <param name="maxLen">the length within which it should fit</param>
     /// <returns></returns>
-    public static string TruncatedTo(this string fullString, int maxLen) => fullString.Length <= maxLen
+    internal static string TruncatedTo(this string fullString, int maxLen) => fullString.Length <= maxLen
             ? fullString
             : maxLen <= 3 ? "..." : fullString[..Math.Min(fullString.Length - 1, maxLen - 3)] + "...";
 
@@ -748,7 +748,7 @@ public static class Utilities
     /// <param name="s1">string to compare</param>
     /// <param name="s2">other string to compare</param>
     /// <returns>true if the strings are functionally equal, false if they differ</returns>
-    public static bool StringFunctionallyEqual(string s1, string s2) => string.Equals(s1, s2) || (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2));
+    internal static bool StringFunctionallyEqual(string s1, string s2) => string.Equals(s1, s2) || (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2));
     public static async Task HapticNotify()
     {
         try
@@ -786,13 +786,13 @@ public static class Utilities
         using var reader = new StreamReader(notesStream);
         ReleaseNotes = new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
-    public static string CurrencySymbol = System.Globalization.NumberFormatInfo.CurrentInfo.CurrencySymbol;
-    public static string EditionName => App.IsLimited ? "Basic" : "Professional";
+    internal static string CurrencySymbol = System.Globalization.NumberFormatInfo.CurrentInfo.CurrencySymbol;
+    internal static string EditionName => App.IsLimited ? "Basic" : "Professional";
     private static readonly Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
-    public static string VersionName { get; } = $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}";
-    public static string DebugString { get; } = IsDebug ? "DEBUG" : null;
-    public static string Revision { get; } = assemblyVersion.Revision.ToString();
-    public static string BuildTime { get; } = DateTime.Parse(BuildEnvironment.BuildTimeString, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind).ToLocalTime().ToString();
+    internal static string VersionName { get; } = $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}";
+    internal static string DebugString { get; } = IsDebug ? "DEBUG" : null;
+    internal static string Revision { get; } = assemblyVersion.Revision.ToString();
+    internal static string BuildTime { get; } = DateTime.Parse(BuildEnvironment.BuildTimeString, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind).ToLocalTime().ToString();
     private static HtmlWebViewSource GetReleaseNotes()
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -830,25 +830,25 @@ public static class Utilities
             location.Accuracy = sourceLocation.Accuracy;
         }
     }
-    public static bool IsValid(this Location location) => location is not null && App.UseLocation && location.Accuracy <= Distances.AccuracyLimit;
-    public static bool IsAccurate(this Location location) => (location is not null && location.Accuracy.HasValue);
+    internal static bool IsValid(this Location location) => location is not null && App.UseLocation && location.Accuracy <= Distances.AccuracyLimit;
+    internal static bool IsAccurate(this Location location) => (location is not null && location.Accuracy.HasValue);
     /// <summary>
     /// This is accuracy, but as an integer (not double) number of meters or an "inaccurate" value
     /// </summary>
     /// <param name="location">The Location object to be evaluated</param>
     /// <returns>The distance from the current location, or an "inaccurate" value</returns>
     public static int AccuracyOrDefault(this Location location) => location.IsAccurate() ? (int)Math.Round(location.Accuracy.Value) : (Distances.Inaccurate);
-    public static string MakeLocationText(Location location) => location is null || !location.IsValid() ? null :
+    internal static string MakeLocationText(Location location) => location is null || !location.IsValid() ? null :
                 MakeLocationText(location.Latitude, location.Longitude, location.AccuracyOrDefault());
 
-    public static string MakeLocationText(double Latitude, double Longitude, int HorizontalAccuracy)
+    internal static string MakeLocationText(double Latitude, double Longitude, int HorizontalAccuracy)
     {
         char EW = Math.Sign(Longitude) < 0 ? 'W' : 'E',
             NS = Math.Sign(Latitude) < 0 ? 'S' : 'N';
         return AdjustedString(Math.Abs(Latitude), HorizontalAccuracy) + NS + ", "
             + AdjustedString(Math.Abs(Longitude), HorizontalAccuracy) + EW + " ± " + HorizontalAccuracy + "m";
     }
-    public static string AdjustedString(double d, double accuracy)
+    internal static string AdjustedString(double d, double accuracy)
     {
         // The earth is about 40,000 km in circumference and there are 360 degrees of arc in a circle
         // So 1 degree is roughly 111,111 and that means 0.0001 degrees is about 11 meters
@@ -890,7 +890,7 @@ public static class Distances
     /// </summary>
     /// <param name="distance"></param>
     /// <returns>String representation of approximate distance and units</returns>
-    public static string Text(int distance) =>
+    internal static string Text(int distance) =>
         distance <= Close ? "close"
         : (distance < 1000 ? string.Format("{0} m", distance)
         : (distance < 9950 ? string.Format("{0:F1} km", (distance) / 1000.0)
@@ -938,7 +938,7 @@ public class AwaitableQueue<T>
 /// </summary>
 public class SentryEventProcessor : ISentryEventProcessor
 {
-    public static int skipBreaks = 0; // Just set this to skip the next however many breaks
+    private static int skipBreaks = 0; // Just set this to skip the next however many breaks
     public SentryEvent Process(SentryEvent sentryEvent)
     {
         Utilities.DebugMsg($"In SentryEventProcessor.Process, Sentry EventId: {sentryEvent.EventId}");

@@ -133,7 +133,7 @@ internal static class CallWs
     #endregion
     #region Get Version
 
-    public static string MostRecentVersionInfo { get; set; } = null;
+    internal static string MostRecentVersionInfo { get; set; } = null;
 
     /// <summary>
     /// Get the version of various server-side components

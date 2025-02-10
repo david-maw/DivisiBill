@@ -19,10 +19,10 @@ public partial class App : Application, INotifyPropertyChanged
     // Sentry us used in production to report problems
     public static readonly bool SentryAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillSentryDsn);
     #endregion
-    public static string MealLoadName;
-    public static DateTime MealLoadTime;
-    public static bool UseLocation = true;
-    public static bool LicenseChecked = false;
+    internal static string MealLoadName;
+    internal static DateTime MealLoadTime;
+    internal static bool UseLocation = true;
+    internal static bool LicenseChecked = false;
     /// <summary>
     /// IsLimited is the inverse of whether Professional Edition has been purchased, so it is only ever set, not reset.
     /// The normal scenario is that a person uses the Basic Edition then buys the Professional Edition so at the point
@@ -33,7 +33,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// Professional Edition is uninstalled, Meals, Venues and People should have been backed up to the cloud and only
     /// bill images and program options will be lost.
     /// </summary>
-    public static bool IsLimited = true; // Whether capabilities are limited, set in initialization
+    internal static bool IsLimited = true; // Whether capabilities are limited, set in initialization
 #if DEBUG
     public const string BaseFolderName = "DivisiBillDebug";
 #else
@@ -41,26 +41,26 @@ public partial class App : Application, INotifyPropertyChanged
 #endif
     public static readonly TimeSpan MinimumIdleTime = TimeSpan.FromMinutes(90); // A changed bill younger than this is not persisted
     public static readonly TimeSpan MaximumIdleTime = TimeSpan.FromMinutes(150); // Changed bills untouched for this long are always persisted
-    public static string BaseFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), BaseFolderName);
+    internal static string BaseFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), BaseFolderName);
     // On Android BaseFolderPath is typically /data/user/0/com.autoplus.divisibill/files/DivisiBill, on Windows C:\users\<user>\Documents\DivisiBill
-    public static string AppFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), BaseFolderName);
+    internal static string AppFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), BaseFolderName);
     // The AppFolderPath is silently mapped into something App specific, for example 
     //   ..AppData\Local\Packages\D9049CD2-5037-432D-BC7E-2E2FB39EBA1C_9zz4h110yvjzm\LocalCache\Local\DivisiBillDebug
     // The 'magic number' is the package.appxmanifest 'package family name'.
-    public static Location MyLocation;
+    internal static Location MyLocation;
     private static Task LocationMonitorTask;
     private static CancellationTokenSource LocationMonitorCancellationTokenSource = new();
-    public static CancellationTokenSource SaveProcessCancellationTokenSource = new();
+    internal static CancellationTokenSource SaveProcessCancellationTokenSource = new();
     public static readonly TaskCompletionSource<bool> InitializationComplete = new();
     public static readonly PauseTokenSource IsRunningSource = new();
     public static readonly PauseTokenSource CloudAllowedSource = new();
     public static ISettings Settings = null; // This (rather than direct app properties) enables fake settings to be injected for testing
-    public static CancellationTokenSource RequestBackupLoopStop;
-    public static Task MainBackupLoopTask;
-    public static bool IsTesting = AppDomain.CurrentDomain.FriendlyName.Equals("testhost");
-    public static int ScanOption = 2;
-    public static bool pauseInitialization = false;
-    public static bool isTutorialMode = false;
+    internal static CancellationTokenSource RequestBackupLoopStop;
+    internal static Task MainBackupLoopTask;
+    internal static bool IsTesting = AppDomain.CurrentDomain.FriendlyName.Equals("testhost");
+    internal static int ScanOption = 2;
+    internal static bool pauseInitialization = false;
+    internal static bool isTutorialMode = false;
     private const int WindowWidth = 600;
     private const int WindowHeight = 1200;
     #endregion
@@ -261,7 +261,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <see cref="App.IsCloudAllowed"/> - Can you reach it AND are you allowed to perform backups
     /// See also Settings.IsCloudAccessAllowed and App.IsCloudAllowed
     /// </summary>
-    public static bool IsCloudAccessible
+    internal static bool IsCloudAccessible
     {
         get;
         set
@@ -277,7 +277,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <summary>
     /// Is the cloud accessible (<see cref="App.IsCloudAccessible"/>) and are we permitted to use it (<see cref="AppSettings.IsCloudAccessAllowed"/>).
     /// </summary>
-    public static bool IsCloudAllowed
+    internal static bool IsCloudAllowed
     {
         get => !CloudAllowedSource.IsPaused;
         set
@@ -287,7 +287,7 @@ public partial class App : Application, INotifyPropertyChanged
         }
     }
 
-    public static bool RecentlyUsed => DateTime.Now - Settings.LastUse < MinimumIdleTime;
+    internal static bool RecentlyUsed => DateTime.Now - Settings.LastUse < MinimumIdleTime;
     /// <summary>
     /// Handle changes in application status, either because an Internet connection comes or goes, or because
     /// the app itself is put in the background and we don't want to do anything (like backing up files)

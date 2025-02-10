@@ -491,7 +491,7 @@ public partial class Meal : ObservableObjectPlus
     /// <summary>
     /// Select all but the latest meal for each venue from local storage, note that after calling this the MealListViewModel.SelectedMealSummariesCount will be wrong
     /// </summary>
-    public static bool SelectOlder()
+    internal static bool SelectOlder()
     {
         var list = LocalMealList.Where(ms => ms.IsLocal).OrderBy(ms => ms.VenueName).ThenByDescending(ms => ms.CreationTime);
         var distinctCount = list.DistinctBy(ms => ms.VenueName).Count();
@@ -2445,7 +2445,7 @@ public partial class Meal : ObservableObjectPlus
     public static readonly string MealFolderPath = Path.Combine(App.BaseFolderPath, MealFolderName);
     public static readonly string ImageFolderPath = Path.Combine(App.BaseFolderPath, ImageFolderName);
     public static readonly string TempImageFilePath = Path.Combine(App.BaseFolderPath, ImageFolderName, "NewImage.jpg");
-    public static string DeletedItemFolderPath = Path.Combine(App.BaseFolderPath, DeletedItemFolderName);
+    internal static string DeletedItemFolderPath = Path.Combine(App.BaseFolderPath, DeletedItemFolderName);
 
     /// <summary>
     /// This is the 'smush' left over when all the costs have been allocated to participants. It is supposed to be a few cents 
