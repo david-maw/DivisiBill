@@ -18,7 +18,7 @@ internal partial class DataManagementViewModel : ObservableObject
     private readonly DateTime nextTime = DateTime.MinValue;
 
     [RelayCommand]
-    private async Task SelectOlder()
+    private static async Task SelectOlder()
     {
         Models.Meal.SelectOlder();
         await App.GoToAsync(Routes.MealListByAgePage + "?IsSelectableList=true&count=true&ShowLocal=true&ShowRemote=false");
@@ -49,7 +49,7 @@ internal partial class DataManagementViewModel : ObservableObject
             await Utilities.ShowAppSnackBarAsync("Remote Access is not currently available");
             return;
         }
-        if (Meal.RemoteMealList.Count() == 0)
+        if (Meal.RemoteMealList.Count == 0)
             await Utilities.ShowAppSnackBarAsync($"There are no remote bills");
         else
         {
@@ -63,7 +63,7 @@ internal partial class DataManagementViewModel : ObservableObject
             if (foundOne)
                 await App.GoToAsync(Routes.MealListByAgePage + "?command=SelectFirstUnallocatedLineItem");
             else
-                await Utilities.ShowAppSnackBarAsync($"All {Meal.RemoteMealList.Count()} remote bills are already downloaded");
+                await Utilities.ShowAppSnackBarAsync($"All {Meal.RemoteMealList.Count} remote bills are already downloaded");
         }
     }
 
@@ -109,8 +109,8 @@ internal partial class DataManagementViewModel : ObservableObject
             PickerTitle = "Please select an archive file",
             FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
-                    { DevicePlatform.Android, new[] { "text/xml" } },
-                    { DevicePlatform.WinUI, new[] { ".xml" } },
+                    { DevicePlatform.Android, [ "text/xml" ] },
+                    { DevicePlatform.WinUI, [ ".xml" ] },
             }),
         };
 
