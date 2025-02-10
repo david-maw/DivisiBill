@@ -658,15 +658,15 @@ public static class Utilities
         if (s.Length == 14
             && int.TryParse(s[..4], out int y)
             && y > 2010 && y < 2030
-            && int.TryParse(s.Substring(4, 2), out int m)
+            && int.TryParse(s.AsSpan(4, 2), out int m)
             && m >= 1 && m <= 12
-            && int.TryParse(s.Substring(6, 2), out int d)
+            && int.TryParse(s.AsSpan(6, 2), out int d)
             && d >= 1 && d <= 31
-            && int.TryParse(s.Substring(8, 2), out int hh)
+            && int.TryParse(s.AsSpan(8, 2), out int hh)
             && hh >= 0 && hh <= 23
-            && int.TryParse(s.Substring(10, 2), out int mm)
+            && int.TryParse(s.AsSpan(10, 2), out int mm)
             && mm >= 0 && mm < 60
-            && int.TryParse(s.Substring(12, 2), out int ss)
+            && int.TryParse(s.AsSpan(12, 2), out int ss)
             && ss >= 0 && ss < 60)
         {
             dateTime = new DateTime(y, m, d, hh, mm, ss); // Plausible date
@@ -684,15 +684,15 @@ public static class Utilities
         if (s.Length == 14
             && int.TryParse(s[..4], out int y)
             && y > 2010 && y < 2030
-            && int.TryParse(s.Substring(4, 2), out int m)
+            && int.TryParse(s.AsSpan(4, 2), out int m)
             && m >= 1 && m <= 12
-            && int.TryParse(s.Substring(6, 2), out int d)
+            && int.TryParse(s.AsSpan(6, 2), out int d)
             && d >= 1 && d <= 31
-            && int.TryParse(s.Substring(8, 2), out int hh)
+            && int.TryParse(s.AsSpan(8, 2), out int hh)
             && hh >= 0 && hh <= 23
-            && int.TryParse(s.Substring(10, 2), out int mm)
+            && int.TryParse(s.AsSpan(10, 2), out int mm)
             && mm >= 0 && mm < 60
-            && int.TryParse(s.Substring(12, 2), out int ss)
+            && int.TryParse(s.AsSpan(12, 2), out int ss)
             && ss >= 0 && ss < 60)
             return new DateTime(y, m, d, hh, mm, ss); // Plausible date
         else
