@@ -396,12 +396,12 @@ public partial class Meal : ObservableObjectPlus
         if (Directory.Exists(MealFolderPath))
         {
             // Make a list of bills, each one may have a corresponding image file with a related name.
-            List<string> files = Directory.EnumerateFiles(MealFolderPath, "??????????????.xml")
+            List<string> files = [.. Directory.EnumerateFiles(MealFolderPath, "??????????????.xml")
                                  .Select(fp => Path.GetFileName(fp))
                                  .Where(fn => Regex.IsMatch(fn, @"\d{14}\.xml")) // 14 digits dot xml (yyyymmddhhmmss.xml)
-                                 .OrderByDescending(fn => fn).ToList();
+                                 .OrderByDescending(fn => fn)];
             await StatusMsgAsync($"Found {files.Count} candidate meal files");
-            List<string> oldfiles = LocalMealList.Select(ms => ms.FileName).ToList(); // The order will have been determined the line above in a previous call 
+            List<string> oldfiles = [.. LocalMealList.Select(ms => ms.FileName)]; // The order will have been determined the line above in a previous call 
             if (!Enumerable.SequenceEqual(files, oldfiles))
             {
                 // The list of files has changed, so evaluate what's there now
@@ -2376,7 +2376,7 @@ public partial class Meal : ObservableObjectPlus
     {
         decimal totalDifference = 0;
         DistributeCosts20230527();
-        string s = JsonSerializer.Serialize<List<PersonCost>>(Costs.ToList());
+        string s = JsonSerializer.Serialize(Costs.ToList());
         List<PersonCost> OldCosts = JsonSerializer.Deserialize<List<PersonCost>>(s);
         DistributeCosts();
         foreach ((PersonCost oldPc, PersonCost newPc) in OldCosts.Zip(Costs))
@@ -2783,8 +2783,7 @@ public partial class Meal : ObservableObjectPlus
         foreach (var rfi in remoteOnlyFileInfoList)
         {
             using Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name);
-            if (cancellationToken.IsCancellationRequested)
-                throw new OperationCanceledException();
+            cancellationToken.ThrowIfCancellationRequested();
             LineItem.nextItemNumber = 1;
             try // if one file fails, just report it and go on to the next 
             {
