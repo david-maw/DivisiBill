@@ -235,7 +235,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// <summary>
     /// Notify the user that they attempted something that requires remote access and it's not available
     /// </summary>
-    private async Task ShowRemoteAccessWarning() => await Utilities.ShowAppSnackBarAsync("Warning: Remote Access is not currently available");
+    private static async Task ShowRemoteAccessWarning() => await Utilities.ShowAppSnackBarAsync("Warning: Remote Access is not currently available");
 
     /// <summary>
     /// Make the Meal corresponding to this MealSummary the current one (which may 
@@ -380,8 +380,9 @@ public partial class MealListViewModel : ObservableObjectPlus
         MealSummary.ForgetDeleted();
         NoteDeletedChange();
     }
-    public bool AnyDeleted => MealSummary.DeletedStack.Any();
-    public bool ManyDeleted => MealSummary.DeletedStack.Skip(1).Any();
+    public bool AnyDeleted => MealSummary.DeletedStack.Count > 0;
+
+    public bool ManyDeleted => MealSummary.DeletedStack.Count > 1;
 
     /// <summary>
     /// Restore a previously deleted MealSummary - note that it will be restored to the same place in the list that it was before it was removed
@@ -415,7 +416,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// </summary>
     /// <param name="ms">The target MealSummary</param>
     /// <returns></returns>
-    private bool CanDownLoadMeal(MealSummary ms)
+    private static bool CanDownLoadMeal(MealSummary ms)
         => ms is not null
         && App.Settings.IsCloudAccessAllowed
         && ms.IsRemote
@@ -517,7 +518,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             {
                 if (cancellationToken.IsCancellationRequested) throw new TaskCanceledException();
                 bool worked = await DownloadOneMeal(mealSummary, false);
-                // In order not to multi-thread access to LocalMealList we just queue the changed mealsummaries and handle them all on one thread
+                // In order not to multi-thread access to LocalMealList we just queue the changed meal summaries and handle them all on one thread
                 if (worked)
                     downloadedQueue.Enqueue(mealSummary);
                 else
@@ -546,7 +547,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// </summary>
     /// <param name="ms"></param>
     /// <returns>true if the meal was downloaded false otherwise</returns>
-    private async Task<bool> DownloadOneMeal(MealSummary ms, bool changeLocation = true)
+    private static async Task<bool> DownloadOneMeal(MealSummary ms, bool changeLocation = true)
     {
         try
         {
@@ -653,8 +654,8 @@ public partial class MealListViewModel : ObservableObjectPlus
     public enum SortOrderType { byDate, byDistance, byName };
     public void NextSortOrder()
     {
-        if (SortOrder == Enum.GetValues(typeof(SortOrderType)).Cast<SortOrderType>().Max())
-            SortOrder = Enum.GetValues(typeof(SortOrderType)).Cast<SortOrderType>().Min();
+        if (SortOrder == Enum.GetValues<SortOrderType>().Max())
+            SortOrder = Enum.GetValues<SortOrderType>().Min();
         else
             SortOrder++;
     }
@@ -665,7 +666,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     } = SortOrderType.byDate;
     private string Sort
     {
-        get => Enum.GetName(typeof(SortOrderType), SortOrder);
+        get => Enum.GetName<SortOrderType>(SortOrder);
         set
         {
             string sortRequest = Uri.UnescapeDataString(value ?? string.Empty);
@@ -701,9 +702,6 @@ public partial class MealListViewModel : ObservableObjectPlus
     public string ShowLocalText => ShowLocalMeals ? "Hide Local" : "Show Local";
     public string WhereText => ShowLocalMeals == ShowRemoteMeals ? null : ShowLocalMeals ? "local" : "remote";
     public string FilterText => Filter ? "Show Bills" : "Show Venues";
-    #region Meal local/remote status icons
-    public bool Dark => Application.Current.UserAppTheme == AppTheme.Dark || Application.Current.RequestedTheme == AppTheme.Dark;
-    #endregion 
     #endregion
 
     [ObservableProperty]
@@ -802,7 +800,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             {
                 // We could perhaps optimize this by sorting theList in place then deleting the duplicates,
                 // but the performance gain doesn't seem worth the trouble.
-                List<MealSummary> filteredList = theList.OrderBy(ms => ms.VenueName).ThenByDescending((ms) => ms.CreationTime).ToList();
+                List<MealSummary> filteredList = [.. theList.OrderBy(ms => ms.VenueName).ThenByDescending((ms) => ms.CreationTime)];
                 for (int i = filteredList.Count - 1; i > 0; i--)
                 {
                     MealSummary ms = filteredList[i];
