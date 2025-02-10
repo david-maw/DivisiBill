@@ -18,7 +18,7 @@ namespace DivisiBill.Services;
 /// <summary>
 /// A general repository for handy capabilities used throughout the app
 /// </summary>
-public static class Utilities
+public static partial class Utilities
 {
 #if DEBUG
     public static readonly bool IsDebug = true; // Not a const so as to avoid "unreachable code" warnings
@@ -284,7 +284,7 @@ public static class Utilities
         SentrySdk.CaptureException(ex, scope =>
         {
             if (ex is XmlException xmlEx)
-                scope.Fingerprint = new[] { "xml-error" }; // this seems to be ignored
+                scope.Fingerprint = ["xml-error"]; // this seems to be ignored
             // These attachments appear in the Sentry UI in reverse of the order they appear here
             if (Meal.CurrentMeal?.Summary is not null)
             {
@@ -326,7 +326,7 @@ public static class Utilities
         [CallerFilePath] string sourceFilePath = "",
         [CallerLineNumber] int sourceLineNumber = 0)
     {
-        string fullMsg = sourceFilePath[(sourceFilePath.LastIndexOf(@"\") + 1)..] + "@" + sourceLineNumber + " (" + callerName + "): " + msg;
+        string fullMsg = sourceFilePath[(sourceFilePath.LastIndexOf('\\') + 1)..] + "@" + sourceLineNumber + " (" + callerName + "): " + msg;
         SentrySdk.AddBreadcrumb(
             type: "debug",
             category: "Record." + callerName,
@@ -367,7 +367,7 @@ public static class Utilities
         await PauseBeforeMessageSource.WaitWhilePausedAsync();
         StatusMsgInvoked?.Invoke(msg);
         // Extract just the file name - has to be done manually because this may be an Android build compiled on Windows
-        var sourceFileName = sourceFilePath[(sourceFilePath.LastIndexOf(@"\") + 1)..];
+        var sourceFileName = sourceFilePath[(sourceFilePath.LastIndexOf('\\') + 1)..];
         SentrySdk.AddBreadcrumb(
             type: "debug",
             category: "Utilities.StatusMsg",
@@ -468,7 +468,7 @@ public static class Utilities
             double secondsNow = (DateTime.Now - startTime).TotalMilliseconds / 1000;
             double secondsSinceLastTime = secondsNow - lastSeconds;
             lastSeconds = secondsNow;
-            Debug.WriteLine($"{Thread.CurrentThread.ManagedThreadId:D2} {secondsNow,6:F3}(+{secondsSinceLastTime,4:F3})>>> " + msg);
+            Debug.WriteLine($"{Environment.CurrentManagedThreadId:D2} {secondsNow,6:F3}(+{secondsSinceLastTime,4:F3})>>> " + msg);
         }
     }
 
@@ -704,7 +704,8 @@ public static class Utilities
     }
     internal static bool WithinOneSecond(DateTime t1, DateTime t2) => Math.Abs((t1 - t2).TotalMilliseconds) < 1000;
 
-    private static readonly Regex JsonDateRegex = new(@"^/Date\((\d+)(-\d{2})(\d{2})\)/$");
+    [GeneratedRegex(@"^/Date\((\d+)(-\d{2})(\d{2})\)/$")]
+    private static partial Regex DateRegex();
 
     /// <summary>
     /// Parse a Json time serialized by a DataContractJsonSerializer returning a DateTimeOffset 
@@ -717,7 +718,7 @@ public static class Utilities
     internal static bool TryParseJsonDate(string myJson, out DateTimeOffset dateTimeOffset)
     {
 
-        Match match = JsonDateRegex.Match(myJson);
+        Match match = DateRegex().Match(myJson);
 
         if (match.Success)
         {
