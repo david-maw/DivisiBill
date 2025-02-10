@@ -384,6 +384,9 @@ public partial class Meal : ObservableObjectPlus
         }
     }
 
+    [GeneratedRegex(@"\d{14}\.xml")]
+    private static partial Regex FourteenDigitsRegex();
+
     /// <summary>
     /// Read the list of meals stored in local storage (if there are any) and create MealSummary items from them
     /// If location access is permitted return the closest 
@@ -398,7 +401,7 @@ public partial class Meal : ObservableObjectPlus
             // Make a list of bills, each one may have a corresponding image file with a related name.
             List<string> files = [.. Directory.EnumerateFiles(MealFolderPath, "??????????????.xml")
                                  .Select(fp => Path.GetFileName(fp))
-                                 .Where(fn => Regex.IsMatch(fn, @"\d{14}\.xml")) // 14 digits dot xml (yyyymmddhhmmss.xml)
+                                 .Where(fn => FourteenDigitsRegex().IsMatch(fn)) // 14 digits dot xml (yyyymmddhhmmss.xml)
                                  .OrderByDescending(fn => fn)];
             await StatusMsgAsync($"Found {files.Count} candidate meal files");
             List<string> oldfiles = [.. LocalMealList.Select(ms => ms.FileName)]; // The order will have been determined the line above in a previous call 
