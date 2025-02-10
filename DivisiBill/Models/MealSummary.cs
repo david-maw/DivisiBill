@@ -42,8 +42,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         get;
         set
         {
-            if (value is null)
-                throw new ArgumentNullException("value");
+            ArgumentNullException.ThrowIfNull(value);
             SetProperty(ref field, value);
         }
     } = string.Empty;
@@ -331,7 +330,7 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
             Meal.LocalMealList.Remove(this);
     }
 
-    public static MealSummary PopMostRecentDeletion() => DeletedStack.Any() ? DeletedStack.Pop() : null;
+    public static MealSummary PopMostRecentDeletion() => DeletedStack.Count > 0 ? DeletedStack.Pop() : null;
     /// <summary>
     /// Undelete a local Meal and its associated image, if by some weird mischance the corresponding file already exists, just discard it
     /// </summary>
