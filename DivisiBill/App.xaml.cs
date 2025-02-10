@@ -54,7 +54,6 @@ public partial class App : Application, INotifyPropertyChanged
     public static readonly TaskCompletionSource<bool> InitializationComplete = new();
     public static readonly PauseTokenSource IsRunningSource = new();
     public static readonly PauseTokenSource CloudAllowedSource = new();
-    public static ISettings Settings = null; // This (rather than direct app properties) enables fake settings to be injected for testing
     internal static CancellationTokenSource RequestBackupLoopStop;
     internal static Task MainBackupLoopTask;
     internal static bool IsTesting = AppDomain.CurrentDomain.FriendlyName.Equals("testhost");
@@ -591,6 +590,12 @@ public partial class App : Application, INotifyPropertyChanged
             }
         }
     } = null;
+
+    /// <summary>
+    /// Settable to permit unit testing
+    /// </summary>
+    public static ISettings Settings { get; set; } = null;
+
     /// <summary>
     /// Set, reset, or change the fake location to a specified value
     /// Notify the user so as to allow app page switching. 
