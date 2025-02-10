@@ -450,7 +450,9 @@ public static class Utilities
             long savedPosition = streamParameter.Position;
             streamParameter.Position = 0;
             StreamReader sr = new(streamParameter);
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             string myString = sr.ReadToEnd();
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             streamParameter.Position = savedPosition;
         }
     }
@@ -596,7 +598,9 @@ public static class Utilities
                 DebugMsg(new string(' ', indent) + $"{path} - created {Directory.GetCreationTime(path)}");
                 listSubdirectories(path);
             }
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             indent -= 3;
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
         }
 
         string folder = App.BaseFolderPath;
@@ -821,9 +825,7 @@ public static class Utilities
     public static void CopyFrom(this Location location, Location sourceLocation)
     {
         ArgumentNullException.ThrowIfNull(location);
-        if (sourceLocation is null)
-            location = null;
-        else
+        if (sourceLocation is not null)
         {
             location.Latitude = sourceLocation.Latitude;
             location.Longitude = sourceLocation.Longitude;

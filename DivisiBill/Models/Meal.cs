@@ -296,7 +296,6 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     private void OverwriteCurrent()
     {
-        Meal PriorMeal = CurrentMeal;
         CurrentMeal = this;
         // It is important to reassign CurrentMeal early so downstream code which wants to remove it from lists of meals
         // will recognize the correct meal. Such code may well be triggered by events, so beware.

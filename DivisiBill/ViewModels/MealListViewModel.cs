@@ -516,7 +516,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             Task downLoad = Parallel.ForEachAsync(list, parallelOptions, async (mealSummary, cancellationToken) =>
             {
                 if (cancellationToken.IsCancellationRequested) throw new TaskCanceledException();
-                bool worked = await DownloadOneMeal(mealSummary, false, cancellationToken);
+                bool worked = await DownloadOneMeal(mealSummary, false);
                 // In order not to multi-thread access to LocalMealList we just queue the changed mealsummaries and handle them all on one thread
                 if (worked)
                     downloadedQueue.Enqueue(mealSummary);
@@ -546,7 +546,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// </summary>
     /// <param name="ms"></param>
     /// <returns>true if the meal was downloaded false otherwise</returns>
-    private async Task<bool> DownloadOneMeal(MealSummary ms, bool changeLocation = true, CancellationToken ct = default)
+    private async Task<bool> DownloadOneMeal(MealSummary ms, bool changeLocation = true)
     {
         try
         {
