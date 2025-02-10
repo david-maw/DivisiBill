@@ -364,7 +364,7 @@ public partial class Meal : ObservableObjectPlus
                 CurrentMeal.SaveToApp();
             SnapshotNeeded.IsPaused = true;
             // Wait for delayTime seconds or until a request to check immediately is received
-            Task which = await Task.WhenAny(Task.Delay(delayTime * 1000), SnapshotNeeded.WaitWhilePausedAsync());
+            await Task.WhenAny(Task.Delay(delayTime * 1000), SnapshotNeeded.WaitWhilePausedAsync());
             if (!SnapshotNeeded.IsPaused)
                 Utilities.DebugMsg($"In PeriodicSaveAsync SnapshotNeeded IsPaused is false");
         }
