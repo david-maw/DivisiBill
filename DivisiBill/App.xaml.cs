@@ -19,8 +19,6 @@ public partial class App : Application, INotifyPropertyChanged
     // Sentry us used in production to report problems
     public static readonly bool SentryAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillSentryDsn);
     #endregion
-    internal static string MealLoadName;
-    internal static DateTime MealLoadTime;
     internal static bool UseLocation = true;
     internal static bool LicenseChecked = false;
     /// <summary>
