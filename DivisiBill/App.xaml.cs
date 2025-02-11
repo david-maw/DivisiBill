@@ -122,8 +122,11 @@ public partial class App : Application, INotifyPropertyChanged
             return result;
         }
 
-        // Save off ant persistent state - this can be called multiple times without any problem
-        async void PersistAsNeeded()
+        // TODO: remove workaround for https://github.com/dotnet/maui/issues/27167
+        async void PersistAsNeeded() => await MainThread.InvokeOnMainThreadAsync(ActualPersistAsNeeded);
+
+        // Save off any persistent state - this can be called multiple times without any problem
+        async void ActualPersistAsNeeded()
         {
             Utilities.DebugMsg($"In PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
             if (!InitializationComplete.Task.IsCompleted)
