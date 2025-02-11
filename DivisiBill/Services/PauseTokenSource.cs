@@ -44,7 +44,7 @@ public class PauseTokenSource
     public PauseToken Token => new(this);
 }
 
-public struct PauseToken
+public readonly struct PauseToken
 {
     private readonly PauseTokenSource m_source;
     internal PauseToken(PauseTokenSource source) => m_source = source;
