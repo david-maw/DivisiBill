@@ -62,11 +62,11 @@ public class Archive
                     }
                 }
             }
-            Venues = Venues.Distinct().ToList();
+            Venues = [.. Venues.Distinct()];
             Venues.Sort();
-            Persons = Persons.Distinct().ToList();
+            Persons = [.. Persons.Distinct()];
             Persons.Sort();
-            AliasGuids = AliasGuids.DistinctBy(a => a.Key).ToList();
+            AliasGuids = [.. AliasGuids.DistinctBy(a => a.Key)];
             AliasGuids.Sort();
         }
     }
@@ -76,7 +76,7 @@ public class Archive
     public string CreationTimeString
     {
         get => creationTime.ToString();
-        set => DateTimeOffset.TryParse(value, out creationTime);
+        set => _ = DateTimeOffset.TryParse(value, out creationTime);
     }
     public string TimeName => Utilities.NameFromDateTime(creationTime.LocalDateTime);
     public bool DeleteBeforeRestore { get; set; } = false;
