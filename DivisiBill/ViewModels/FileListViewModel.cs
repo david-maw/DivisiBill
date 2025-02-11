@@ -106,7 +106,7 @@ public partial class FileListViewModel : ObservableObjectPlus
     {
         if (ShowAsSelectableList)
         {
-            List<RemoteItemInfo> list = FileList.Where((rii) => rii.Selected).ToList();
+            List<RemoteItemInfo> list = [.. FileList.Where((rii) => rii.Selected)];
             foreach (RemoteItemInfo item in list)
             {
                 await DeleteThisItemAsync(item);
