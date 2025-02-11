@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "This warning is inappropriate for properties referred to from XAML")]
+[assembly: SuppressMessage("Usage", "CsWinRT1028:Class should be marked partial", Justification = "WinRT interface and AOT related bur this doesn't use AOT on WinRT")]
