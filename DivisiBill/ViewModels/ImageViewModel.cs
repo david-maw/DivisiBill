@@ -242,8 +242,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     public partial ImageSource PreviewImageSource { get; set; } = null;
 
     [ObservableProperty]
-    private double imageScale = 1;
-
+    public partial double ImageScale { get; set; } = 1;
     [ObservableProperty]
     public partial double ImageTranslationX { get; set; } = 0;
 
