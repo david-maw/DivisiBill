@@ -3,15 +3,12 @@ using Microsoft.Maui.Layouts;
 
 namespace DivisiBill.Services;
 
-public class ColumnLayoutManager : ILayoutManager
+public class ColumnLayoutManager(ColumnLayout layout) : ILayoutManager
 {
-    private readonly ColumnLayout _columnLayout;
-    private IGridLayout _gridLayout;
+    private Grid _gridLayout;
     private GridLayoutManager _manager;
 
-    public ColumnLayoutManager(ColumnLayout layout) => _columnLayout = layout;
-
-    private static IGridLayout ToColumnGrid(VerticalStackLayout stackLayout)
+    private static Grid ToColumnGrid(VerticalStackLayout stackLayout)
     {
         Grid grid = new LayoutGrid
         {
@@ -44,7 +41,7 @@ public class ColumnLayoutManager : ILayoutManager
     public Size Measure(double widthConstraint, double heightConstraint)
     {
         _gridLayout?.Clear();
-        _gridLayout = ToColumnGrid(_columnLayout);
+        _gridLayout = ToColumnGrid(layout);
         _manager = new GridLayoutManager(_gridLayout);
 
         return _manager.Measure(widthConstraint, heightConstraint);
@@ -52,7 +49,7 @@ public class ColumnLayoutManager : ILayoutManager
 
     public Size ArrangeChildren(Rect bounds) => _manager?.ArrangeChildren(bounds) ?? Size.Zero;
 
-    private class LayoutGrid : Grid
+    private partial class LayoutGrid : Grid
     {
         protected override void OnChildAdded(Element child)
         {
