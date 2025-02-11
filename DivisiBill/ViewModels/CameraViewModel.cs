@@ -65,7 +65,7 @@ public partial class CameraViewModel : ObservableObject
     public partial FontImageSource FlashGlyph { get; set; } = (FontImageSource)Application.Current.Resources["GlyphFlashOn"];
 
     [ObservableProperty]
-    private CameraFlashMode flashMode = CameraFlashMode.Off;
+    public partial CameraFlashMode FlashMode { get; set; } = CameraFlashMode.Off;
 
     [RelayCommand]
     private void ChangeFlashMode()
