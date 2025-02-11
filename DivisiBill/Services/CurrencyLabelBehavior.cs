@@ -63,9 +63,7 @@ internal class CurrencyLabelBehavior : Behavior<Label>
         else IsEqual = IsSet(TargetValueProperty)
             ? TargetValue == EqualValue
             : decimal.TryParse(savedLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal d) && d == EqualValue;
-#pragma warning disable CS8601 // Possible null reference assignment.
-        savedLabel.Style = IsEqual ? ValidStyle : UnequalStyle; // Warning here from .NET 9 is a bug because Style should be nullable, see https://github.com/dotnet/maui/issues/25227
-#pragma warning restore CS8601 // Possible null reference assignment.
+        savedLabel.Style = IsEqual ? ValidStyle : UnequalStyle;
     }
 
     /// <summary>

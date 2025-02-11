@@ -66,7 +66,7 @@ public class CurrencyValidationBehavior : Behavior<Entry>
 
     private void OnEntryTextChanged(object? sender, TextChangedEventArgs args)
     {
-        if (sender is Entry entry && (ValidStyle ?? InvalidStyle ?? UnequalStyle) is not null)
+        if (sender is Entry && (ValidStyle ?? InvalidStyle ?? UnequalStyle) is not null)
             ValidateEntry();
     }
 
@@ -81,10 +81,7 @@ public class CurrencyValidationBehavior : Behavior<Entry>
         else if (string.IsNullOrWhiteSpace(savedEntry.Text))
         {
             IsEqual = (IsValid = AllowBlank) && (!TestEquality || (UnequalStyle is null || (IsSet(EqualValueProperty) && 0 == EqualValue)));
-#pragma warning disable CS8601 // Possible null reference assignment.
-            // Warning here from .NET 9 is a bug because Style should be nullable, see https://github.com/dotnet/maui/issues/25227
             savedEntry.Style = IsValid ? IsEqual ? ValidStyle : UnequalStyle : InvalidStyle;
-#pragma warning restore CS8601 // Possible null reference assignment.
             return;
         }
         bool formatValid = NumberRegex.IsMatch(savedEntry.Text);
@@ -92,19 +89,13 @@ public class CurrencyValidationBehavior : Behavior<Entry>
         {
             IsValid = true;
             IsEqual = !TestEquality || (UnequalStyle is null || (IsSet(EqualValueProperty) && decimal.Parse(savedEntry.Text) == EqualValue));
-#pragma warning disable CS8601 // Possible null reference assignment.
-            // Warning here from .NET 9 is a bug because Style should be nullable, see https://github.com/dotnet/maui/issues/25227
             savedEntry.Style = IsEqual ? ValidStyle : UnequalStyle;
-#pragma warning restore CS8601 // Possible null reference assignment.
         }
         else
         {
             IsValid = false;
             IsEqual = false;
-#pragma warning disable CS8601 // Possible null reference assignment.
-            // Warning here from .NET 9 is a bug because Style should be nullable, see https://github.com/dotnet/maui/issues/25227
             savedEntry.Style = InvalidStyle;
-#pragma warning restore CS8601 // Possible null reference assignment.
         }
     }
 
