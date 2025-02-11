@@ -6,10 +6,7 @@ using System.Xml.Serialization;
 namespace DivisiBill.Services;
 
 [DataContract]
-[ObservableObject] // Needed because you can't add  [DataContract] to ObservableObject and DataContract Serializers are used in MealSummary and Person classes for now
-#pragma warning disable MVVMTK0033 // Inherit from ObservableObject instead of using [ObservableObject]
-public partial class ObservableObjectPlus
-#pragma warning restore MVVMTK0033 // Inherit from ObservableObject instead of using [ObservableObject]
+public partial class ObservableObjectPlus : ObservableObject
 {
     [ObservableProperty]
     [XmlIgnore]
