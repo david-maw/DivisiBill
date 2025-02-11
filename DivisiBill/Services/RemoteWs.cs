@@ -31,19 +31,12 @@ public static class RemoteWs
     /// <summary>
     /// The layout of the data for each item delivered from the web service
     /// </summary>
-    private class WsDataItem
+    private class WsDataItem(string name, long dataLength, string data, string summary = null)
     {
-        public WsDataItem(string name, long dataLength, string data, string summary = null)
-        {
-            Name = name;
-            DataLength = dataLength;
-            Data = data;
-            Summary = summary;
-        }
-        public string Name { get; set; }
-        public string Data { get; set; }
-        public long DataLength { get; set; }
-        public string Summary { get; set; }
+        public string Name { get; set; } = name;
+        public string Data { get; set; } = data;
+        public long DataLength { get; set; } = dataLength;
+        public string Summary { get; set; } = summary;
     }
     /// <summary>
     /// Get a list of all the remote items of a particular type.
@@ -55,7 +48,7 @@ public static class RemoteWs
         const int MaxItems = 1000;
         if (string.IsNullOrWhiteSpace(itemTypeName))
             return null;
-        List<RemoteItemInfo> remoteItemInfos = [];
+        List<RemoteItemInfo> remoteItemInfoList = [];
         string latestName = "30000000000000"; // Start at the year 3000 or earlier 
         try
         {
@@ -67,7 +60,7 @@ public static class RemoteWs
                     List<WsDataItem> items = JsonSerializer.Deserialize<List<WsDataItem>>(itemListJson);
                     foreach (var item in items)
                     {
-                        remoteItemInfos.Add(new RemoteItemInfo()
+                        remoteItemInfoList.Add(new RemoteItemInfo()
                         {
                             Name = item.Name,
                             Size = item.DataLength,
@@ -82,7 +75,7 @@ public static class RemoteWs
                 else
                     break;
             }
-            return remoteItemInfos;
+            return remoteItemInfoList;
         }
         catch (Exception)
         {
