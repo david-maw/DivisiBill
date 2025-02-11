@@ -38,10 +38,10 @@ public class SimpleLocation : IEquatable<SimpleLocation>
         try
         {
             using StreamWriter sw = new(stream, System.Text.Encoding.UTF8, -1, true);
-            using var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { OmitXmlDeclaration = true });
+            using var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { OmitXmlDeclaration = true });
             var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
-            xmlSerializer.Serialize(xmlwriter, this, namespaces);
+            xmlSerializer.Serialize(xmlWriter, this, namespaces);
             return true;
         }
         catch (Exception)
@@ -94,4 +94,7 @@ public class SimpleLocation : IEquatable<SimpleLocation>
             }
         }
     }
+    public override bool Equals(object obj) => obj is SimpleLocation simpleLocation && Equals(simpleLocation);
+
+    public override int GetHashCode() => base.GetHashCode();
 }
