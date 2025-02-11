@@ -116,8 +116,8 @@ internal static class CallWs
             //    "2" - Return a fake ScannedBill without ever calling an OCR function
             //    Other values are ignored and the normal OCR functions are performed
             int option = Utilities.IsDebug ? App.ScanOption : 0;
-            HttpResponseMessage response = await client.PostAsync($"scan?option={option}", form);
-            responseData = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await client.PostAsync($"scan?option={option}", form, cancel);
+            responseData = await response.Content.ReadAsStringAsync(cancel);
             response.EnsureSuccessStatusCode();
             response.StoreTokenHeader();
             return responseData;
