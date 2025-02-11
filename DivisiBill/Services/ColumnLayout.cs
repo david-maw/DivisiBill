@@ -3,7 +3,7 @@ using Microsoft.Maui.Layouts;
 
 namespace DivisiBill.Services;
 
-public class ColumnLayout : VerticalStackLayout
+public partial class ColumnLayout : VerticalStackLayout
 {
     public static readonly BindableProperty FillProperty = BindableProperty.CreateAttached("Fill", typeof(bool),
         typeof(ColumnLayout), false);
