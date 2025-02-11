@@ -49,7 +49,7 @@ public class ColumnLayoutManager(ColumnLayout layout) : ILayoutManager
 
     public Size ArrangeChildren(Rect bounds) => _manager?.ArrangeChildren(bounds) ?? Size.Zero;
 
-    private partial class LayoutGrid : Grid
+    private class LayoutGrid : Grid
     {
         protected override void OnChildAdded(Element child)
         {

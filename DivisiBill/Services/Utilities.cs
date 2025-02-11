@@ -18,7 +18,7 @@ namespace DivisiBill.Services;
 /// <summary>
 /// A general repository for handy capabilities used throughout the app
 /// </summary>
-public static partial class Utilities
+public static partial class Utilities // Partial for regex generator
 {
 #if DEBUG
     public static readonly bool IsDebug = true; // Not a const so as to avoid "unreachable code" warnings
