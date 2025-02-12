@@ -16,7 +16,7 @@ public partial class LineItemsPage : ContentPage
         InitializeComponent();
         SizeChanged += LineItemsPage_SizeChanged;
         // Initialize the shares buttons
-        ShareButtons = SharesContainer.Children.Select(v => (Button)v).ToArray();
+        ShareButtons = [.. SharesContainer.Children.Select(v => (Button)v)];
     }
 
     private PersonCost CurrentPersonCost = null;
@@ -78,9 +78,11 @@ public partial class LineItemsPage : ContentPage
                     LineItemsListView.ScrollTo(li);
                 }
             }
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
 #pragma warning disable CS0168 // Unnecessary assignment of a value
             catch (Exception ex)
 #pragma warning restore CS0168 // Unnecessary assignment of a value
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             {
                 if (Utilities.IsDebug)
                     Debugger.Break();
@@ -186,23 +188,23 @@ public partial class LineItemsPage : ContentPage
     /// </summary>
     /// <param name="sender">The item list</param>
     /// <param name="e">Information about what changed</param>
-    private void OnItemSelected(object sender, SelectionChangedEventArgs e)
+    private async void OnItemSelected(object sender, SelectionChangedEventArgs e)
     {
-        var priorLi = (LineItem)e.PreviousSelection.FirstOrDefault();
+        LineItem priorLi = e.PreviousSelection.Count == 0 ? null : (LineItem)e.PreviousSelection[0];
         if (priorLi is not null)
         {
             // Hide the prior item if it should no longer be visible
             mealViewModel.LineItemDeselected(priorLi);
         }
 
-        var li = (LineItem)e.CurrentSelection.FirstOrDefault();
+        var li = e.CurrentSelection.Count == 0 ? null : (LineItem)e.CurrentSelection[0];
         ItemEntryContainer.IsVisible = li is not null;
         totalsContainer.IsVisible = li is null;
         SharesCountContainer.IsVisible = false;
         CurrentSharesButton = null;
         SharesContainer.IsVisible = li is not null;
         if (li is null)
-            SelectedNameEntry.HideKeyboardAsync(); // This is for the case where the user does not use the enter key but just deselects the current item
+            await SelectedNameEntry.HideKeyboardAsync(); // This is for the case where the user does not use the enter key but just deselects the current item
         else
         {
             DrawAllSharesButtons(li);

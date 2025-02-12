@@ -60,7 +60,7 @@ public partial class MapPage : ContentPage
         mantissa = Math.Round(mantissa);
         return mantissa * exponent;
     }
-    private async void OnMapClicked(object sender, MapClickedEventArgs e)
+    private async void OnMapClicked(object _, MapClickedEventArgs e)
     {
         // A round number based on there being 20 distinct points across the screen
         double fingerWidth = Simplified(map.VisibleRegion.Radius.Meters / 10.0);
@@ -155,6 +155,7 @@ public partial class MapPage : ContentPage
             return false;
 
         backingStore = value;
+        onChanged?.Invoke();
         OnPropertyChanged(propertyName);
         return true;
     }

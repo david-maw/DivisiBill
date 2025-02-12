@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Core;
+using DivisiBill.Services;
 using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
@@ -16,6 +17,7 @@ public partial class CameraPage : ContentPage
     ~CameraPage()
     {
         // For debug of lifetime
+        Utilities.DebugMsg("In ~CameraPage");
     }
     protected override async void OnAppearing()
     {

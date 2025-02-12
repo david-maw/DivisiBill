@@ -25,19 +25,19 @@ public partial class PropertiesPage : ContentPage
 
     private void GoToVenuesByName(object sender, EventArgs e) => Navigation.PushAsync(new VenueListByNamePage());
 
-    private void OnEntryFocused(object sender, FocusEventArgs e)
+    private async void OnEntryFocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry focusedEntry)
         {
-            focusedEntry.ShowKeyboardAsync();
+            await focusedEntry.ShowKeyboardAsync();
         }
     }
 
-    private void OnEntryCompleted(object sender, EventArgs e)
+    private async void OnEntryCompleted(object sender, EventArgs e)
     {
         if (sender is Entry focusedEntry)
         {
-            focusedEntry.HideKeyboardAsync();
+            await focusedEntry.HideKeyboardAsync();
             focusedEntry.Unfocus();
         }
     }

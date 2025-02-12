@@ -7,15 +7,10 @@ namespace DivisiBill.Views;
 
 public partial class SplashPage : ContentPage
 {
-    private class QuestionDisposition : IQuestionDisposition
+    private class QuestionDisposition(string title, string text) : IQuestionDisposition
     {
-        public QuestionDisposition(string title, string text)
-        {
-            Title = title;
-            Text = text;
-        }
-        public string Title { get; private set; }
-        public string Text { get; private set; }
+        public string Title { get; private set; } = title;
+        public string Text { get; private set; } = text;
         public bool Yes
         {
             get => App.Settings.SendCrashYes;
