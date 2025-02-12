@@ -118,7 +118,7 @@ namespace DivisiBill.Models;
  *    IsDefault - is it an unmodified sample meal the program created - this never needs to be saved
  *    SavedToApp - means it was not changed since last being persisted to the app dictionary, 
  *    TooOldToContinue - This basically says an existing bill that is about to be updated is really a new bill for 
- *        the same venue, in essence you can keep updating a bill for Meal.Timelimit (3 hours) but after that we'll 
+ *        the same venue, in essence you can keep updating a bill for Meal.TimeLimit (3 hours) but after that we'll 
  *        store a snapshot of it and start a new bill. This mostly happens when initially loading a bill on startup.
  *    OldEnoughToBeNewFile - it was last updated more than App.MinimumIdleTime (15 minutes) ago. This is basically how we
  *        decide if an existing bill that is being saved to disk should be saved to the same file or to a new one.
@@ -404,8 +404,8 @@ public partial class Meal : ObservableObjectPlus
                                  .Where(fn => FourteenDigitsRegex().IsMatch(fn)) // 14 digits dot xml (yyyymmddhhmmss.xml)
                                  .OrderByDescending(fn => fn)];
             await StatusMsgAsync($"Found {files.Count} candidate meal files");
-            List<string> oldfiles = [.. LocalMealList.Select(ms => ms.FileName)]; // The order will have been determined the line above in a previous call 
-            if (!Enumerable.SequenceEqual(files, oldfiles))
+            List<string> oldFiles = [.. LocalMealList.Select(ms => ms.FileName)]; // The order will have been determined the line above in a previous call 
+            if (!Enumerable.SequenceEqual(files, oldFiles))
             {
                 // The list of files has changed, so evaluate what's there now
                 // First, the Meals which are now missing should be marked as not local and removed from the local list (they may still be in the remote list)
@@ -929,13 +929,13 @@ public partial class Meal : ObservableObjectPlus
     // Create a crash report - this will be sent immediately (it doesn't wait for a program restart)
     public static void ReportCrash(string What, string Who, Stream sourceStream, Exception ex, string streamName, string errorDescription = "")
     {
-        string errmsg = $"Meal.ReportCrash reported What={What}, Who={Who}, Exception={ex}";
-        Debug.WriteLine(errmsg);
+        string errorMessage = $"Meal.ReportCrash reported What={What}, Who={Who}, Exception={ex}";
+        Debug.WriteLine(errorMessage);
 
         if (!string.IsNullOrEmpty(errorDescription))
-            errmsg += "\n" + errorDescription + "\n";
+            errorMessage += "\n" + errorDescription + "\n";
 
-        ex.ReportCrash(errmsg, sourceStream, streamName);
+        ex.ReportCrash(errorMessage, sourceStream, streamName);
     }
     public static Meal LoadFromStream(Stream sourceStream, MealSummary ms = null, bool setup = true)
     {
@@ -1142,11 +1142,11 @@ public partial class Meal : ObservableObjectPlus
         SaverVersion = Utilities.VersionName;
         DataVersion = "1.1"; // Increment when significant changes happen to the data format, like optional fields being added
         using (StreamWriter sw = new(streamParameter, Encoding.UTF8, -1, true))
-        using (var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true }))
+        using (var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true }))
         {
             var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
-            MealSerializer.Serialize(xmlwriter, this, namespaces);
+            MealSerializer.Serialize(xmlWriter, this, namespaces);
         }
         DebugExamineStream(streamParameter);
     }
@@ -1418,11 +1418,11 @@ public partial class Meal : ObservableObjectPlus
     public bool PersonGuidsUseless => string.IsNullOrEmpty(SaverVersion) || SaverVersion[0] == '5';
 
     /// <summary>
-    /// The curious layout of the xxxTime and ActualxxxTime properties is because we want to store the times accurately
+    /// The curious layout of the xxxTime and Actual...Time properties is because we want to store the times accurately
     /// with time zone information but show them to the human as if they were all local times, so dinner in Mumbai and Dinner 
     /// in California both show as happening in the evening. Most people only ever operate in a single time zone, but for those
     /// that do not this seems like the least bad choice. More importantly, it means that the file name and the creation time
-    /// align regardless of timezone.
+    /// align regardless of time zone.
     /// </summary>
 
     [XmlElement(ElementName = "CreationTime")]
@@ -2465,13 +2465,9 @@ public partial class Meal : ObservableObjectPlus
         }
     }
 
-    [XmlIgnore]
-    // The UnsharedAmount is too large indicating there is some sort of calculation problem.
-    public bool IsUnsharedAmountSignificant
-    {
-        get;
-        private set => SetProperty(ref field, value);
-    }
+    [ObservableProperty]
+    [XmlIgnore]    // The UnsharedAmount is too large indicating there is some sort of calculation problem.
+    public partial bool IsUnsharedAmountSignificant { get; private set; }
 
 
     public void UndoCosts()
@@ -2502,13 +2498,13 @@ public partial class Meal : ObservableObjectPlus
                     if ((costInx >= 0) && (Costs[costInx].DinerID == pc.DinerID))
                     {
                         // Oh dear, the CostIndex has been reused, so do not replace this one if it is in use
-                        var newpc = Costs[costInx];
-                        if (newpc.Amount == 0) // If the amount is zero, perhaps no items refer to it
+                        var newPersonCost = Costs[costInx];
+                        if (newPersonCost.Amount == 0) // If the amount is zero, perhaps no items refer to it
                         {
                             bool shared = false;
                             foreach (var item in lineItems)
                             {
-                                if (item.SharedBy[newpc.DinerIndex])
+                                if (item.SharedBy[newPersonCost.DinerIndex])
                                 {
                                     shared = true;
                                     break;
@@ -2649,9 +2645,9 @@ public partial class Meal : ObservableObjectPlus
         foreach (var costItem in LineItems)
             costItem.SwapSharerID(newDinerID, oldDinerID);
         // Find if a PersonCost used to use this DinerID and if so give it the ID from this one
-        PersonCost oldpc = Costs.FirstOrDefault(item => item.DinerID == newDinerID);
-        if (oldpc is not null)
-            oldpc.DinerID = pc.DinerID;
+        PersonCost previousPersonCost = Costs.FirstOrDefault(item => item.DinerID == newDinerID);
+        if (previousPersonCost is not null)
+            previousPersonCost.DinerID = pc.DinerID;
         pc.DinerID = newDinerID;
     }
 
@@ -2730,9 +2726,9 @@ public partial class Meal : ObservableObjectPlus
     /// <returns></returns>
     private static async Task BackupToRemoteAsync(CancellationToken cancellationToken)
     {
-        Utilities.DebugMsg("Entered BackuptoRemoteAsync, waiting for CloudAllowedSource");
+        Utilities.DebugMsg("Entered BackupToRemoteAsync, waiting for CloudAllowedSource");
         await App.CloudAllowedSource.WaitWhilePausedAsync();
-        Utilities.DebugMsg("In BackuptoRemoteAsync, CloudAllowedSource no longer paused");
+        Utilities.DebugMsg("In BackupToRemoteAsync, CloudAllowedSource no longer paused");
         // This is where all the elapsed time goes, reaching out over the network
         List<RemoteItemInfo> remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
         // We use HashSet types to store the data, but the performance difference pales compared to the network time above        

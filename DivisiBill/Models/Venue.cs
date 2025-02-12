@@ -21,8 +21,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     private static readonly ObservableCollection<Venue> allVenues = [];
     private static readonly ObservableCollection<Venue> allVenuesByDistance = [];
     private static bool allVenuesByDistanceIsSorted = true;
-    public static Venue Current = null;
-
+    public static Venue Current { get; set; } = null;
     private static void LoadDefaultVenues()
     {
         var initialVenues = new List<Venue>() {
@@ -57,7 +56,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             {
                 Updater = App.Settings.VenueUpdater;
                 if (Updater == Guid.Empty)
-                    Updater = App.Current.Id; // Set the current appid
+                    Updater = App.Current.Id; // Set the current app id
                 Utilities.DebugExamineStream(stream);
                 MergeVenues(stream, replace);
                 await Task.Delay(100); // Avoids a "no async" warning
@@ -142,10 +141,10 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         Directory.CreateDirectory(Path.GetDirectoryName(TargetPathName));
         try
         {
-            using (Stream sfile = new FileStream(TargetPathName, FileMode.Create, FileAccess.Write))
+            using (Stream fileStream = new FileStream(TargetPathName, FileMode.Create, FileAccess.Write))
             {
                 stream.Position = 0;
-                await stream.CopyToAsync(sfile);
+                await stream.CopyToAsync(fileStream);
             }
             App.Settings.VenueUpdateTime = UpdateTime;
             App.Settings.VenueUpdater = Updater;
@@ -215,10 +214,8 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         {
             if (!string.IsNullOrEmpty(storedVenue.Name))
             {
-                if (allVenuesDictionary.ContainsKey(storedVenue.Name))
+                if (allVenuesDictionary.TryGetValue(storedVenue.Name, out Venue localVenue))
                 {
-                    // We are loading a duplicate name
-                    Venue localVenue = allVenuesDictionary[storedVenue.Name];
                     if (localVenue.Accuracy > storedVenue.Accuracy)
                     {  // New Venue has a more accurate location, use it (big numbers are less accurate)
                         localVenue.Accuracy = storedVenue.Accuracy;
@@ -226,7 +223,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
                         localVenue.Longitude = storedVenue.Longitude;
                     }
                     if (string.IsNullOrWhiteSpace(storedVenue.Notes))
-                    { } // No need to do anything, the old notes (if any) ares all there is
+                    { } // No need to do anything, the old notes (if any) are all there is
                     else if (string.IsNullOrWhiteSpace(localVenue.Notes) || !localVenue.Notes.Equals(storedVenue.Notes))
                         localVenue.Notes += storedVenue.Notes;
                     else
@@ -382,11 +379,11 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         venues.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
         VenueRoot vr = new() { Venues = venues };
         using (StreamWriter sw = new(s, System.Text.Encoding.UTF8, -1, true))
-        using (var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
+        using (var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
         {
             var namespaces = new XmlSerializerNamespaces();
             namespaces.Add(string.Empty, string.Empty);
-            allVenuesSerializer.Serialize(xmlwriter, vr, namespaces);
+            allVenuesSerializer.Serialize(xmlWriter, vr, namespaces);
         }
         Utilities.DebugExamineStream(s);
     }
@@ -407,7 +404,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     /// <param name="newLocation">The candidate new location</param>
     public void SetLocationIfBetter(Location newLocation)
     {
-        bool useNewLocation = false;
+        bool useNewLocation;
         if (newLocation.IsValid())
         {   // We have a pretty accurate location for this venue, so perhaps it's better
             if (IsLocationValid) // We currently have a location, so decide if the new one is better

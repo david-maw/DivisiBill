@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,7 +19,7 @@ namespace DivisiBill.Models;
 [DebuggerDisplay("{DebugDisplay}")]
 [DataContract]
 [XmlRoot(ElementName = "Meal")]
-public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
+public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 {
     #region Global
     public MealSummary() { }
@@ -48,11 +49,11 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     } = string.Empty;
 
     /// <summary>
-    /// The curious layout of the xxxTime and ActualxxxTime properties is because we want to store the times accurately
+    /// The curious layout of the xxxTime and Actual...Time properties is because we want to store the times accurately
     /// with time zone information but show them to the human as if they were all local times, so dinner in Mumbai and Dinner 
     /// in California both show as happening in the evening. Most people only ever operate in a single time zone, but for those
-    /// that do not this seems like the least bad choice. More importantly, it means that the file name and the creationtime
-    /// align regardless of timezone.
+    /// that do not this seems like the least bad choice. More importantly, it means that the file name and the creation time
+    /// align regardless of time zone.
     /// 
     /// The definitions for MealSummary are a bit more complex than for Meal because MealSummaries are deserialized from XML 
     /// and JSON (they are only ever serialized to JSON) whereas Meal objects are only ever serialized and deserialized from XML.
@@ -146,10 +147,10 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
         get => creationTime;
         set
         {
-            DateTime withoutTimezone = value.DateTime;
-            if (withoutTimezone != creationTime)
+            DateTime withoutTimeZone = value.DateTime;
+            if (withoutTimeZone != creationTime)
             {
-                creationTime = withoutTimezone;
+                creationTime = withoutTimeZone;
                 OnPropertyChanged(nameof(CreationTime));
             }
         }
@@ -254,8 +255,9 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     /// The last known ImageID in the cloud for this file, someone could delete the file and add another of the 
     /// same name then the ImageID would be stale
     /// </summary>
+    [ObservableProperty]
     [XmlIgnore]
-    public string ImageID { get; set => SetProperty(ref field, value); }
+    public partial string ImageID { get; set; }
     public string ApproximateAge => ApproximateAge(CreationTime);
 
     public static Stack<MealSummary> DeletedStack { get; } = new();
@@ -409,30 +411,21 @@ public class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
     private DateTime creationTime = DateTime.MinValue;
     private DateTime lastChangeTime = DateTime.MinValue;
 
+    [ObservableProperty]
     [XmlIgnore]
-    public bool FileSelected
-    {
-        get;
-        set => SetProperty(ref field, value);
-    }
+    public partial bool FileSelected { get; set; }
 
     [XmlIgnore]
     public long Size
     {
         get; set;
     }
+    [ObservableProperty]
     [XmlIgnore]
-    public bool HasImage
-    {
-        get;
-        private set => SetProperty(ref field, value);
-    } = false;
+    public partial bool HasImage { get; private set; } = false;
+    [ObservableProperty]
     [XmlIgnore]
-    public bool HasDeletedImage
-    {
-        get;
-        private set => SetProperty(ref field, value);
-    } = false;
+    public partial bool HasDeletedImage { get; private set; } = false;
 
     [XmlIgnore]
     public int Distance { get; set; } = Distances.Inaccurate;

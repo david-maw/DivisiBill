@@ -1,5 +1,4 @@
 ﻿using DivisiBill.Services;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Xml;
@@ -37,10 +36,10 @@ public class ScannedBill
     private void Serialize(Stream s)
     {
         using StreamWriter sw = new(s, Encoding.UTF8, 512, true);
-        using var xmlwriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true });
+        using var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true });
         var namespaces = new XmlSerializerNamespaces();
         namespaces.Add(string.Empty, string.Empty);
-        itemsSerializer.Serialize(xmlwriter, this, namespaces);
+        itemsSerializer.Serialize(xmlWriter, this, namespaces);
     }
 
     /// <summary>
@@ -57,8 +56,8 @@ public class ScannedBill
     private static ScannedBill Deserialize(Stream s)
     {
         using StreamReader sr = new(s, Encoding.UTF8, true, 512, true);
-        using var xmlreader = XmlReader.Create(sr);
-        return (ScannedBill)itemsSerializer.Deserialize(xmlreader);
+        using var xmlReader = XmlReader.Create(sr);
+        return (ScannedBill)itemsSerializer.Deserialize(xmlReader);
     }
 
     public static ScannedBill LoadFromFile(string fileName)
@@ -75,12 +74,7 @@ public class ScannedBill
         {
             using var stream = File.Open(TargetFilePath, FileMode.Open); // Expect an existing file
             result = Deserialize(stream);
-            if (Debugger.IsAttached)
-            {
-                stream.Position = 0;
-                StreamReader sr = new(stream);
-                string myString = sr.ReadToEnd(); // Allows the encoded version to be viewed in the debugger
-            }
+            Utilities.DebugExamineStream(stream);
         }
         result.SourceName = fileName;
         return result;
@@ -223,7 +217,7 @@ public class OrderLine
         decimal result = 0;
         for (; startInx >= 0; startInx--)
         {
-            if (decimal.TryParse(currencyText.Substring(startInx, endInx - startInx + 1), out decimal parsedNumber))
+            if (decimal.TryParse(currencyText.AsSpan(startInx, endInx - startInx + 1), out decimal parsedNumber))
                 result = parsedNumber;
             else
                 break;

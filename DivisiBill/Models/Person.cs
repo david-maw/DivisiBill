@@ -25,7 +25,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     public const string PersonFileName = "People.xml";
     public const string FromBill = "From Bill";
     private static string PersonPathName = null;
-    public static ObservableCollection<Person> AllPeople = [];
+    public static ObservableCollection<Person> AllPeople { get; set; } = [];
 
     static Person() => AllPeople.CollectionChanged += AllPeople_CollectionChanged;
 
@@ -92,7 +92,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         {
             Updater = App.Settings.PeopleUpdater;
             if (Updater == Guid.Empty)
-                Updater = App.Current.Id; // Set the current appid
+                Updater = App.Current.Id; // Set the current app id
             Utilities.DebugExamineStream(allPeopleStream);
             DeserializeAllPeople(allPeopleStream, doReplace);
             return true;
@@ -274,10 +274,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
                 {
                     if (newPerson.personGUID.Equals(Guid.Empty)) // Created by an earlier release with a bug
                         newPerson.personGUID = Guid.NewGuid();
-                    if (Aliases.ContainsKey(newPerson.personGUID))
+                    if (Aliases.TryGetValue(newPerson.personGUID, out Person existingPerson))
                     {
-                        // We've seen this person before, so just merge in a few attributes and leave it at that
-                        Person existingPerson = Aliases[newPerson.personGUID];
                         existingPerson.Merge(newPerson);
                     }
                     else // we have not seen this person (identified by their GUID) yet
@@ -727,7 +725,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             string s = value;
             if (s is not null)
             {
-                s.Trim();
+                s = s.Trim();
                 if (s.Equals(firstName, StringComparison.OrdinalIgnoreCase))
                     s = null;
             }

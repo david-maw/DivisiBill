@@ -225,7 +225,7 @@ public class LineItem : INotifyPropertyChanged
         // At this point CostsPerPerson has a total amount entry for each person who purchased something, ignoring any discounts
         var newShares = Meal.CostsToShares(costPerPerson);
 
-        // Transfer the calculated share allocation to this lineitem
+        // Transfer the calculated share allocation to this LineItem
         for (DinerID diner = DinerID.first; diner < DinerID.limit; diner++)
         {
             SetShares(diner, newShares[(int)(diner - 1)]);
