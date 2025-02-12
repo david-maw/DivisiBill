@@ -45,7 +45,7 @@ public partial class AppShell : Shell
             FlyoutIsPresented = false;
             return true;
         }
-        else if (Navigation.NavigationStack.Count() > 1 || Navigation.ModalStack.Any()) // Bottom of NavigationStack has a null entry
+        else if (Navigation.NavigationStack.Count > 1 || Navigation.ModalStack.Any()) // Bottom of NavigationStack has a null entry
         {
             DebugMsg("In Shell.OnBackButtonPressed navigation branch");
             // If there is an active back button behavior, use it
@@ -98,7 +98,7 @@ public partial class AppShell : Shell
 
     private void GoToImagePageWithCamera(object sender, EventArgs e)
     {
-        if (CurrentPage is ImagePage imagePage)
+        if (CurrentPage is ImagePage)
             App.PushAsync(Routes.CameraPage);
         else
             App.GoToAsync(Routes.ImagePage, "StartWithCamera", "true");

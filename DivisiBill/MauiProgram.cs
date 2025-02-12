@@ -30,7 +30,7 @@ public static class MauiProgram
                 options.AddEventProcessor(new Services.SentryEventProcessor());
 
                 // Use debug mode if you want to see what the SDK is doing.
-                // Debug messages are written to stdout with Console.Writeline,
+                // Debug messages are written to stdout with Console.WriteLine,
                 // and are viewable in your IDE's debug console or with 'adb logcat', etc.
                 // This option is not recommended when deploying your application.
                 options.Debug = false;
