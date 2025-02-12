@@ -62,7 +62,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
         if (IsAnyDeletedPerson)
         {
             deletedPeople.Pop().UpsertInAllPeople();
-            IsAnyDeletedPerson = deletedPeople.Any();
+            IsAnyDeletedPerson = deletedPeople.Count > 0;
             await Person.SaveSettingsAsync();
         }
     }
@@ -72,7 +72,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
     {
         if (IsAnyDeletedPerson)
         {
-            while (deletedPeople.Any())
+            while (deletedPeople.Count > 0)
                 await UnDeletePersonAsync();
         }
     }

@@ -73,11 +73,8 @@ public partial class VenueListViewModel : ObservableObjectPlus
     private async Task UnDeleteAllVenues() => await UndeleteAllVenuesAsync();
     #endregion
     #region Properties
-    public Venue? CurrentItem
-    {
-        get;
-        set => SetProperty(ref field, value);
-    }
+    [ObservableProperty]
+    public partial Venue? CurrentItem { get; set; }
 
 #if WINDOWS
     private Venue? lastVenueSelectedByMe = null;
@@ -149,7 +146,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
         if (IsAnyDeletedVenue)
         {
             deletedVenues.Pop().InsertInVenueLists();
-            IsAnyDeletedVenue = deletedVenues.Any();
+            IsAnyDeletedVenue = deletedVenues.Count != 0;
             await Venue.SaveSettingsAsync();
         }
     }
@@ -159,7 +156,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
     {
         if (IsAnyDeletedVenue)
         {
-            while (deletedVenues.Any())
+            while (deletedVenues.Count != 0)
                 await UndeleteVenueAsync();
         }
     }
@@ -213,8 +210,8 @@ public partial class VenueListViewModel : ObservableObjectPlus
     public enum SortOrderType { byDistance, byName };
     private void NextSortOrder()
     {
-        if (SortOrder == Enum.GetValues(typeof(SortOrderType)).Cast<SortOrderType>().Max())
-            SortOrder = Enum.GetValues(typeof(SortOrderType)).Cast<SortOrderType>().Min();
+        if (SortOrder == Enum.GetValues<SortOrderType>().Max())
+            SortOrder = Enum.GetValues<SortOrderType>().Min();
         else
             SortOrder++;
     }

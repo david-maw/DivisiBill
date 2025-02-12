@@ -7,7 +7,7 @@ namespace DivisiBill.ViewModels;
 [QueryProperty(nameof(Summary), "Summary")]
 [QueryProperty(nameof(CurrentMeal), "Meal")]
 [QueryProperty(nameof(ShowStorage), "ShowStorage")]
-public class MealSummaryViewModel // Not inherited from BaseNotifypropertyChanged because these are readonly values and so need not be observable
+public class MealSummaryViewModel // No PropertyChanged events because these are readonly values and so need not be observable
 {
     public MealSummaryViewModel() { }
 

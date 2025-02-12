@@ -21,11 +21,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         Initialize();
         App.MyLocationChanged += App_MyLocationChanged;
     }
-    //TODO Report the conflict between MemberNotNill and ObserveableProperty
-#pragma warning disable MVVMTK0034 // Direct field reference to [ObservableProperty] backing field
+
     [MemberNotNull(nameof(Name))]
     [MemberNotNull(nameof(Notes))]
-#pragma warning restore MVVMTK0034 // Direct field reference to [ObservableProperty] backing field
     private void Initialize()
     {
         Name = originalVenue.Name ?? string.Empty;

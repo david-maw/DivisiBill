@@ -6,19 +6,12 @@ using DivisiBill.Services;
 
 namespace DivisiBill.ViewModels;
 
-internal partial class PersonEditViewModel : ObservableObjectPlus
+internal partial class PersonEditViewModel(Person personParameter, Action ClosePageParam) : ObservableObjectPlus
 {
-    private readonly Person originalPerson;
-    private readonly Action ClosePage;
+    private readonly Person originalPerson = personParameter;
+    private readonly Action ClosePage = ClosePageParam;
 
-    public PersonEditViewModel(Person personParameter, Action ClosePageParam)
-    {
-        originalPerson = personParameter;
-        CurrentPerson = new Person(personParameter);
-        ClosePage = ClosePageParam;
-    }
-
-    public Person CurrentPerson { get; }
+    public Person CurrentPerson { get; } = new Person(personParameter);
     public bool IsInUse => originalPerson.IsInUse;
     public bool HasUnsavedChanges => !CurrentPerson.SameIdentityAs(originalPerson);
 

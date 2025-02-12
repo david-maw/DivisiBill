@@ -166,7 +166,7 @@ public partial class MealViewModel : ObservableObjectPlus
             InsertCost(sc.PersonCost);
             foreach (var si in sc.ShareInfoList)
                 si.LineItem.SetShares(sc.PersonCost.DinerID, si.Shares);
-            IsAnyDeletedCost = deletedCosts.Any();
+            IsAnyDeletedCost = deletedCosts.Count > 0;
             DistributeCostsIfNeeded();
         }
     }
@@ -176,7 +176,7 @@ public partial class MealViewModel : ObservableObjectPlus
     {
         if (IsAnyDeletedCost)
         {
-            while (deletedCosts.Any())
+            while (deletedCosts.Count > 0)
                 UndeleteCost();
         }
     }
@@ -530,7 +530,7 @@ public partial class MealViewModel : ObservableObjectPlus
         if (IsAnyDeletedLineItem)
         {
             LineItem li = deletedLineItems.Pop();
-            IsAnyDeletedLineItem = deletedLineItems.Any();
+            IsAnyDeletedLineItem = deletedLineItems.Count > 0;
             AddLineItem(li);
         }
     }
@@ -541,7 +541,7 @@ public partial class MealViewModel : ObservableObjectPlus
         if (IsAnyDeletedLineItem)
         {
             LineItem firstUndeletedItem = deletedLineItems.Peek();
-            while (deletedLineItems.Any())
+            while (deletedLineItems.Count > 0)
                 AddItem(deletedLineItems.Pop());
             IsAnyDeletedLineItem = false;
             SelectedLineItem = firstUndeletedItem;
@@ -703,7 +703,8 @@ public partial class MealViewModel : ObservableObjectPlus
     private decimal VisibleNegative => -LineItems.Where(l => l.FilteredAmount < 0).Sum(l => l.FilteredAmount);
     public decimal SubTotal => Meal.CurrentMeal.SubTotal;
     private void SetFilteredSubtotal() => FilteredSubTotal = Math.Max(0, IsFiltered ? VisiblePositive - (IsCouponAfterTax ? 0 : VisibleNegative) : 0);
-    public decimal FilteredSubTotal { get; private set => SetProperty(ref field, value); }
+    [ObservableProperty]
+    public partial decimal FilteredSubTotal { get; private set; }
     public decimal TotalAmount => Meal.CurrentMeal.TotalAmount;
     public decimal RoundedAmount => Meal.CurrentMeal.RoundedAmount;
     public bool IsAnyUnallocated => Meal.CurrentMeal.UnallocatedAmount != 0;
@@ -733,7 +734,8 @@ public partial class MealViewModel : ObservableObjectPlus
     // Zeroing these out when unused makes the XAML simpler
     public decimal CouponAmountAfterTax => Meal.CurrentMeal.CouponAmountAfterTax;
     private void SetFilteredCouponAmountAfterTax() => FilteredCouponAmountAfterTax = IsFiltered && IsCouponAfterTax ? VisibleNegative : 0;
-    public decimal FilteredCouponAmountAfterTax { get; private set => SetProperty(ref field, value); }
+    [ObservableProperty]
+    public partial decimal FilteredCouponAmountAfterTax { get; private set; }
     public decimal ScannedSubTotal => Meal.CurrentMeal.ScannedSubTotal;
     public decimal ScannedTax => Meal.CurrentMeal.ScannedTax;
     #endregion    
