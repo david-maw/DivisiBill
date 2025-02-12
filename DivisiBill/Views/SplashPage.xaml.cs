@@ -7,21 +7,6 @@ namespace DivisiBill.Views;
 
 public partial class SplashPage : ContentPage
 {
-    private class QuestionDisposition(string title, string text) : IQuestionDisposition
-    {
-        public string Title { get; private set; } = title;
-        public string Text { get; private set; } = text;
-        public bool Yes
-        {
-            get => App.Settings.SendCrashYes;
-            set => App.Settings.SendCrashYes = value;
-        }
-        public bool AskAgain
-        {
-            get => App.Settings.SendCrashAsk;
-            set => App.Settings.SendCrashAsk = value;
-        }
-    }
     public SplashPage()
     {
         InitializeComponent();
@@ -71,19 +56,12 @@ public partial class SplashPage : ContentPage
             statusLabel.Text = string.Empty;
             App.Settings ??= new AppSettings(); // allowed to be null for testing
             await InitializeUtilitiesAsync();
-            if (App.SentryAllowed)
+            if (App.SentryAllowed && App.Settings.SendCrashAsk)
             {
-                if (Utilities.IsDebug)
-                {
-                    App.Settings.SendCrashYes = false;
-                    App.Settings.SendCrashAsk = false;
-                }
-                else
-                {
-                    IQuestionDisposition questionDisposition = new QuestionDisposition("Telemetry", "Do you want to report crash data anonymously to DivisiBill Support?");
-                    if (questionDisposition.AskAgain)
-                        _ = await this.ShowPopupAsync(new QuestionPage(questionDisposition));
-                }
+                dynamic d = await this.ShowPopupAsync(new QuestionPage("Telemetry", "Do you want to report crash data anonymously to DivisiBill Support?", App.Settings.SendCrashYes));
+                // It's ok to ask the questions in debug builds, but debug builds never send reports, regardless of the answer
+                App.Settings.SendCrashYes = d.Yes;
+                App.Settings.SendCrashAsk = d.Ask;
             }
             App.EvaluateCloudAccessible(); // Set initial values
             App.HandleActivityChanges();
