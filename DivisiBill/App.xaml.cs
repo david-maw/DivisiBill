@@ -152,7 +152,6 @@ public partial class App : Application, INotifyPropertyChanged
             {
                 // Just ignore it and go on to the next operation as we are stopping anyway
             }
-            HandleActivityChanges(true);
         }
 
         void StoreWindowLocation(double x, double y, double w, double h)
@@ -184,6 +183,8 @@ public partial class App : Application, INotifyPropertyChanged
                     HandleActivityChanges(false);
                     await Meal.ResumeAsync();
                 }
+                else
+                    HandleActivityChanges(false);
             }
         };
 
@@ -192,16 +193,17 @@ public partial class App : Application, INotifyPropertyChanged
             if (!IsRepeated("Deactivated"))
             {
                 PersistAsNeeded();
+                HandleActivityChanges(true);
                 StoreWindowLocation(window.X, window.Y, window.Width, window.Height);
             }
         };
 
-        window.Stopped += (s, e) =>
+        window.Stopped += (s, e) => // When the user switches to another app on android or minimizes the app on Windows
         {
             IsRepeated("Stopped");
         };
 
-        window.Resumed += (s, e) =>
+        window.Resumed += (s, e) => // Called on Windows and Android when switching to an app, closely followed by Activated when it gets focus
         {
             IsRepeated("Resumed");
         };
@@ -211,6 +213,7 @@ public partial class App : Application, INotifyPropertyChanged
             if (!IsRepeated("Destroying"))
             {
                 PersistAsNeeded();
+                HandleActivityChanges(true);
                 StoreWindowLocation(window.X, window.Y, window.Width, window.Height);
             }
         };
@@ -385,7 +388,7 @@ public partial class App : Application, INotifyPropertyChanged
 
         #region Try to reach the web service until the user tells us to give up
         Task<HttpStatusCode> WsVersionTask = CallWs.GetVersion();
-        bool WsVersionChecked = false;
+        bool WsVersionChecked;
         await WsVersionTask.OrDelay(1000);
         // Call the 'version' web service and wait for a response or until the user gives up 
         WsVersionChecked = (WsVersionTask.IsCompleted && WsVersionTask.Result == HttpStatusCode.OK) // in other words, it completed without error 

@@ -53,19 +53,25 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
     /// </summary>
     public async Task WaitForConnection()
     {
+
         // Ensure we were initialized correctly
         ArgumentNullException.ThrowIfNull(ClosePopup);
         ArgumentNullException.ThrowIfNull(WsVersionTask);
-        // prepare a timer for use later
+        #region Timer Handling
         DateTime startTime = DateTime.Now;
+        int ElapsedSeconds() => (int)((DateTime.Now - startTime).TotalSeconds);
+        string ToSecondsText(int i) => i + " second" + (i > 1 ? "s" : "");
+        // prepare a timer for use later
         Timer elapsedTimer = new(e =>
             {
-                int i = (int)((DateTime.Now - startTime).TotalSeconds);
-                SetStatusMessage(null, "Waited " + i + " second" + (i > 1 ? "s" : ""));
+                int i = ElapsedSeconds();
+                SetStatusMessage(null, "Waited " + ToSecondsText(i));
             },
             null, 1000, 1000);
         elapsedTimer.Change(int.MaxValue, int.MaxValue);
+        #endregion
         // Loop until we have a successful call or the user tells us to stop
+        PauseToken IsRunning = App.IsRunningSource.Token;
         do
         {
             // If the 'version' call has completed, check the result (if it has not completed, there's nothing we can do but wait)
@@ -78,13 +84,20 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
                 {
                     // The request completed but returned an error, so wait a bit then try again
                     SetStatusMessage("Call failed with Error: " + WsVersionTask.Result);
-                    for (int i = 5; i > 0; i--)
+                    startTime = DateTime.Now;
+                    do
                     {
-                        if (!keepTrying)
+                        await App.IsRunningSource.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
+                        int i = 30 - ElapsedSeconds();
+                        if (i > 0 && keepTrying)
+                        {
+                            SetStatusMessage(null, "Will retry in " + ToSecondsText(i));
+                            await Task.Delay(1000);
+                        }
+                        else
                             break;
-                        SetStatusMessage(null, "Will retry in " + (i) + " second" + (i > 1 ? "s" : ""));
-                        await Task.Delay(1000);
                     }
+                    while (keepTrying);
                     if (keepTrying)
                         WsVersionTask = CallWs.GetVersion();
                 }
