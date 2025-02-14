@@ -1,4 +1,5 @@
-﻿using DivisiBill.Models;
+﻿using CommunityToolkit.Maui.Views;
+using DivisiBill.Models;
 using DivisiBill.Services;
 using DivisiBill.ViewModels;
 using Microsoft.Maui.Handlers;
@@ -383,49 +384,12 @@ public partial class App : Application, INotifyPropertyChanged
         }
 
         #region Try to reach the web service until the user tells us to give up
-        var WsVersionTask = CallWs.GetVersion();
+        Task<HttpStatusCode> WsVersionTask = CallWs.GetVersion();
         bool WsVersionChecked = false;
+        await WsVersionTask.OrDelay(1000);
         // Call the 'version' web service and wait for a response or until the user gives up 
-        await WsVersionTask.OrDelay();
-        while (!WsVersionTask.IsCompleted)
-        {
-            AskAboutLicense = AskAboutLicense &&
-                await Utilities.AskAsync("Slow Response", "DivisiBill web service has not responded, do you want to keep waiting or continue without licenses",
-                    "wait", "continue");
-            if (!AskAboutLicense) break;
-            await WsVersionTask.OrDelay();
-        }
-        // If the 'version' call has completed, check the result (if it has not completed, there's no more we can do)
-        if (WsVersionTask.IsCompleted)
-        {
-            Utilities.DebugMsg("In CheckLicenses, WsVersionTask.IsCompleted and result = " + WsVersionTask.Result);
-            if (WsVersionTask.Result == HttpStatusCode.OK)
-                WsVersionChecked = true;
-            else
-            {
-                // The request completed but returned an error, ask the user if they wish to try again or just go on without licenses
-                while (WsVersionTask.Result != HttpStatusCode.OK)
-                {
-                    AskAboutLicense = AskAboutLicense &&
-                        await Utilities.AskAsync("Cloud Failure",
-                        $"Could not use the cloud licensing service ({(int)WsVersionTask.Result}-{WsVersionTask.Result}), do you want to try again or continue without licenses",
-                            "try again", "continue");
-                    if (!AskAboutLicense) break; // The user has elected to stop waiting
-                    if (WsVersionTask.IsCompleted)
-                        WsVersionTask = CallWs.GetVersion();
-                    await WsVersionTask.OrDelay();
-                    if (WsVersionTask.IsCompleted)
-                        Utilities.DebugMsg("In CheckLicenses, retried version call, returned result = " + WsVersionTask.Result);
-                }
-                if (WsVersionTask.IsCompleted)
-                {
-                    if (!AskAboutLicense)
-                        Utilities.DebugMsg("In CheckLicenses, abandoned retried version call but the request completed anyway with " + WsVersionTask.Result);
-                    if (WsVersionTask.Result == HttpStatusCode.OK)
-                        WsVersionChecked = true;
-                }
-            }
-        }
+        WsVersionChecked = (WsVersionTask.IsCompleted && WsVersionTask.Result == HttpStatusCode.OK) // in other words, it completed without error 
+             || (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(WsVersionTask)); // or, it did so after a delay
         #endregion
         #region Check the pro license
         bool FoundProSubscription = false;
