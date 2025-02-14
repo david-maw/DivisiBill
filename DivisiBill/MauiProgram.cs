@@ -1,16 +1,13 @@
 ﻿using CommunityToolkit.Maui;
-using CommunityToolkit.Maui.Maps;
 using DivisiBill.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.Versioning;
 #if WINDOWS
+using CommunityToolkit.Maui.Maps;
 using Sentry.Profiling;
 #endif
 
 namespace DivisiBill;
 
-[SupportedOSPlatform("windows10.0.10240.0")]
-[SupportedOSPlatform("android21.1")]
 [epj.RouteGenerator.AutoRoutes("Page")]
 public static class MauiProgram
 {
