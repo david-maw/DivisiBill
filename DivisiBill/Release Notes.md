@@ -1,3 +1,9 @@
+# 6.2.16
+
+## Initial Popup For license Check
+
+When DivisiBill starts it checks a web service for licensing, if this check did not quickly succeed it would display a series of questions. Now it shows a popup while it retries errors and/or waits for responses. the popup closes automatically if a good response is received or you elect to continue without waiting for licenses.
+
 # 6.2.15
 
 ## Correct OCR License Purchase Message
