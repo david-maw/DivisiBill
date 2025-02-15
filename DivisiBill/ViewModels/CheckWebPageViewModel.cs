@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
+using System.Diagnostics;
 using System.Net;
 
 namespace DivisiBill.ViewModels;
@@ -58,8 +59,8 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
         ArgumentNullException.ThrowIfNull(ClosePopup);
         ArgumentNullException.ThrowIfNull(WsVersionTask);
         #region Timer Handling
-        DateTime startTime = DateTime.Now;
-        int ElapsedSeconds() => (int)((DateTime.Now - startTime).TotalSeconds);
+        Stopwatch stopwatch = new();
+        int ElapsedSeconds() => (int)((stopwatch.Elapsed).TotalSeconds);
         string ToSecondsText(int i) => i + " second" + (i > 1 ? "s" : "");
         // prepare a timer for use later
         Timer elapsedTimer = new(e =>
@@ -84,7 +85,7 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
                 {
                     // The request completed but returned an error, so wait a bit then try again
                     SetStatusMessage("Call failed with Error: " + WsVersionTask.Result);
-                    startTime = DateTime.Now;
+                    stopwatch.Restart();
                     do
                     {
                         await App.IsRunningSource.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
@@ -106,7 +107,7 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
             {
                 // The request has not completed yet, so just wait for it to complete
                 SetStatusMessage("Waiting for web service call to complete");
-                startTime = DateTime.Now;
+                stopwatch.Restart();
                 elapsedTimer.Change(1200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
                 await WsVersionTask;
                 elapsedTimer.Change(int.MaxValue, int.MaxValue); // Stop firing the timer
