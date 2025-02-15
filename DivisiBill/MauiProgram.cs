@@ -46,6 +46,9 @@ public static class MauiProgram
                 // e.g. 0.2 means we want to profile 20 % of the captured transactions.
                 // We recommend adjusting this value in production.
                 options.ProfilesSampleRate = 1.0;
+#if ANDROID
+                options.Android.SuppressSegfaults = true; // Release builds report these in addition to a .NET null reference exception
+#endif
 #if WINDOWS
                 // Requires NuGet package: Sentry.Profiling
                 // Note: By default, the profiler is initialized asynchronously. This can
