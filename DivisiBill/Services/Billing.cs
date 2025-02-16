@@ -1,6 +1,7 @@
 ﻿using Plugin.InAppBilling;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace DivisiBill.Services;
@@ -64,6 +65,8 @@ internal static class Billing
     public const string ExpectedPackageName = "com.autoplus.divisibill";
     public const int ScansWarningLevel = 4; // If this many or fewer are left, warn the user and allow them to purchase additional scans
 
+    private static string GetJsonFieldValue(string jsonString, string fieldName) => JsonDocument.Parse(jsonString).RootElement.TryGetProperty(fieldName, out JsonElement fieldValue) ? fieldValue.GetString() : string.Empty;
+
     #region Pro License
     public const string ProSubscriptionId = "pro.subscription";
     public const string OldProProductId = "pro.upgrade"; // a product, not a subscription, kept around to simplify testing because it does not expire
@@ -101,7 +104,7 @@ internal static class Billing
                 {
                     ProductId = OldProProductId, // temporary
                     State = PurchaseState.Failed,
-                    Id = "GPA.XXXX-XXXX-XXXX-10936",
+                    Id = GetJsonFieldValue(json, "orderId"),
                     OriginalJson = json
                 };
                 if (resultString is not null)
@@ -206,7 +209,7 @@ internal static class Billing
                 {
                     ProductId = OcrLicenseProductId,
                     State = PurchaseState.Failed,
-                    Id = "GPA.XXXX-XXXX-XXXX-34067",
+                    Id = GetJsonFieldValue(json, "orderId"),
                     OriginalJson = json
                 };
                 if (resultString is not null && int.TryParse(resultString, out int scans))

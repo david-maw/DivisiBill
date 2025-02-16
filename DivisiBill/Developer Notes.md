@@ -387,7 +387,7 @@ namespace DivisiBill.Generated
 ```
 
 Annoyingly when you change VS build from Android to Windows (and maybe other times) these files sometimes get generated with `CDATA`
-tags actually in the file, which is irritating and a [bug](https://developercommunity.visualstudio.com/t/Project-Generated-Files-Sometimes-Contai/10604117?port=1025&fsid=289c13cb-3f26-49b3-ad9f-3ce964430f13&q=CDATA&ref=native&refTime=1729901351487&refUserId=87be68b7-e95b-4f21-a5ac-92dc4c3f90a9) Microsoft have declined to fix . To work around this just repeat the build. 
+tags actually in the file, which is irritating and a [bug](https://developercommunity.visualstudio.com/t/Project-Generated-Files-Sometimes-Contai/10604117?port=1025&fsid=289c13cb-3f26-49b3-ad9f-3ce964430f13&q=CDATA&ref=native&refTime=1729901351487&refUserId=87be68b7-e95b-4f21-a5ac-92dc4c3f90a9) Microsoft took a while to fix - it was finally fixed in February 2025 though not yet released. To work around this just repeat the build. 
 
 On the developer machine, the secrets are stored in environment variables that mostly begin with DIVISIBILL_.
 CI/CD creates environment variables on the fly using secrets stored in the CI/CD system. Some example secrets and their corresponding environment variable (the full list is above):
@@ -406,6 +406,48 @@ in this case `.github\workflows\dotnet-build-android.yml`. That script needs var
 CI/CD Play Store deployment from the GitHub action YAML file uses a service account whose key is stored in SERVICE_ACCOUNT_JSON.
 
 The project file also deploys the PDB file for a release build to Sentry using a build step. This requires a secret in SENTRY_AUTH_TOKEN so the `SentryUploadSymbols` action can upload the generated PDB file.
+
+A local debug build on Windows is helpful (see "Windows Debug Environment"$pwd below) but it uses some secrets that are not needed elsewhere so they are just stored as environment variables on the development system:
+
+DIVISIBILL_BING_MAPS_SECRET - the key to use bing maps in the Community Toolkit because MAUI doesn't do maps on Windows
+DIVISIBILL_TEST_PRO_JSON_B64 - A base-64 encoded JSON representation of a Pro License on Android
+DIVISIBILL_TEST_OCR_JSON_B64 - A base-64 encoded JSON representation of an OCR License on Android
+
+The Bing Maps key is issued when you sign up for Bing maps.
+
+The DIVISIBILL_TEST_xxx_JSON_B64 environment variables are used to test licensing on a Windows system because the Android play API isn't readily usable there. They are created by capturing the JSON from an android app, storing it in a file and then using PowerShell to create an environment variable from it. A PowerShell script to create an appropriate environment variable looks like this:
+
+```
+                # Path to the file you want to store in an environment variable
+                $filePath = "$PWD\OCR 36111.json"
+                # The variable name you want to use
+                $envVarName = "DIVISIBILL_TEST_OCR_JSON_B64"
+
+                # Read the file content
+                $fileContent = Get-Content -Path $filePath -Raw
+
+                # Encode the file content in Base64
+                $encodedContent = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($fileContent))
+
+                # Store the encoded content in a machine wide environment variable
+                [System.Environment]::SetEnvironmentVariable($envVarName, $encodedContent, [System.EnvironmentVariableTarget]::User)
+```
+If you wish you can verify the variable contains the right thing by running a script like this. 
+
+```
+                # Verify by displaying the decoded environment variable
+                $retrievedValue = [System.Environment]::GetEnvironmentVariable($envVarName, [System.EnvironmentVariableTarget]::User)
+                # Decode the Base64 encoded string
+
+                $decodedBytes = [System.Convert]::FromBase64String($retrievedValue)
+                $decodedString = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+
+                # Output the decoded string
+                Write-Output ("User environment variable '$envVarName' contains base-64 encoded string : " + $retrievedValue.substring(0,50) + "...")
+                Write-Output $decodedString
+```
+
+If you set environment variables, don't forget to restart Visual Studio before rebuilding the app so it uses the new values. 
 
 Build Time
 ----------
