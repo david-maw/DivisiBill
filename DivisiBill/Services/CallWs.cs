@@ -44,13 +44,17 @@ internal static class CallWs
     #endregion
     #region Select Alternate Web Service (debug only) 
     [Conditional("DEBUG")]
-    internal static void SelectAlternateWs(bool useAlternateWs)
+    internal static void SelectWs(bool useAlternateWs)
     {
         if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsUri) // There is no defined URI
             || string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillAlternateWsUri)) // There is no defined alternate URI
             return;
-        client.BaseAddress = useAlternateWs ? new Uri(Generated.BuildInfo.DivisiBillAlternateWsUri) : new Uri(Generated.BuildInfo.DivisiBillWsUri);
-        KeyString = useAlternateWs ? Generated.BuildInfo.DivisiBillAlternateWsKey : Generated.BuildInfo.DivisiBillWsKey;
+        Uri newUri = useAlternateWs ? new Uri(Generated.BuildInfo.DivisiBillAlternateWsUri) : new Uri(Generated.BuildInfo.DivisiBillWsUri);
+        if (!newUri.Equals(client.BaseAddress))
+        {
+            client.BaseAddress = newUri;
+            KeyString = useAlternateWs ? Generated.BuildInfo.DivisiBillAlternateWsKey : Generated.BuildInfo.DivisiBillWsKey;
+        }
     }
     #endregion
     #region Scan a Bill

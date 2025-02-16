@@ -245,7 +245,7 @@ public partial class App : Application, INotifyPropertyChanged
         bool wifiIsNotRequiredOrIsPresent = Settings is null || !Settings.WiFiOnly || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
         IsCloudAccessible = Connectivity.NetworkAccess == NetworkAccess.Internet && wifiIsNotRequiredOrIsPresent;
         IsCloudAllowed = Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
-        CallWs.SelectAlternateWs(Settings.UseAlternateWs); // Debug only
+        CallWs.SelectWs(Settings.UseAlternateWs); // Debug only
     }
 
     private static async void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)
