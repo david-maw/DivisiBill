@@ -70,14 +70,14 @@ internal partial class DataManagementViewModel : ObservableObject
     [RelayCommand]
     public async Task ArchiveAsync()
     {
-        Archive archive = new(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue);
+        Archive archive = new(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue, OnlyRelated);
         var filePath = Path.Combine(FileSystem.CacheDirectory, "DivisiBill" + archive.TimeName + ".xml");
         try
         {
             if (ArchiveShare)
             {
                 Stream s = new FileStream(filePath, FileMode.OpenOrCreate);
-                archive.ToStream(s);
+                archive.ToJsonStream(s);
                 await Share.RequestAsync(new ShareFileRequest
                 {
                     Title = "Archive " + Path.GetFileName(filePath),
@@ -88,7 +88,7 @@ internal partial class DataManagementViewModel : ObservableObject
             else if (ArchiveToDisk)
             {
                 Stream s = new MemoryStream();
-                archive.ToStream(s);
+                archive.ToJsonStream(s);
                 s.Position = 0;
                 FileSaverResult fileSaverResult = new(null, null);
 #if WINDOWS || ANDROID
@@ -187,7 +187,7 @@ internal partial class DataManagementViewModel : ObservableObject
                         // Now restore all the other items (which are not part of this ViewModel)
                         archive.DeleteBeforeRestore = DeleteBeforeRestore;
                         archive.OverwriteDuplicates = OverwriteDuplicates;
-                        await archive.RestoreAsync(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue);
+                        await archive.RestoreAsync(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue, OnlyRelated);
                         IsBusy = false;
                         await Utilities.ShowAppSnackBarAsync("Restore Complete");
                     }
@@ -219,6 +219,15 @@ internal partial class DataManagementViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool FilterByDate { get; set; } = false;
+
+    partial void OnFilterByDateChanged(bool value)
+    {
+        if (value)
+            OnlyRelated = true;
+    }
+
+    [ObservableProperty]
+    public partial bool OnlyRelated { get; set; } = false;
 
     [ObservableProperty]
     public partial bool DeleteBeforeRestore { get; set; } = false;

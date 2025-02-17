@@ -1,4 +1,5 @@
 ﻿using DivisiBill.Models;
+using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Services;
@@ -6,7 +7,7 @@ namespace DivisiBill.Services;
 public class Archive
 {
     public Archive() { }
-    public Archive(DateOnly startDate, DateOnly finishDate)
+    public Archive(DateOnly startDate, DateOnly finishDate, bool onlyRelatedParam)
     {
         UserSettings = new UserSettingsClass()
         {
@@ -22,6 +23,7 @@ public class Archive
             FakeLocation = App.MyLocation is not null ? new SimpleLocation(App.MyLocation) : null,
             BillsFromDate = startDate > DateOnly.MinValue ? startDate.ToString() : null,
             BillsToDate = finishDate < DateOnly.MaxValue ? finishDate.ToString() : null,
+            OnlyRelated = onlyRelatedParam,
         };
         // Make a list of meals one by looping through list of local mealSummaries and creating a meal from each
         Meals = [.. Meal.LocalMealList
@@ -34,9 +36,9 @@ public class Archive
             foreach (Meal m in Meals)
                 m.CompareCostDistribution();
         }
-        if (startDate == DateOnly.MinValue && finishDate == DateOnly.MaxValue)
+        if (!onlyRelatedParam)
         {
-            // No date filtering, just include everything
+            // No filtering, just include everything
             Venues = [.. Venue.AllVenues];
             Persons = [.. Person.AllPeople];
             AliasGuids = Person.AliasGuidList;
@@ -71,7 +73,7 @@ public class Archive
         }
     }
     // The data to archive
-    public string Version { get; set; } = "1.2";
+    public string Version { get; set; } = "1.3";
     private DateTimeOffset creationTime = DateTimeOffset.Now;
     public string CreationTimeString
     {
@@ -79,7 +81,9 @@ public class Archive
         set => _ = DateTimeOffset.TryParse(value, out creationTime);
     }
     public string TimeName => Utilities.NameFromDateTime(creationTime.LocalDateTime);
+    [JsonIgnore]
     public bool DeleteBeforeRestore { get; set; } = false;
+    [JsonIgnore]
     public bool OverwriteDuplicates { get; set; } = false;
     public UserSettingsClass UserSettings { get; set; } = null;
     public List<Venue> Venues { get; set; } = null;
@@ -87,7 +91,7 @@ public class Archive
     public List<GuidMappingEntry> AliasGuids { get; set; } = null;
     public List<Meal> Meals { get; set; } = null;
 
-    public bool ToStream(Stream stream)
+    public bool ToJsonStream(Stream stream)
     {
         try
         {
@@ -115,7 +119,7 @@ public class Archive
     private static readonly XmlSerializer xmlSerializer = new(typeof(Archive));
 
 
-    public async Task<bool> RestoreAsync(DateOnly startDate, DateOnly finishDate)
+    public async Task<bool> RestoreAsync(DateOnly startDate, DateOnly finishDate, bool onlyRelatedParam)
     {
         // Restore each object type except user specifiable defaults because
         // those are restored through a ViewModel and we want to stay ignorant of those.
@@ -124,11 +128,44 @@ public class Archive
         try
         {
             App.IsCloudAllowed = false; // No backups while this is going on
-            // if we're handling only limited dates reevaluate the list
+                                        // if we're handling only limited dates reevaluate the list
             if (startDate > DateOnly.MinValue || finishDate < DateOnly.MaxValue)
             {
                 // Filter the meal list by date
                 Meals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate)];
+            }
+            if (!onlyRelatedParam)
+            {
+                // filter other lists to limit them to required items
+                List<Venue> FilteredVenues = [];
+                List<Person> FilteredPersons = [];
+                List<GuidMappingEntry> FilteredAliasGuids = [];
+                // figure out what is used by the meals in the list and just include that
+                foreach (var meal in Meals)
+                {
+                    Venue v = string.IsNullOrWhiteSpace(meal.VenueName) ? null : Venues.FirstOrDefault(venue => meal.VenueName.Equals(venue.Name));
+                    if (v is not null)
+                        FilteredVenues.Add(v);
+                    foreach (var pc in meal.Costs.Where(pc => pc.PersonGUID != Guid.Empty))
+                    {
+                        Guid personGuid = pc.PersonGUID;
+                        GuidMappingEntry guidMappingEntry = AliasGuids.FirstOrDefault(guidMapping => personGuid.Equals(guidMapping.Key));
+                        if (guidMappingEntry is not null)
+                        {
+                            FilteredAliasGuids.Add(guidMappingEntry);
+                            personGuid = guidMappingEntry.Value;
+                        }
+                        Person person = Persons.FirstOrDefault(person => person.PersonGUID == personGuid);
+                        if (person is not null)
+                            FilteredPersons.Add(person);
+                    }
+                }
+                Venues = [.. FilteredVenues.Distinct()];
+                Venues.Sort();
+                Persons = [.. FilteredPersons.Distinct()];
+                Persons.Sort();
+                AliasGuids = [.. FilteredAliasGuids.DistinctBy(a => a.Key)];
+                AliasGuids.Sort();
             }
             // If we're going to clear the current meal do it first so any side effects will be erased later
             if (DeleteBeforeRestore)
@@ -195,5 +232,6 @@ public class UserSettingsClass
     public SimpleLocation FakeLocation { get; set; }
     public string BillsFromDate { get; set; }
     public string BillsToDate { get; set; }
+    public bool OnlyRelated { get; set; }
     public bool HadProSubscription { get; set; }
 }

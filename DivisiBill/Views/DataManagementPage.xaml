@@ -34,6 +34,10 @@
             <Label Text="thru" VerticalOptions="Center"/>
             <DatePicker MinimumDate="{Binding StartDate}" MaximumDate="1/1/3000" Date="{Binding FinishDate}"/>
         </HorizontalStackLayout>
+        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+            <Label Text="Only Related People and Venues" VerticalOptions="Center"/>
+            <CheckBox IsChecked="{Binding OnlyRelated}"/>
+        </HorizontalStackLayout>
         <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="30,0"/>
         <!--#endregion-->
         <!--#region Bill Management -->
