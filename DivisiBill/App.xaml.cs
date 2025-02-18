@@ -179,7 +179,8 @@ public partial class App : Application, INotifyPropertyChanged
                 Utilities.DebugMsg($"In window.Activated; initialization completed = {InitializationComplete.Task.IsCompleted}");
                 if (InitializationComplete.Task.IsCompleted)
                 {
-                    await App.CheckLicenses();
+                    if (LicenseChecked) // If we have checked licenses before, do it again, otherwise don't bother so as not to keep complaining about a bad connection
+                        await App.CheckLicenses();
                     HandleActivityChanges(false);
                     await Meal.ResumeAsync();
                 }
