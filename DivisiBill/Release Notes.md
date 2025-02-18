@@ -1,3 +1,17 @@
+# 6.2.17
+
+## Enhance Archiving with Explicit Related Item Filtering
+
+A new "Only Related People and Venues" checkbox is added to the data management page. It allows you to limit archived or restored people and venues to just those relating to the bills to be archived or restored.
+
+## Enhance app lifecycle handling and web service retry logic
+
+If you switch away from the app while it is trying to connect to the web service it will now pause the connection attempt and resume it when you return to the app. If the connection attempt fails it will retry it after a short delay.
+
+## Improve Format of "Telemetry" Popup
+
+During initialization DivisiBill may ask the user whether they wish to send telemetry in the event of a failure. The appearance of this dialog has been improved.
+
 # 6.2.16
 
 ## Initial Popup For license Check
