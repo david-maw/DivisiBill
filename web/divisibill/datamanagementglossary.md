@@ -30,6 +30,10 @@ Select this option to overwrite items of the same name that already exist when t
 
 Changes the behavior of the Archive and Restore buttons so they only operate on a limited range of bills.
 
+## Only Related
+
+Changes the behavior of the Archive and Restore buttons so they only operate on those People and Venues that are used on a selected bill.
+
 ## Download Bills Button
 
 Tap this button to select any bills stored to the cloud which are not stored locally and switch to the [bill list](meallistpage.html) page.

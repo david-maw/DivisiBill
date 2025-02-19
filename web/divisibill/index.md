@@ -57,4 +57,4 @@ Otherwise it connects only when you specifically request it to (for example, in 
 
 Professional Edition Subscribers may delete their cloud based data (bills and/or lists of people or venues) at any time through DivisiBill, by canceling their subscription, or by sending an email request to [DivisiBill Support](mailto:support@autopl.us) along with their Professional Subscription order number (DivisiBill will add this to the mail automatically, just don't delete it). Once a Professional Subscription ends (either by being canceled or not being renewed) the corresponding cloud based data will be removed. The source of this data is anonymous though the data itself may give some clues, especially to the users location.
 
-<p style="Text-align:center; font-size: 0.8em">Last updated January 2025 for version 6.2.15</p>
+<p style="Text-align:center; font-size: 0.8em">Last updated February 2025 for version 6.2.17</p>
