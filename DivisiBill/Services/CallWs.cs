@@ -155,7 +155,10 @@ internal static class CallWs
                 MostRecentVersionInfo = await response.Content.ReadAsStringAsync();
                 // Detect the weird failure which just returns an OK result but no data
                 if (string.IsNullOrEmpty(MostRecentVersionInfo))
+                { // This is a failure, return a NotFound status
+                    Utilities.DebugMsg("GetVersion returned OK but no data, returning NotFound");
                     return HttpStatusCode.NotFound;
+                }
             }
 
             return response.StatusCode;

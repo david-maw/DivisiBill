@@ -19,7 +19,7 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
     /// <param name="result">True if the web service call worked, false if the user elected to abandon it</param>
     private void StopTrying(object result)
     {
-        Utilities.DebugMsg($"In WaitForConnection.InvokeClose({result}");
+        Utilities.DebugMsg($"In WaitForConnection.InvokeClose({result})");
         keepTrying = false;
         ClosePopup?.Invoke(result);
     }
@@ -59,20 +59,22 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
         ArgumentNullException.ThrowIfNull(ClosePopup);
         ArgumentNullException.ThrowIfNull(WsVersionTask);
         #region Timer Handling
+        PauseToken runningStatus = App.IsRunningSource.Token;
         Stopwatch stopwatch = new();
         int ElapsedSeconds() => (int)((stopwatch.Elapsed).TotalSeconds);
         string ToSecondsText(int i) => i + " second" + (i > 1 ? "s" : "");
         // prepare a timer for use later
         Timer elapsedTimer = new(e =>
             {
-                int i = ElapsedSeconds();
-                SetStatusMessage(null, "Waited " + ToSecondsText(i));
+                if (runningStatus.IsPaused)
+                    SetStatusMessage(null, "Paused");
+                else
+                    SetStatusMessage(null, "Waited " + ToSecondsText(ElapsedSeconds()));
             },
             null, 1000, 1000);
         elapsedTimer.Change(int.MaxValue, int.MaxValue);
         #endregion
         // Loop until we have a successful call or the user tells us to stop
-        PauseToken IsRunning = App.IsRunningSource.Token;
         do
         {
             // If the 'version' call has completed, check the result (if it has not completed, there's nothing we can do but wait)
@@ -88,12 +90,15 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
                     stopwatch.Restart();
                     do
                     {
-                        await App.IsRunningSource.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
+                        await runningStatus.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
                         int i = 30 - ElapsedSeconds();
                         if (i > 0 && keepTrying)
                         {
-                            SetStatusMessage(null, "Will retry in " + ToSecondsText(i));
                             await Task.Delay(1000);
+                            if (runningStatus.IsPaused)
+                                SetStatusMessage(null, "Paused");
+                            else
+                                SetStatusMessage(null, "Will retry in " + ToSecondsText(i));
                         }
                         else
                             break;
@@ -108,7 +113,7 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
                 // The request has not completed yet, so just wait for it to complete
                 SetStatusMessage("Waiting for web service call to complete");
                 stopwatch.Restart();
-                elapsedTimer.Change(1200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
+                elapsedTimer.Change(200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
                 await WsVersionTask;
                 elapsedTimer.Change(int.MaxValue, int.MaxValue); // Stop firing the timer
             }

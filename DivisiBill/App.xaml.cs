@@ -399,7 +399,7 @@ public partial class App : Application, INotifyPropertyChanged
         bool FoundProSubscription = false;
         if (WsVersionChecked)
         {
-            Utilities.DebugMsg("In CheckLicenses, WsVersionChecked true");
+            Utilities.DebugMsg("In CheckLicenses, WsVersionChecked == true");
             // Check whether the license store knows about us
             Task<Billing.BillingStatusType> LicenseTask = Billing.GetHasProSubscriptionAsync();
             await LicenseTask.OrDelay();
@@ -453,7 +453,7 @@ public partial class App : Application, INotifyPropertyChanged
                 Utilities.DebugMsg("In CheckLicenses, Pro license check did not complete, continuing without it");
         }
         else
-            Utilities.DebugMsg("In CheckLicenses, WsVersionChecked false");
+            Utilities.DebugMsg("In CheckLicenses, WsVersionChecked == false");
         #endregion
         if (LicenseChecked)
         {
