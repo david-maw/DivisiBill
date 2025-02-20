@@ -16,7 +16,7 @@ internal static class CallWs
     private const string TokenHeaderName = "divisibill-token";
     private const string KeyHeaderName = "x-functions-key";
     private static string KeyString = Generated.BuildInfo.DivisiBillWsKey;
-    private static readonly HttpClient client = new() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri) };
+    private static readonly HttpClient client = new() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri), Timeout = TimeSpan.FromSeconds(30) };
 
     public static Uri BaseAddress => client.BaseAddress;
 
