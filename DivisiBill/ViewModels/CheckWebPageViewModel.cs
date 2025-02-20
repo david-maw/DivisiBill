@@ -2,11 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
 using System.Diagnostics;
-using System.Net;
 
 namespace DivisiBill.ViewModels;
 
-public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, Action<object> ClosePopup) : ObservableObject
+public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall) : ObservableObject
 {
     /// <summary>
     /// Flag to indicate if we should keep trying to connect or not
@@ -57,7 +56,7 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
 
         // Ensure we were initialized correctly
         ArgumentNullException.ThrowIfNull(ClosePopup);
-        ArgumentNullException.ThrowIfNull(WsVersionTask);
+        ArgumentNullException.ThrowIfNull(webCallTask);
         #region Timer Handling
         PauseToken runningStatus = App.IsRunningSource.Token;
         Stopwatch stopwatch = new();
@@ -78,15 +77,15 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
         do
         {
             // If the 'version' call has completed, check the result (if it has not completed, there's nothing we can do but wait)
-            if (WsVersionTask.IsCompleted)
+            if (webCallTask.IsCompleted)
             {
-                Utilities.DebugMsg("In WaitForConnection, WsVersionTask.IsCompleted and result = " + WsVersionTask.Result);
-                if (WsVersionTask.Result == HttpStatusCode.OK)
+                Utilities.DebugMsg("In WaitForConnection, WsVersionTask.IsCompleted and result = " + webCallTask.Result.StatusCode);
+                if (webCallTask.Result.IsSuccessStatusCode)
                     StopTrying(true); // The request completed without error, we can continue on
                 else
                 {
                     // The request completed but returned an error, so wait a bit then try again
-                    SetStatusMessage("Call failed with Error: " + WsVersionTask.Result);
+                    SetStatusMessage("Call failed with Error: " + webCallTask.Result.StatusCode);
                     stopwatch.Restart();
                     do
                     {
@@ -105,7 +104,7 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
                     }
                     while (keepTrying);
                     if (keepTrying)
-                        WsVersionTask = CallWs.GetVersion();
+                        webCallTask = webCall();
                 }
             }
             else
@@ -114,7 +113,14 @@ public partial class CheckWebPageViewModel(Task<HttpStatusCode> WsVersionTask, A
                 SetStatusMessage("Waiting for web service call to complete");
                 stopwatch.Restart();
                 elapsedTimer.Change(200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
-                await WsVersionTask;
+                try
+                {
+                    await webCallTask;
+                }
+                catch (TaskCanceledException ex)
+                {
+                    Utilities.DebugMsg("In WaitForConnection, webCallTask was canceled, probably timed out. Exception message: " + ex.Message);
+                }
                 elapsedTimer.Change(int.MaxValue, int.MaxValue); // Stop firing the timer
             }
         } while (keepTrying);

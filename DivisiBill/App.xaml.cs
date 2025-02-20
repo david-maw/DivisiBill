@@ -1,11 +1,9 @@
-﻿using CommunityToolkit.Maui.Views;
-using DivisiBill.Models;
+﻿using DivisiBill.Models;
 using DivisiBill.Services;
 using DivisiBill.ViewModels;
 using Microsoft.Maui.Handlers;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Net;
 
 namespace DivisiBill;
 
@@ -355,9 +353,8 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     internal static async Task CheckLicenses(bool mandatory = false)
     {
-        // First check that all the required constants have values
         if (!WsAllowed)
-            return;
+            return; // Web services are disabled, perhaps this is a new build environment, do nothing at all
 
         bool wasLimited = App.IsLimited; // This will always be false for the call during initialization but later It may change
 
@@ -388,12 +385,7 @@ public partial class App : Application, INotifyPropertyChanged
         }
 
         #region Try to reach the web service until the user tells us to give up
-        Task<HttpStatusCode> WsVersionTask = CallWs.GetVersion();
-        bool WsVersionChecked;
-        await WsVersionTask.OrDelay(1000);
-        // Call the 'version' web service and wait for a response or until the user gives up 
-        WsVersionChecked = (WsVersionTask.IsCompleted && WsVersionTask.Result == HttpStatusCode.OK) // in other words, it completed without error 
-             || (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(WsVersionTask)); // or, it did so after a delay
+        bool WsVersionChecked = await CallWs.GetVersionAsync();
         #endregion
         #region Check the pro license
         bool FoundProSubscription = false;

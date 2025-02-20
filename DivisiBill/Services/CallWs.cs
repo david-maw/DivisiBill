@@ -1,7 +1,7 @@
-﻿using DivisiBill.Models;
+﻿using CommunityToolkit.Maui.Views;
+using DivisiBill.Models;
 using Plugin.InAppBilling;
 using System.Diagnostics;
-using System.Net;
 using System.Text;
 
 namespace DivisiBill.Services;
@@ -20,6 +20,7 @@ internal static class CallWs
 
     public static Uri BaseAddress => client.BaseAddress;
 
+    #region Class Constructor
     static CallWs()
     {
         if (!App.WsAllowed)
@@ -27,6 +28,25 @@ internal static class CallWs
         if (!string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsKey))
             UpsertHttpClientHeader(KeyHeaderName, KeyString);
     }
+    #endregion
+
+    /// <summary>
+    /// Invoke a web service, wiat briefly to see if it completes, then pop up a dialog so the user can check progress and abandon it as needed.
+    /// </summary>
+    /// <param name="webCall"></param>
+    /// <returns></returns>
+    internal static async Task<HttpResponseMessage> CallWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
+    {
+        Task<HttpResponseMessage> webCallTask = webCall();
+        await webCallTask.OrDelay(1000);
+        // Call the 'version' web service and wait for a response or until the user gives up 
+        return webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode
+            ? webCallTask.Result
+            : (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall))
+                ? webCallTask.Result
+                : null;
+    }
+
     #region Header Management
     private static void StoreTokenHeader(this HttpResponseMessage response)
     {
@@ -143,31 +163,30 @@ internal static class CallWs
     /// Get the version of various server-side components
     /// </summary>
     /// <returns>A string containing the various versions in use on the server</returns>
-    internal static async Task<HttpStatusCode> GetVersion()
+    internal static async Task<bool> GetVersionAsync()
     {
+        bool WsVersionChecked = false;
         try
         {
-            HttpResponseMessage response =
-                  await client.GetAsync("version");
+            var WsVersionTask = await CallWebServiceAsync(() => client.GetAsync("version"));
 
-            if (response.IsSuccessStatusCode)
+            if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
             {
-                MostRecentVersionInfo = await response.Content.ReadAsStringAsync();
+                MostRecentVersionInfo = await WsVersionTask.Content.ReadAsStringAsync();
                 // Detect the weird failure which just returns an OK result but no data
                 if (string.IsNullOrEmpty(MostRecentVersionInfo))
                 { // This is a failure, return a NotFound status
                     Utilities.DebugMsg("GetVersion returned OK but no data, returning NotFound");
-                    return HttpStatusCode.NotFound;
                 }
+                else
+                    WsVersionChecked = true;
             }
-
-            return response.StatusCode;
         }
         catch (Exception ex)
         {
             Utilities.DebugMsg("GetVersion failed, exception = " + ex);
-            return HttpStatusCode.ServiceUnavailable;
         }
+        return WsVersionChecked;
     }
     #endregion
     #region Purchase and Verify
