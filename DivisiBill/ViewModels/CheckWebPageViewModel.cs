@@ -18,7 +18,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
     /// <param name="result">True if the web service call worked, false if the user elected to abandon it</param>
     private void StopTrying(object result)
     {
-        Utilities.DebugMsg($"In WaitForConnection.InvokeClose({result})");
+        Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.InvokeClose({result})");
         keepTrying = false;
         ClosePopup?.Invoke(result);
     }
@@ -32,7 +32,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
     {
         if (message is not null)
         {
-            Utilities.DebugMsg($"In WaitForConnection.SetStatusMessage({message},{messageExtra})");
+            Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.SetStatusMessage({message},{messageExtra})");
             StatusMessage = message;
         }
         StatusMessageExtra = messageExtra;
@@ -76,16 +76,29 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
         // Loop until we have a successful call or the user tells us to stop
         do
         {
-            // If the 'version' call has completed, check the result (if it has not completed, there's nothing we can do but wait)
+            // If the call has completed, check the result (if it has not completed, there's nothing we can do but wait)
             if (webCallTask.IsCompleted)
             {
-                Utilities.DebugMsg("In WaitForConnection, WsVersionTask.IsCompleted and result = " + webCallTask.Result.StatusCode);
-                if (webCallTask.Result.IsSuccessStatusCode)
+                stopwatch.Stop();
+                if (webCallTask.IsCompletedSuccessfully && webCallTask.Result.IsSuccessStatusCode)
+                {
+                    Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompletedSuccessfully and successful result = " + webCallTask.Result.StatusCode + " in " + ToSecondsText(ElapsedSeconds()));
                     StopTrying(true); // The request completed without error, we can continue on
+                }
                 else
                 {
-                    // The request completed but returned an error, so wait a bit then try again
-                    SetStatusMessage("Call failed with Error: " + webCallTask.Result.StatusCode);
+                    // The request failed, or completed but returned an error, so wait a bit then try again
+                    if (webCallTask.IsCompletedSuccessfully)
+                    {
+                        SetStatusMessage("Call returned result = " + webCallTask.Result.StatusCode);
+                        Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompleted but fail result = " + webCallTask.Result.StatusCode);
+                    }
+                    else
+                    {
+                        SetStatusMessage("Call failed with status = " + webCallTask.Status);
+                        Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompleted but unsuccessfully, status = " + webCallTask.Status);
+                    }
+                    // restart the stopwatch and wait a bit before trying again
                     stopwatch.Restart();
                     do
                     {
@@ -119,7 +132,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                 }
                 catch (TaskCanceledException ex)
                 {
-                    Utilities.DebugMsg("In WaitForConnection, webCallTask was canceled, probably timed out. Exception message: " + ex.Message);
+                    Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask was canceled, probably timed out. Exception message: " + ex.Message);
                 }
                 elapsedTimer.Change(int.MaxValue, int.MaxValue); // Stop firing the timer
             }

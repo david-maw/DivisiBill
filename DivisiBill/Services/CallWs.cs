@@ -44,9 +44,8 @@ internal static class CallWs
             ? webCallTask.Result
             : (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall))
                 ? webCallTask.Result
-                : null;
+                : new HttpResponseMessage(System.Net.HttpStatusCode.GatewayTimeout); // User opted not to wait
     }
-
     #region Header Management
     private static void StoreTokenHeader(this HttpResponseMessage response)
     {
@@ -168,7 +167,7 @@ internal static class CallWs
         bool WsVersionChecked = false;
         try
         {
-            var WsVersionTask = await CallWebServiceAsync(() => client.GetAsync("version"));
+            HttpResponseMessage WsVersionTask = await CallWebServiceAsync(() => client.GetAsync("version"));
 
             if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
             {
@@ -232,8 +231,8 @@ internal static class CallWs
         {
             Utilities.DebugMsg("In VerifyAndroidPurchase, awaiting verify");
             // validate the license by calling a web service
-            var response = await client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
-                new StringContent(androidJson, System.Text.Encoding.UTF8, "application/json"));
+            HttpResponseMessage response = await CallWebServiceAsync(() => client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
+                new StringContent(androidJson, System.Text.Encoding.UTF8, "application/json")));
             if (response.IsSuccessStatusCode)
             {
                 string s = await response.Content.ReadAsStringAsync();
@@ -249,7 +248,7 @@ internal static class CallWs
                 return s;
             }
             else
-                Utilities.DebugMsg("In VerifyAndroidPurchase, verify returned " + response.StatusCode);
+                Utilities.DebugMsg("In VerifyAndroidPurchase, verify returned status code " + response.StatusCode);
         }
         return null;
     }
@@ -269,8 +268,8 @@ internal static class CallWs
             {
                 Utilities.DebugMsg("In VerifyPurchase, awaiting verify");
                 // validate the license by calling a web service
-                var response = await client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
-                    new StringContent(purchase.OriginalJson, Encoding.UTF8, "application/json"));
+                var response = await CallWebServiceAsync(() => client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
+                    new StringContent(purchase.OriginalJson, Encoding.UTF8, "application/json")));
                 if (response.IsSuccessStatusCode)
                 {
                     string s = await response.Content.ReadAsStringAsync();

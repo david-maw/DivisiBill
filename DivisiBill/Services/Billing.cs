@@ -107,7 +107,9 @@ internal static class Billing
                     Id = GetJsonFieldValue(json, "orderId"),
                     OriginalJson = json
                 };
-                if (resultString is not null)
+                if (resultString is null)
+                    return BillingStatusType.connectionFailed;
+                else if (resultString is not null && int.TryParse(resultString, out int scans) && scans >= 0)
                 {
                     ProPurchase.State = PurchaseState.Purchased;
                     HasOldProProductId = true;
@@ -463,7 +465,7 @@ internal static class Billing
                 return null;
             }
 
-            Utilities.DebugMsg($"Exiting GetInAppBillingPurchaseFakeAsync, returning '{validationResult}'");
+            Utilities.DebugMsg($"Exiting GetInAppBillingPurchaseFakeAsync, returning \"{validationResult}\"");
 
             return validationResult;
         }
