@@ -22,7 +22,7 @@
             <Label
                 FontSize="Large"
                 HorizontalOptions="Center"
-                Text="Web Access Problem"
+                Text="Slow Web Response"
                 VerticalOptions="Center" />
             <Label
                 HorizontalOptions="Center"

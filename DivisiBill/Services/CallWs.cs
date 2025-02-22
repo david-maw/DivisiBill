@@ -39,8 +39,8 @@ internal static class CallWs
     {
         Stopwatch webStopwatch = Stopwatch.StartNew();
         Task<HttpResponseMessage> webCallTask = webCall();
-        await webCallTask.OrDelay(1000);
-        // Call the 'version' web service and wait for a response or until the user gives up 
+        await webCallTask.OrDelay(5000); // If it responds quickly, don't even bother to show a dialog
+        // Call the web service and wait for a response or until the user gives up 
         return webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode
             ? webCallTask.Result
             : (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall, webStopwatch))
