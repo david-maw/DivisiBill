@@ -1,3 +1,13 @@
+# 6.2.18
+
+## Change Cloud Timeout to 30s
+
+If the web service is not responsive the app waits 30s before giving up instead of waiting 100s as it did before.
+
+## Counting Improvements
+
+The dialog that pops up when waiting for a result or to retry a call to a a web service has a countdown to retry and a count of seconds since the last try. With this change the visible count is not updated when the app is in the background (although the timer remains active and will resume at the correct time). Timing accuracy has also been improved. 
+
 # 6.2.17
 
 ## Enhance Archiving with Explicit Related Item Filtering
