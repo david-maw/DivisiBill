@@ -2,10 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
 using System.Diagnostics;
+using System.Net;
 
 namespace DivisiBill.ViewModels;
 
-public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall) : ObservableObject
+public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall, Stopwatch webStopwatch) : ObservableObject
 {
     /// <summary>
     /// Flag to indicate if we should keep trying to connect or not
@@ -59,9 +60,8 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
         ArgumentNullException.ThrowIfNull(webCallTask);
         #region Timer Handling
         PauseToken runningStatus = App.IsRunningSource.Token;
-        Stopwatch stopwatch = new();
-        int ElapsedSeconds() => (int)((stopwatch.Elapsed).TotalSeconds);
-        string ToSecondsText(int i) => i + " second" + (i > 1 ? "s" : "");
+        int ElapsedSeconds() => (int)((webStopwatch.Elapsed).TotalSeconds);
+        string ToSecondsText(int i) => i + " second" + (i == 1 ? "" : "s");
         // prepare a timer for use later
         Timer elapsedTimer = new(e =>
             {
@@ -70,8 +70,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                 else
                     SetStatusMessage(null, "Waited " + ToSecondsText(ElapsedSeconds()));
             },
-            null, 1000, 1000);
-        elapsedTimer.Change(int.MaxValue, int.MaxValue);
+            null, int.MaxValue, int.MaxValue);
         #endregion
         // Loop until we have a successful call or the user tells us to stop
         do
@@ -79,7 +78,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
             // If the call has completed, check the result (if it has not completed, there's nothing we can do but wait)
             if (webCallTask.IsCompleted)
             {
-                stopwatch.Stop();
+                webStopwatch.Stop();
                 if (webCallTask.IsCompletedSuccessfully && webCallTask.Result.IsSuccessStatusCode)
                 {
                     Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompletedSuccessfully and successful result = " + webCallTask.Result.StatusCode + " in " + ToSecondsText(ElapsedSeconds()));
@@ -90,8 +89,9 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                     // The request failed, or completed but returned an error, so wait a bit then try again
                     if (webCallTask.IsCompletedSuccessfully)
                     {
+                        // Completed but returned a failed status code
                         SetStatusMessage("Call returned result = " + webCallTask.Result.StatusCode);
-                        Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompleted but fail result = " + webCallTask.Result.StatusCode);
+                        Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompleted with fail result = " + webCallTask.Result.StatusCode);
                     }
                     else
                     {
@@ -99,32 +99,35 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                         Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompleted but unsuccessfully, status = " + webCallTask.Status);
                     }
                     // restart the stopwatch and wait a bit before trying again
-                    stopwatch.Restart();
+                    webStopwatch.Restart();
                     do
                     {
-                        await runningStatus.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
+                        if (runningStatus.IsPaused)
+                        {
+                            SetStatusMessage(null, "Paused");
+                            await runningStatus.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
+                        }
                         int i = 30 - ElapsedSeconds();
                         if (i > 0 && keepTrying)
                         {
+                            SetStatusMessage(null, "Will retry in " + ToSecondsText(i));
                             await Task.Delay(1000);
-                            if (runningStatus.IsPaused)
-                                SetStatusMessage(null, "Paused");
-                            else
-                                SetStatusMessage(null, "Will retry in " + ToSecondsText(i));
                         }
                         else
                             break;
                     }
                     while (keepTrying);
                     if (keepTrying)
-                        webCallTask = webCall();
+                    {
+                        webStopwatch.Restart();
+                        webCallTask = webCall(); // Initiate the call but do not wait on it
+                    }
                 }
             }
             else
             {
                 // The request has not completed yet, so just wait for it to complete
                 SetStatusMessage("Waiting for web service call to complete");
-                stopwatch.Restart();
                 elapsedTimer.Change(200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
                 try
                 {
@@ -132,7 +135,17 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                 }
                 catch (TaskCanceledException ex)
                 {
+                    // Connection timeouts on Windows seem to go here
                     Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask was canceled, probably timed out. Exception message: " + ex.Message);
+                }
+                catch (WebException ex)
+                {
+                    // Connection timeouts on Android seem to go here
+                    Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask threw a WebException: " + ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask threw an exception: " + ex.Message);
                 }
                 elapsedTimer.Change(int.MaxValue, int.MaxValue); // Stop firing the timer
             }

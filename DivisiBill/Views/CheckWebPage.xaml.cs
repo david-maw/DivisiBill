@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace DivisiBill.Views;
 
 /// <summary>
@@ -7,10 +9,10 @@ namespace DivisiBill.Views;
 public partial class CheckWebPage : CommunityToolkit.Maui.Views.Popup
 {
     private readonly ViewModels.CheckWebPageViewModel ViewModel;
-    public CheckWebPage(Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall)
+    public CheckWebPage(Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall, Stopwatch webStopwatch)
     {
         InitializeComponent();
-        BindingContext = ViewModel = new ViewModels.CheckWebPageViewModel(result => Close(result), webCallTask, webCall);
+        BindingContext = ViewModel = new ViewModels.CheckWebPageViewModel(result => Close(result), webCallTask, webCall, webStopwatch);
         Opened += async (sender, e) => await ViewModel.WaitForConnection();
     }
 }

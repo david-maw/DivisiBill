@@ -37,12 +37,13 @@ internal static class CallWs
     /// <returns></returns>
     internal static async Task<HttpResponseMessage> CallWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
     {
+        Stopwatch webStopwatch = Stopwatch.StartNew();
         Task<HttpResponseMessage> webCallTask = webCall();
         await webCallTask.OrDelay(1000);
         // Call the 'version' web service and wait for a response or until the user gives up 
         return webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode
             ? webCallTask.Result
-            : (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall))
+            : (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall, webStopwatch))
                 ? webCallTask.Result
                 : new HttpResponseMessage(System.Net.HttpStatusCode.GatewayTimeout); // User opted not to wait
     }
