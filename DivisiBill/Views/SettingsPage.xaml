@@ -30,7 +30,7 @@
             <Grid ColumnDefinitions ="*, auto, *, auto, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto" ColumnSpacing="{OnPlatform 10, Android=0}" x:Name="MealSection"
                    x:DataType="vm:MealViewModel" BindingContext="{StaticResource MealViewModel}">
                 <Label Grid.Row="1" Grid.Column="0" Text="Tip on Tax" VerticalOptions="Center" HorizontalOptions="End"/>
-                <Switch Grid.Row="1" Grid.Column="1" IsToggled="{Binding DefaultTipOnTax}" HorizontalOptions="End"/>
+                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding DefaultTipOnTax}" HorizontalOptions="End"/>
                 <Label Grid.Row="1" Grid.Column="2" Text="Tip Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
                 <Entry Grid.Row="1" Grid.Column="3" Text="{Binding DefaultTipRate}" MaxLength="2" Keyboard="Numeric" HorizontalTextAlignment="End">
                     <Entry.Behaviors>
@@ -43,7 +43,7 @@
                 </Entry>
                 <Label Grid.Row="1" Grid.Column="4" Text="%" VerticalOptions="Center"/>
                 <Label Grid.Row="2" Text="Coupon After Tax" VerticalOptions="Center" HorizontalOptions="End"/>
-                <Switch Grid.Row="2" Grid.Column="1" IsToggled="{Binding DefaultTaxOnCoupon}"/>
+                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding DefaultTaxOnCoupon}"/>
                 <Label Grid.Row="2" Grid.Column="2" Text="Tax Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
                 <Entry Grid.Row="2" Grid.Column="3" Text="{Binding DefaultTaxRateString}" ReturnCommand="{Binding UnloadDefaultTaxRateStringCommand}"
                        Keyboard="Numeric" HorizontalTextAlignment="End" WidthRequest="80">
@@ -69,7 +69,7 @@
                 <Button Grid.Row="1" Text="System Settings" LineBreakMode="WordWrap" Command="{Binding SystemSettingsCommand}"/>
                 <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*, auto" ColumnSpacing="{OnPlatform 10, Android=0}">
                     <Label Text="Dark UI" VerticalOptions="Center" HorizontalOptions="End"/>
-                    <Switch Grid.Column="1" IsToggled="{Binding Dark}" HorizontalOptions="End"/>
+                    <Switch Grid.Column="1" IsToggled="{Binding Dark}" HorizontalOptions="End" Margin="20,0,0,0"/>
                 </Grid>
             </Grid>
             <!--#endregion-->
@@ -84,9 +84,9 @@
                 <Label Text="{Binding Path=WiFiStatus,StringFormat='Internet Enabled ({0})'}" HorizontalOptions="Center" Margin="0,10,0,0"/>
                 <Grid ColumnDefinitions ="*, auto, *, auto" RowDefinitions="auto, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
                     <Label Grid.Row="0" Text="Allow Cloud Backup" VerticalOptions="Center" HorizontalOptions="End"/>
-                    <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding IsCloudAccessAllowed}"/>
-                    <Label Grid.Row="0" Grid.Column="2" Text="Only with WiFi" VerticalOptions="Center" HorizontalOptions="End"/>
-                    <Switch Grid.Row="0" Grid.Column="3" IsToggled="{Binding WiFiOnly}" IsEnabled="{Binding IsCloudAccessAllowed}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsCloudAccessAllowed}"/>
+                    <Label Grid.Row="0" Grid.Column="2" Text="Only with WiFi" VerticalOptions="Center" HorizontalOptions="End" Margin="20,0,0,0"/>
+                    <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding WiFiOnly}" IsEnabled="{Binding IsCloudAccessAllowed}"/>
                 </Grid>
             </VerticalStackLayout>
             <!--#endregion-->
@@ -103,9 +103,9 @@
                         </Label.GestureRecognizers>
                         <Label.FormattedText>
                             <FormattedString>
-                                <Span Text="Tap " FontSize="Medium"/>
-                                <Span Text="here" TextDecorations="Underline" FontSize="Medium"/>
-                                <Span Text=" for licensing help" FontSize="Medium"/>
+                                <Span Text="Tap "/>
+                                <Span Text="here" TextDecorations="Underline"/>
+                                <Span Text=" for licensing help"/>
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
@@ -131,10 +131,10 @@
             <!--#region Telemetry -->
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <Grid ColumnDefinitions="*, auto, *, auto" HorizontalOptions="Center">
-                <Label Grid.Column="0" Text="Send Data on Crash" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
-                <Switch Grid.Column="1" IsToggled="{Binding SendCrashYes}"/>
-                <Label Grid.Column="2" Text="Ask After Restart" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0"/>
-                <Switch Grid.Column="3" IsToggled="{Binding SendCrashAsk}"/>
+                <Label Grid.Column="0" Text="Send Data on Crash" VerticalOptions="Center" HorizontalOptions="End"/>
+                <CheckBox Grid.Column="1" IsChecked="{Binding SendCrashYes}"/>
+                <Label Grid.Column="2" Text="Ask After Restart" VerticalOptions="Center" HorizontalOptions="End"/>
+                <CheckBox Grid.Column="3" IsChecked="{Binding SendCrashAsk}"/>
             </Grid>
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <!--#endregion-->
@@ -155,7 +155,7 @@
                 <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}"
                       x:DataType="vm:CloudViewModel" BindingContext="{StaticResource CloudViewModel}">
                     <Label Grid.Row="0" Text="Start With Alternate Web Service" VerticalOptions="Center" HorizontalOptions="End"/>
-                    <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding UseAlternateWs}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding UseAlternateWs}"/>
                 </Grid>
                 <!--#endregion-->
                 <!--#region Scan Options -->

@@ -19,7 +19,7 @@
     <ContentPage.Resources>
         <x:String x:Key="StoppedTypingTimeThreshold">1000</x:String>
         <Style TargetType="Label">
-            <Setter Property="FontSize" Value="Medium"/>
+            <Setter Property="FontSize" Value="Body"/>
         </Style>
         <Style TargetType="Entry">
             <Setter Property="Keyboard" Value="Numeric"/>
@@ -28,10 +28,10 @@
             <Setter Property="VerticalOptions" Value="Center"/>
             <Style.Triggers>
                 <Trigger TargetType="Entry" Property="IsFocused" Value="True">
-                    <Setter Property="FontSize" Value="Large" />
+                    <Setter Property="FontSize" Value="Medium" />
                 </Trigger>
                 <Trigger TargetType="Entry" Property="IsFocused" Value="False">
-                    <Setter Property="FontSize" Value="Medium" />
+                    <Setter Property="FontSize" Value="Body" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -64,12 +64,12 @@
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{x:Static services:Utilities.IsDebug}" Text="{Binding DefaultFileName}"/>
             <!--#endregion-->
             <!--#region Bill information -->
-            <Grid Margin="10,0" ColumnDefinitions="*,auto,auto" RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto">
+            <Grid Margin="10,0" RowSpacing="-7" ColumnDefinitions="*,auto,auto" RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto">
                 <!--#region Tip-->
                 <!--#region Tip on Tax -->
                 <Label Grid.Row="0" VerticalOptions="Center"  
                        Text="{Binding IsDefaultTipOnTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)', StringFormat='Tip on Tax{0}'}"/>
-                <Switch Grid.Row="0" Grid.Column="1" IsToggled="{Binding TipOnTax}" HorizontalOptions="End" BackgroundColor="Transparent" MinimumWidthRequest="50" WidthRequest="50"/>
+                <CheckBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding TipOnTax}" HorizontalOptions="End" BackgroundColor="Transparent"/>
                 <!--#endregion-->
                 <!--#region Tip Rate Label -->
                 <Label Grid.Row="1" VerticalOptions="Center" FontSize="{Binding Source={x:Reference entryTipRate}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"
@@ -128,7 +128,7 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
-                <Switch Grid.Row="4" Grid.Column="1" IsToggled="{Binding CouponAfterTax}" HorizontalOptions="End" MinimumWidthRequest="50" WidthRequest="50"/>
+                <CheckBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding CouponAfterTax}" HorizontalOptions="End"/>
                 <!--#endregion-->
                 <!--#region Tax Rate Label -->
                 <Label Grid.Row="5" VerticalOptions="Center" FontSize="{Binding Source={x:Reference entryTaxRate}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"
@@ -240,7 +240,7 @@
             </Grid>
             <!--#endregion-->
             <!--#region Venue Notes -->
-            <Label Text="{Binding VenueName, StringFormat='Venue notes for {0}'}" HorizontalOptions="Center" FontSize="Subtitle" Margin="0,25,0,0"/>
+            <Label Text="{Binding VenueName, StringFormat='Venue notes for {0}'}" HorizontalOptions="Center" Margin="0,25,0,0"/>
             <Border Margin="5">
                 <Editor Text="{Binding VenueNotes}"/>
             </Border>

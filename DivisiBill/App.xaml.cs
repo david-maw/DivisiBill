@@ -73,6 +73,8 @@ public partial class App : Application, INotifyPropertyChanged
                 h.PlatformView.OffContent = string.Empty;
                 h.PlatformView.OnContent = string.Empty;
                 h.PlatformView.MinWidth = 0;
+                //h.PlatformView.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red);
+                //h.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(3);
             });
 #endif
         // Change all Entry controls to auto-select text
@@ -346,8 +348,6 @@ public partial class App : Application, INotifyPropertyChanged
     #region Licensing
     internal static event EventHandler ProEditionVerified;
     private static DateTime NextLicenseCheckTime = DateTime.MinValue;
-    // Is it ok to ask the user about licenses (or failures to get them)
-    private static readonly bool AskAboutLicense = true;
     /// <summary>
     /// Check for the presence of licenses and subscriptions. This is called during startup an on entering the Settings page.
     /// </summary>
