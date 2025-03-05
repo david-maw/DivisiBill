@@ -59,7 +59,7 @@ All versions of DivisiBill allow you to purchase "scans" to extract information 
 
 ## Purchase Scans
 
-Tap this button to purchase more scans.
+This button is only visible when you have a small number of scans remaining, tap it to purchase more scans.
 
 ## Send Crash Data
 

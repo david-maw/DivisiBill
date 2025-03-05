@@ -37,14 +37,14 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="1"
      showgrid="false"
-     inkscape:zoom="1.01"
-     inkscape:cx="502.9703"
-     inkscape:cy="1269.802"
-     inkscape:window-width="2560"
-     inkscape:window-height="1529"
-     inkscape:window-x="1192"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:zoom="0.50925926"
+     inkscape:cx="540"
+     inkscape:cy="1109.4545"
+     inkscape:window-width="1278"
+     inkscape:window-height="1520"
+     inkscape:window-x="1193"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
      inkscape:current-layer="g842"
      inkscape:document-rotation="0"
      inkscape:showpageshadow="2"
@@ -65,7 +65,7 @@
        width="1080" />
     <a
        xlink:href="settingsglossary.html#send-crash-data"
-       transform="matrix(0.53348897,0,0,0.38088838,3.1006263,908.53687)"
+       transform="matrix(0.51596149,0,0,0.38088838,48.308281,804.53687)"
        inkscape:label="scans"
        xlink:title="Send Crash Data on Fault"
        target="_parent"
@@ -80,7 +80,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#ask-after-restart"
-       transform="matrix(0.53348897,0,0,0.27072657,490.85524,1083.6653)"
+       transform="matrix(0.47214279,0,0,0.38088847,524.10022,812.53674)"
        inkscape:label="scans"
        xlink:title="Ask about sending telemetry after restart"
        target="_parent"
@@ -91,26 +91,11 @@
          width="896.255"
          height="247.6494"
          x="85.498009"
-         y="1441.6733" />
-    </a>
-    <a
-       xlink:href="settingsglossary.html#purchase-scans"
-       transform="matrix(2.0248379,0,0,0.86451265,-548.28633,465.43072)"
-       inkscape:label="upgrade"
-       xlink:title="Buy a set of OCR scans"
-       target="_parent"
-       id="a855-6">
-      <rect
-         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
-         id="rect844-6"
-         width="309.56174"
-         height="141.51395"
-         x="392.11154"
-         y="981.75299" />
+         y="1420.6699" />
     </a>
     <a
        xlink:href="settingsglossary.html#subscribe"
-       transform="matrix(1.8155894,0,0,0.93003522,-441.72674,182.96428)"
+       transform="matrix(1.8155894,0,0,0.93003522,-441.72674,146.96428)"
        inkscape:label="upgrade"
        xlink:title="Buy a Professional Subscription"
        target="_parent"
@@ -125,7 +110,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#scans"
-       transform="matrix(1.63521,0,0,0.41599808,-342.8462,839.7831)"
+       transform="matrix(2.4598362,0,0,0.83227571,-789.79166,399.10129)"
        inkscape:label="upgrade"
        xlink:title="OCR Scans Remaining"
        target="_parent"
@@ -140,7 +125,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#dark-mode-switch"
-       transform="matrix(0.29748244,0,0,0.82578135,648.80746,-407.06771)"
+       transform="matrix(0.29748244,0,0,0.82578135,642.80746,-425.06771)"
        inkscape:label="wifi"
        xlink:title="Toggle Dark Mode"
        target="_parent"
@@ -185,7 +170,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#defaults"
-       transform="matrix(3.3384958,0,0,1.6565613,-1273.3541,-1248.9465)"
+       transform="matrix(3.3384958,0,0,1.6565613,-1273.3541,-1270.9465)"
        inkscape:label="defaults"
        xlink:title="Preferred bill defaults"
        target="_parent"
@@ -200,7 +185,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#restore-hints-button"
-       transform="matrix(0.39566641,0,0,1.3875554,123.86377,-1406.5889)"
+       transform="matrix(0.39566641,0,0,1.3875554,123.86377,-1424.5889)"
        inkscape:label="wifi"
        xlink:title="Show all hints"
        target="_parent"
@@ -226,11 +211,11 @@
          width="1031.8726"
          height="88.446213"
          x="35.378487"
-         y="1469.5219" />
+         y="1457.2424" />
     </a>
     <a
        xlink:href="settingsglossary.html#clear-checkboxes-button"
-       transform="matrix(0.38489561,0,0,1.2817533,560.71654,-1223.7455)"
+       transform="matrix(0.38489561,0,0,1.2817533,560.71654,-1241.7455)"
        inkscape:label="wifi"
        xlink:title="Clear &quot;Do not ask again&quot; checkboxes"
        target="_parent"
@@ -245,7 +230,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#licensing-help"
-       transform="matrix(0.60988113,0,0,0.82859166,218.67085,-193.60389)"
+       transform="matrix(0.60988113,0,0,0.82859166,218.67085,-225.60389)"
        inkscape:label="wifi"
        xlink:title="Change Professional Subscription"
        target="_parent"

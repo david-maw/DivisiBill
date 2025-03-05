@@ -28,10 +28,10 @@
      inkscape:zoom="0.33918919"
      inkscape:cx="552.78884"
      inkscape:cy="877.09163"
-     inkscape:window-width="2095"
+     inkscape:window-width="1200"
      inkscape:window-height="1521"
-     inkscape:window-x="1190"
-     inkscape:window-y="40"
+     inkscape:window-x="1200"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="g842"
      inkscape:showpageshadow="2"
@@ -81,7 +81,7 @@
        xlink:href="propertiesglossary.html#tax-delta"
        target="_parent"
        xlink:title="Tax Adjustment"
-       transform="matrix(2.1009174,0,0,0.81632654,-42.059284,232.12244)">
+       transform="matrix(3.3669724,0,0,0.81632654,-713.65854,326.12244)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect983"
@@ -95,7 +95,7 @@
        xlink:href="propertiesglossary.html#tax"
        target="_parent"
        xlink:title="Tax Specification"
-       transform="matrix(1,0,0,1.097561,10,-60.413367)">
+       transform="matrix(1,0,0,1.2073171,12,-72.170246)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect985"
@@ -109,7 +109,7 @@
        xlink:href="propertiesglossary.html#tip"
        target="_parent"
        xlink:title="Tip Specification"
-       transform="matrix(1,0,0,1.2195122,5.5179403,-451.05561)">
+       transform="matrix(1,0,0,1.5487805,9.5179403,-698.59715)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect985-93"
@@ -123,7 +123,7 @@
        xlink:href="propertiesglossary.html#scanned"
        target="_parent"
        xlink:title="Printed Amounts"
-       transform="matrix(1,0,0,0.81818182,33.585632,235.92393)">
+       transform="matrix(1,0,0,0.94318182,33.585632,186.17294)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect987"
@@ -137,7 +137,7 @@
        xlink:href="propertiesglossary.html#venue-notes"
        target="_parent"
        xlink:title="Notes for Current Venue"
-       transform="matrix(4.1445782,0,0,0.81818182,-3301.6562,478.9957)">
+       transform="matrix(4.4578312,0,0,0.90909091,-3579.3916,532.59947)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect987-7"
