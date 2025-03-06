@@ -31,7 +31,7 @@ internal static class CallWs
     #endregion
 
     /// <summary>
-    /// Invoke a web service, wiat briefly to see if it completes, then pop up a dialog so the user can check progress and abandon it as needed.
+    /// Invoke a web service, wait a few seconds to see if it completes, then pop up a dialog so the user can check progress and abandon it as needed.
     /// </summary>
     /// <param name="webCall"></param>
     /// <returns></returns>
