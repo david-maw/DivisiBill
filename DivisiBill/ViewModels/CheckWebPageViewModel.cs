@@ -24,16 +24,20 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
         ClosePopup?.Invoke(result);
     }
 
+
     /// <summary>
-    /// Set the status message to tell the user what is going on and the extra message to tell them how long for.
+    /// Set the status message fields to tell the user what is going on and the extra message to tell them how long for.
+    /// The extra field can be updated without changing the main message
     /// </summary>
     /// <param name="message">What's happening</param>
     /// <param name="messageExtra">How long for or when it will end</param>
     private void SetStatusMessage(string message, string messageExtra = null)
     {
+        static string Quoted(string s) => s is not null ? "\"" + s + "\"" : "null";
+
         if (message is not null)
-        {
-            Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.SetStatusMessage({message},{messageExtra})");
+        { // Only update the message if it is not null
+            Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.SetStatusMessage({Quoted(message)}, {Quoted(messageExtra)})");
             StatusMessage = message;
         }
         StatusMessageExtra = messageExtra;
@@ -44,6 +48,10 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
 
     [ObservableProperty]
     public partial string StatusMessageExtra { get; set; }
+
+    [ObservableProperty]
+    public partial float Progress { get; set; }
+
 
     [RelayCommand]
     private void ClosePopupWindow() => StopTrying(false); // User elected to abandon the web service call
@@ -59,6 +67,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
         ArgumentNullException.ThrowIfNull(ClosePopup);
         ArgumentNullException.ThrowIfNull(webCallTask);
         #region Timer Handling
+        const int waitSeconds = 30;
         PauseToken runningStatus = App.IsRunningSource.Token;
         int ElapsedSeconds() => (int)((webStopwatch.Elapsed).TotalSeconds);
         string ToSecondsText(int i) => i + " second" + (i == 1 ? "" : "s");
@@ -67,8 +76,11 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
             {
                 if (runningStatus.IsPaused)
                     SetStatusMessage(null, "Paused");
-                else
+                else if (ElapsedSeconds() > 0)
+                {
                     SetStatusMessage(null, "Waited " + ToSecondsText(ElapsedSeconds()));
+                    Progress = (float)webStopwatch.Elapsed.Ticks / CallWs.CallTimeout.Ticks;
+                }
             },
             null, int.MaxValue, int.MaxValue);
         #endregion
@@ -100,6 +112,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                     }
                     // restart the stopwatch and wait a bit before trying again
                     webStopwatch.Restart();
+                    Progress = 1;
                     do
                     {
                         if (runningStatus.IsPaused)
@@ -107,14 +120,18 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                             SetStatusMessage(null, "Paused");
                             await runningStatus.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
                         }
-                        int i = 30 - ElapsedSeconds();
+                        int i = waitSeconds - ElapsedSeconds();
                         if (i > 0 && keepTrying)
                         {
                             SetStatusMessage(null, "Will retry in " + ToSecondsText(i));
+                            Progress = (float)i / waitSeconds;
                             await Task.Delay(1000);
                         }
                         else
+                        {
+                            Progress = 0;
                             break;
+                        }
                     }
                     while (keepTrying);
                     if (keepTrying)
@@ -131,7 +148,15 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                 elapsedTimer.Change(200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
                 try
                 {
-                    await webCallTask;
+                    int remainingMilliseconds = (int)(CallWs.CallTimeout.TotalMilliseconds - webStopwatch.Elapsed.TotalMilliseconds);
+                    if (remainingMilliseconds > 0)
+                        await webCallTask.OrDelay(remainingMilliseconds);
+                    if (!webCallTask.IsCompleted)
+                    {
+                        // The call ran longer than the timeout (which seems to happen on Android), so we need to pretend it was canceled
+                        Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask ran past Timeout, ignore it and go on anyway");
+                        webCallTask = Task.FromCanceled<HttpResponseMessage>(new CancellationToken(true));
+                    }
                 }
                 catch (TaskCanceledException ex)
                 {

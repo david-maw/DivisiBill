@@ -32,6 +32,11 @@
                 HorizontalOptions="Center"
                 Text="{Binding StatusMessageExtra}"
                 VerticalOptions="Center" />
+            <ProgressBar
+                HorizontalOptions="Center"
+                Progress="{Binding Progress}"
+                ScaleY="2"
+                WidthRequest="200" />
             <Button
                 Command="{Binding ClosePopupWindowCommand}"
                 HorizontalOptions="Center"
