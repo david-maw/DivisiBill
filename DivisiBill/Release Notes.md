@@ -1,3 +1,21 @@
+# 6.2.20
+
+## Slow Web Service Calls
+
+A progress bar has been added to the popup used to report slow web service calls. The progress bar shows how much time remains before abandoning the current request and trying again. 
+
+An intermittent problem where the timeout on a call was ignored has been corrected.
+
+## Improve People List Help
+
+The image truncation was confusing - it has been made more obvious that the image is truncated.
+
+# 6.2.19
+
+## Improved UI on Settings and Properties
+
+Most occurrences of a switch have been replaced by a checkbox and some minor reformatting has been done on the Settings and Properties pages.
+
 # 6.2.18
 
 ## Change Cloud Timeout to 30s
