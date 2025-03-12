@@ -5,8 +5,12 @@ using System.Xml.Serialization;
 
 namespace DivisiBill.Services;
 
+[ObservableObject]
 [DataContract]
-public partial class ObservableObjectPlus : ObservableObject
+[System.Diagnostics.CodeAnalysis.SuppressMessage("CommunityToolkit.Mvvm.SourceGenerators.INotifyPropertyChangedGenerator",
+    "MVVMTK0033:Inherit from ObservableObject instead of using [ObservableObject]",
+    Justification = "Can't be done because if the [DataContract] specification")]
+public partial class ObservableObjectPlus
 {
     [ObservableProperty]
     [XmlIgnore]
