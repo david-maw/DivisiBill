@@ -461,24 +461,19 @@ public partial class Meal : ObservableObjectPlus
     /// Add new meals into the existing LocalMealList and store each one locally, used for archive restore
     /// </summary>
     /// <param name="newMeals">An enumerable list of Meal items</param>
-    public static void AddLocalMeals(IEnumerable<Meal> newMeals, bool replace)
+    public static async Task AddLocalMeals(IEnumerable<Meal> newMeals, bool replace)
     {
-        var localMealDict = new Dictionary<string, object>(); // the value is always null, it's the presence of the key that matters
-        foreach (var ms in LocalMealList)
-        {
-            if (!ms.IsDefault)
-                localMealDict.Add(ms.Id, null);
-        }
+        HashSet<string> localMealNames = [.. LocalMealList.Where(ms => !ms.IsDefault).Select(ms => ms.Id)];
         foreach (var meal in newMeals)
         {
             if (meal.Size < 0)
                 continue; // This is a bad bill
-            if (replace && localMealDict.ContainsKey(meal.Summary.Id))
+            if (replace && localMealNames.Contains(meal.Summary.Id))
             {
                 LocalMealList.Remove(meal.summary);
-                localMealDict.Remove(meal.summary.Id);
+                localMealNames.Remove(meal.summary.Id);
             }
-            if (!localMealDict.ContainsKey(meal.Summary.Id))
+            if (!localMealNames.Contains(meal.Summary.Id))
             {
                 if (!meal.IsDefault) // never save the default meal to persistent storage
                 {
@@ -486,8 +481,16 @@ public partial class Meal : ObservableObjectPlus
                     meal.Summary.IsLocal = true;
                 }
                 LocalMealList.Add(meal.summary);
-                localMealDict.Add(meal.summary.Id, null); // to ensure we do not add duplicates
+                localMealNames.Add(meal.summary.Id); // to ensure we do not add duplicates
             }
+        }
+        // Get the list of remote meals if we can (and should) and update whatever local meals are also remote
+        if (App.IsCloudAllowed)
+        {
+            await App.CloudAllowedSource.WaitWhilePausedAsync();
+            Utilities.DebugMsg("In BackupToRemoteAsync, CloudAllowedSource no longer paused");
+            // This is where all the elapsed time goes, reaching out over the network
+            await BackupMissingAsync();
         }
     }
     /// <summary>
@@ -2705,7 +2708,7 @@ public partial class Meal : ObservableObjectPlus
     private static Task BackupTask = null;
     private static readonly CancellationTokenSource BackupCancellationTokenSource = new();
     private static readonly AwaitableQueue<MealSummary> backupQueue = new();
-    internal static void StartBackupToRemote() => BackupTask ??= BackupToRemoteAsync(BackupCancellationTokenSource.Token);
+    internal static void StartBackupToRemote() => BackupTask ??= StartBackupToRemoteAsync(BackupCancellationTokenSource.Token);
     internal static async Task StopBackupToRemoteAsync()
     {
         if (BackupTask is null)
@@ -2722,13 +2725,8 @@ public partial class Meal : ObservableObjectPlus
     /// the main process may add additional meals to the queue as they are saved (by calling
     /// QueueForBackup).
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private static async Task BackupToRemoteAsync(CancellationToken cancellationToken)
+    private static async Task BackupMissingAsync()
     {
-        Utilities.DebugMsg("Entered BackupToRemoteAsync, waiting for CloudAllowedSource");
-        await App.CloudAllowedSource.WaitWhilePausedAsync();
-        Utilities.DebugMsg("In BackupToRemoteAsync, CloudAllowedSource no longer paused");
         // This is where all the elapsed time goes, reaching out over the network
         List<RemoteItemInfo> remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
         // We use HashSet types to store the data, but the performance difference pales compared to the network time above        
@@ -2736,6 +2734,7 @@ public partial class Meal : ObservableObjectPlus
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
         var remoteFileInfoDict = remoteFileInfoList.ToDictionary(m => m.Name);
         HashSet<string> localMealNames = [];
+        // Mark meals in the remote meal set as being remote and populate the set of local meals  
         foreach (var ms in LocalMealList)
         {
             if (remoteMealNames.Contains(ms.Id))
@@ -2751,9 +2750,22 @@ public partial class Meal : ObservableObjectPlus
             if (!ms.IsFake)
                 backupQueue.Enqueue(ms);
         }
+    }
+    /// <summary>
+    /// Enter a loop sending each queued meal and removing it from the queue. In the meantime
+    /// the main process may add additional meals to the queue as they are saved (by calling
+    /// QueueForBackup).
+    /// </summary>
+    private static async Task StartBackupToRemoteAsync(CancellationToken cancellationToken)
+    {
+        Utilities.DebugMsg("Entered StartBackupToRemoteAsync, waiting for CloudAllowedSource");
+        await App.CloudAllowedSource.WaitWhilePausedAsync();
+        Utilities.DebugMsg("In StartBackupToRemoteAsync, CloudAllowedSource no longer paused");
+        await BackupMissingAsync();
         // Start the actual transmission process - it will loop forever sending each MealSummary in the queue
         await BackupLoopAsync(cancellationToken);
     }
+
     /// <summary>
     /// Download all the remote meals that have valid content (meaning they can be deserialized) and are
     /// not stored locally.

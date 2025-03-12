@@ -203,7 +203,8 @@ public class Archive
                     m.FinalizeSetup();
                     await m.BecomeCurrentMealAsync();
                 }
-                Meal.AddLocalMeals(Meals, OverwriteDuplicates);
+                App.HandleActivityChanges(); // So we can check for remote meals if necessary
+                await Meal.AddLocalMeals(Meals, OverwriteDuplicates);
             }
             return true;
         }
