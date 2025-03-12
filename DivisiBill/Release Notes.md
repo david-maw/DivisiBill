@@ -1,3 +1,13 @@
+# 6.2.21
+
+## Restoring an Archive Checks Remote
+
+Restoring an archive now checks whether restored bills are backed up to the cloud and either marks them as being available remotely or initiates a backup of those which are not.
+
+## Correct Remote Bill Access
+
+Bills stored in the cloud were inaccessible in 6.2.20, this has been corrected.
+
 # 6.2.20
 
 ## Slow Web Service Calls
