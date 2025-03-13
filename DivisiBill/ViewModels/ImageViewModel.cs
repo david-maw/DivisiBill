@@ -58,8 +58,6 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.TempImageFilePath));
         }
         else PreviewImageSource = Meal.CurrentMeal.HasImage ? ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath)) : null;
-        // Make sure Image File Status is initialized to correct value
-        Meal.CurrentMeal.CheckImageFiles();
         // Track subsequent changes
         Meal.CurrentMeal.Summary.PropertyChanged += CurrentMeal_PropertyChanged;
     }

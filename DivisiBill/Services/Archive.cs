@@ -202,6 +202,9 @@ public class Archive
                     m.FinalizeSetup();
                     await m.BecomeCurrentMealAsync();
                 }
+                // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files
+                foreach (Meal meal in Meals)
+                    meal.Summary.CheckImageFiles();
                 App.HandleActivityChanges(); // So we can check for remote meals if necessary
                 await Meal.AddLocalMeals(Meals, OverwriteDuplicates);
             }

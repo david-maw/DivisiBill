@@ -291,8 +291,11 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         }
         return false;
     }
-    public bool DetermineHasImage() => HasImage = File.Exists(ImagePath);
-    public bool DetermineHasDeletedImage() => HasDeletedImage = File.Exists(DeletedImagePath);
+    public void CheckImageFiles()
+    {
+        HasImage = File.Exists(ImagePath);
+        HasDeletedImage = File.Exists(DeletedImagePath);
+    }
 
     // Deletes all local copies of meals with no option for recovery (used with archive restore)
     // Does NOT delete any corresponding image so that restoring a meal will restore access to the corresponding image 
@@ -440,7 +443,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         {
             ms = (MealSummary)mealSummarySerializer.ReadObject(sourceStream);
             // Beware the MealSummary constructor is not called above use [OnDeserializing] or [OnDeserialized] if that's ever needed
-            ms.HasImage = File.Exists(ms.ImagePath);
+            ms.CheckImageFiles();
         }
         catch (ArgumentNullException)
         {
@@ -476,7 +479,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
             ms = (MealSummary)mealSummaryXmlSerializer.Deserialize(sourceStream);
             // Deserialize above calls the MealSummary constructor
             ms.Size = (int)sourceStream.Length;
-            ms.HasImage = File.Exists(ms.ImagePath);
+            ms.CheckImageFiles();
         }
         catch (Exception ex)
         {

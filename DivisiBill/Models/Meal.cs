@@ -799,7 +799,7 @@ public partial class Meal : ObservableObjectPlus
             if (HasImage)
             {
                 // Copy the original image to the location expected by the new Summary, finding the original image is made
-                // difficult by the fact that the CreationTime has been changed but we can use the original FileName
+                // difficult by the fact that the CreationTime has been changed, but we can use the original FileName
                 if (string.IsNullOrEmpty(FileName))
                 {
                     if (Utilities.IsDebug) Debugger.Break();
@@ -809,7 +809,6 @@ public partial class Meal : ObservableObjectPlus
                     try
                     {
                         File.Copy(OriginalSummary.ImagePath, Summary.ImagePath);
-                        Summary.DetermineHasImage();
                     }
                     catch (Exception)
                     {
@@ -817,6 +816,10 @@ public partial class Meal : ObservableObjectPlus
                             Debugger.Break();
                         // Not the end of the world if this fails, so just go on without it
                         Summary.DeleteImage();
+                    }
+                    finally
+                    {
+                        Summary.CheckImageFiles();
                     }
                 }
             }
@@ -922,8 +925,6 @@ public partial class Meal : ObservableObjectPlus
                 m.Summary.IsRemote = m.SavedToRemote;
             }
             m.Frozen = App.Settings.MealFrozen;
-            if (m.Summary.IsLocal)
-                m.CheckImageFiles();
             m.MonitorChanges = true; // From now on take notice of changes
             return m;
         }
@@ -1018,7 +1019,6 @@ public partial class Meal : ObservableObjectPlus
         }
         else
         {
-            m.CheckImageFiles();
             m.MonitorChanges = true;
         }
         return m;
@@ -1043,7 +1043,6 @@ public partial class Meal : ObservableObjectPlus
             {
                 if (m.CreationTime == DateTime.MinValue || m.Size < 0) // It's a file without a stored creation time
                     m.Summary.SetCreationTimeFromFileName(TargetFileName);
-                m.CheckImageFiles();
                 m.Summary.IsLocal = true;
                 m.SavedToFile = true;
                 if (m.Size < 0)
@@ -1083,7 +1082,6 @@ public partial class Meal : ObservableObjectPlus
             }
             else
             {
-                m.CheckImageFiles(); // Just in case it is stored locally
                 m.Summary.IsRemote = true;
                 m.SavedToRemote = true;
                 m.MonitorChanges = true;
@@ -1295,11 +1293,6 @@ public partial class Meal : ObservableObjectPlus
     public void DeleteImage() => Summary.DeleteImage();
     public void TryUndeleteImage() => Summary.TryUndeleteImage();
     public bool ReplaceImage(string s) => Summary.ReplaceImage(s);
-    public void CheckImageFiles()
-    {
-        Summary.DetermineHasImage();
-        Summary.DetermineHasDeletedImage();
-    }
 
     /// <summary>
     /// Called whenever a user tells us it's time to persist a file. This is a special action - it persists a snapshot of the
