@@ -179,8 +179,6 @@ internal partial class DataManagementViewModel : ObservableObject
                             App.Settings.ShowVenuesHint = archive.UserSettings.ShowVenuesHint;
                             App.Settings.ShowPeopleHint = archive.UserSettings.ShowPeopleHint;
 
-                            App.Settings.HadProSubscription = archive.UserSettings.HadProSubscription;
-
                             if (Utilities.IsDebug && archive.UserSettings.FakeLocation is not null && archive.UserSettings.FakeLocation.IsLocationValid)
                                 await App.SetFakeLocation(archive.UserSettings.FakeLocation);
                         }

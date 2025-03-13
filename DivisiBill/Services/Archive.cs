@@ -19,7 +19,6 @@ public class Archive
             ShowTotalsHint = App.Settings.ShowTotalsHint,
             ShowVenuesHint = App.Settings.ShowVenuesHint,
             ShowPeopleHint = App.Settings.ShowPeopleHint,
-            HadProSubscription = App.Settings.HadProSubscription,
             FakeLocation = App.MyLocation is not null ? new SimpleLocation(App.MyLocation) : null,
             BillsFromDate = startDate > DateOnly.MinValue ? startDate.ToString() : null,
             BillsToDate = finishDate < DateOnly.MaxValue ? finishDate.ToString() : null,
@@ -234,5 +233,4 @@ public class UserSettingsClass
     public string BillsFromDate { get; set; }
     public string BillsToDate { get; set; }
     public bool OnlyRelated { get; set; }
-    public bool HadProSubscription { get; set; }
 }
