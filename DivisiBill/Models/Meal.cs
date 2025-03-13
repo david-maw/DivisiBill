@@ -2730,7 +2730,7 @@ public partial class Meal : ObservableObjectPlus
         // This is where all the elapsed time goes, reaching out over the network
         List<RemoteItemInfo> remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
         // We use HashSet types to store the data, but the performance difference pales compared to the network time above        
-        HashSet<string> remoteMealNames = [.. remoteFileInfoList.Select(x => x.Name)];
+        HashSet<string> remoteMealNames = remoteFileInfoList is null ? [] : [.. remoteFileInfoList.Select(x => x.Name)];
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
         var remoteFileInfoDict = remoteFileInfoList.ToDictionary(m => m.Name);
         HashSet<string> localMealNames = [];
