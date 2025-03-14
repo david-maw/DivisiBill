@@ -528,7 +528,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <summary>
     /// Location to use instead of the calculated one for test purposes 
     /// </summary>
-    private static Location FakeLocation
+    public static Location FakeLocation
     {
         get;
         set

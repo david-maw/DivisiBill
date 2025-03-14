@@ -19,7 +19,7 @@ public class Archive
             ShowTotalsHint = App.Settings.ShowTotalsHint,
             ShowVenuesHint = App.Settings.ShowVenuesHint,
             ShowPeopleHint = App.Settings.ShowPeopleHint,
-            FakeLocation = App.MyLocation is not null ? new SimpleLocation(App.MyLocation) : null,
+            FakeLocation = App.FakeLocation is not null ? new SimpleLocation(App.FakeLocation) : null,
             BillsFromDate = startDate > DateOnly.MinValue ? startDate.ToString() : null,
             BillsToDate = finishDate < DateOnly.MaxValue ? finishDate.ToString() : null,
             OnlyRelated = onlyRelatedParam,
