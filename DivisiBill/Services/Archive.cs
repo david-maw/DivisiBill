@@ -11,6 +11,26 @@ public class Archive
     {
         UserSettings = new UserSettingsClass()
         {
+            BillsFromDate = startDate > DateOnly.MinValue ? startDate.ToString() : null,
+            BillsToDate = finishDate < DateOnly.MaxValue ? finishDate.ToString() : null,
+        };
+        // Make a list of meals one by looping through list of local mealSummaries and creating a meal from each
+        Meals = [.. Meal.LocalMealList
+            .Where(ms => DateOnly.FromDateTime(ms.CreationTime) >= startDate && DateOnly.FromDateTime(ms.CreationTime) <= finishDate)
+            .OrderByDescending(ms => ms.CreationTime)
+            .Select(ms => Meal.LoadFromFile(ms))];
+        SetupArchive(onlyRelatedParam);
+    }
+    public Archive(List<Meal> mealsToArchive, bool onlyRelatedParam)
+    {
+        UserSettings = new UserSettingsClass();
+        Meals = mealsToArchive;
+        SetupArchive(onlyRelatedParam);
+    }
+    private void SetupArchive(bool onlyRelatedParam)
+    {
+        UserSettings = new UserSettingsClass()
+        {
             DefaultTipRate = App.Settings.DefaultTipRate,
             DefaultTaxRate = App.Settings.DefaultTaxRate,
             DefaultTipOnTax = App.Settings.DefaultTipOnTax,
@@ -20,15 +40,10 @@ public class Archive
             ShowVenuesHint = App.Settings.ShowVenuesHint,
             ShowPeopleHint = App.Settings.ShowPeopleHint,
             FakeLocation = App.FakeLocation is not null ? new SimpleLocation(App.FakeLocation) : null,
-            BillsFromDate = startDate > DateOnly.MinValue ? startDate.ToString() : null,
-            BillsToDate = finishDate < DateOnly.MaxValue ? finishDate.ToString() : null,
+            BillsFromDate = UserSettings.BillsFromDate, // Use any value that was passed in
+            BillsToDate = UserSettings.BillsToDate, // Use any value that was passed in
             OnlyRelated = onlyRelatedParam,
         };
-        // Make a list of meals one by looping through list of local mealSummaries and creating a meal from each
-        Meals = [.. Meal.LocalMealList
-            .Where(ms => DateOnly.FromDateTime(ms.CreationTime) >= startDate && DateOnly.FromDateTime(ms.CreationTime) <= finishDate)
-            .OrderByDescending(ms => ms.CreationTime)
-            .Select(ms => Meal.LoadFromFile(ms))];
         if (Utilities.IsDebug)
         {
             // this is a handy place to check for differences between the old and new DistributeCosts algorithms
@@ -90,18 +105,31 @@ public class Archive
     public List<GuidMappingEntry> AliasGuids { get; set; } = null;
     public List<Meal> Meals { get; set; } = null;
 
-    public bool ToJsonStream(Stream stream)
+    public Stream AsJsonStream(Stream stream = null)
     {
+        stream ??= new MemoryStream();
+        var originalPosition = stream.Position;
         try
         {
             xmlSerializer.Serialize(stream, this);
-            return true;
+            stream.Position = originalPosition;
+            return stream;
         }
         catch (Exception)
         {
-            return false;
+            return null;
         }
     }
+    public string AsJsonString()
+    {
+        if (AsJsonStream() is Stream stream)
+        {
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+        return string.Empty;
+    }
+
     public static Archive FromStream(Stream stream)
     {
         try
@@ -233,7 +261,7 @@ public class UserSettingsClass
     public bool ShowVenuesHint { get; set; }
     public bool ShowPeopleHint { get; set; }
     public SimpleLocation FakeLocation { get; set; }
-    public string BillsFromDate { get; set; }
-    public string BillsToDate { get; set; }
+    public string BillsFromDate { get; set; } = null;
+    public string BillsToDate { get; set; } = null;
     public bool OnlyRelated { get; set; }
 }

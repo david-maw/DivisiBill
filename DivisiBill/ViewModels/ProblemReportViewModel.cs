@@ -28,9 +28,9 @@ internal partial class ProblemReportViewModel : ObservableObject
         {
             // Attach user information and comments
             scope.AddAttachment(Encoding.Latin1.GetBytes(Utilities.GetAppInformation() + "\n" + DescriptionText), "UserMsg.txt", AttachmentType.Default, "text/plain");
-            // Attach a copy of the bill if there is one
-            if (File.Exists(Meal.CurrentMeal.FilePath))
-                scope.AddAttachment(Meal.CurrentMeal.FilePath);
+            // Attach an archive of just the current bill
+            var archive = new Archive([Meal.CurrentMeal], true);
+            scope.AddAttachment(archive.AsJsonStream(), "archive-" + mealFileName);
             // Attach a copy of the bill image if there is one
             if (Meal.CurrentMeal.HasImage && File.Exists(Meal.CurrentMeal.ImagePath))
                 scope.AddAttachment(Meal.CurrentMeal.ImagePath);
@@ -51,9 +51,23 @@ internal partial class ProblemReportViewModel : ObservableObject
                     : "*** Start of Message (verify end is also present) ***\n" + body + "\n*** End of Message***\n",
         };
         message.To!.Add("support@autopl.us");
-        // Attach a copy of the bill
-        if (File.Exists(Meal.CurrentMeal.FilePath))
-            message.Attachments!.Add(new EmailAttachment(Meal.CurrentMeal.FilePath));
+        // get a temporary file path
+        string tempFilePath = Path.GetTempPath() + "archive-" + Meal.CurrentMeal.FileName;
+        try
+        {
+            // Attach an archive of just the current bill
+            var archive = new Archive([Meal.CurrentMeal], true);
+            MemoryStream stream = new();
+            if (archive.AsJsonStream(stream) is not null)
+            {
+                await File.WriteAllBytesAsync(tempFilePath, stream.ToArray());
+                message.Attachments!.Add(new EmailAttachment(tempFilePath));
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+        }
         // Attach a copy of the bill image if there is one
         if (Meal.CurrentMeal.HasImage && File.Exists(Meal.CurrentMeal.ImagePath))
             message.Attachments!.Add(new EmailAttachment(Meal.CurrentMeal.ImagePath));
@@ -71,7 +85,12 @@ internal partial class ProblemReportViewModel : ObservableObject
         {
             ex.ReportCrash();
         }
-        // Now delete the temporary file used for attachment
+        finally
+        {
+            // Now delete the temporary file used for the archive attachment
+            if (File.Exists(tempFilePath))
+                File.Delete(tempFilePath);
+        }
         await Utilities.DisplayAlertAsync("Issue Reported", "Your mail has been sent", "ok");
         await App.GoToRoot(1);
     }

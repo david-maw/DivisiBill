@@ -77,7 +77,7 @@ internal partial class DataManagementViewModel : ObservableObject
             if (ArchiveShare)
             {
                 Stream s = new FileStream(filePath, FileMode.OpenOrCreate);
-                archive.ToJsonStream(s);
+                archive.AsJsonStream(s);
                 await Share.RequestAsync(new ShareFileRequest
                 {
                     Title = "Archive " + Path.GetFileName(filePath),
@@ -87,15 +87,15 @@ internal partial class DataManagementViewModel : ObservableObject
             }
             else if (ArchiveToDisk)
             {
-                Stream s = new MemoryStream();
-                archive.ToJsonStream(s);
-                s.Position = 0;
-                FileSaverResult fileSaverResult = new(null, null);
-#if WINDOWS || ANDROID
-                fileSaverResult = await FileSaver.Default.SaveAsync(Path.GetFileName(filePath), s);
-#endif
-                if (!fileSaverResult.IsSuccessful)
-                    await Utilities.ShowAppSnackBarAsync("Archive Failed");
+                if (archive.AsJsonStream() is Stream s)
+                {
+                    FileSaverResult fileSaverResult = new(null, null);
+                    fileSaverResult = await FileSaver.Default.SaveAsync(Path.GetFileName(filePath), s);
+                    if (!fileSaverResult.IsSuccessful)
+                        await Utilities.ShowAppSnackBarAsync("Archive Failed");
+                }
+                else
+                    await Utilities.ShowAppSnackBarAsync("Archive Stream Creation Failed");
             }
         }
         catch (Exception ex)
