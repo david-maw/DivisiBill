@@ -941,6 +941,7 @@ public class AwaitableQueue<T>
 /// </summary>
 public class SentryEventProcessor : ISentryEventProcessor
 {
+    public const string UserFeedbackTitle = "User Feedback";
     private static int skipBreaks = 0; // Just set this to skip the next however many breaks
     public SentryEvent Process(SentryEvent sentryEvent)
     {
@@ -955,7 +956,9 @@ public class SentryEventProcessor : ISentryEventProcessor
                 skipBreaks--;
             return null;
         }
-        if (App.Settings is not null && App.Settings.SendCrashYes)
+        // User feedback gets reported regardless of general telemetry settings
+        bool userMessage = !string.IsNullOrWhiteSpace(sentryEvent.Message?.Message) && sentryEvent.Message.Message.Equals(UserFeedbackTitle);
+        if (userMessage || (App.Settings is not null && App.Settings.SendCrashYes))
             return sentryEvent; // this is on a separate line so it's east to use in "set next statement" 
         return null;
     }

@@ -24,7 +24,7 @@ internal partial class ProblemReportViewModel : ObservableObject
         string mealFileName = Meal.CurrentMeal.FileName;
         if (string.IsNullOrWhiteSpace(mealFileName))
             mealFileName = "BadMeal.xml";
-        SentrySdk.CaptureMessage("User Feedback", scope =>
+        SentrySdk.CaptureMessage(SentryEventProcessor.UserFeedbackTitle, scope =>
         {
             // Attach user information and comments
             scope.AddAttachment(Encoding.Latin1.GetBytes(Utilities.GetAppInformation() + "\n" + DescriptionText), "UserMsg.txt", AttachmentType.Default, "text/plain");
