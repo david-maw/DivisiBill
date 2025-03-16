@@ -260,11 +260,12 @@ public partial class App : Application, INotifyPropertyChanged
 
     /// <summary>
     /// Can we physically reach the Internet via an acceptable interfaces, so perhaps we require WiFi, even if it is not to be used for backup.
-    /// The user can limit access by setting: <see cref="AppSettings.IsCloudAccessAllowed"/> and <see cref="AppSettings.WiFiOnly"/>
-    /// Various calculated results are available as related properties:
-    /// <see cref="App.IsCloudAccessible"/> - Can you reach the Internet, whether backup is permitted or not
-    /// <see cref="App.IsCloudAllowed"/> - Can you reach it AND are you allowed to perform backups
-    /// See also Settings.IsCloudAccessAllowed and App.IsCloudAllowed
+    /// <para>The user can limit access by setting: <see cref="AppSettings.IsCloudAccessAllowed"/> and <see cref="AppSettings.WiFiOnly"/></para>
+    /// <para>Various calculated results are available as related properties:</para>
+    /// <list type="bullet">
+    /// <item><see cref="App.IsCloudAllowed"/> - Can we reach it AND is the user allowed to use it</item>
+    /// <item>See also <see cref="AppSettings.IsCloudAccessAllowed"/> and <see cref="App.IsCloudAllowed"/></item>
+    /// </list>
     /// </summary>
     internal static bool IsCloudAccessible
     {

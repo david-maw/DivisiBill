@@ -1,53 +1,118 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:DivisiBill"
-             xmlns:views="clr-namespace:DivisiBill.Views"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             BindingContext="{vm:DataManagementViewModel}"
-             x:DataType="vm:DataManagementViewModel"
-             Title="Manage Data"
-             x:Class="DivisiBill.Views.DataManagementPage">
+<ContentPage
+    x:Class="DivisiBill.Views.DataManagementPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:DivisiBill"
+    xmlns:services="clr-namespace:DivisiBill.Services"
+    xmlns:views="clr-namespace:DivisiBill.Views"
+    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+    Title="Manage Data"
+    x:DataType="vm:DataManagementViewModel"
+    BindingContext="{vm:DataManagementViewModel}">
     <VerticalStackLayout Spacing="10">
-        <!--#region Archive / Restore -->
-        <Label Text="Archive and Restore" HorizontalOptions="Center" FontSize="Medium"/>
-        <Grid RowDefinitions="auto, auto, auto, auto"  ColumnDefinitions="auto, auto" ColumnSpacing="10" Margin="10" HorizontalOptions="Center">
-            <Button      Grid.Row="0" Grid.RowSpan="2" Text="Archive" Command="{Binding ArchiveCommand}" Margin="5"/>
-            <RadioButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding ArchiveShare}" Content="Share" GroupName="ArchiveGroup"/>
-            <RadioButton Grid.Row="1" Grid.Column="1" IsChecked="{Binding ArchiveToDisk}" Content="To Disk" GroupName="ArchiveGroup"/>
-
-            <Button Grid.Row="2" Grid.RowSpan="2" Text="Restore" LineBreakMode="WordWrap" Command="{Binding RestoreArchiveCommand}" Margin="5"/>
-            <HorizontalStackLayout  Grid.Row="2" Grid.Column="1">
-                <CheckBox IsChecked="{Binding DeleteBeforeRestore}"/>
-                <Label Text="Delete Everything First" VerticalOptions="Center"/>
-            </HorizontalStackLayout>
-            <HorizontalStackLayout Grid.Row="3" Grid.Column="1" IsEnabled="{Binding DeleteBeforeRestore,Converter={StaticResource Not}}">
-                <CheckBox IsChecked="{Binding OverwriteDuplicates}"/>
-                <Label Text="Overwrite Duplicate Items" VerticalOptions="Center"/>
-            </HorizontalStackLayout>
-        </Grid>
-        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-            <Label Text="Limit Bills" VerticalOptions="Center"/>
-            <CheckBox IsChecked="{Binding FilterByDate}"/>
-            <DatePicker  MinimumDate="1/1/2000" MaximumDate="{Binding FinishDate}" Date="{Binding StartDate}"/>
-            <Label Text="thru" VerticalOptions="Center"/>
-            <DatePicker MinimumDate="{Binding StartDate}" MaximumDate="1/1/3000" Date="{Binding FinishDate}"/>
-        </HorizontalStackLayout>
-        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-            <Label Text="Only Related People and Venues" VerticalOptions="Center"/>
-            <CheckBox IsChecked="{Binding OnlyRelated}"/>
-        </HorizontalStackLayout>
-        <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="30,0"/>
+        <!--#region Archive / Restore-->
+        <Border Margin="30,10">
+            <VerticalStackLayout>
+                <Label
+                    FontSize="Medium"
+                    HorizontalOptions="Center"
+                    Text="Archive and Restore" />
+                <Grid
+                    Margin="10"
+                    ColumnDefinitions="auto, auto"
+                    ColumnSpacing="10"
+                    HorizontalOptions="Start"
+                    RowDefinitions="auto, auto, auto, auto">
+                    <Button
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        Margin="5"
+                        Command="{Binding ArchiveCommand}"
+                        Text="Archive" />
+                    <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
+                        <RadioButton
+                            Content="To Share"
+                            GroupName="ArchiveGroup"
+                            IsChecked="{Binding ArchiveShare}" />
+                        <RadioButton
+                            Content="To Disk"
+                            GroupName="ArchiveGroup"
+                            IsChecked="{Binding ArchiveToDisk}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                        <CheckBox IsChecked="{Binding OnlySelectedMeals}" />
+                        <Label Text="Only Selected Bills" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Grid>
+                <Grid
+                    Margin="10"
+                    ColumnDefinitions="auto, auto"
+                    ColumnSpacing="10"
+                    HorizontalOptions="Start"
+                    RowDefinitions="auto, auto, auto, auto">
+                    <Button
+                        Grid.Row="2"
+                        Grid.RowSpan="2"
+                        Margin="5"
+                        Command="{Binding RestoreArchiveCommand}"
+                        Text="Restore" />
+                    <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                        <CheckBox IsChecked="{Binding DeleteBeforeRestore}" />
+                        <Label Text="Delete Everything First" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        IsEnabled="{Binding DeleteBeforeRestore, Converter={StaticResource Not}}">
+                        <CheckBox IsChecked="{Binding OverwriteDuplicates}" />
+                        <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" WidthRequest="150" />
+                    </HorizontalStackLayout>
+                </Grid>
+                <Label Text="Use Bills Between" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-10,0,0">
+                    <DatePicker
+                        Date="{Binding StartDate}"
+                        MaximumDate="{Binding FinishDate}"
+                        MinimumDate="{Static services:Archive.EarliestDateAllowed}" />
+                    <Label Text="and" VerticalOptions="Center" />
+                    <DatePicker
+                        Date="{Binding FinishDate}"
+                        MaximumDate="1/1/2100"
+                        MinimumDate="{Binding StartDate}" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <CheckBox IsChecked="{Binding OnlyRelated}" />
+                    <Label Text="Only Related People and Venues" VerticalOptions="Center" LineBreakMode="WordWrap"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Border>
         <!--#endregion-->
-        <!--#region Bill Management -->
-        <Label Text="Bill Management" HorizontalOptions="Center" FontSize="Medium"/>
-        <Button Text="Select Downloadable Bills" Command ="{Binding SelectDownloadableCommand}" HorizontalOptions="Center"/>
-        <Button Text="Select All But Latest Bill Per Venue" Command = "{Binding SelectOlderCommand}" HorizontalOptions="Center"/>
-        <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="30,0"/>
+        <!--#region Bill Management-->
+        <Border Margin="30,0">
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontSize="Medium"
+                    HorizontalOptions="Center"
+                    Text="Bill Management" />
+                <Button
+                    Command="{Binding SelectDownloadableCommand}"
+                    HorizontalOptions="Center"
+                    Text="Select Downloadable Bills" />
+                <Button
+                    Margin="10"
+                    Command="{Binding SelectOlderCommand}"
+                    HorizontalOptions="Center"
+                    Text="Select All But Latest Bill Per Venue" />
+            </VerticalStackLayout>
+        </Border>
         <!--#endregion-->
-        <!--#region Progress Reporting -->
-        <ActivityIndicator IsRunning="True" IsVisible="{Binding IsBusy}" HeightRequest="50" HorizontalOptions="Center"/>
+        <!--#region Progress Reporting-->
+        <ActivityIndicator
+            HeightRequest="50"
+            HorizontalOptions="Center"
+            IsRunning="True"
+            IsVisible="{Binding IsBusy}" />
         <!--#endregion-->
     </VerticalStackLayout>
 </ContentPage>

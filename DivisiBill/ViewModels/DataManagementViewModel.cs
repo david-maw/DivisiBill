@@ -17,6 +17,10 @@ internal partial class DataManagementViewModel : ObservableObject
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private readonly DateTime nextTime = DateTime.MinValue;
 
+    /// <summary>
+    /// Selects all but the latest meal for each venue from local storage and navigates to the meal list page with specific query parameters.
+    /// </summary>
+    /// <returns>Returns a Task representing the asynchronous operation.</returns>
     [RelayCommand]
     private static async Task SelectOlder()
     {
@@ -24,9 +28,23 @@ internal partial class DataManagementViewModel : ObservableObject
         await App.GoToAsync(Routes.MealListByAgePage + "?IsSelectableList=true&count=true&ShowLocal=true&ShowRemote=false");
     }
 
+    /// <summary>
+    /// Selects meals that are remote but not local and sets a busy indicator if it takes more than 500 ms to figure
+    /// out the remote list. If the remote list is empty or remote access is not available, a message is displayed.
+    /// </summary>
     [RelayCommand]
     private async Task SelectDownloadable()
     {
+        // Ensure that cloud access is allowed and usable
+        if (!App.IsCloudAllowed)
+        {
+            if (!App.Settings.IsCloudAccessAllowed)
+                await Utilities.ShowAppSnackBarAsync("Cloud access is not enabled in settings");
+            else
+                await Utilities.ShowAppSnackBarAsync("Cloud is currently inaccessible");
+            return;
+        }
+        // get the list of remotely stored meals
         Task<bool> task = Meal.GetRemoteMealListAsync();
         try
         {
@@ -43,7 +61,7 @@ internal partial class DataManagementViewModel : ObservableObject
                 IsBusy = false;
             }
         }
-
+        // Make sure it worked correctly
         if (!task.Result)
         {
             await Utilities.ShowAppSnackBarAsync("Remote Access is not currently available");
@@ -61,16 +79,23 @@ internal partial class DataManagementViewModel : ObservableObject
                 foundOne = true;
             }
             if (foundOne)
-                await App.GoToAsync(Routes.MealListByAgePage + "?command=SelectFirstUnallocatedLineItem");
+                await App.GoToAsync(Routes.MealListByAgePage + "?IsSelectableList=true&count=true&ShowLocal=true&ShowRemote=true");
             else
                 await Utilities.ShowAppSnackBarAsync($"All {Meal.RemoteMealList.Count} remote bills are already downloaded");
         }
     }
 
+    /// <summary>
+    /// Writes an archive of the data to a file, either to disk or to a shared location (an app in Android), depending on the values 
+    /// of <see cref="ArchiveShare"/> or <see cref="ArchiveToDisk"/>.
+    /// </summary>
     [RelayCommand]
     public async Task ArchiveAsync()
     {
-        Archive archive = new(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue, OnlyRelated);
+        Archive archive = new(
+            DateOnly.FromDateTime(StartDate),
+            DateOnly.FromDateTime(FinishDate),
+            OnlyRelated, OnlySelectedMeals);
         var filePath = Path.Combine(FileSystem.CacheDirectory, "DivisiBill" + archive.TimeName + ".xml");
         try
         {
@@ -103,23 +128,25 @@ internal partial class DataManagementViewModel : ObservableObject
             ex.ReportCrash();
         }
     }
-    private static readonly PickOptions pickOptions
-        = new()
-        {
-            PickerTitle = "Please select an archive file",
-            FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-            {
-                    { DevicePlatform.Android, [ "text/xml" ] },
-                    { DevicePlatform.WinUI, [ ".xml" ] },
-            }),
-        };
 
+    /// <summary>
+    /// Command to restore an archive from a selected XML file, handling various types of data such as venues, people, and meals.
+    /// </summary>
+    /// <returns>Returns a task that completes when the restore operation is finished.</returns>
     [RelayCommand]
     public async Task RestoreArchiveAsync()
     {
         try
         {
-            var result = await FilePicker.PickAsync(pickOptions);
+            var result = await FilePicker.PickAsync(new PickOptions()
+            {
+                PickerTitle = "Please select an archive file",
+                FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                        { DevicePlatform.Android, [ "text/xml" ] },
+                        { DevicePlatform.WinUI, [ ".xml" ] },
+                }),
+            });
             if (result is not null)
             {
                 IsBusy = true;
@@ -185,7 +212,7 @@ internal partial class DataManagementViewModel : ObservableObject
                         // Now restore all the other items (which are not part of this ViewModel)
                         archive.DeleteBeforeRestore = DeleteBeforeRestore;
                         archive.OverwriteDuplicates = OverwriteDuplicates;
-                        await archive.RestoreAsync(FilterByDate ? DateOnly.FromDateTime(StartDate) : DateOnly.MinValue, FilterByDate ? DateOnly.FromDateTime(FinishDate) : DateOnly.MaxValue, OnlyRelated);
+                        await archive.RestoreAsync(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate), OnlyRelated);
                         IsBusy = false;
                         await Utilities.ShowAppSnackBarAsync("Restore Complete");
                     }
@@ -209,52 +236,50 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Indicates whether an archive is shared (the other alternative is to store it to disk). The default value is true.
+    /// </summary>
     [ObservableProperty]
     public partial bool ArchiveShare { get; set; } = true;
 
+    /// <summary>
+    /// Indicates whether to archive data to disk (the other alternative is to share it). The default value is false.
+    /// </summary>
     [ObservableProperty]
     public partial bool ArchiveToDisk { get; set; } = false;
 
+    /// <summary>
+    /// Indicates whether all meals or only selected meals are candidates for archiving. Defaults to false.
+    /// </summary>
     [ObservableProperty]
-    public partial bool FilterByDate { get; set; } = false;
+    public partial bool OnlySelectedMeals { get; set; } = false;
 
-    partial void OnFilterByDateChanged(bool value)
-    {
-        if (value)
-            OnlyRelated = true;
-    }
-
+    /// <summary>
+    /// Indicates whether only items referred to by meals being archived or restored should themselves be archived or restored.
+    /// Initialized to false by default.
+    /// </summary>
     [ObservableProperty]
     public partial bool OnlyRelated { get; set; } = false;
 
+    /// <summary>
+    /// Indicates whether to delete all items before commencing a restore operation. Defaults to false.
+    /// </summary>
     [ObservableProperty]
     public partial bool DeleteBeforeRestore { get; set; } = false;
 
     [ObservableProperty]
     public partial bool OverwriteDuplicates { get; set; } = false;
 
-    /// There's some strangeness below of DateOnly vs. DateTime, FinishDate and StartDate ought to be type DateOnly but that seems to behave as if it were XAML mode=OneWay as of Feb 2024  
+    /// There's some strangeness below of DateOnly vs. DateTime, FinishDate and StartDate ought to be type DateOnly but 
+    /// DatePicker controls do not work with the DateOnly type. See https://github.com/dotnet/maui/issues/20438 and
+    /// https://github.com/dotnet/maui/issues/1100 for more information. To summarize, that's how it works until #1100 is implemented.
 
     /// <summary>
     /// Get or set the earliest date in the range of bills which should be archived or restored
     /// </summary>
-    public DateTime StartDate
-    {
-        get;
-        set
-        {
-            SetProperty(ref field, value.Date);
-            FilterByDate = true;
-        }
-    } = DateTime.Now.Date;
+    [ObservableProperty]
+    public partial DateTime StartDate { get; set; } = Archive.EarliestDateAllowed;
 
-    public DateTime FinishDate
-    {
-        get;
-        set
-        {
-            SetProperty(ref field, value.Date);
-            FilterByDate = true;
-        }
-    } = DateTime.Now.Date;
+    [ObservableProperty]
+    public partial DateTime FinishDate { get; set; } = DateTime.Now.Date;
 }

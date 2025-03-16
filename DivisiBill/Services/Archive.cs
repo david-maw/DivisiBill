@@ -6,17 +6,23 @@ namespace DivisiBill.Services;
 
 public class Archive
 {
+    public static readonly DateTime EarliestDateAllowed = new(2010, 1, 1);
     public Archive() { }
-    public Archive(DateOnly startDate, DateOnly finishDate, bool onlyRelatedParam)
+    public Archive(DateOnly startDate, DateOnly finishDate, bool onlyRelatedParam, bool onlySelectedMealsParam)
     {
         UserSettings = new UserSettingsClass()
         {
-            BillsFromDate = startDate > DateOnly.MinValue ? startDate.ToString() : null,
-            BillsToDate = finishDate < DateOnly.MaxValue ? finishDate.ToString() : null,
+            // Arrange to back dates up only if they are non-default 
+            BillsFromDate = startDate > DateOnly.FromDateTime(EarliestDateAllowed) ? startDate.ToString() : null,
+            BillsToDate = finishDate < DateOnly.FromDateTime(DateTime.Now) ? finishDate.ToString() : null,
         };
         // Make a list of meals one by looping through list of local mealSummaries and creating a meal from each
         Meals = [.. Meal.LocalMealList
-            .Where(ms => DateOnly.FromDateTime(ms.CreationTime) >= startDate && DateOnly.FromDateTime(ms.CreationTime) <= finishDate)
+            .Where(ms => // A meal that is already selected (if we are selecting) and within date range if there is one
+                (!onlySelectedMealsParam || ms.FileSelected) &&
+                DateOnly.FromDateTime(ms.CreationTime) >= startDate &&
+                DateOnly.FromDateTime(ms.CreationTime) <= finishDate
+            )
             .OrderByDescending(ms => ms.CreationTime)
             .Select(ms => Meal.LoadFromFile(ms))];
         SetupArchive(onlyRelatedParam);
