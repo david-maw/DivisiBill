@@ -54,7 +54,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
 
 
     [RelayCommand]
-    private void ClosePopupWindow() => StopTrying(false); // User elected to abandon the web service call
+    private void ClosePopupWindow() => StopTrying(new HttpResponseMessage(HttpStatusCode.RequestTimeout)); // User elected to abandon the web service call
 
     /// <summary>
     /// Wait for a successful call to the version web service or until the user commands us to quit
@@ -94,7 +94,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                 if (webCallTask.IsCompletedSuccessfully && webCallTask.Result.IsSuccessStatusCode)
                 {
                     Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompletedSuccessfully and successful result = " + webCallTask.Result.StatusCode + " in " + ToSecondsText(ElapsedSeconds()));
-                    StopTrying(true); // The request completed without error, we can continue on
+                    StopTrying(webCallTask.Result); // The request completed without error, we can continue on
                 }
                 else
                 {

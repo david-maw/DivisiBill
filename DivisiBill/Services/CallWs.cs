@@ -44,9 +44,7 @@ internal static class CallWs
         // Call the web service and wait for a response or until the user gives up 
         return webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode
             ? webCallTask.Result
-            : (bool)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall, webStopwatch))
-                ? webCallTask.Result
-                : new HttpResponseMessage(System.Net.HttpStatusCode.GatewayTimeout); // User opted not to wait
+            : (HttpResponseMessage)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall, webStopwatch));
     }
     #region Header Management
     private static void StoreTokenHeader(this HttpResponseMessage response)
@@ -182,6 +180,10 @@ internal static class CallWs
                 else
                     WsVersionChecked = true;
             }
+            else if (WsVersionTask is null)
+                Utilities.DebugMsg("GetVersion failed, no task returned");
+            else
+                Utilities.DebugMsg("GetVersion failed, status code = " + WsVersionTask.StatusCode);
         }
         catch (Exception ex)
         {
