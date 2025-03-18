@@ -38,13 +38,13 @@
      inkscape:pagecheckerboard="1"
      showgrid="false"
      inkscape:zoom="0.51316815"
-     inkscape:cx="539.78408"
-     inkscape:cy="1228.6421"
-     inkscape:window-width="2560"
-     inkscape:window-height="1529"
-     inkscape:window-x="1192"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
+     inkscape:cx="538.80974"
+     inkscape:cy="1229.6165"
+     inkscape:window-width="1135"
+     inkscape:window-height="1490"
+     inkscape:window-x="28"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
      inkscape:current-layer="g842"
      inkscape:document-rotation="0"
      inkscape:showpageshadow="2"
@@ -63,7 +63,7 @@
        width="1080" />
     <a
        xlink:href="datamanagementglossary.html#only-related"
-       transform="matrix(0.8921546,0,0,0.89459829,46.405934,-293.68305)"
+       transform="matrix(0.67497847,0,0,1.0928896,188.54815,-557.79493)"
        inkscape:label="wifi"
        xlink:title="Limit People and Venues used"
        target="_parent"
@@ -77,8 +77,8 @@
          y="1469.5219" />
     </a>
     <a
-       xlink:href="datamanagementglossary.html#limit-bills-switch"
-       transform="matrix(0.8921546,0,0,0.89459829,45.841445,-436.28427)"
+       xlink:href="datamanagementglossary.html#use-bills-between"
+       transform="matrix(0.57677709,0,0,0.89459829,218.73938,-367.77562)"
        inkscape:label="wifi"
        xlink:title="Limit Range of Bills Used"
        target="_parent"
@@ -93,7 +93,7 @@
     </a>
     <a
        xlink:href="datamanagementglossary.html#archive-button"
-       transform="matrix(0.23879972,0,0,2.7633308,103.29799,-3730.492)"
+       transform="matrix(0.23879972,0,0,2.8514603,103.29799,-3860.0001)"
        inkscape:label="wifi"
        xlink:title="Create an archive"
        target="_parent"
@@ -107,8 +107,8 @@
          y="1469.5219" />
     </a>
     <a
-       xlink:href="datamanagementglossary.html#download-bills-button"
-       transform="matrix(0.49279487,0,0,1.4454978,270.494,-846.06568)"
+       xlink:href="datamanagementglossary.html#select-downloadable-bills"
+       transform="matrix(0.51734521,0,0,1.4454978,258.29262,-818.06568)"
        inkscape:label="wifi"
        xlink:title="Download missing bills"
        target="_parent"
@@ -123,7 +123,7 @@
     </a>
     <a
        xlink:href="datamanagementglossary.html#overwrite-option"
-       transform="matrix(0.56430199,0,0,0.90720311,366.57396,-610.20161)"
+       transform="matrix(0.56430199,0,0,1.0173649,368.52264,-710.65497)"
        inkscape:label="wifi"
        xlink:title="Overwrite existing items"
        target="_parent"
@@ -138,7 +138,7 @@
     </a>
     <a
        xlink:href="datamanagementglossary.html#delete-option"
-       transform="matrix(0.56430199,0,0,0.90720311,366.57396,-722.17538)"
+       transform="matrix(0.56430199,0,0,0.90720311,366.57396,-663.30748)"
        inkscape:label="wifi"
        xlink:title="Delete all items before restore"
        target="_parent"
@@ -152,8 +152,23 @@
          y="1450.4404" />
     </a>
     <a
+       xlink:href="datamanagementglossary.html#only-selected-bills"
+       transform="matrix(0.47554305,0,0,0.90720311,383.99563,-833.24856)"
+       inkscape:label="wifi"
+       xlink:title="Archive only the selected bills"
+       target="_parent"
+       id="a938-8-9-5-9-4">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-1-0-7"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1450.4404" />
+    </a>
+    <a
        xlink:href="datamanagementglossary.html#archive-to-disk"
-       transform="matrix(0.23948204,0,0,0.90720311,378.0656,-845.0448)"
+       transform="matrix(0.23948204,0,0,0.90720311,631.39387,-958.06818)"
        inkscape:label="wifi"
        xlink:title="Store Archive on Disk"
        target="_parent"
@@ -183,7 +198,7 @@
     </a>
     <a
        xlink:href="datamanagementglossary.html#restore-button"
-       transform="matrix(0.23948204,0,0,2.603695,103.40602,-3196.3943)"
+       transform="matrix(0.23948204,0,0,2.603695,105.3547,-3142.9105)"
        inkscape:label="wifi"
        xlink:title="Restore an archive"
        target="_parent"
@@ -197,8 +212,8 @@
          y="1450.4404" />
     </a>
     <a
-       xlink:href="datamanagementglossary.html#select-bills-button"
-       transform="matrix(0.81831522,0,0,0.53039369,102.00997,651.31888)"
+       xlink:href="datamanagementglossary.html#select-all-but-latest"
+       transform="matrix(0.78352728,0,0,0.56186849,124.47106,665.12136)"
        inkscape:label="scans"
        xlink:title="Select older bills"
        target="_parent"

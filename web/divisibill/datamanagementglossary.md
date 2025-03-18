@@ -14,30 +14,34 @@ Select this option to send the archive to be shared with email, text and so on.
 
 Select this option to send the archive to a disk location of your choice.
 
+## Only Selected Bills
+
+Changes the behavior of the Archive button so it only operates on selected bills. You can select bills in the [bill list](meallistpage.html) page.
+
 ## Restore Button
 
-Press this to locate an archive file previously created by the "Archive" button and restore its contents.
+Press this to locate an archive file previously created by the "Archive" action and restore its contents.
 
 ## Delete Option
 
-Select this option to remove all people, venues and bills before the restore is performed. 
+Select "Delete Everything First" to remove all people, venues and bills before the restore is performed. 
 
 ## Overwrite Option
 
-Select this option to overwrite items of the same name that already exist when the restore is performed. 
+Select "Overwrite Duplicate Items" to overwrite items of the same name that already exist when the restore is performed. 
 
-## Limit Bills Switch
+## Use Bills Between
 
-Changes the behavior of the Archive and Restore buttons so they only operate on a limited range of bills.
+Changes the behavior of the Archive and Restore buttons so they only operate on bills in the specified date range.
 
 ## Only Related
 
-Changes the behavior of the Archive and Restore buttons so they only operate on those People and Venues that are used on a selected bill.
+Changes the behavior of the Archive button and Restore buttons so they only include those People and Venues that are used in a bill being archived or restored.
 
-## Download Bills Button
+## Select Downloadable Bills
 
 Tap this button to select any bills stored to the cloud which are not stored locally and switch to the [bill list](meallistpage.html) page.
 
-## Select Bills Button
+## Select All But Latest
 
-Tap this button to select all but the latest local bill for each location and switch to the [bill list](meallistpage.html) page. This action does not affect bills stored in the cloud.
+Tap this button to select all but the latest local bill for each location and switch to the [bill list](meallistpage.html) page. This action does not affect bills stored in the cloud and can be used to select a set of unused local bills to remove.
