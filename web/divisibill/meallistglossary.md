@@ -16,25 +16,26 @@ Determines whether a single bill or multiple bills may be selected.
 
 ### Delete (<u>&#xF0A7A;</u>)
 
-Deletes the selected item or items (you can Undo this if you do it by mistake). To delete a single item, you can also swipe left on that item.
+Deletes the selected bill or bills. To delete a single bill, you can also swipe left on it. If the bill has both local and remote copies only the local one is deleted.  You can Undo local deletes but remote deletes cannot be undone.
 
 ### Ellipsis (<u>&#xF01D9;</u>)
 
 Tap on the ellipsis to open a secondary menu containing additional commands:
 
     - Use and Show Details - This duplicate the swipe right or 
-      double tap actions (single tap now selects or deselects a bill)
-    - Download - This duplicates the effect of a single tap to the 
-      right of an item.
-    - Show All / Show Latest - Restrict the bills shown to only 
-      the latest per venue.
-    - Show Bills / Show Venues - Allows you to show all bills 
-      or just the latest one for each venue.
-    - Show/Hide Local/Remote which allows you to limit the display of 
-      bills to only those stored locally or remotely or both. 
-      Bills which are hidden are deselected.
-    - Select None, Select All and Invert Selection allowing manipulation
-      of the list of selected bills. Note that Select All actually selects all except the current bill.
+      double tap actions (a single tap selects or deselects a bill)
+    - Download - This duplicates the effect of a single tap on the 
+      end of an item.
+    - Delete Local / Remote - This either the local or the remote
+      copy of a bill while leaving the other copy untouched.
+    - Select None, Select All and Invert Selection allowing
+      manipulation of the list of selected bills. Note that Select All
+      actually selects all except the current bill and that bills
+      which are hidden are still deselected.
+    - Show Bills / Show Venues - Allows you to show all bills or just
+      the latest one for each venue.
+    - Show/Hide Local/Remote which allows you to limit the display
+      of bills to only those stored locally or remotely or both. 
 
 ## Selected Count
 
