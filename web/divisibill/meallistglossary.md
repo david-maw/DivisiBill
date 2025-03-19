@@ -22,20 +22,20 @@ Deletes the selected bill or bills. To delete a single bill, you can also swipe 
 
 Tap on the ellipsis to open a secondary menu containing additional commands:
 
-    - Use and Show Details - This duplicate the swipe right or 
-      double tap actions (a single tap selects or deselects a bill)
-    - Download - This duplicates the effect of a single tap on the 
-      end of an item.
-    - Delete Local / Remote - This either the local or the remote
-      copy of a bill while leaving the other copy untouched.
-    - Select None, Select All and Invert Selection allowing
-      manipulation of the list of selected bills. Note that Select All
-      actually selects all except the current bill and that bills
-      which are hidden are still deselected.
-    - Show Bills / Show Venues - Allows you to show all bills or just
-      the latest one for each venue.
-    - Show/Hide Local/Remote which allows you to limit the display
-      of bills to only those stored locally or remotely or both. 
+- Use and Show Details - This duplicate the swipe right or 
+    double tap actions (a single tap selects or deselects a bill)
+- Download - This duplicates the effect of a single tap on the 
+    end of an item.
+- Delete Local / Remote - This either the local or the remote
+    copy of a bill while leaving the other copy untouched.
+- Select None, Select All and Invert Selection allowing
+    manipulation of the list of selected bills. Note that Select All
+    actually selects all except the current bill and that bills
+    which are hidden are still deselected.
+- Show Bills / Show Venues - Allows you to show all bills or just
+    the latest one for each venue.
+- Show/Hide Local/Remote which allows you to limit the display
+    of bills to only those stored locally or remotely or both. 
 
 ## Selected Count
 

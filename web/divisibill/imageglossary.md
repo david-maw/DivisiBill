@@ -26,9 +26,9 @@ If you have the Professional Edition version of DivisiBill, this uses a cloud we
 
 Tap on the ellipsis to open a secondary menu containing commands to delete the current image, take a picture of a replacement image or browse for a picture.
 
-    - Delete - Remove the image from the current bill.
-    - Camera - Open the Camera page to take a picture of a bill.
-    - Browse - Browse and select from current images.
+- Delete - Remove the image from the current bill.
+- Camera - Take a picture of a bill.
+- Browse - Browse and select from current images.
 
 ## Image Area
 
