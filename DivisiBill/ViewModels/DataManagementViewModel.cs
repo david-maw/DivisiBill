@@ -92,10 +92,21 @@ internal partial class DataManagementViewModel : ObservableObject
     [RelayCommand]
     public async Task ArchiveAsync()
     {
+        if (OnlySelectedMeals && !Meal.LocalMealList.Any(ms => ms.FileSelected))
+        {
+            await Utilities.DisplayAlertAsync("Archiving Error", "No bills are selected");
+            return;
+        }
         Archive archive = new(
             DateOnly.FromDateTime(StartDate),
             DateOnly.FromDateTime(FinishDate),
             OnlyRelated, OnlySelectedMeals);
+        if (!archive.Meals.Any())
+        {
+            await Utilities.DisplayAlertAsync("Archiving Error", "No bills meet the archive criteria");
+            return;
+        }
+
         var filePath = Path.Combine(FileSystem.CacheDirectory, "DivisiBill" + archive.TimeName + ".xml");
         try
         {
