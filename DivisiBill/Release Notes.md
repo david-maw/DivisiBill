@@ -1,3 +1,27 @@
+# 6.2.23
+
+## Warn The user if No Bills Ar to Be Archived
+
+An attempt to archive with no bills selected now produces an error message rather than just creating an archive with no bills in it.
+
+# 6.2.22
+
+## Check for Image File Presence
+
+When restoring a bill from an archive or downloading it from the cloud the application now checks for the presence of an image or a deleted image.
+
+## Always Send user Feedback
+
+User initiated feedback is sent regardless of telemetry settings since the intent is clear.
+
+##  Handle Retrying Web Service Call
+
+After a web service call failed but a retry succeeded the app would behave as if the call had failed. This has been corrected.
+
+## Archive Selected Bills
+
+It is now possible to select a set of bills on a "Bill List" page and then go to the "Manage Data" page and request that only the selected bills be archived.
+
 # 6.2.21
 
 ## Restoring an Archive Checks Remote
