@@ -1241,7 +1241,7 @@ public partial class Meal : ObservableObjectPlus
                 if (summary is not null)
                 {
                     summary.PropertyChanged -= Summary_PropertyChanged;
-                    if (value is not null)
+                    if (!string.IsNullOrEmpty(value?.VenueName) && !string.IsNullOrEmpty(summary.VenueName))
                     {
                         Debug.Assert(value.VenueName == summary.VenueName
                             && Utilities.WithinOneSecond(value.CreationTime, summary.CreationTime),

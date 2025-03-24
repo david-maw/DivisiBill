@@ -38,15 +38,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
 
     [DataMember(Name = "Restaurant", Order = 1)]
     [XmlElement(ElementName = "Restaurant")]
-    public string VenueName
-    {
-        get;
-        set
-        {
-            ArgumentNullException.ThrowIfNull(value);
-            SetProperty(ref field, value);
-        }
-    } = string.Empty;
+    public string VenueName { get; set => SetProperty(ref field, value); } = string.Empty;
 
     /// <summary>
     /// The curious layout of the xxxTime and Actual...Time properties is because we want to store the times accurately
@@ -444,10 +436,6 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
             ms = (MealSummary)mealSummarySerializer.ReadObject(sourceStream);
             // Beware the MealSummary constructor is not called above use [OnDeserializing] or [OnDeserialized] if that's ever needed
             ms.CheckImageFiles();
-        }
-        catch (ArgumentNullException)
-        {
-            // Probably a dubious JSON stream, just ignore it
         }
         catch (Exception ex)
         {

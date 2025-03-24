@@ -202,9 +202,16 @@ public static class RemoteWs
                     MemoryStream s = new(buf);
                     ms = MealSummary.LoadJsonFromStream(s);
                     if (ms is null)
-                        Utilities.DebugMsg($"JSON load of description metadata failed, description = \"{description.TruncatedTo(30)}\"");
+                        Utilities.DebugMsg("JSON load of description metadata failed for meal " + remoteItem.Name);
                     else
+                    {
+                        if (string.IsNullOrEmpty(ms.VenueName))
+                        {
+                            Utilities.DebugMsg("JSON encoded description had no venue name for meal " + remoteItem.Name);
+                            ms.VenueName = "Unknown Venue";
+                        }
                         ms.IsRemote = true;
+                    }
                 }
                 if (ms is null)
                 {
