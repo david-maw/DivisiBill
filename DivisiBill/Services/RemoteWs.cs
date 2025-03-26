@@ -200,7 +200,7 @@ public static class RemoteWs
                 {
                     var buf = System.Text.Encoding.UTF8.GetBytes(description);
                     MemoryStream s = new(buf);
-                    ms = MealSummary.LoadJsonFromStream(s);
+                    ms = MealSummary.LoadJsonFrom(s);
                     if (ms is null)
                         Utilities.DebugMsg("JSON load of description metadata failed for meal " + remoteItem.Name);
                     else

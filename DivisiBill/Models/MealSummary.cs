@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using static DivisiBill.Services.Utilities;
@@ -112,7 +113,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         return null;
     }
 
-    public bool IsForCurrentMeal => CreationTime == Meal.CurrentMeal.CreationTime;
+    public bool IsForCurrentMeal => Meal.CurrentMeal is not null && CreationTime == Meal.CurrentMeal.CreationTime;
 
     /// <summary>
     /// Last time a bill was changed unlike ActualLastChangeTime this defaults to creation time if not set
@@ -428,7 +429,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     #region Persistence
     private static readonly DataContractJsonSerializer mealSummarySerializer = new(typeof(MealSummary));
     private static readonly XmlSerializer mealSummaryXmlSerializer = new(typeof(MealSummary));
-    public static MealSummary LoadJsonFromStream(Stream sourceStream)
+    public static MealSummary LoadJsonFrom(Stream sourceStream)
     {
         MealSummary ms = null;
         try
@@ -441,6 +442,12 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         {
             ex.ReportCrash();
         }
+        return ms;
+    }
+    public static MealSummary LoadJsonFrom(string sourceString)
+    {
+        MemoryStream s = new(Encoding.UTF8.GetBytes(sourceString));
+        MealSummary ms = LoadJsonFrom(s);
         return ms;
     }
     public string GetJsonString()

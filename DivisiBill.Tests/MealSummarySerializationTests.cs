@@ -1,0 +1,50 @@
+﻿using DivisiBill.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
+
+namespace DivisiBill.Tests;
+
+[TestClass]
+public class MealSummarySerializationTests
+{
+    public MealSummarySerializationTests() => DivisiBill.App.Settings = new FakeAppSettings();
+
+    [TestMethod]
+    public void DeserializeTest()
+    {
+        MealSummary ms = MealSummary.LoadJsonFrom
+            ("""{"CreationTime":"2024-12-05T16:53:05-08:00","Restaurant":"Aruba","RoundedAmount":120,"LastChangeTime":"2024-12-05T16:53:06-08:00","StoredVersion":2}""");
+        // Note that RoundedAmount is ignored, it is no longer used
+        Assert.AreEqual("Aruba", ms.VenueName);
+        Assert.AreEqual(2, ms.StoredVersion);
+        Assert.AreEqual(new DateTime(2024, 12, 5, 16, 53, 5), ms.CreationTime);
+        Assert.AreEqual(new DateTime(2024, 12, 5, 16, 53, 6), ms.ActualLastChangeTime);
+        Assert.AreEqual("20241205165305", ms.DefaultId);
+#if DEBUG
+        // Display the property names and an indication of which ones are settable and persisted
+        Debug.WriteLine("Properties of the object:");
+        foreach (var property in typeof(MealSummary).GetProperties().OrderBy(pr => pr.Name))
+        {
+            Debug.WriteLine((property.CanWrite ? "*" : " ")
+                + (property.CustomAttributes.Any(att => att.AttributeType.Name.Equals("XmlIgnoreAttribute")) ? " " : "*")
+                + property.Name + " = " + property.GetValue(ms));
+        }
+#endif
+    }
+
+    [TestMethod]
+    public void RoundTripTest()
+    {
+        MealSummary ms1 = new()
+        {
+            VenueName = "Test Venue",
+            CreationTime = new DateTime(2025, 1, 2, 3, 4, 5),
+            ActualLastChangeTime = new DateTime(2025, 1, 2, 13, 14, 15),
+        };
+        string jsonData = ms1.GetJsonString();
+        MealSummary ms = MealSummary.LoadJsonFrom(jsonData);
+        Assert.AreEqual(ms1.VenueName, ms.VenueName);
+        Assert.AreEqual(ms1.CreationTime, ms.CreationTime);
+        Assert.AreEqual(ms1.ActualLastChangeTime, ms.ActualLastChangeTime);
+    }
+}
