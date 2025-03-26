@@ -1,6 +1,6 @@
-﻿using DivisiBill.Models;
+﻿#nullable disable
+using DivisiBill.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
 
 namespace DivisiBill.Tests;
 
@@ -15,12 +15,23 @@ public class MealSummarySerializationTests
         MealSummary ms = MealSummary.LoadJsonFrom
             ("""{"CreationTime":"2024-12-05T16:53:05-08:00","Restaurant":"Aruba","RoundedAmount":120,"LastChangeTime":"2024-12-05T16:53:06-08:00","StoredVersion":2}""");
         // Note that RoundedAmount is ignored, it is no longer used
+        Assert.IsNotNull(ms);
         Assert.AreEqual("Aruba", ms.VenueName);
         Assert.AreEqual(2, ms.StoredVersion);
         Assert.AreEqual(new DateTime(2024, 12, 5, 16, 53, 5), ms.CreationTime);
         Assert.AreEqual(new DateTime(2024, 12, 5, 16, 53, 6), ms.ActualLastChangeTime);
         Assert.AreEqual("20241205165305", ms.DefaultId);
-#if DEBUG
+
+        // Test a null Restaurant (MealSummary.VenueName) which occasionally turns up in ancient bills
+        ms = MealSummary.LoadJsonFrom
+            ("""{"CreationTime":"2024-12-05T06:07:08-08:00","Restaurant":null,"StoredVersion":2}""");
+        Assert.IsNotNull(ms);
+        Assert.IsNull(ms.VenueName);
+        Assert.AreEqual(2, ms.StoredVersion);
+        Assert.AreEqual(new DateTime(2024, 12, 5, 6, 7, 8), ms.CreationTime);
+        Assert.AreEqual(DateTime.MinValue, ms.ActualLastChangeTime);
+        Assert.AreEqual("20241205060708", ms.DefaultId);
+#if DEBUG && FALSE
         // Display the property names and an indication of which ones are settable and persisted
         Debug.WriteLine("Properties of the object:");
         foreach (var property in typeof(MealSummary).GetProperties().OrderBy(pr => pr.Name))
