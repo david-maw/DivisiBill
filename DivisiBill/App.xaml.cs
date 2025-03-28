@@ -515,16 +515,24 @@ public partial class App : Application, INotifyPropertyChanged
     public static int GetDistanceTo(Location l) => MyLocation is null || l is null || MyLocation.Accuracy.GetValueOrDefault(Distances.Inaccurate) >= Distances.Inaccurate ? Distances.Inaccurate : MyLocation.GetDistanceTo(l);
     private static async Task TryGetMyLocationAsync(CancellationToken cancellationToken)
     {
-        var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-        UseLocation = status == PermissionStatus.Granted; // UWP always seems to return true
-        if (!UseLocation)
+        try
         {
-            await InitializationComplete.Task; // let initialization complete and try again
-            status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-            UseLocation = status == PermissionStatus.Granted;
+            var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            UseLocation = status == PermissionStatus.Granted; // UWP always seems to return true
+            if (!UseLocation)
+            {
+                await InitializationComplete.Task; // let initialization complete and try again
+                status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+                UseLocation = status == PermissionStatus.Granted;
+            }
+            if (UseLocation)
+                await GetMyLocationAsync(cancellationToken);
         }
-        if (UseLocation)
-            await GetMyLocationAsync(cancellationToken);
+        catch (Exception ex)
+        {
+            Utilities.ReportCrash(ex);
+            return;
+        }
     }
     /// <summary>
     /// Location to use instead of the calculated one for test purposes 
