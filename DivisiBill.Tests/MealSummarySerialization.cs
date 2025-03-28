@@ -66,14 +66,14 @@ public class MealSummarySerialization
     [TestMethod]
     public void DeserializeXmlTest()
     {
-        byte[] byteArray = Encoding.UTF8.GetBytes(MealSerialization.FakeBillXml);
+        byte[] byteArray = Encoding.UTF8.GetBytes(MealSerialization.DefaultMealXml);
         using MemoryStream memoryStream = new(byteArray);
         MealSummary ms = MealSummary.LoadFromMealStream(memoryStream, "dummy");
         Assert.IsNotNull(ms);
         Assert.AreEqual("Queasy Diner", ms.VenueName);
         Assert.AreEqual(2, ms.StoredVersion);
-        Assert.AreEqual(new DateTime(2025, 3, 26, 10, 43, 5), ms.CreationTime);
-        Assert.AreEqual(new DateTime(2025, 3, 26, 10, 43, 6), ms.ActualLastChangeTime);
-        Assert.AreEqual("20250326104305", ms.DefaultId);
+        Assert.AreEqual(DateTime.MinValue, ms.CreationTime);
+        Assert.AreEqual("00010101000000", ms.DefaultId);
+        Assert.IsTrue(ms.IsDefault);
     }
 }

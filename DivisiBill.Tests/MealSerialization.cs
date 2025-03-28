@@ -1,15 +1,14 @@
 ﻿namespace DivisiBill.Tests;
 public class MealSerialization
 {
-    internal const string FakeBillXml = """
+    internal const string DefaultMealXml = """
         <Meal>
           <CreationReason>ElapsedTime</CreationReason>
           <SaveReason>time</SaveReason>
           <SaverVersion>6.2.24</SaverVersion>
           <DataVersion>1.1</DataVersion>
           <Restaurant>Queasy Diner</Restaurant>
-          <CreationTime>2025-03-26T10:43:05-07:00</CreationTime>
-          <LastChangeTime>2025-03-26T10:43:06-07:00</LastChangeTime>
+          <CreationTime>0001-01-01T00:00:00-07:00</CreationTime>
           <TipRate>0.2</TipRate>
           <TipOnTax>false</TipOnTax>
           <TaxOnDiscount>false</TaxOnDiscount>
