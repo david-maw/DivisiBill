@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>preview</LangVersion> <!--In order to use 'field' in properties-->
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
