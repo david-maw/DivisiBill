@@ -46,10 +46,9 @@ public class MealTests
         return m;
     }
 
-    private void NewTestMeal() => testMeal = null; // so the next request will create a new one
+    private void NewTestMeal() => TestMeal = null; // so the next request will create a new one
 
-    private Meal testMeal = null;
-    private Meal TestMeal => testMeal ??= GetBasicMeal();
+    private Meal TestMeal { get => field ??= GetBasicMeal(); set; } = null;
 
     [TestMethod]
     // These are sorted before use, so put them in sorted order for convenience
@@ -231,7 +230,7 @@ public class MealTests
         SharedMeal.FinalizeSetup();
         int i = 0;
 
-        Assert.IsTrue(SharedMeal.RoundingErrorAmount <= 0.01m * SharedMeal.Costs.Count(),
+        Assert.IsTrue(SharedMeal.RoundingErrorAmount <= 0.01m * SharedMeal.Costs.Count,
             $"Excessive Rounding Error {SharedMeal.RoundingErrorAmount:C} when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
         Assert.AreEqual(SharedMeal.TotalAmount, SharedMeal.Costs.Sum(pc => pc.Amount),
@@ -275,10 +274,10 @@ public class MealTests
         SharedMeal.FinalizeSetup();
         int i = 0;
 
-        Assert.IsTrue(SharedMeal.RoundingErrorAmount <= 0.01m * SharedMeal.Costs.Count(),
+        Assert.IsTrue(SharedMeal.RoundingErrorAmount <= 0.01m * SharedMeal.Costs.Count,
             $"Excessive Rounding Error {SharedMeal.RoundingErrorAmount:C} when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
-        Assert.IsTrue(SharedMeal.UnallocatedAmount != 0,
+        Assert.AreNotEqual(0, SharedMeal.UnallocatedAmount,
             $"Zero unallocated amount when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
         decimal measuredTotal = 0;
