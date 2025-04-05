@@ -42,9 +42,12 @@
             <Color x:Key="ImageGlyphLight">LightGreen</Color>
             <Color x:Key="ImageGlyphDark">Green</Color>
             <Color x:Key="NegativeNumber">Red</Color>
-            <Color x:Key="SelectedBackGroundColor">#f17b01</Color> 
-            <!--  Same color that Android uses by default  -->
+            <Color x:Key="SelectedBackGroundColor">#f17b01</Color> <!--  Same color that Android uses by default  -->
+
             <!--  ICON NAME  -->
+
+            <x:String x:Key="TextArrowDown">&#xF0CDC;</x:String>
+            <x:String x:Key="TextArrowUp">&#xF0CE2;</x:String>
 
             <FontImageSource x:Key="FileGlyphLocalOutline"       Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
             <FontImageSource x:Key="FileGlyphRemoteOutline"      Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
@@ -131,7 +134,7 @@
                 <Setter Property="MinimumHeightRequest" Value="44" />
                 <Setter Property="MinimumWidthRequest" Value="44" />
                 <Setter Property="CommandParameter" Value="Down" />
-                <Setter Property="Text" Value="&#xF0CE2;" />
+                <Setter Property="Text" Value="{StaticResource TextArrowUp}" />
                 <Setter Property="VerticalOptions" Value="Start" />
                 <Setter Property="HorizontalOptions" Value="Center" />
                 <Setter Property="VisualStateManager.VisualStateGroups">
@@ -154,7 +157,7 @@
                 BasedOn="{StaticResource ScrollUpButtonStyle}"
                 TargetType="Button">
                 <Setter Property="CommandParameter" Value="Up" />
-                <Setter Property="Text" Value="&#xF0CDC;" />
+                <Setter Property="Text" Value="{StaticResource TextArrowDown}" />
                 <Setter Property="VerticalOptions" Value="End" />
             </Style>
         </ResourceDictionary>
