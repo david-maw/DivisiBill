@@ -60,26 +60,65 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// </summary>
     private void LocalMealList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        if (!ShowLocalMeals) return;
-        if (e.Action == NotifyCollectionChangedAction.Remove && mealList is not null)
+        if (mealList is null || !ShowLocalMeals)
+            return;
+        if (e.Action == NotifyCollectionChangedAction.Remove)
             foreach (MealSummary ms in e.OldItems)
             {
-                if (!(ms.IsRemote && ShowRemoteMeals)) // in other words if not already in the list
-                    if (mealList.Remove(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                if (!(ms.IsRemote && ShowRemoteMeals)) // in other words if not showing because of the other list
+                    if (mealList.Remove(ms)) // DeselectInvisibleMeals() is not needed here because we handle it directly
                     {
-                        ms.FileSelected = false;
-                        SelectedMealSummariesCount--;
+                        if (IsGrouped)
+                        {   // Remove from the group
+                            MealSummaryGroup group = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
+                            group.MealSummaries.Remove(ms);
+                            if (group.Count == 0)
+                                MealSummaryGroups.Remove(group);
+                            else if (group.CreationTime == ms.CreationTime)
+                            {
+                                group.CreationTime = group.MealSummaries[0].CreationTime;
+                                UpsertIntoMealSummaryGroupList(group);
+                            }
+                        }
+                        if (ms.FileSelected)
+                        {
+                            ms.FileSelected = false;
+                            SelectedMealSummariesCount--;
+                        }
                     }
             }
-        else if (e.Action == NotifyCollectionChangedAction.Add && mealList is not null) // Probably an Undelete operation
+        else if (e.Action == NotifyCollectionChangedAction.Add) // Probably an Undelete operation
             foreach (MealSummary ms in e.NewItems)
             {
-                if (!(ms.IsRemote && ShowRemoteMeals)) // in other words if not already in the list
-                    if (UpsertIntoMealList(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                if (!(ms.IsRemote && ShowRemoteMeals) // in other words if not in the other list
+                    && UpsertIntoMealList(ms)) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                {
+                    if (IsGrouped)
+                    {   // Add to the group
+                        MealSummaryGroup group = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
+                        if (group is not null)
+                        {
+                            group.MealSummaries.Upsert(ms, MealSummary.CompareCreationTimeTo);
+                            if (group.CreationTime < ms.CreationTime)
+                            {
+                                group.CreationTime = ms.CreationTime;
+                                UpsertIntoMealSummaryGroupList(group);
+                            }
+                        }
+                        else
+                        {
+                            group = new MealSummaryGroup(ms);
+                            UpsertIntoMealSummaryGroupList(group);
+                        }
+                    }
+                    if (ms.FileSelected)
+                    {
                         SelectedMealSummariesCount++;
+                    }
+                }
             }
         else
-        if (e.Action == NotifyCollectionChangedAction.Reset && mealList is not null)
+        if (e.Action == NotifyCollectionChangedAction.Reset)
         {
             foreach (MealSummary ms in MealList.Where(ms => ms.FileSelected && ms.IsLocal))
                 ms.FileSelected = false;
@@ -96,26 +135,62 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// </summary>
     private void RemoteMealList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        if (!ShowRemoteMeals) return;
-        if (e.Action == NotifyCollectionChangedAction.Remove && mealList is not null)
+        if (mealList is null || !ShowRemoteMeals)
+            return;
+        if (e.Action == NotifyCollectionChangedAction.Remove)
             foreach (MealSummary ms in e.OldItems)
             {
                 if (!(ms.IsLocal && ShowLocalMeals)) // in other words if not already in the list
-                    if (mealList.Remove(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                    if (mealList.Remove(ms)) // DeselectInvisibleMeals() is not needed here because we handle it directly
                     {
-                        ms.FileSelected = false;
-                        SelectedMealSummariesCount--;
+                        if (IsGrouped)
+                        {   // Remove from the group
+                            MealSummaryGroup group = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
+                            group.MealSummaries.Remove(ms);
+                            if (group.Count == 0)
+                                MealSummaryGroups.Remove(group);
+                            else if (group.CreationTime == ms.CreationTime)
+                            {
+                                group.CreationTime = group.MealSummaries[0].CreationTime;
+                                UpsertIntoMealSummaryGroupList(group);
+                            }
+                        }
+                        if (ms.FileSelected)
+                        {
+                            ms.FileSelected = false;
+                            SelectedMealSummariesCount--;
+                        }
                     }
             }
-        else if (e.Action == NotifyCollectionChangedAction.Add && mealList is not null) // Probably an Undelete operation
+        else if (e.Action == NotifyCollectionChangedAction.Add) // Probably an Undelete operation
             foreach (MealSummary ms in e.NewItems)
             {
-                if (!(ms.IsLocal && ShowLocalMeals)) // in other words if not already in the list
-                    if (UpsertIntoMealList(ms) && ms.FileSelected) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                if (!(ms.IsLocal && ShowLocalMeals)  // in other words if not in the other list
+                    && UpsertIntoMealList(ms)) // DeselectInvisibleMeals() is not needed here because we handle it directly
+                {
+                    if (IsGrouped)
+                    {   // Add to the group
+                        MealSummaryGroup group = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
+                        if (group is not null)
+                        {
+                            if (group.CreationTime < ms.CreationTime)
+                                group.CreationTime = ms.CreationTime;
+                            group.MealSummaries.Upsert(ms, MealSummary.CompareCreationTimeTo);
+                        }
+                        else
+                        {
+                            group = new MealSummaryGroup(ms);
+                            UpsertIntoMealSummaryGroupList(group);
+                        }
+                    }
+                    if (ms.FileSelected)
+                    {
                         SelectedMealSummariesCount++;
+                    }
+                }
             }
         else
-        if (e.Action == NotifyCollectionChangedAction.Reset && mealList is not null)
+        if (e.Action == NotifyCollectionChangedAction.Reset)
         {
             foreach (MealSummary ms in MealList.Where(ms => ms.FileSelected && ms.IsLocal))
                 ms.FileSelected = false;
@@ -158,7 +233,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// Turn on or off the single person filter (to show only items they share)
     /// </summary>
     [RelayCommand]
-    private void ChangeFilter() => Filter = !Filter;
+    private void ChangeFilter() => IsGrouped = !IsGrouped;
 
     /// <summary>
     /// Show or hide the local meals. 
@@ -309,6 +384,13 @@ public partial class MealListViewModel : ObservableObjectPlus
             if (!(mealToDelete.IsLocal && ShowLocalMeals)
                 && !(mealToDelete.IsRemote && ShowRemoteMeals))
                 SelectedMealSummary = next;
+        }
+        else if (IsGrouped && SelectedGroup is not null)
+        {
+            foreach (MealSummary mealToDelete in SelectedGroup.MealSummaries.Reverse())
+            {
+                await DeleteOneMeal(mealToDelete, tryLocal, tryRemote);
+            }
         }
     }
 
@@ -637,7 +719,13 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// <summary>
     /// Force future callers to reevaluate the list because we know it has changed
     /// </summary>
-    public void InvalidateMealList() => MealList = null; // The list is not accurate any more
+    public void InvalidateMealList()
+    {
+        MealList = null; // The list is not accurate any more
+        MealSummaryGroups = null; // The groups are not accurate any more
+        if (IsGrouped)
+            OnPropertyChanged(nameof(MealSummaryGroups)); // Force the groups to be rebuilt
+    }
 
     public void DeselectInvisibleMeals()
     {
@@ -674,34 +762,45 @@ public partial class MealListViewModel : ObservableObjectPlus
         }
     }
 
+    [RelayCommand]
+    private void ShowGroup(MealSummaryGroup group)
+    {
+        if (group is not null)
+        {
+            SelectedGroup = group;
+        }
+    }
+
+    [ObservableProperty]
+    public partial MealSummaryGroup SelectedGroup { get; set; } = null;
+    partial void OnSelectedGroupChanged(MealSummaryGroup oldValue, MealSummaryGroup newValue)
+    {
+        if (oldValue is not null)
+        {
+            oldValue.IsExpanded = false;
+        }
+    }
+
     /// <summary>
-    /// Show only the latest bills for each venue if true.
+    /// Show only venues if true, each bill otherwise.
     /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(FilterGlyph))]
-    [NotifyPropertyChangedFor(nameof(FilterText))]
-    public partial bool Filter { get; set; } = false;
+    public partial bool IsGrouped { get; set; } = false;
+    partial void OnIsGroupedChanged(bool value) => InvalidateMealList(); // DeselectInvisibleMeals() is not needed here because the filtering code handles it
 
-    partial void OnFilterChanged(bool value) => InvalidateMealList(); // DeselectInvisibleMeals() is not needed here because the filtering code handles it
-    public FontImageSource FilterGlyph => (FontImageSource)(Filter ? Application.Current.Resources["GlyphFilterOn"] : Application.Current.Resources["GlyphFilterOff"]);
     #region Show/Hide Local/Remote
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowLocalText))]
     [NotifyPropertyChangedFor(nameof(WhereText))]
     public partial bool ShowLocalMeals { get; set; } = true;
 
     partial void OnShowLocalMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowRemoteText))]
     [NotifyPropertyChangedFor(nameof(WhereText))]
     public partial bool ShowRemoteMeals { get; set; } = false;
 
     partial void OnShowRemoteMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
-    public string ShowRemoteText => ShowRemoteMeals ? "Hide Remote" : "Show Remote";
-    public string ShowLocalText => ShowLocalMeals ? "Hide Local" : "Show Local";
     public string WhereText => ShowLocalMeals == ShowRemoteMeals ? null : ShowLocalMeals ? "local" : "remote";
-    public string FilterText => Filter ? "Show Bills" : "Show Venues";
     #endregion
 
     [ObservableProperty]
@@ -763,9 +862,9 @@ public partial class MealListViewModel : ObservableObjectPlus
     {
         get
         {
-            // Local function
+            // Local functions
 
-            ObservableCollection<MealSummary> GetList()
+            List<MealSummary> GetList()
             {
                 if (ShowLocalMeals)
                 {
@@ -785,60 +884,41 @@ public partial class MealListViewModel : ObservableObjectPlus
 
             if (mealList is not null)
                 return mealList; // There's a cached one, just use it
-            ObservableCollection<MealSummary> theList = GetList();
+            List<MealSummary> theList = GetList();
             if (theList.Count <= 1)
             {
-                if (theList.Count == 1)
-                {
-                    MealSummary ms = theList[0];
-                    Venue v = Venue.FindVenueByName(ms.VenueName);
-                    ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
-                }
-                return mealList = theList; // If there are one or zero meals, sort order and meal filtering are irrelevant
+                // Handle the trivial cases of one or zero entries
+                mealList = [.. theList]; // If there are one or zero meals, sort order and meal grouping are unnecessary
             }
-            else if (Filter)
+            else // A nontrivial list
             {
-                // We could perhaps optimize this by sorting theList in place then deleting the duplicates,
-                // but the performance gain doesn't seem worth the trouble.
-                List<MealSummary> filteredList = [.. theList.OrderBy(ms => ms.VenueName).ThenByDescending((ms) => ms.CreationTime)];
-                for (int i = filteredList.Count - 1; i > 0; i--)
+                mealList = SortOrder switch
                 {
-                    MealSummary ms = filteredList[i];
-                    if (ms.VenueName.Equals(filteredList[i - 1].VenueName))
-                    {
-                        // This is a later bill for the same venue, discard it
-                        if (ms.FileSelected) // Make sure invisible meals are not selected
-                            ms.FileSelected = false; // we'll fix up the summaries count later
-                        filteredList.RemoveAt(i);
-                    }
-                }
-                theList = [.. filteredList];
-                // At this point all the duplicate dates for the same venue are gone and we just have a list in venue name order
-                // now fill in the distances in case we need to sort on them.
-                if (App.MyLocation is not null)
-                    foreach (MealSummary ms in theList)
-                    {
-                        Venue v = Venue.FindVenueByName(ms.VenueName);
-                        ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
-                    }
-                // Now we have the correct list, sort it
-                mealList = SortOrder == SortOrderType.byName
-                    ? theList
-                    : SortOrder == SortOrderType.byDistance ? [.. SortByDistance(theList)] : [.. theList.OrderByDescending((ms) => ms.CreationTime)];
-            }
-            else // Not filtered
-            {
-                if (App.MyLocation is not null)
-                    foreach (MealSummary ms in theList)
-                    {
-                        Venue v = Venue.FindVenueByName(ms.VenueName);
-                        ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
-                    }
-                mealList = SortOrder == SortOrderType.byName
-                    ? [.. theList.OrderBy((ms) => ms.VenueName)]
-                    : SortOrder == SortOrderType.byDistance ? [.. SortByDistance(theList)] : theList;
+                    SortOrderType.byName => [.. theList.OrderBy((ms) => ms.VenueName)],
+                    SortOrderType.byDistance => [.. SortByDistance(theList)],
+                    SortOrderType.byDate => [.. theList],
+                    _ => throw new ArgumentOutOfRangeException(nameof(SortOrder), "Unknown sort order")
+                };
             }
             SelectedMealSummariesCount = mealList.Count(ms => ms.FileSelected);
+
+            string priorVenue = "";
+            int priorDistance = 0;
+            if (App.MyLocation is not null)
+            { // Set the distance for each venue}
+                foreach (MealSummary ms in mealList)
+                {
+                    if (ms.VenueName == priorVenue)
+                        ms.Distance = priorDistance;
+                    else
+                    {
+                        priorVenue = ms.VenueName;
+                        Venue v = Venue.FindVenueByName(ms.VenueName);
+                        priorDistance = ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
+                    }
+                }
+            }
+            LastItemIndex = mealList.Count - 1;
             return mealList;
         }
         private set => SetProperty(ref mealList, value);
@@ -849,7 +929,78 @@ public partial class MealListViewModel : ObservableObjectPlus
         SortOrderType.byName => mealList.Upsert(ms, MealSummary.CompareVenueTo),
         _ => mealList.Upsert(ms, MealSummary.CompareCreationTimeTo),
     };
+
+    public ObservableCollection<MealSummaryGroup> MealSummaryGroups
+    {
+        get
+        {
+            // Local function
+            static IEnumerable<MealSummaryGroup> SortByDistance(IEnumerable<MealSummaryGroup> mealSummaries) => App.MyLocation is null
+                    ? mealSummaries.OrderBy((ms) => ms.VenueName)
+                    : mealSummaries.OrderBy((ms) => ms.Distance).ThenBy((ms) => ms.VenueName).ThenByDescending((ms) => ms.CreationTime);
+
+            if (field is not null)
+                return field;
+            if (!IsGrouped)
+                return null;
+
+            string workingVenueName = "";
+            MealSummaryGroup mealSummaryGroup = new();
+            List<MealSummaryGroup> Groups = [];
+            foreach (MealSummary mealSummary in MealList.OrderBy(ms => ms.VenueName).ThenByDescending(ms => ms.CreationTime))
+            {
+                if (workingVenueName.Equals(mealSummary.VenueName))
+                {
+                    mealSummaryGroup.MealSummaries.Add(mealSummary);
+                }
+                else
+                {
+                    // The group changes, so store the current group and start a new one
+                    if (mealSummaryGroup.Count > 0)
+                    {
+                        Groups.Add(mealSummaryGroup);
+                        mealSummaryGroup.Count = mealSummaryGroup.MealSummaries.Count;
+                    }
+                    mealSummaryGroup = new(mealSummary);
+                    workingVenueName = mealSummary.VenueName;
+                }
+            }
+            // Add the final group if there is one
+            if (!string.IsNullOrWhiteSpace(mealSummaryGroup.VenueName))
+            {
+                Groups.Add(mealSummaryGroup);
+                mealSummaryGroup.Count = mealSummaryGroup.MealSummaries.Count;
+            }
+            LastItemIndex = Groups.Count - 1;
+            field = SortOrder switch
+            {
+                SortOrderType.byName => [.. Groups.OrderBy((g) => g.VenueName)],
+                SortOrderType.byDistance => [.. SortByDistance(Groups)],
+                SortOrderType.byDate => [.. Groups.OrderByDescending((g) => g.CreationTime)],
+                _ => throw new ArgumentOutOfRangeException(nameof(SortOrder), "Unknown sort order")
+            };
+            return field;
+        }
+        private set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged(nameof(MealSummaryGroups));
+            }
+        }
+    }
+    private bool UpsertIntoMealSummaryGroupList(MealSummaryGroup g) => MealSummaryGroups.Upsert(g,
+        SortOrder switch
+        {
+            SortOrderType.byDistance => MealSummaryGroup.CompareDistanceTo,
+            SortOrderType.byName => MealSummaryGroup.CompareVenueTo,
+            _ => MealSummaryGroup.CompareCreationTimeTo
+        });
+
     #region Scrolling Item list
+    private int LastItemIndex = int.MaxValue;
+
     [ObservableProperty]
     public partial bool IsSwipeUpAllowed { get; set; }
 
@@ -864,25 +1015,24 @@ public partial class MealListViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial int LastVisibleItemIndex { get; set; }
 
-    partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < MealList.Count - 1;
+    partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < LastItemIndex;
 
     public Action<int, bool> ScrollItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)
     {
-        if (FirstVisibleItemIndex == LastVisibleItemIndex || ScrollItemsTo is null || MealList is null)
+        if (FirstVisibleItemIndex == LastVisibleItemIndex || ScrollItemsTo is null || MealList is null || (IsGrouped && MealSummaryGroups is null))
             return;
-        int lastItemIndex = MealList.Count - 1;
-        if (lastItemIndex < 2)
+        if (LastItemIndex <= 1)
             return;
         try
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
+                case "Up": if (LastVisibleItemIndex < LastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
                 case "Down": if (FirstVisibleItemIndex > 0) ScrollItemsTo(FirstVisibleItemIndex, true); break;
-                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(lastItemIndex, false); break;
+                case "End": if (LastVisibleItemIndex < LastItemIndex) ScrollItemsTo(LastItemIndex, false); break;
                 case "Start": if (FirstVisibleItemIndex > 0) ScrollItemsTo(0, true); break;
                 default: break;
             }
@@ -894,5 +1044,4 @@ public partial class MealListViewModel : ObservableObjectPlus
         }
     }
     #endregion
-
 }

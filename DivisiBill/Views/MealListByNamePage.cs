@@ -6,6 +6,6 @@ public class MealListByNamePage : MealListPage
     public MealListByNamePage()
     {
         viewModel.SortOrder = ViewModels.MealListViewModel.SortOrderType.byName;
-        viewModel.Filter = true;
+        viewModel.IsGrouped = true;
     }
 }

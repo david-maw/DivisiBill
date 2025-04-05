@@ -47,7 +47,7 @@ This tells you how many bills there are in the current list.
 
 ## Filter Indicator
 
-This tells you whether "Show Bills" or "Show Venues" are currently selected, change this by tapping the [ellipsis](#ellipsis) and selecting Show Bills or Show Venues. 
+This tells you whether "Show Bills" or "Show Venues" are currently selected, change this by tapping the [ellipsis](#ellipsis) and selecting Show Bills or Show Venues.If you are showing venues a list with the venue name,the number of bills for that venue and the date of the newest bill is shown. The bills for each venue can be shown sorted from newest to oldest by tapping on the venue name.
 
 ## Selected
 

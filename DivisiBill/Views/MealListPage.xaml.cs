@@ -63,8 +63,15 @@ public partial class MealListPage : ContentPage
         }
     }
     #region Collection Scrolling
-    private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
-        => CurrentCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+    private void ScrollItemsTo(int index, bool itemPositionRelativeToEnd) // Passed in to viewModel
+    {
+        if (viewModel.IsGrouped)
+            CurrentGroupView.ScrollTo(index, position: itemPositionRelativeToEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+        else
+            CurrentCollectionView.ScrollTo(index, position: itemPositionRelativeToEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+    }
+    // Ideally this would be handled in properties of the CollectionView but it isn't
+    // Also beware, on Windows it is not always called
     private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
     {
         viewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;

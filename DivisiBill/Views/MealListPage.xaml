@@ -12,55 +12,10 @@
     x:DataType="vm:MealListViewModel"
     BindingContext="{vm:MealListViewModel}">
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding ChangeListCommand}" IconImageSource="{StaticResource GlyphList}" />
-        <ToolbarItem Command="{Binding DeleteMealCommand}" IconImageSource="{StaticResource GlyphDel}" />
-        <ToolbarItem
-            Command="{Binding InvokeUseMealCommand}"
-            Order="Secondary"
-            Text="Use" />
-        <ToolbarItem
-            Command="{Binding InvokeShowDetailsCommand}"
-            Order="Secondary"
-            Text="Show Details" />
-        <ToolbarItem
-            Command="{Binding DownloadCommand}"
-            Order="Secondary"
-            Text="Download" />
-        <ToolbarItem
-            Command="{Binding DeleteLocalMealsCommand}"
-            Order="Secondary"
-            Text="Delete Local" />
-        <ToolbarItem
-            Command="{Binding DeleteRemoteMealsCommand}"
-            Order="Secondary"
-            Text="Delete Remote" />
-        <ToolbarItem
-            Command="{Binding SelectNoneCommand}"
-            Order="Secondary"
-            Text="Select None" />
-        <ToolbarItem
-            Command="{Binding SelectAllCommand}"
-            Order="Secondary"
-            Text="Select All" />
-        <ToolbarItem
-            Command="{Binding InvertSelectionCommand}"
-            Order="Secondary"
-            Text="Invert Selection" />
-        <ToolbarItem
-            Command="{Binding ChangeFilterCommand}"
-            Order="Secondary"
-            Text="{Binding FilterText}" />
-        <ToolbarItem
-            Command="{Binding ChangeShowLocalMealsCommand}"
-            Order="Secondary"
-            Text="{Binding ShowLocalText}" />
-        <ToolbarItem
-            Command="{Binding ChangeShowRemoteMealsCommand}"
-            Order="Secondary"
-            Text="{Binding ShowRemoteText}" />
-    </ContentPage.ToolbarItems>
     <ContentPage.Resources>
+        <toolkit:VariableMultiValueConverter 
+            x:Key="All"
+            ConditionType="All" />
         <toolkit:BoolToObjectConverter
             x:Key="RemoteIconConverter"
             FalseObject="{StaticResource FileGlyphRemoteOutline}"
@@ -109,6 +64,7 @@
                     <!--#region Bill Summary Info-->
                     <VerticalStackLayout Margin="0,0,2,0">
                         <Label
+                            IsVisible="{Binding IsGrouped, Converter={StaticResource Not}, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                             Margin="0,-3,0,-3"
                             FontSize="Large"
                             LineBreakMode="TailTruncation"
@@ -225,6 +181,7 @@
                 <!--#region Bill Summary Info-->
                 <VerticalStackLayout Grid.Column="1" Grid.ColumnSpan="3">
                     <Label
+                        IsVisible="{Binding IsGrouped, Converter={StaticResource Not}, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                         Margin="0,0,0,-5"
                         FontSize="Large"
                         LineBreakMode="TailTruncation"
@@ -336,10 +293,70 @@
             </Grid>
         </DataTemplate>
         <toolkit:BoolToObjectConverter
-            x:Key="FilterConverter"
+            x:Key="IsGroupedConverter"
             FalseObject=" bills"
-            TrueObject=" venues" />
+            TrueObject=" bills in groups" />
+        <toolkit:BoolToObjectConverter
+            x:Key="ShowBillsText"
+            FalseObject="Show Venues"
+            TrueObject="Show Bills" />
+        <toolkit:BoolToObjectConverter
+            x:Key="ShowLocalText"
+            FalseObject="Show Local"
+            TrueObject="Hide Local" />
+        <toolkit:BoolToObjectConverter
+            x:Key="ShowRemoteText"
+            FalseObject="Show Remote"
+            TrueObject="Hide Remote" />
     </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding ChangeListCommand}" IconImageSource="{StaticResource GlyphList}" />
+        <ToolbarItem Command="{Binding DeleteMealCommand}" IconImageSource="{StaticResource GlyphDel}" />
+        <ToolbarItem
+            Command="{Binding InvokeUseMealCommand}"
+            Order="Secondary"
+            Text="Use" />
+        <ToolbarItem
+            Command="{Binding InvokeShowDetailsCommand}"
+            Order="Secondary"
+            Text="Show Details" />
+        <ToolbarItem
+            Command="{Binding DownloadCommand}"
+            Order="Secondary"
+            Text="Download" />
+        <ToolbarItem
+            Command="{Binding DeleteLocalMealsCommand}"
+            Order="Secondary"
+            Text="Delete Local" />
+        <ToolbarItem
+            Command="{Binding DeleteRemoteMealsCommand}"
+            Order="Secondary"
+            Text="Delete Remote" />
+        <ToolbarItem
+            Command="{Binding SelectNoneCommand}"
+            Order="Secondary"
+            Text="Select None" />
+        <ToolbarItem
+            Command="{Binding SelectAllCommand}"
+            Order="Secondary"
+            Text="Select All" />
+        <ToolbarItem
+            Command="{Binding InvertSelectionCommand}"
+            Order="Secondary"
+            Text="Invert Selection" />
+        <ToolbarItem
+            Command="{Binding ChangeFilterCommand}"
+            Order="Secondary"
+            Text="{Binding IsGrouped, Converter={StaticResource ShowBillsText}}" />
+        <ToolbarItem
+            Command="{Binding ChangeShowLocalMealsCommand}"
+            Order="Secondary"
+            Text="{Binding ShowLocalMeals, Converter={StaticResource ShowLocalText}}" />
+        <ToolbarItem
+            Command="{Binding ChangeShowRemoteMealsCommand}"
+            Order="Secondary"
+            Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}" />
+    </ContentPage.ToolbarItems>
     <services:ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading -->
         <Label FontSize="Medium" HorizontalOptions="Center">
@@ -348,7 +365,7 @@
                     <Span Text="{Binding SelectedMealSummariesCountText, StringFormat='{0} of', TargetNullValue=''}" />
                     <Span Text="{Binding MealList.Count, StringFormat=' {0}'}" />
                     <Span Text="{Binding WhereText, StringFormat=' {0}', TargetNullValue=''}" />
-                    <Span Text="{Binding Filter, Converter={StaticResource FilterConverter}}" />
+                    <Span Text="{Binding IsGrouped, Converter={StaticResource IsGroupedConverter}}" />
                     <Span Text="{Binding SortOrderName, StringFormat=' sorted by {0}'}" />
                 </FormattedString>
             </Label.FormattedText>
@@ -398,26 +415,90 @@
             </VerticalStackLayout>
         </Border>
         <!--#endregion-->
-        <!--#region List of Meals-->
+        <!--#region Simple List of Meals-->
         <CollectionView
             x:Name="CurrentCollectionView"
             services:ColumnLayout.Fill="True"
             EmptyView="No bills found"
-            IsVisible="{Binding IsMealListLoading, Converter={StaticResource Not}}"
             ItemSizingStrategy="MeasureAllItems"
             ItemTemplate="{OnPlatform Default={StaticResource WithSwipe},
                                       WinUI={StaticResource NoSwipe}}"
             ItemsSource="{Binding MealList}"
             Scrolled="OnCollectionViewScrolled"
             SelectedItem="{Binding SelectedMealSummary}"
-            SelectionMode="{Binding MealCollectionMode}" />
-        <!--#region Scroll Up/Down-->
-        <Button
+            SelectionMode="{Binding MealCollectionMode}">
+            <CollectionView.IsVisible>
+                <MultiBinding Converter="{StaticResource All}">
+                    <Binding Path="IsGrouped" Converter="{StaticResource Not}" />
+                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
+                </MultiBinding>
+            </CollectionView.IsVisible>
+        </CollectionView>
+        <!--#endregion-->
+        <!--#region List of Meals Grouped by Venue-->
+        <CollectionView
+            x:Name="CurrentGroupView"
             services:ColumnLayout.SameRow="True"
-            Command="{Binding ScrollItemsCommand}"
+            services:ColumnLayout.Fill="True"
+            EmptyView="No bill groups found"
+            ItemSizingStrategy="MeasureAllItems"
+            ItemsSource="{Binding MealSummaryGroups}"
+            Scrolled="OnCollectionViewScrolled"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedGroup}">
+            <CollectionView.IsVisible>
+                <MultiBinding Converter="{StaticResource All}">
+                    <Binding Path="IsGrouped"/>
+                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
+                </MultiBinding>
+            </CollectionView.IsVisible>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:MealSummaryGroup">
+                    <toolkit:Expander
+                        IsExpanded="{Binding IsExpanded}"
+                        CommandParameter ="{Binding}"
+                        Command ="{Binding ShowGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}">
+                        <toolkit:Expander.Header>
+                            <VerticalStackLayout>
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="{Binding VenueName}" FontSize="Large" />
+                                    <Label Text="{Binding Count, StringFormat='({0})'}" FontSize="Large" />
+                                </HorizontalStackLayout>
+                                <Grid ColumnDefinitions="*, auto"
+                                        IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType = toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Label FontSize="Small" Text="{Binding CreationTime, StringFormat='{0:g}'}" />
+                                        <Label FontSize="Small" Text="{Binding ApproximateAge}" />
+                                    </HorizontalStackLayout>
+                                    <Label
+                                        Grid.Column="1"
+                                        Margin="0,0,34,0"
+                                        FontSize="Small"
+                                        HorizontalOptions="End"
+                                        Text="{Binding Path=Distance, Converter={StaticResource Distance}}">
+                                    </Label>
+                                </Grid>
+                                <BoxView
+                                    HeightRequest="1"
+                                    VerticalOptions="End"
+                                    Color="{AppThemeBinding Light={StaticResource Gray900},
+                                            Dark={StaticResource White}}" />
+                            </VerticalStackLayout>
+                        </toolkit:Expander.Header>
+                        <toolkit:Expander.Content>
+                            <CollectionView 
+                                ItemsSource="{Binding MealSummaries}" 
+                                ItemTemplate="{OnPlatform Default={StaticResource WithSwipe},
+                                                          WinUI={StaticResource NoSwipe}}"/>
+                        </toolkit:Expander.Content>
+                    </toolkit:Expander>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <!--#endregion-->
+        <!--#region Scroll Up/Down "Buttons" -->
+        <Border
             IsVisible="{Binding IsSwipeDownAllowed}"
-            Style="{StaticResource ScrollUpButtonStyle}" />
-        <Button
             services:ColumnLayout.SameRow="True"
             HorizontalOptions="Center"
             VerticalOptions="Start"

@@ -6,6 +6,6 @@ public class MealListByDistancePage : MealListPage
     public MealListByDistancePage()
     {
         viewModel.SortOrder = ViewModels.MealListViewModel.SortOrderType.byDistance;
-        viewModel.Filter = true;
+        viewModel.IsGrouped = true;
     }
 }
