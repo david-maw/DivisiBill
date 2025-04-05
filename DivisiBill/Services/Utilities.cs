@@ -63,7 +63,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="list">The list on which we are operating</param>
     /// <param name="targetItem">The item to insert or move</param>
     /// <param name="compareTo">The comparison function to determine where the item should be</param>
-    /// <returns>True if a new item was inserted false if not (one was already there or the list was null)</returns>
+    /// <returns>True if an item was moved or inserted false if nothing changed></returns>
     internal static bool Upsert<T>(this IList<T> list, T targetItem, Func<T, T, int> compareTo) where T : class
     {
         // First, handle the trivial cases
@@ -73,6 +73,25 @@ public static partial class Utilities // Partial for regex generator
         {
             list.Add(targetItem);
             return true;
+        }
+        // Validation code to ensure order is correct when we enter this function, the targetItem may be out-of-order
+        // but nothing else should be (we do not check the order of the items before and after the targetItem relative to each other)
+        if (IsDebug)
+        {
+            bool noErrors = true;
+            T priorItem = list.First();
+            foreach (T currentItem in list)
+            {
+                if (currentItem == targetItem || priorItem == targetItem)
+                    continue;
+                if (noErrors && compareTo(currentItem, priorItem) < 0)
+                {
+                    noErrors = false;
+                    Debugger.Break();
+                    int i = compareTo(currentItem, priorItem); // so the debugger can step in 
+                }
+                priorItem = currentItem;
+            }
         }
         // Go through the list to see if the item is already in it and where it should be now
         // A linear search because we do not know the former item location, if any.
@@ -99,13 +118,29 @@ public static partial class Utilities // Partial for regex generator
         {
             // either it's already in the right place or it should be at the end
             if (compareTo(targetItem, list.Last()) > 0)
-            { // Needs to be at the end
-                if (oldIndex >= 0) // item was already in the list so remove it
-                    list.RemoveAt(oldIndex);
-                list.Add(targetItem);
+            { // Needs to be at the end 
+                newIndex = list.Count - 1; // Remember where we put it
+                if (oldIndex >= 0) // item was already in the list so move it
+                {
+                    if (list is ObservableCollection<T> coll)
+                        coll.Move(oldIndex, newIndex);
+                    else
+                    {
+                        list.RemoveAt(oldIndex);
+                        list.Add(targetItem);
+                    }
+                }
+                else
+                {
+                    list.Add(targetItem);
+                }
+            }
+            else
+            {
+                newIndex = oldIndex; // it was already in the list and in the right place
             }
         }
-        else if (oldIndex < 0) // item is not in list, so we will simply add it
+        else if (oldIndex < 0) // item is not in list, so we will simply add it in the appropriate spot
             list.Insert(newIndex, targetItem);
         else
         {
@@ -123,24 +158,27 @@ public static partial class Utilities // Partial for regex generator
                 }
             }
         }
-        // Validation code to ensure order is correct when we exit this function
+
+        // Validation code to ensure the newly added item falls between appropriate existing items
         if (IsDebug)
         {
-            bool noErrors = true;
-            T priorVenue = list.First();
-            foreach (T currentVenue in list)
+            // check that the inserted item 
+
+            // Test against the previous one if not inserted at the beginning
+            if (newIndex > 0 && compareTo(targetItem, list[newIndex - 1]) < 0)
             {
-                if (noErrors && compareTo(currentVenue, priorVenue) < 0)
-                {
-                    noErrors = false;
-                    Debugger.Break();
-                    int i = compareTo(currentVenue, priorVenue); // so the debugger can step in 
-                }
-                priorVenue = currentVenue;
+                Debugger.Break();
+                compareTo(targetItem, list[newIndex - 1]); // so the debugger can step in 
+            }
+            // Test the next one if not inserted at the end
+            if (newIndex < list.Count - 1 && compareTo(list[newIndex], list[newIndex + 1]) > 0)
+            {
+                Debugger.Break();
+                compareTo(list[newIndex], list[newIndex + 1]); // so the debugger can step in 
             }
         }
         // Return false if it was already there, true if it was not
-        return oldIndex < 0;
+        return newIndex != oldIndex;
     }
 
     /// <summary>
