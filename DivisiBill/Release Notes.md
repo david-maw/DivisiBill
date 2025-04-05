@@ -1,6 +1,20 @@
+# 6.2.24
+
+## Improvements to Handling Lists of Bills
+
+When 'Show Venues' is selected on a list of bills, the list changes to a list of Venues. Tap on a venue to see a list of bills for that venue.
+
+## Allow Scroll to Beginning or End of Bill List
+
+The Scroll Up/Down buttons on the list of bills now accept a double tap to scroll to the beginning or end of the list respectively.
+
+## Handle Empty Venue Name in Stored Bills
+
+Some older versions of DivisiBill could create bills with no stored venue name, These now show up as "Unknown Venue".
+
 # 6.2.23
 
-## Warn The user if No Bills Ar to Be Archived
+## Warn The user if No Bills are to Be Archived
 
 An attempt to archive with no bills selected now produces an error message rather than just creating an archive with no bills in it.
 
