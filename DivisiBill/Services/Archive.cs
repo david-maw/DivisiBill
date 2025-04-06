@@ -204,7 +204,7 @@ public class Archive
             if (DeleteBeforeRestore)
             {
                 if (Meals is null || Meals.Count == 0)
-                    await Meal.LoadFake(new MealSummary()).BecomeCurrentMealAsync();
+                    Meal.LoadFake(new MealSummary()).OverwriteCurrent();
             }
             if (Venues is not null)
             {
@@ -226,7 +226,7 @@ public class Archive
             {
                 if (DeleteBeforeRestore)
                     MealSummary.PermanentlyDeleteLocalMeals(startDate, finishDate);
-                Meal m = Meals.Where(m => m.Size > 0).FirstOrDefault();
+                Meal m = Meals.Where(m => m.Size >= 0).FirstOrDefault();
                 if (m is not null)
                 {
                     if (m.OldEnoughToBeNewFile)
@@ -234,7 +234,7 @@ public class Archive
 
                     // Restore the first meal in the list (should be the one that was current at the time of the archive) 
                     m.FinalizeSetup();
-                    await m.BecomeCurrentMealAsync();
+                    m.OverwriteCurrent();
                 }
                 // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files
                 foreach (Meal meal in Meals)

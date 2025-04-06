@@ -292,9 +292,11 @@ public partial class Meal : ObservableObjectPlus
         SaveToApp(); // We do want to save it to App storage so the old version doesn't reappear after a restart
     }
     /// <summary>
-    /// Call this on a meal to have it overwrite the current one and (via events) trigger actions like regenerating meal lists 
+    /// Call this on a meal to have it overwrite the current one and (via events) trigger actions like regenerating meal lists.
+    /// Normally this is called via <see cref="BecomeCurrentMealAsync"/> but can be used directly if the current meal is to be 
+    /// discarded (for example in Archive Restore).
     /// </summary>
-    private void OverwriteCurrent()
+    public void OverwriteCurrent()
     {
         CurrentMeal = this;
         // It is important to reassign CurrentMeal early so downstream code which wants to remove it from lists of meals
