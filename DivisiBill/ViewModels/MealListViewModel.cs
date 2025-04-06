@@ -368,7 +368,9 @@ public partial class MealListViewModel : ObservableObjectPlus
                     await Task.Delay(1000);
                     IsBusy = false;
                     foreach (var ms in list) ms.IsBusy = false;
-                    if (failed == 0)
+                    if (succeeded == 0)
+                        await Utilities.ShowAppSnackBarAsync("No bills deleted"); // there was only one so no need for a count information
+                    else if (failed == 0)
                         await Utilities.ShowAppSnackBarAsync($"{succeeded} bills deleted");
                     else
                         await Utilities.ShowAppSnackBarAsync($"{succeeded} of {list.Count} bills deleted");
@@ -405,18 +407,20 @@ public partial class MealListViewModel : ObservableObjectPlus
     {
         ProgressLimit = list.Count;
         Progress = 0;
-        int attempted = 0;
+        int attempted = 0, succeeded = 0;
         cancellationTokenSource = new CancellationTokenSource();
         foreach (MealSummary mealSummary in list)
         {
             if (cancellationTokenSource.IsCancellationRequested)
                 break;
-            await DeleteOneMeal(mealSummary, tryLocal, tryRemote);
+
+            if (await DeleteOneMeal(mealSummary, tryLocal, tryRemote))
+                succeeded++;
             mealSummary.IsBusy = false;
             attempted++;
             Progress = (double)attempted / ProgressLimit;
         }
-        return ProgressLimit - attempted;
+        return ProgressLimit - succeeded;
     }
 
     /// <summary>
@@ -424,8 +428,8 @@ public partial class MealListViewModel : ObservableObjectPlus
     /// so if it is both local and remote only delete the local one.
     /// </summary>
     /// <param name="ms">The target MealSummary</param>
-    /// <returns></returns>
-    private async Task DeleteOneMeal(MealSummary ms, bool tryLocal, bool tryRemote)
+    /// <returns>False if the bill was the current one (and so not deleted), false if a bill was deleted</returns>
+    private async Task<bool> DeleteOneMeal(MealSummary ms, bool tryLocal, bool tryRemote)
     {
         if (ms.IsForCurrentMeal && ms.IsLocal && tryLocal)
         {
@@ -433,6 +437,7 @@ public partial class MealListViewModel : ObservableObjectPlus
                 await Utilities.DisplayAlertAsync("Error", $"\"{ms.VenueName} - {ms.CreationTime:g} {ms.ApproximateAge}\" is the current bill, you must select another before deleting it");
             else
                 await Utilities.DisplayAlertAsync("Error", "This is the current bill, you must select another before deleting it");
+            return false;
         }
         else
         {
@@ -441,6 +446,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             // only ever delete the meal from one place at a time
             await ms.DeleteAsync(doLocal: doLocal, doRemote: doRemote && !doLocal); // If it is both local and remote remove the local one only
             NoteDeletedChange();
+            return true;
         }
     }
 
