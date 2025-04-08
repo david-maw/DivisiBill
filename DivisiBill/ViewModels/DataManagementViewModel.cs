@@ -225,7 +225,7 @@ internal partial class DataManagementViewModel : ObservableObject
                         archive.OverwriteDuplicates = OverwriteDuplicates;
                         await archive.RestoreAsync(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate), OnlyRelated);
                         IsBusy = false;
-                        await Utilities.ShowAppSnackBarAsync("Restore Complete");
+                        await App.GoToAsync(Routes.MealListByAgePage);
                     }
                 }
                 else
