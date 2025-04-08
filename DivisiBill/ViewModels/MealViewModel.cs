@@ -650,7 +650,12 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             if (changeType == ChangeType.Cycle)
             {
-                changeType = li.TotalSharers == 0 ? ChangeType.Proportional : ChangeType.Clear;
+                changeType = li.GetSharingType() switch
+                {
+                    LineItem.SharingType.Even => ChangeType.Proportional,
+                    LineItem.SharingType.Uneven => ChangeType.Clear,
+                    _ => ChangeType.Even
+                };
             }
             switch (changeType)
             {

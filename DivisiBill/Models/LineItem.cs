@@ -88,11 +88,11 @@ public class LineItem : INotifyPropertyChanged
     /// </item>
     /// <item>
     ///    <term>A Plus Sign ('+')</term>
-    ///    <description>Multiple sharers have one share each</description>
+    ///    <description>Multiple sharers have one share each, the rest, zero</description>
     /// </item>
     /// <item>
     ///    <term>An Asterisk ('*')</term>
-    ///    <description>MShared unevenly, at least one sharer has multiple shares</description>
+    ///    <description>Shared unevenly, at least one sharer has multiple shares</description>
     /// </item>
     /// </list>
     /// </summary>
@@ -193,6 +193,13 @@ public class LineItem : INotifyPropertyChanged
         OnPropertyChanged(nameof(SharesList));
     }
 
+    public enum SharingType
+    {
+        Even,
+        Uneven,
+        None
+    }
+    public SharingType GetSharingType() => (TotalSharers == 0) ? SharingType.None : (TotalSharers == TotalShares) ? SharingType.Even : SharingType.Uneven;
     /// <summary>
     /// Share out a coupon amount based on the overall amount spent by each sharer in the meal it is in.
     /// Share only with current sharers and only if there is more than one
@@ -349,13 +356,7 @@ public class LineItem : INotifyPropertyChanged
     {
         get
         {
-            DinerID maxDiner;
-
-            for (maxDiner = DinerID.limit - 1; maxDiner > DinerID.none; maxDiner--)
-            {
-                if (GetShares(maxDiner) > 0)
-                    break;
-            }
+            DinerID maxDiner = GetMaxDiner();
             var sb = new StringBuilder(SharedBy.Count);
             for (DinerID diner = DinerID.first; diner <= maxDiner; diner++)
             {
@@ -376,6 +377,24 @@ public class LineItem : INotifyPropertyChanged
                 inx++;
             }
         }
+    }
+
+    /// <summary>
+    /// Retrieves the highest DinerID that has a positive share count. It iterates from the maximum limit down to find
+    /// the first valid DinerID.
+    /// </summary>
+    /// <returns>Returns the maximum DinerID with shares greater than zero.</returns>
+    public DinerID GetMaxDiner()
+    {
+        DinerID maxDiner;
+
+        for (maxDiner = DinerID.limit - 1; maxDiner > DinerID.none; maxDiner--)
+        {
+            if (GetShares(maxDiner) > 0)
+                break;
+        }
+
+        return maxDiner;
     }
 
     /// <summary>
