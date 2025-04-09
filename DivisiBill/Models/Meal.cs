@@ -856,7 +856,7 @@ public partial class Meal : ObservableObjectPlus
             Frozen = true;  // Meaning it has been saved and now you have a new copy
         }
     }
-    public string ApproximateAge => ApproximateAge(CreationTime);
+    public string ApproximateAge => CreationTime.ApproximateAge();
     private TimeSpan Age => DateTime.Now - CreationTime;
     private TimeSpan IdleTime => DateTime.Now - LastChangeTime;
     public bool TooOldToContinue => IdleTime > App.MaximumIdleTime;

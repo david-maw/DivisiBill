@@ -33,12 +33,10 @@ public class MealSummaryViewModel // No PropertyChanged events because these are
     }
     public string VenueName => ms.VenueName;
     public DateTime LastChangeTime => ms.LastChangeTime;
-    public string ApproximateChangeAge => Utilities.ApproximateAge(LastChangeTime);
     public bool IsLastChangeTimeDifferent => !Utilities.WithinOneSecond(CreationTime, LastChangeTime);
     public string LastChangeTimeText => ms.GetLastChangeString();
     public DateTime CreationTime => ms.CreationTime;
     public string Id => ms.Id;
-    public string ApproximateAge => ms.ApproximateAge;
     public decimal RoundedAmount => HasMealInfo ? CurrentMeal.RoundedAmount : 0;
     public ObservableCollection<PersonCost> Costs => CurrentMeal?.Costs;
     public int LineItemCount => HasMealInfo ? CurrentMeal.LineItems.Count : 0;

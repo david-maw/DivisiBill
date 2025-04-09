@@ -33,7 +33,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         LoadScannedSubTotal();
         LoadScannedTax();
         LoadVenueNotes();
-        OnPropertyChanged(nameof(Meal.ApproximateAge));
     }
     public void UnloadProperties()
     {
@@ -67,7 +66,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         else if (e.PropertyName.Equals(nameof(Meal.CreationTime)))
         {
             OnPropertyChanged(nameof(DefaultFileName));
-            OnPropertyChanged(nameof(ApproximateAge));
         }
         else if (e.PropertyName.Equals(nameof(Meal.LastChangeTime)))
         {
@@ -80,7 +78,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     public decimal SubTotal => Meal.CurrentMeal.SubTotal;
     public string VenueName => Meal.CurrentMeal.VenueName;
     public Location AppLocation => App.MyLocation;
-    public string ApproximateAge => Meal.CurrentMeal.ApproximateAge;
     public DateTime CreationTime => Meal.CurrentMeal.CreationTime;
     public DateTime LastChangeTime => Meal.CurrentMeal.LastChangeTime;
     public string LastChangeTimeText => Meal.CurrentMeal.Summary.GetLastChangeString();

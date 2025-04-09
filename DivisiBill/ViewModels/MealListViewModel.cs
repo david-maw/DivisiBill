@@ -434,7 +434,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         if (ms.IsForCurrentMeal && ms.IsLocal && tryLocal)
         {
             if (IsSelectableList)
-                await Utilities.DisplayAlertAsync("Error", $"\"{ms.VenueName} - {ms.CreationTime:g} {ms.ApproximateAge}\" is the current bill, you must select another before deleting it");
+                await Utilities.DisplayAlertAsync("Error", $"\"{ms.VenueName} - {ms.CreationTime.ApproximateDateTime()}\" is the current bill, you must select another before deleting it");
             else
                 await Utilities.DisplayAlertAsync("Error", "This is the current bill, you must select another before deleting it");
             return false;

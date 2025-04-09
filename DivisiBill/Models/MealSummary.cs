@@ -251,7 +251,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     [ObservableProperty]
     [XmlIgnore]
     public partial string ImageID { get; set; }
-    public string ApproximateAge => ApproximateAge(CreationTime);
+    public string ApproximateAge => CreationTime.ApproximateAge();
 
     public static Stack<MealSummary> DeletedStack { get; } = new();
 

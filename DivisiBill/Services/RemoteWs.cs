@@ -13,7 +13,7 @@ public partial class RemoteItemInfo : ObservableObject
     public string Name { get; set; }
     public DateTime CreatedDateTime => Utilities.DateTimeFromName(Name);
     public long Size { get; set; }
-    public string CreatedDateTimeString => $"{CreatedDateTime:g} {Utilities.ApproximateAge(CreatedDateTime)}";
+    public string CreatedDateTimeString => CreatedDateTime.ApproximateDateTime();
     public string SizeText => $"{Size / 1000.0:f1} kB";
     public string Description { get; set; } // An alias for the Summary field
     public bool ReplaceRequested { get; set; } = false;

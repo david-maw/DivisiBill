@@ -70,15 +70,7 @@
                             LineBreakMode="TailTruncation"
                             Text="{Binding VenueName}" />
                         <Grid ColumnDefinitions="*, auto">
-                            <Label FontSize="Small">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <Span Text="{Binding CreationTime, StringFormat='{0:g}'}" />
-                                        <Span Text=" " />
-                                        <Span Text="{Binding ApproximateAge}" />
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
+                            <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"/>
                             <Label
                                 Grid.Column="1"
                                 FontSize="Small"
@@ -187,15 +179,8 @@
                         LineBreakMode="TailTruncation"
                         Text="{Binding VenueName}" />
                     <Grid ColumnDefinitions="*, auto">
-                        <Label FontSize="Small">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <Span Text="{Binding CreationTime, StringFormat='{0:g}'}" />
-                                    <Span Text=" " />
-                                    <Span Text="{Binding ApproximateAge}" />
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
+                        <Label FontSize="Small"
+                            Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"/>
                         <Label
                             Grid.Column="1"
                             Margin="0,0,-8,0"
@@ -466,10 +451,7 @@
                                 </HorizontalStackLayout>
                                 <Grid ColumnDefinitions="*, auto"
                                         IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType = toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
-                                    <HorizontalStackLayout Spacing="10">
-                                        <Label FontSize="Small" Text="{Binding CreationTime, StringFormat='{0:g}'}" />
-                                        <Label FontSize="Small" Text="{Binding ApproximateAge}" />
-                                    </HorizontalStackLayout>
+                                    <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"/>
                                     <Label
                                         Grid.Column="1"
                                         Margin="0,0,34,0"

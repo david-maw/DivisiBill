@@ -21,6 +21,7 @@
             <services:PercentConverter x:Key="Percent" />
             <services:InvertBoolConverter x:Key="Not" />
             <services:DistanceConverter x:Key="Distance" />
+            <services:ApproximateDateTimeConverter x:Key="ApproximateDateTime"/>
             <services:LocationConverter x:Key="Location" />
             <services:IsNonZeroConverter x:Key="IsNonZero" />
             <services:IsNegativeConverter x:Key="IsNegative" />

@@ -57,7 +57,7 @@ public partial class MealSummaryGroup : ObservableObject
         OnPropertyChanged(nameof(ApproximateAge));
     }
 
-    public string ApproximateAge => Utilities.ApproximateAge(CreationTime);
+    public string ApproximateAge => CreationTime.ApproximateAge();
     [ObservableProperty]
     public partial int Count { get; set; } = 0;
     public int Distance

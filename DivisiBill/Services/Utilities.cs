@@ -659,7 +659,20 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="millisecondsTimeout">how long to wait for it to finish before continuing</param>
     /// <returns></returns>
     public static Task OrDelay(this Task task, int millisecondsTimeout = 15000) => Task.WhenAny(task, Task.Delay(millisecondsTimeout));
-    internal static string ApproximateAge(DateTime dt)
+
+    /// <summary>
+    /// Formats a DateTime object into a string that includes the date and time along with an approximate age.
+    /// </summary>
+    /// <param name="dateTime">Represents the date and time to be formatted and approximated.</param>
+    /// <returns>A string that combines the formatted date and time with the approximate age.</returns>
+    internal static string ApproximateDateTime(this DateTime dateTime) => $"{dateTime:g} {dateTime.ApproximateAge()}";
+
+    /// <summary>
+    /// Calculates and formats the approximate age based on a given date.   
+    /// </summary>
+    /// <param name="dt">Represents the date from which the age is calculated.</param>
+    /// <returns>Returns a string indicating the approximate age in years, days, hours, or minutes.</returns>
+    internal static string ApproximateAge(this DateTime dt)
     {
         string s = string.Empty;
         bool MakeText(double amount, string unit)

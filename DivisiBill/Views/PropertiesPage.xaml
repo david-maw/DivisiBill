@@ -47,15 +47,8 @@
                 </Label.GestureRecognizers>
             </Label>
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDefault}" Text="Default Bill"/>
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDefault, Converter={StaticResource Not}}">
-                <Label.FormattedText>
-                    <FormattedString>
-                        <Span Text="{Binding CreationTime, StringFormat='Created {0:g}'}"/>
-                        <Span Text=" "/>
-                        <Span Text="{Binding ApproximateAge}"/>
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
+            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDefault, Converter={StaticResource Not}}"
+                   Text="{Binding CreationTime, StringFormat='Created {}',  Converter={StaticResource ApproximateDateTime}}"/>
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsLastChangeTimeDifferent}"
                Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
             <!--#endregion-->

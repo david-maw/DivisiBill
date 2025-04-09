@@ -92,11 +92,9 @@ public partial class MealViewModel : ObservableObjectPlus
         else if (e.PropertyName.Equals(nameof(Meal.CreationTime)))
         {
             OnPropertyChanged(nameof(DefaultFileName));
-            OnPropertyChanged(nameof(ApproximateAge));
         }
         else if (e.PropertyName.Equals(nameof(Meal.LastChangeTime)))
         {
-            OnPropertyChanged(nameof(ApproximateChangeAge));
             OnPropertyChanged(nameof(IsLastChangeTimeDifferent));
             OnPropertyChanged(nameof(LastChangeTimeText));
         }
@@ -715,8 +713,6 @@ public partial class MealViewModel : ObservableObjectPlus
     public bool IsAnyUnallocated => Meal.CurrentMeal.UnallocatedAmount != 0;
     public decimal UnallocatedAmount => Meal.CurrentMeal.UnallocatedAmount;
     public Venue CurrentVenue => Venue.FindVenueByName(Meal.CurrentMeal.VenueName);
-    public string ApproximateAge => Meal.CurrentMeal.ApproximateAge;
-    public string ApproximateChangeAge => Utilities.ApproximateAge(LastChangeTime);
     public DateTime CreationTime => Meal.CurrentMeal.CreationTime;
     public DateTime LastChangeTime => Meal.CurrentMeal.LastChangeTime;
     public string LastChangeTimeText => Meal.CurrentMeal.Summary.GetLastChangeString();
