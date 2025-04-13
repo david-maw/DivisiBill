@@ -773,9 +773,41 @@ public partial class MealListViewModel : ObservableObjectPlus
     {
         if (group is not null)
         {
-            SelectedGroup = group;
+            if (group.IsExpanded)
+            {
+                if (expandedGroup != null && expandedGroup != group)
+                    expandedGroup.IsExpanded = false;
+                expandedGroup = group;
+                SelectedGroup = group;
+            }
+            else
+            {
+                expandedGroup = null; // Group has been collapsed, so there's no need to remember it
+            }
         }
     }
+
+    [RelayCommand]
+    private void OnGroupExpanded(object o)
+    {
+        Utilities.DebugMsg($">>> MainViewModel.OnGroupExpanded({(o ?? "null")})");
+        if (o is MealSummaryGroup group)
+        {
+            if (group.IsExpanded)
+            {
+                if (expandedGroup != null && expandedGroup != group)
+                    expandedGroup.IsExpanded = false;
+                expandedGroup = group;
+                SelectedGroup = group;
+            }
+            else
+            {
+                expandedGroup = null; // Group has been collapsed, so there's no need to remember it
+            }
+        }
+    }
+
+    private MealSummaryGroup expandedGroup = null;
 
     [ObservableProperty]
     public partial MealSummaryGroup SelectedGroup { get; set; } = null;

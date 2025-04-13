@@ -440,7 +440,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="model:MealSummaryGroup">
                     <toolkit:Expander
-                        IsExpanded="{Binding IsExpanded}"
+                        IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
                         CommandParameter ="{Binding}"
                         Command ="{Binding ShowGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}">
                         <toolkit:Expander.Header>
