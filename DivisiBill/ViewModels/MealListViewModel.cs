@@ -77,8 +77,12 @@ public partial class MealListViewModel : ObservableObjectPlus
                             else if (group.CreationTime == ms.CreationTime)
                             {
                                 group.CreationTime = group.MealSummaries[0].CreationTime;
-                                UpsertIntoMealSummaryGroupList(group);
+                                if (UpsertIntoMealSummaryGroupList(group))
+                                {
+                                    int index = MealSummaryGroups.IndexOf(group);
+                                    ScrollItemsTo(index, false);
                             }
+                        }
                         }
                         if (ms.FileSelected)
                         {
@@ -102,8 +106,12 @@ public partial class MealListViewModel : ObservableObjectPlus
                             if (group.CreationTime < ms.CreationTime)
                             {
                                 group.CreationTime = ms.CreationTime;
-                                UpsertIntoMealSummaryGroupList(group);
+                                if (UpsertIntoMealSummaryGroupList(group))
+                                {
+                                    int index = MealSummaryGroups.IndexOf(group);
+                                    ScrollItemsTo(index, false);
                             }
+                        }
                         }
                         else
                         {
@@ -956,7 +964,6 @@ public partial class MealListViewModel : ObservableObjectPlus
                     }
                 }
             }
-            LastItemIndex = mealList.Count - 1;
             return mealList;
         }
         private set => SetProperty(ref mealList, value);
@@ -1009,7 +1016,6 @@ public partial class MealListViewModel : ObservableObjectPlus
                 Groups.Add(mealSummaryGroup);
                 mealSummaryGroup.Count = mealSummaryGroup.MealSummaries.Count;
             }
-            LastItemIndex = Groups.Count - 1;
             field = SortOrder switch
             {
                 SortOrderType.byName => [.. Groups.OrderBy((g) => g.VenueName)],
@@ -1028,6 +1034,12 @@ public partial class MealListViewModel : ObservableObjectPlus
             }
         }
     }
+    /// <summary>
+    /// Insert a  <see cref="MealSummaryGroup"/> in <see cref="MealSummaryGroups"/>, or move it if it is already there but should be 
+    /// in a different place in the list. The list is ordered based on a compare function.
+    /// </summary>
+    /// <param name="g">The <see cref="MealSummaryGroup"/> we're working with</param>
+    /// <returns>True if the group was moved or inserted, false if nothing changed></returns>
     private bool UpsertIntoMealSummaryGroupList(MealSummaryGroup g) => MealSummaryGroups.Upsert(g,
         SortOrder switch
         {
@@ -1037,7 +1049,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         });
 
     #region Scrolling Item list
-    private int LastItemIndex = int.MaxValue;
+    private int LastItemIndex => (IsGrouped && MealSummaryGroups is not null) ? MealSummaryGroups.Count - 1 : (MealList is not null) ? MealList.Count - 1 : -1;
 
     [ObservableProperty]
     public partial bool IsSwipeUpAllowed { get; set; }
