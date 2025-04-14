@@ -1,3 +1,30 @@
+# 6.2.25
+
+## Change Scroll to Start/End of Bill List
+
+Because a double tap did not work wall, scrolling to the start or end of the list is now triggered by a long press of the scroll buttons.
+
+## Scroll to Moved Meal Group
+
+When a meal group is moved (because it is in a list sorted by date and the meal with that date is deleted or a newer one added) the list will scroll to the new location so as to keep the group in view.
+
+## Collapse Bill Group When Another is Selected
+
+When you are viewing a list of bills grouped together by venue and you click to expand a group the currently expanded group will be collapsed automatically
+
+## Change Sharing now includes even Sharing
+
+On the items page you may change the current sharing of an item by tapping in the left margin or by selecting the item, using the menu for the page and selecting 'Change'. It used to alternate between no sharing and sharing proportionally, now it includes sharing equally as well.
+
+
+## Go to Page after restore completion
+
+The notification for restore completion is replaced with automatic navigation to the Bill List by Age Page.
+
+## Count Deleted Bills Correctly
+
+If multiple bills are selected for deletion but one of them is the current bill it will not be deleted. It was incorrectly being counted as having been deleted.
+
 # 6.2.24
 
 ## Improvements to Handling Lists of Bills
