@@ -81,8 +81,8 @@ public partial class MealListViewModel : ObservableObjectPlus
                                 {
                                     int index = MealSummaryGroups.IndexOf(group);
                                     ScrollItemsTo(index, false);
+                                }
                             }
-                        }
                         }
                         if (ms.FileSelected)
                         {
@@ -110,8 +110,8 @@ public partial class MealListViewModel : ObservableObjectPlus
                                 {
                                     int index = MealSummaryGroups.IndexOf(group);
                                     ScrollItemsTo(index, false);
+                                }
                             }
-                        }
                         }
                         else
                         {
@@ -274,33 +274,24 @@ public partial class MealListViewModel : ObservableObjectPlus
     {
         try
         {
-            if (App.Settings.IsCloudAccessAllowed)
+            IsCloudAllowed = App.IsCloudAllowed; // Just in case it changed
+            if (ShowRemoteMeals)
+                ShowRemoteMeals = false;
+            else if (App.IsCloudAllowed)
             {
                 IsMealListLoading = true;
-                if (ShowRemoteMeals)
-                    ShowRemoteMeals = false;
+                if (await Meal.GetRemoteMealListAsync())
+                    ShowRemoteMeals = true;
                 else
                 {
-                    if (await Meal.GetRemoteMealListAsync())
-                        ShowRemoteMeals = true;
-                    else
-                    {
-                        IsMealListLoading = false;
-                        await ShowRemoteAccessWarning();
-                    }
+                    IsMealListLoading = false;
+                    await ShowRemoteAccessWarning();
                 }
             }
             else if (!ShowRemoteMeals)
             {
-                if (App.IsLimited)
-                    await Utilities.DisplayAlertAsync("Cloud Archive Unavailable", "Cloud archiving is not supported in Basic Edition");
-                else
-                {
-                    App.Settings.IsCloudAccessAllowed = await Utilities.AskAsync("Cloud Archive is Off", "The 'Allow Archive to " +
-                        "Cloud' program setting is off. Do you want to turn it on?");
-                    if (App.Settings.IsCloudAccessAllowed)
-                        await ChangeShowRemoteMeals();
-                }
+                if (await App.Current.RequestArchive())
+                    await ChangeShowRemoteMeals();
             }
             else
                 await ShowRemoteAccessWarning();

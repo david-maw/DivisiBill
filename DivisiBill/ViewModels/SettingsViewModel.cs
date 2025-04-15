@@ -29,6 +29,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public void RefreshValues()
     {
         OnPropertyChanged(nameof(IsLimited));
+        OnPropertyChanged(nameof(IsCloudAccessAllowed));
         OnPropertyChanged(nameof(ScanOption));
         OnPropertyChanged(nameof(LicenseChecked));
         OnPropertyChanged(nameof(HasProSubscription));
@@ -146,6 +147,43 @@ public partial class SettingsViewModel : ObservableObjectPlus
     {
         get => App.Settings.SendCrashAsk;
         set => App.Settings.SendCrashAsk = value;
+    }
+    public bool IsCloudAccessAllowed
+    {
+        get => App.Settings.IsCloudAccessAllowed;
+        set
+        {
+            if (App.Settings.IsCloudAccessAllowed != value)
+            {
+                App.Settings.IsCloudAccessAllowed = value;
+                if (!value) WiFiOnly = true; // so that if it's turned on again wifi is required
+                OnPropertyChanged();
+            }
+        }
+    }
+    public bool UseAlternateWs
+    {
+        get => App.Settings.UseAlternateWs;
+        set
+        {
+            if (App.Settings.UseAlternateWs != value) // The value changed
+            {
+                App.Settings.UseAlternateWs = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    public bool WiFiOnly
+    {
+        get => App.Settings.WiFiOnly;
+        set
+        {
+            if (App.Settings.WiFiOnly != value)
+            {
+                App.Settings.WiFiOnly = value;
+                OnPropertyChanged();
+            }
+        }
     }
     public bool WsAllowed => App.WsAllowed;
     public bool LicenseChecked => App.LicenseChecked;

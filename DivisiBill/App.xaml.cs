@@ -305,6 +305,26 @@ public partial class App : Application, INotifyPropertyChanged
             IsRunningSource.IsPaused = (bool)appIsPaused;
         IsCloudAllowed = appIsPaused != true && Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
     }
+    /// <summary>
+    /// Requests to archive data in the cloud, checking various conditions like edition limitations and network access.
+    /// It prompts the user for necessary permissions.
+    /// </summary>
+    /// <returns>Returns a the value of <see cref="IsCloudAllowed"/> a boolean indicating whether cloud access is allowed.</returns>
+    public async Task<bool> RequestArchive()
+    {
+        if (IsLimited)
+            await Utilities.DisplayAlertAsync("Cloud Archive Unavailable", "Cloud archiving is not supported in Basic Edition");
+        else if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+            await Utilities.DisplayAlertAsync("Internet Unavailable", "You have no Internet access");
+        else if (Settings.WiFiOnly && !Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi))
+            await Utilities.DisplayAlertAsync("WiFi Unavailable", "You specified WiFi was required in Settings but it is not available");
+        else if (!IsCloudAccessible)
+            await Utilities.DisplayAlertAsync("Cloud Unavailable", "Cloud access is not available");
+        else
+            Settings.IsCloudAccessAllowed = await Utilities.AskAsync("Cloud Archive is Off",
+                "The 'Allow Archive to Cloud' program setting is off. Do you want to turn it on?");
+        return IsCloudAllowed;
+    }
     #endregion
     #region Debug Features
     [Conditional("DEBUG")]

@@ -19,43 +19,6 @@ public class CloudViewModel : ObservableObjectPlus
     }
 
     public void NotifyProPurchase() => OnPropertyChanged(nameof(InternetEnabledAndLicensed));
-    public bool IsCloudAccessAllowed
-    {
-        get => App.Settings.IsCloudAccessAllowed;
-        set
-        {
-            if (App.Settings.IsCloudAccessAllowed != value)
-            {
-                App.Settings.IsCloudAccessAllowed = value;
-                if (!value) WiFiOnly = true; // so that if it's turned on again wifi is required
-                OnPropertyChanged();
-            }
-        }
-    }
-    public bool UseAlternateWs
-    {
-        get => App.Settings.UseAlternateWs;
-        set
-        {
-            if (App.Settings.UseAlternateWs != value) // The value changed
-            {
-                App.Settings.UseAlternateWs = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-    public bool WiFiOnly
-    {
-        get => App.Settings.WiFiOnly;
-        set
-        {
-            if (App.Settings.WiFiOnly != value)
-            {
-                App.Settings.WiFiOnly = value;
-                OnPropertyChanged();
-            }
-        }
-    }
 
     /// <summary>
     /// Whether or not Internet access exists

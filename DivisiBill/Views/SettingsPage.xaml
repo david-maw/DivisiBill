@@ -84,9 +84,9 @@
                 <Label Text="{Binding Path=WiFiStatus,StringFormat='Internet Enabled ({0})'}" HorizontalOptions="Center" Margin="0,10,0,0"/>
                 <Grid ColumnDefinitions ="*, auto, *, auto" RowDefinitions="auto, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
                     <Label Grid.Row="0" Text="Allow Cloud Backup" VerticalOptions="Center" HorizontalOptions="End"/>
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsCloudAccessAllowed}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsCloudAccessAllowed, x:DataType = vm:SettingsViewModel, Source={RelativeSource AncestorType={x:Type vm:SettingsViewModel}}}"/>
                     <Label Grid.Row="0" Grid.Column="2" Text="Only with WiFi" VerticalOptions="Center" HorizontalOptions="End" Margin="20,0,0,0"/>
-                    <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding WiFiOnly}" IsEnabled="{Binding IsCloudAccessAllowed}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding WiFiOnly, x:DataType = vm:SettingsViewModel, Source={RelativeSource AncestorType={x:Type vm:SettingsViewModel}}}"/>
                 </Grid>
             </VerticalStackLayout>
             <!--#endregion-->
@@ -152,8 +152,7 @@
                 <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
                 <!--#endregion-->
                 <!--#region Use Alternate Web Service -->
-                <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}"
-                      x:DataType="vm:CloudViewModel" BindingContext="{StaticResource CloudViewModel}">
+                <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
                     <Label Grid.Row="0" Text="Start With Alternate Web Service" VerticalOptions="Center" HorizontalOptions="End"/>
                     <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding UseAlternateWs}"/>
                 </Grid>
