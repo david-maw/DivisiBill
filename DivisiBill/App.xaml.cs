@@ -1,6 +1,5 @@
 ﻿using DivisiBill.Models;
 using DivisiBill.Services;
-using DivisiBill.ViewModels;
 using Microsoft.Maui.Handlers;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -472,10 +471,9 @@ public partial class App : Application, INotifyPropertyChanged
             else if (IsLimited && !wasLimited) // Downgrade, an unusual case but not impossible
                 await Utilities.DisplayAlertAsync("Removed", "The professional subscription for DivisiBill has ended");
             // Nice, there's no message if we found a pro subscription because that is 
-            if (IsLimited != wasLimited) // it changed, tell the ViewModel
+            if (IsLimited != wasLimited) // it changed, tell anyone who cares (usually the Settings ViewModel)
             {
                 ProEditionVerified?.Invoke(null, null);
-                (Application.Current.Resources["CloudViewModel"] as CloudViewModel)?.NotifyProPurchase();
             }
             Utilities.DebugMsg("Checking for OCR License");
             if (await Billing.GetHasOcrLicenseAsync() == 0)

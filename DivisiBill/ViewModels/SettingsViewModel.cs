@@ -15,12 +15,20 @@ public partial class SettingsViewModel : ObservableObjectPlus
         currentApp = Application.Current is null ? throw new NullReferenceException() : Application.Current;
         ScanOption = 2;
         App.MyLocationChanged += App_MyLocationChanged;
+        Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
     }
 
     ~SettingsViewModel()
     {
         App.ProEditionVerified -= App_ProEditionVerified;
         App.MyLocationChanged -= App_MyLocationChanged;
+        Connectivity.ConnectivityChanged -= Connectivity_ConnectivityChanged;
+    }
+    private void Connectivity_ConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(WiFiStatus));
+        OnPropertyChanged(nameof(InternetEnabled));
+        OnPropertyChanged(nameof(InternetEnabledAndLicensed));
     }
 
     private void App_MyLocationChanged(object? sender, EventArgs e) => OnPropertyChanged(nameof(AppLocation));
@@ -30,6 +38,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     {
         OnPropertyChanged(nameof(IsLimited));
         OnPropertyChanged(nameof(IsCloudAccessAllowed));
+        OnPropertyChanged(nameof(InternetEnabledAndLicensed));
         OnPropertyChanged(nameof(ScanOption));
         OnPropertyChanged(nameof(LicenseChecked));
         OnPropertyChanged(nameof(HasProSubscription));
@@ -89,7 +98,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
             await Utilities.DisplayAlertAsync("Thank You",
                 $"You have purchased a professional subscription. You may now set the 'Allow Cloud Backup' option.");
             RefreshValues();
-            (currentApp.Resources["CloudViewModel"] as CloudViewModel)?.NotifyProPurchase();
         }
     }
 
@@ -183,6 +191,29 @@ public partial class SettingsViewModel : ObservableObjectPlus
                 App.Settings.WiFiOnly = value;
                 OnPropertyChanged();
             }
+        }
+    }
+    /// <summary>
+    /// Whether or not Internet access exists
+    /// </summary>
+    public bool InternetEnabled => Connectivity.NetworkAccess == NetworkAccess.Internet;
+
+    /// <summary>
+    /// Whether or not Internet access exists and we are running the Professional edition
+    /// Note that cloud archiving may still not be allowed by the user
+    /// </summary>
+    public bool InternetEnabledAndLicensed => InternetEnabled && !App.IsLimited;
+    public string WiFiStatus
+    {
+        get
+        {
+            var profiles = Connectivity.ConnectionProfiles;
+            if (profiles.Contains(ConnectionProfile.WiFi))
+            {
+                return "WiFi enabled";// Active Wi-Fi connection.
+            }
+            else
+                return "No WiFi detected";
         }
     }
     public bool WsAllowed => App.WsAllowed;

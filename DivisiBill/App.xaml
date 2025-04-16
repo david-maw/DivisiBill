@@ -26,7 +26,6 @@
             <services:IsNonZeroConverter x:Key="IsNonZero" />
             <services:IsNegativeConverter x:Key="IsNegative" />
 
-            <viewModels:CloudViewModel x:Key="CloudViewModel" />
             <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> 
             <!--  This is defined in code  -->
 
