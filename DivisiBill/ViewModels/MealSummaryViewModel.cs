@@ -1,4 +1,5 @@
-﻿using DivisiBill.Models;
+﻿using CommunityToolkit.Mvvm.Input;
+using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
 
@@ -7,7 +8,7 @@ namespace DivisiBill.ViewModels;
 [QueryProperty(nameof(Summary), "Summary")]
 [QueryProperty(nameof(CurrentMeal), "Meal")]
 [QueryProperty(nameof(ShowStorage), "ShowStorage")]
-public class MealSummaryViewModel // No PropertyChanged events because these are readonly values and so need not be observable
+public partial class MealSummaryViewModel
 {
     public MealSummaryViewModel() { }
 
@@ -57,11 +58,20 @@ public class MealSummaryViewModel // No PropertyChanged events because these are
     /// Delete a local or remote stored meal but never both 
     /// </summary>
     /// <returns></returns>
-    public async Task DeleteMeal()
+    [RelayCommand]
+    private async Task DeleteMeal()
     {
         if (ms.IsLocal)
             await CurrentMeal.Summary.DeleteAsync(doLocal: true, doRemote: false);
         else if (ms.IsRemote)
             await CurrentMeal.Summary.DeleteAsync(doLocal: false, doRemote: true);
+        await App.PopAsync();
+    }
+
+    [RelayCommand]
+    private async Task LoadMeal()
+    {
+        await CurrentMeal.BecomeCurrentMealAsync();
+        await App.GoToRoot(2);
     }
 }

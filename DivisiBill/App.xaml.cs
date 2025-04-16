@@ -510,6 +510,8 @@ public partial class App : Application, INotifyPropertyChanged
                 : Shell.Current.GoToAsync("//" + location, navigationParameter)
             : Task.CompletedTask;
 
+    public static Task PopAsync() => Shell.Current is not null ? Shell.Current.Navigation.PopAsync() : Task.CompletedTask;
+
     public static async Task GoToHomeAsync() => await GoToAsync(isTutorialMode ? Routes.TutorialPage : Routes.LineItemsPage);
 
     public static async Task GoToRoot(int depth = 1)

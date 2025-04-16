@@ -23,17 +23,6 @@ public partial class MealSummaryPage : ContentPage
         #endregion
     }
 
-    private async void OnDelItem(object sender, EventArgs e)
-    {
-        await viewModel.DeleteMeal();
-        await Navigation.PopAsync();
-    }
-
-    private async void OnLoadItem(object sender, EventArgs e)
-    {
-        await viewModel.CurrentMeal.BecomeCurrentMealAsync();
-        await App.GoToRoot(2);
-    }
     private void OnVenueNameTapped(object sender, TappedEventArgs e)
-        => Navigation.PushAsync(new VenueEditPage(Venue.SelectOrAddVenue(viewModel.VenueName, "Created from a bill")));
+        => Navigation.PushAsync(new VenueEditPage(Venue.SelectOrAddVenue(viewModel.VenueName, $"Created from bill {viewModel.Id} on {DateTime.Now:d}")));
 }

@@ -11,8 +11,8 @@
              Shell.FlyoutBehavior="Disabled"
              Title="Bill Summary">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Clicked="OnLoadItem" IconImageSource="{StaticResource GlyphImport}"/>
-        <ToolbarItem Clicked="OnDelItem" IconImageSource="{StaticResource GlyphDel}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphImport}" Command="{Binding LoadMealCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteMealCommand}"/>
     </ContentPage.ToolbarItems>
 
     <services:ColumnLayout Spacing="2" Padding="5">
