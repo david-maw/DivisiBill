@@ -1,18 +1,8 @@
-using DivisiBill.Models;
-using DivisiBill.ViewModels;
-
 namespace DivisiBill.Views;
 
 public partial class MealSummaryPage : ContentPage
 {
-    private readonly MealSummaryViewModel viewModel;
-
-    public MealSummaryPage()
-    {
-        InitializeComponent();
-
-        viewModel = BindingContext as MealSummaryViewModel;
-    }
+    public MealSummaryPage() => InitializeComponent();
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
@@ -22,7 +12,4 @@ public partial class MealSummaryPage : ContentPage
         BindingContext = temp;
         #endregion
     }
-
-    private void OnVenueNameTapped(object sender, TappedEventArgs e)
-        => Navigation.PushAsync(new VenueEditPage(Venue.SelectOrAddVenue(viewModel.VenueName, $"Created from bill {viewModel.Id} on {DateTime.Now:d}")));
 }

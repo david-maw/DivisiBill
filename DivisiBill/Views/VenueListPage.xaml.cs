@@ -15,7 +15,7 @@ public partial class VenueListPage : ContentPage
     {
         InitializeComponent();
         context = new ViewModels.VenueListViewModel(
-            NavigateToDetails: (v) => Navigation.PushAsync(new VenueEditPage(v)),
+            NavigateToDetails: async (v) => await App.PushAsync(Routes.VenueEditPage, "Venue", v),
             NavigateToHome: async () => { await App.GoToHomeAsync(); });
         BindingContext = context;
         context.ScrollItemsTo = ScrollItemsTo;

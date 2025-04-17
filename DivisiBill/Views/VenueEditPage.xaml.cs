@@ -1,4 +1,3 @@
-using DivisiBill.Models;
 using DivisiBill.Services;
 using DivisiBill.ViewModels;
 
@@ -9,11 +8,10 @@ public partial class VenueEditPage : ContentPage
     private bool needLocation;
     private readonly VenueEditViewModel venueEditViewModel;
     private readonly MapPage mapPage = new();
-
-    public VenueEditPage() => InitializeComponent();
-    public VenueEditPage(Venue venueParam) : this()
+    public VenueEditPage()
     {
-        BindingContext = venueEditViewModel = new VenueEditViewModel(venueParam, async () => await Navigation.PopAsync(), async (v) =>
+        InitializeComponent();
+        BindingContext = venueEditViewModel = new VenueEditViewModel(async (v) =>
         {
             IsEnabled = false;
             IsEnabled = true;   // Kludge to close keyboard if it's open
@@ -24,6 +22,12 @@ public partial class VenueEditPage : ContentPage
                 await Navigation.PushAsync(mapPage);
         });
     }
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        venueEditViewModel.Initialize();
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();

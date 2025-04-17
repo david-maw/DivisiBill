@@ -35,7 +35,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         initialVenues.Sort();
         foreach (Venue v in initialVenues)
             allVenues.Add(v);
-        initialVenues.Sort((Venue v1, Venue v2) => v1.CompareDistanceTo(v2));
+        initialVenues.Sort((v1, v2) => v1.CompareDistanceTo(v2));
         foreach (Venue v in initialVenues)
             allVenuesByDistance.Add(v);
         MarkSaved(); // Flag this as not needing to be saved so it won't be unless someone changes it 

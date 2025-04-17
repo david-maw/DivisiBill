@@ -19,7 +19,7 @@
         <!--#region Venue -->
         <Label Text="{Binding VenueName}" FontSize="Title" FontAttributes="Bold" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnVenueNameTapped"/>
+                <TapGestureRecognizer Command="{Binding OpenVenueCommand}"/>
             </Label.GestureRecognizers>
         </Label>
         <!--#endregion-->

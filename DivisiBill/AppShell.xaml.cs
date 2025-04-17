@@ -8,14 +8,16 @@ public partial class AppShell : Shell
     public AppShell()
     {
         InitializeComponent();
-        Routing.RegisterRoute(Routes.HelpPage, typeof(HelpPage));
-        Routing.RegisterRoute(Routes.PropertiesPage, typeof(PropertiesPage));
-        Routing.RegisterRoute(Routes.PersonEditPage, typeof(PersonEditPage));
-        Routing.RegisterRoute(Routes.ScanPage, typeof(ScanPage));
+        // These are in alphabetic order
         Routing.RegisterRoute(Routes.CameraPage, typeof(CameraPage));
+        Routing.RegisterRoute(Routes.HelpPage, typeof(HelpPage));
         Routing.RegisterRoute(Routes.ImagePage, typeof(ImagePage)); // For the tutorial page to use
-        Routing.RegisterRoute(Routes.VenueListByNamePage, typeof(VenueListByNamePage));
         Routing.RegisterRoute(Routes.MealSummaryPage, typeof(MealSummaryPage));
+        Routing.RegisterRoute(Routes.PersonEditPage, typeof(PersonEditPage));
+        Routing.RegisterRoute(Routes.PropertiesPage, typeof(PropertiesPage));
+        Routing.RegisterRoute(Routes.ScanPage, typeof(ScanPage));
+        Routing.RegisterRoute(Routes.VenueEditPage, typeof(VenueEditPage));
+        Routing.RegisterRoute(Routes.VenueListByNamePage, typeof(VenueListByNamePage));
     }
     protected override async void OnAppearing()
     {

@@ -4,31 +4,26 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DivisiBill.ViewModels;
 
+[QueryProperty(nameof(ActiveVenue), "Venue")]
 internal partial class VenueEditViewModel : ObservableObjectPlus
 {
-    private readonly Venue originalVenue;
-    private readonly Action ClosePage;
+    [ObservableProperty]
+    public partial Venue ActiveVenue { get; set; } = new();
     private readonly Action<Venue> AskCallerToShowMap;
-    public VenueEditViewModel(Venue venueParameter, Action ClosePageParam, Action<Venue> ShowMapParam)
+    public VenueEditViewModel(Action<Venue> ShowMapParam)
     {
-        originalVenue = venueParameter;
-        ClosePage = ClosePageParam;
         AskCallerToShowMap = ShowMapParam;
-        Initialize();
         App.MyLocationChanged += App_MyLocationChanged;
     }
 
-    [MemberNotNull(nameof(Name))]
-    [MemberNotNull(nameof(Notes))]
-    private void Initialize()
+    public void Initialize()
     {
-        Name = originalVenue.Name ?? string.Empty;
-        Notes = originalVenue.Notes ?? string.Empty;
-        MyLocation = originalVenue.IsLocationValid ? originalVenue.Location : null;
+        Name = OriginalName = ActiveVenue.Name;
+        Notes = ActiveVenue.Notes ?? string.Empty;
+        MyLocation = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
     }
 
     ~VenueEditViewModel()
@@ -41,12 +36,13 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNewNameInvalid))]
-    public partial string Name { get; set; }
-
-    public string OriginalName => originalVenue.Name;
+    public partial string Name { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string Notes { get; set; }
+    public partial string OriginalName { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string Notes { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial Location? MyLocation { get; set; } = null;
@@ -56,9 +52,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial int Distance { get; set; } = Distances.Unknown;
 
-    public bool IsInUse => originalVenue.IsCurrentMeal;
-    public bool HasUnsavedChanges => !(Utilities.StringFunctionallyEqual(Name, originalVenue.Name) && Utilities.StringFunctionallyEqual(Notes, originalVenue.Notes));
-    public bool IsNewNameInvalid => string.IsNullOrWhiteSpace(Name) || Venue.AllVenues.Any((v) => originalVenue != v && Name.Equals(v.Name, StringComparison.Ordinal));
+    public bool IsInUse => ActiveVenue.IsCurrentMeal;
+    public bool HasUnsavedChanges => !(Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name) && Utilities.StringFunctionallyEqual(Notes, ActiveVenue.Notes));
+    public bool IsNewNameInvalid => string.IsNullOrWhiteSpace(Name) || Venue.AllVenues.Any((v) => ActiveVenue != v && Name.Equals(v.Name, StringComparison.Ordinal));
     #endregion
     public async Task SaveChanges()
     {
@@ -66,9 +62,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         if (IsInUse)
             await Meal.CurrentMeal.ChangeVenueAsync(Name);
         // Change the stored name
-        originalVenue.Name = Name;
-        originalVenue.Notes = Notes;
-        originalVenue.Location = MyLocation;
+        ActiveVenue.Name = Name;
+        ActiveVenue.Notes = Notes;
+        ActiveVenue.Location = MyLocation;
         // Make sure a changes are persisted
         await Venue.SaveSettingsAsync();
     }
@@ -78,15 +74,15 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     {
         if (!IsInUse)
         {
-            originalVenue.Forget();
-            var mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == originalVenue.Name);
-            if (mealsForVenue.Any() && await Utilities.AskAsync("Question", "Do you want to delete local bills for " + originalVenue.Name))
+            ActiveVenue.Forget();
+            var mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == ActiveVenue.Name);
+            if (mealsForVenue.Any() && await Utilities.AskAsync("Question", "Do you want to delete local bills for " + ActiveVenue.Name))
             {
                 foreach (MealSummary sum in mealsForVenue.OrderBy((ms) => ms.CreationTime))
                     await sum.DeleteAsync(doLocal: true, doRemote: false);
             }
             await Venue.SaveSettingsAsync();
-            ClosePage?.Invoke();
+            await App.PopAsync();
         }
     }
 
@@ -96,12 +92,12 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         if (IsNewNameInvalid)
         {
             // Just restore the original name
-            Name = originalVenue.Name;
+            Name = ActiveVenue.Name;
         }
         else
         {
             await SaveChanges();
-            ClosePage?.Invoke();
+            await App.PopAsync();
         }
     }
 
@@ -112,6 +108,6 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     private void ClearLocation() => MyLocation = null;
 
     [RelayCommand]
-    private void ShowMap() => AskCallerToShowMap(originalVenue);
+    private void ShowMap() => AskCallerToShowMap(ActiveVenue);
     #endregion
 }

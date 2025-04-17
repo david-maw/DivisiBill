@@ -74,4 +74,17 @@ public partial class MealSummaryViewModel
         await CurrentMeal.BecomeCurrentMealAsync();
         await App.GoToRoot(2);
     }
+
+    [RelayCommand]
+    private async Task OpenVenue()
+    {
+        if (Venue.FindVenueByName(VenueName) is Venue venue)
+        {
+            await App.PushAsync(Routes.VenueEditPage, "Venue", venue);
+        }
+        else if (await Utilities.AskAsync("Question", "Venue not found, do you want to create it?"))
+        {
+            await App.PushAsync(Routes.VenueEditPage, "Venue", Venue.SelectOrAddVenue(VenueName, $"Created from bill {Id} on {DateTime.Now:d}"));
+        }
+    }
 }
