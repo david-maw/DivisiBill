@@ -499,16 +499,15 @@ public partial class App : Application, INotifyPropertyChanged
     public static Task PushAsync(string location, string navigationParameterName, object navigationParameterValue) =>
         PushAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
     public static Task PushAsync(string location, ShellNavigationQueryParameters navigationParameter = null) => Shell.Current is not null
-            ? navigationParameter is null ? Shell.Current.GoToAsync(location) : Shell.Current.GoToAsync(location, navigationParameter)
-            : Task.CompletedTask;
+        ? navigationParameter is null
+            ? Shell.Current.GoToAsync(location)
+            : Shell.Current.GoToAsync(location, navigationParameter)
+        : Task.CompletedTask;
 
     public static Task GoToAsync(string location, string navigationParameterName, object navigationParameterValue) =>
-        GoToAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
-    public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter = null) => Shell.Current is not null
-            ? navigationParameter is null
-                ? Shell.Current.GoToAsync("//" + location)
-                : Shell.Current.GoToAsync("//" + location, navigationParameter)
-            : Task.CompletedTask;
+        PushAsync("//" + location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
+    public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter = null) =>
+        PushAsync("//" + location, navigationParameter);
 
     public static Task PopAsync() => Shell.Current is not null ? Shell.Current.Navigation.PopAsync() : Task.CompletedTask;
 

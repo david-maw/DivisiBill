@@ -13,10 +13,8 @@ public partial class VenueEditPage : ContentPage
         InitializeComponent();
         BindingContext = venueEditViewModel = new VenueEditViewModel(async (v) =>
         {
-            IsEnabled = false;
-            IsEnabled = true;   // Kludge to close keyboard if it's open
             mapPage.VenueName = venueEditViewModel.Name;
-            mapPage.VenueLocation = venueEditViewModel.MyLocation;
+            mapPage.VenueLocation = venueEditViewModel.Location;
             mapPage.VenueLocationHasChanged = false;
             if (!Utilities.IsUWP || App.BingMapsAllowed)
                 await Navigation.PushAsync(mapPage);
@@ -28,16 +26,22 @@ public partial class VenueEditPage : ContentPage
         venueEditViewModel.Initialize();
     }
 
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        IsEnabled = false; // Kludge to close keyboard if it's open
+        IsEnabled = true;  // when we switch to the Map page
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await App.InitializationComplete.Task;
-        needLocation = App.UseLocation && venueEditViewModel.MyLocation is not null; // Current location is needed for correct display of distance
+        needLocation = App.UseLocation && venueEditViewModel.Location is not null; // Current location is needed for correct display of distance
         if (needLocation)
             await App.StartMonitoringLocation();
-        if (mapPage?.VenueLocationHasChanged != false)
+        if (mapPage?.VenueLocationHasChanged == true)
         {
-            venueEditViewModel.MyLocation = mapPage.VenueLocation;
+            venueEditViewModel.Location = mapPage.VenueLocation;
             mapPage.VenueLocationHasChanged = false;
         }
     }

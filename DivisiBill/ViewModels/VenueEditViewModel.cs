@@ -23,14 +23,14 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     {
         Name = OriginalName = ActiveVenue.Name;
         Notes = ActiveVenue.Notes ?? string.Empty;
-        MyLocation = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
+        Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
     }
 
     ~VenueEditViewModel()
     {
         App.MyLocationChanged -= App_MyLocationChanged;
     }
-    private void App_MyLocationChanged(object? sender, EventArgs e) => Distance = App.GetDistanceTo(MyLocation);
+    private void App_MyLocationChanged(object? sender, EventArgs e) => Distance = App.GetDistanceTo(Location);
 
     #region Properties
 
@@ -45,9 +45,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     public partial string Notes { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial Location? MyLocation { get; set; } = null;
+    public partial Location? Location { get; set; } = null;
 
-    partial void OnMyLocationChanged(Location? value) => Distance = App.GetDistanceTo(value);
+    partial void OnLocationChanged(Location? value) => Distance = App.GetDistanceTo(value);
 
     [ObservableProperty]
     public partial int Distance { get; set; } = Distances.Unknown;
@@ -64,7 +64,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         // Change the stored name
         ActiveVenue.Name = Name;
         ActiveVenue.Notes = Notes;
-        ActiveVenue.Location = MyLocation;
+        ActiveVenue.Location = Location;
         // Make sure a changes are persisted
         await Venue.SaveSettingsAsync();
     }
@@ -105,7 +105,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     private void Restore() => Initialize();
 
     [RelayCommand]
-    private void ClearLocation() => MyLocation = null;
+    private void ClearLocation() => Location = null;
 
     [RelayCommand]
     private void ShowMap() => AskCallerToShowMap(ActiveVenue);
