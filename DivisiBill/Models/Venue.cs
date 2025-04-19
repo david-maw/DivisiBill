@@ -282,23 +282,28 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     /// <returns>true if inserted, false if not (because it was a duplicate)</returns>
     private bool InsertInAllVenuesByDistance()
     {
-        int index = -1, newIndex = -1;
-        if (allVenuesByDistanceIsSorted) foreach (var item in allVenuesByDistance)
-            {
-                index++;
-                int i = CompareDistanceTo(item);
-                if (i == 0)
-                    return false;
-                else if (i < 0)
-                {
-                    newIndex = index;
-                    break;
-                }
-            }
-        if (newIndex < 0)
-            allVenuesByDistance.Add(this); // Item should go at end
-        else
-            allVenuesByDistance.Insert(newIndex, this);
+        if (!allVenuesByDistanceIsSorted)
+            return false;
+
+        // Use binary search to find the correct insertion point
+        int low = 0;
+        int high = allVenuesByDistance.Count - 1;
+
+        while (low <= high)
+        {
+            int mid = (low + high) >> 1;
+            int comparison = CompareDistanceTo(allVenuesByDistance[mid]);
+
+            if (comparison == 0)
+                return false; // Duplicate found
+
+            if (comparison < 0)
+                high = mid - 1;
+            else
+                low = mid + 1;
+        }
+
+        allVenuesByDistance.Insert(low, this);
         return true;
     }
 
@@ -326,30 +331,33 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     /// <param name="VenueName">Name of the venue to be selected (or created)</param>
     /// <param name="notesParam">Optional notes for a venue if one is created</param>
     /// <returns>Reference to the venue with the specified name</returns>
-    public static Venue SelectOrAddVenue(string VenueName, string notesParam = null)
+    public static Venue SelectOrAddVenue(string VenueName = null, string notesParam = null)
     {
-        Venue v = new() { name = VenueName, Notes = notesParam };
         if (allVenues is null) // initializing
             return null;
-        int index = -1, newIndex = -1;
-        foreach (var item in allVenues)
+        Venue v = new() { name = VenueName ?? "New", Notes = notesParam };
+        if (VenueName is null)
+            v.Location = App.MyLocation; // Assign current location only to a newly created venue with no name
+        // Find out where in the sorted list this venue should go, can't use BinarySearch method because it is
+        // not defined for ObserveableList<T>
+        int low = 0;
+        int high = allVenues.Count - 1;
+
+        while (low <= high)
         {
-            index++;
-            int i = v.CompareTo(item);
-            if (i == 0)
-                return item;
-            else if (i < 0)
-            {
-                newIndex = index;
-                break;
-            }
+            int mid = (low + high) >> 1;
+            int comparison = v.CompareTo(allVenues[mid]);
+
+            if (comparison == 0)
+                return allVenues[mid];
+
+            if (comparison < 0)
+                high = mid - 1;
+            else
+                low = mid + 1;
         }
         // If we get to here it was not found in AllVenues
-        v.Location = App.MyLocation;
-        if (newIndex < 0)
-            allVenues.Add(v); // Item should go at end
-        else
-            allVenues.Insert(newIndex, v);
+        allVenues.Insert(low, v);
         v.InsertInAllVenuesByDistance();
         return v;
     }

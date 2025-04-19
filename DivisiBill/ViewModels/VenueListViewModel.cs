@@ -37,7 +37,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
     [RelayCommand]
     private void Add()
     {
-        CurrentItem = Venue.SelectOrAddVenue("New");
+        CurrentItem = Venue.SelectOrAddVenue();
         NavigateToDetails(CurrentItem);
     }
 

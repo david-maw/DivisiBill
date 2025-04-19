@@ -162,8 +162,6 @@ public static partial class Utilities // Partial for regex generator
         // Validation code to ensure the newly added item falls between appropriate existing items
         if (IsDebug)
         {
-            // check that the inserted item 
-
             // Test against the previous one if not inserted at the beginning
             if (newIndex > 0 && compareTo(targetItem, list[newIndex - 1]) < 0)
             {
@@ -182,11 +180,14 @@ public static partial class Utilities // Partial for regex generator
     }
 
     /// <summary>
-    /// Special case of Upsert for IComparable items
+    /// Insert an item in an ordered list of items or move it if it is already there but should be in a different
+    /// place in the list. The list must implement IComparable and it must represent the list order (other than the 
+    /// possible out-of-order item).
     /// </summary>
     /// <typeparam name="T">The item type</typeparam>
     /// <param name="list"></param>
     /// <param name="targetItem"></param>
+    /// <returns>True if an item was moved or inserted false if nothing changed></returns>
     internal static bool Upsert<T>(this IList<T> list, T targetItem) where T : class, IComparable<T>
     {
         static int compareTo(T item1, T item2) => item1.CompareTo(item2);
