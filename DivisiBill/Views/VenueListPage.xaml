@@ -6,7 +6,8 @@
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              xmlns:model="clr-namespace:DivisiBill.Models"
              xmlns:services="clr-namespace:DivisiBill.Services"
-             mc:Ignorable="d"            
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Name="Page"            
              x:DataType="vm:VenueListViewModel"
              x:Class="DivisiBill.Views.VenueListPage"
              Title="Venue List">
@@ -130,9 +131,51 @@
                 </VerticalStackLayout>
             </CollectionView.Header>
         </CollectionView>
-        <!--#region Scroll Up/Down -->
-        <Button Style="{StaticResource ScrollUpButtonStyle}" services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" IsVisible="{Binding IsSwipeDownAllowed}"/>
-        <Button Style="{StaticResource ScrollDownButtonStyle}" services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}" IsVisible="{Binding IsSwipeUpAllowed}"/>
+        <!--#region Scroll Up/Down "Buttons" -->
+        <Border
+            IsVisible="{Binding IsSwipeDownAllowed}"
+            services:ColumnLayout.SameRow="True"
+            HorizontalOptions="Center"
+            VerticalOptions="Start"
+            StrokeShape="Ellipse"
+            StrokeThickness="0"
+            Padding="5"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+            <Label Text="{StaticResource TextArrowUp}"
+               FontFamily="mdicons"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               FontSize="50"
+               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <Border.Behaviors>
+                <toolkit:TouchBehavior
+                    BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=ContentPage}"
+                    Command="{Binding ScrollItemsCommand}" CommandParameter = "Down"
+                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="Start"/>
+            </Border.Behaviors>
+        </Border>
+        <Border
+            IsVisible="{Binding IsSwipeUpAllowed}"
+            services:ColumnLayout.SameRow="True"
+            HorizontalOptions="Center"
+            VerticalOptions="End"
+            StrokeShape="Ellipse"
+            StrokeThickness="0"
+            Padding="5"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+            <Label Text="{StaticResource TextArrowDown}"
+               FontFamily="mdicons"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               FontSize="50"
+               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <Border.Behaviors>
+                <toolkit:TouchBehavior
+                    BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=ContentPage}"
+                    Command="{Binding ScrollItemsCommand}" CommandParameter = "Up"
+                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="End"/>
+            </Border.Behaviors>
+        </Border>
         <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint -->
