@@ -131,8 +131,7 @@ public partial class App : Application, INotifyPropertyChanged
             Utilities.DebugMsg($"In PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
             if (!InitializationComplete.Task.IsCompleted)
                 return; // There's no knowing what state we're in, so don't do anything
-            if (Settings is not null)
-                Settings.LastUse = DateTime.Now; // Note when we last did anything
+            Settings?.LastUse = DateTime.Now; // Note when we last did anything
             try
             {
                 if (!Venue.IsSaved)
