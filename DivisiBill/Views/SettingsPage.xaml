@@ -158,16 +158,19 @@
                 </Grid>
                 <!--#endregion-->
                 <!--#region Scan Options -->
-                <Picker Title="Select a scan option below:" SelectedIndex="{Binding ScanOption}" HorizontalOptions="Center" FontSize="Small">
-                    <Picker.ItemsSource>
-                        <x:Array Type="{x:Type x:String}">
-                            <x:String>Scan</x:String>
-                            <x:String>Return Fault</x:String>
-                            <x:String>Return Fake Result</x:String>
-                            <x:String>Throw Exception</x:String>
-                        </x:Array>
-                    </Picker.ItemsSource>
-                </Picker>
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Label Text="Scan Option:" VerticalOptions="Center"/>
+                    <Picker Title="Select a scan option" SelectedIndex="{Binding ScanOption}" FontSize="Small">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Actual Scan</x:String>
+                                <x:String>Return Fault</x:String>
+                                <x:String>Return Fake Result</x:String>
+                                <x:String>Throw Exception</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </HorizontalStackLayout>
                 <!--#endregion-->
                 <Button Text="Set Fake Location" Clicked="OnSetLocation" HorizontalOptions="Center" Margin="0,10,0,0"/>
             </VerticalStackLayout>

@@ -25,7 +25,7 @@ public partial class SettingsPage : ContentPage
             mapPage.VenueLocationHasChanged = false;
             if (mapPage.VenueLocation is not null && locationChanged)
             {
-                await CommunityToolkit.Maui.Alerts.Toast.Make("Will set fake location in 10s").Show();
+                await Utilities.ShowAppSnackBarAsync("Will set fake location in 10s");
                 await Task.Delay(10_000);
             }
             await App.SetFakeLocation(mapPage.VenueLocation);
