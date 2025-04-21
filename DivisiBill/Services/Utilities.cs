@@ -919,7 +919,7 @@ public static class Distances
 {
     public const int Inaccurate = 99999999; // The circumference of the earth is just over 40,000,000 m, this is more 
     public const int Unknown = Inaccurate + 1; // The circumference of the earth is just over 40,000,000 m, this is more 
-    public const int Close = 100; // Anything within 100 meters is just 'close' 
+    public const int Close = 10; // Anything within 10 meters is just 'close' 
     public const int AccuracyLimit = // In meters, no location less accurate than this is acceptable
 #if WINDOWS
         8000; // Because the desktop location accuracy without GPS is 7990
