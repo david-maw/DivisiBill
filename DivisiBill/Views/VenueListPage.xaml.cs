@@ -8,7 +8,7 @@ namespace DivisiBill.Views;
 public partial class VenueListPage : ContentPage
 {
     protected ViewModels.VenueListViewModel context;
-    private readonly MapPage mapPage = new();
+    private MapSettings? mapSettings = null;
     private FlyoutBehavior savedFlyoutBehavior;
 
     public VenueListPage()
@@ -28,11 +28,11 @@ public partial class VenueListPage : ContentPage
         savedFlyoutBehavior = Shell.Current.FlyoutBehavior;
         if (Shell.Current.Navigation.NavigationStack.Count > 1) // we got here by navigation
             Shell.Current.FlyoutBehavior = FlyoutBehavior.Disabled;
-        if (mapPage.VenueLocationHasChanged)
+        if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
         {
-            mapPage.VenueLocationHasChanged = false; // don't execute this code again unnecessarily
-            Venue v = Venue.FindVenueByName(mapPage.VenueName);
-            v.Location = mapPage.VenueLocation;
+            mapSettings.VenueLocationHasChanged = false; // don't execute this code again unnecessarily
+            Venue v = Venue.FindVenueByName(mapSettings.VenueName);
+            v?.Location = mapSettings.VenueLocation;
         }
         if (context.CurrentItem is null)
         {
@@ -70,11 +70,9 @@ public partial class VenueListPage : ContentPage
         Venue? v = ((BindableObject)sender).BindingContext as Venue ?? context.CurrentItem;
         if (v is not null)
         {
-            mapPage.VenueName = v.Name;
-            mapPage.VenueLocation = v.Location;
-            mapPage.VenueLocationHasChanged = false;
+            mapSettings = new(v.Name, v.Location);
             if (!Utilities.IsUWP || App.BingMapsAllowed)
-                await Navigation.PushAsync(mapPage);
+                await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
         }
     }
     #region Collection Scrolling

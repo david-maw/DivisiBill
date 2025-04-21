@@ -6,19 +6,33 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 namespace DivisiBill.Views;
 
+[QueryProperty(nameof(MapSettings), "MapSettings")]
 public partial class MapPage : ContentPage
 {
-    private Location originalVenueLocation;
+    private Location originalVenueLocation; // Use to restore location if the user asks
     private readonly Pin pin = new() { Type = PinType.Place }; // No location or name yet
-
     public MapPage() => InitializeComponent();
-
+    public MapSettings MapSettings { get; set; }
     protected override async void OnAppearing()
     {
         await App.StartMonitoringLocation();
         base.OnAppearing();
+        App.MyLocationChanged += App_MyLocationChanged;
+    }
+    protected override async void OnDisappearing()
+    {
+        App.MyLocationChanged -= App_MyLocationChanged;
+        await App.StopMonitoringLocation();
+        base.OnDisappearing();
+    }
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        ArgumentNullException.ThrowIfNull(MapSettings);
+        VenueName = MapSettings.VenueName;
+        originalVenueLocation = VenueLocation = MapSettings.VenueLocation;
+        VenueLocationHasChanged = false;
         Location mapCenter;
-        originalVenueLocation = VenueLocation; // Use to restore location if the user asks
         if (VenueLocation.IsAccurate())
         {
             mapCenter = VenueLocation;
@@ -32,15 +46,13 @@ public partial class MapPage : ContentPage
             await Task.Delay(200); // Without this the MoveToRegion is ignored 
             map.MoveToRegion(mapSpan);
         }
-        VenueLocationHasChanged = false;
-        App.MyLocationChanged += App_MyLocationChanged;
     }
-
-    protected override async void OnDisappearing()
+    protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
     {
-        App.MyLocationChanged -= App_MyLocationChanged;
-        base.OnDisappearing();
-        await App.StopMonitoringLocation();
+        base.OnNavigatingFrom(args);
+        MapSettings.VenueLocationHasChanged = VenueLocationHasChanged;
+        if (VenueLocationHasChanged)
+            MapSettings.VenueLocation = VenueLocation;
     }
 
     private void App_MyLocationChanged(object sender, EventArgs e) => VenueDistance = App.GetDistanceTo(VenueLocation);
@@ -92,17 +104,17 @@ public partial class MapPage : ContentPage
     // BindingContext
     public string VenueName
     {
-        get;
+        get => field;
         set
         {
             ArgumentNullException.ThrowIfNull(value);
             SetProperty(ref field, value);
-            pin.Label = VenueName;
+            pin.Label = value;
         }
     }
     public Location VenueLocation
     {
-        get;
+        get => field;
         set
         {
             if ((value is null && field is not null) || value.GetDistanceTo(field) > 0)
@@ -127,6 +139,7 @@ public partial class MapPage : ContentPage
     public ICommand RestoreCommand => new Command(async () =>
     {
         VenueLocation = originalVenueLocation;
+        VenueLocationHasChanged = false;
         if (VenueLocation is not null)
         {
             var mapSpan = new MapSpan(VenueLocation, 0.01, 0.01);

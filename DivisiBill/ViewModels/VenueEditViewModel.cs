@@ -10,20 +10,19 @@ namespace DivisiBill.ViewModels;
 [QueryProperty(nameof(ActiveVenue), "Venue")]
 internal partial class VenueEditViewModel : ObservableObjectPlus
 {
+    private MapSettings? mapSettings;
+
     [ObservableProperty]
     public partial Venue ActiveVenue { get; set; } = new();
-    private readonly Action<Venue> AskCallerToShowMap;
-    public VenueEditViewModel(Action<Venue> ShowMapParam)
-    {
-        AskCallerToShowMap = ShowMapParam;
-        App.MyLocationChanged += App_MyLocationChanged;
-    }
+    public VenueEditViewModel() => App.MyLocationChanged += App_MyLocationChanged;
 
     public void Initialize()
     {
         Name = OriginalName = ActiveVenue.Name;
         Notes = ActiveVenue.Notes ?? string.Empty;
         Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
+        if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
+            Location = mapSettings.VenueLocation;
     }
 
     ~VenueEditViewModel()
@@ -108,6 +107,11 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     private void ClearLocation() => Location = null;
 
     [RelayCommand]
-    private void ShowMap() => AskCallerToShowMap(ActiveVenue);
+    private async Task ShowMap()
+    {
+        mapSettings = new(ActiveVenue.Name, ActiveVenue.Location);
+        if (!Utilities.IsUWP || App.BingMapsAllowed)
+            await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
+    }
     #endregion
 }
