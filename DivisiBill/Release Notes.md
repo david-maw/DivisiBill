@@ -1,3 +1,21 @@
+# 6.2.26
+
+## Redefine Distances that are 'Close'
+
+When showing distances smaller ones are simply shown as 'close'. The threshold for 'close' was 100m, now it is 10m because GPS can be quite accurate and manual entry even more so.
+
+## Allow Long press to Scroll to Beginning/End
+
+A long press to scroll to the beginning or end of a list was already allowed on the Bill list pages, now it is allowed for the people list and venue list too.
+
+## Ask Before Creating a Venue
+
+If you double tap the venue name on a bill properties page it takes you to the venue definition. The application used to create a venue record of there wasn't one, now it asks first and if it does create one for the venue it has no default location.
+
+## Show Meal List Download Icons
+
+When cloud access was turned on as a result of a request to show remote bills the remote/local status icons on each bill were not shown. This has been corrected.
+
 # 6.2.25
 
 ## Change Scroll to Start/End of Bill List
