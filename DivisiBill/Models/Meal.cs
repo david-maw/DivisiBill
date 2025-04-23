@@ -160,7 +160,6 @@ public partial class Meal : ObservableObjectPlus
     private ObservableCollection<LineItem> lineItems = [];
     private double taxRate;
     private double tipRate;
-    private MealSummary summary;
 
     // Static items shared by all instances of the class
     public const string MealFolderName = "Meals";
@@ -470,10 +469,11 @@ public partial class Meal : ObservableObjectPlus
         {
             if (meal.Size < 0)
                 continue; // This is a bad bill
+            // Remove the old version of the meal if it is being replaced
             if (replace && localMealNames.Contains(meal.Summary.Id))
             {
-                LocalMealList.Remove(meal.summary);
-                localMealNames.Remove(meal.summary.Id);
+                LocalMealList.Remove(meal.Summary);
+                localMealNames.Remove(meal.Summary.Id);
             }
             if (!localMealNames.Contains(meal.Summary.Id))
             {
@@ -482,8 +482,8 @@ public partial class Meal : ObservableObjectPlus
                     meal.SaveToFile();
                     meal.Summary.IsLocal = true;
                 }
-                LocalMealList.Add(meal.summary);
-                localMealNames.Add(meal.summary.Id); // to ensure we do not add duplicates
+                LocalMealList.Add(meal.Summary);
+                localMealNames.Add(meal.Summary.Id); // to ensure we do not add duplicates
             }
         }
         // Get the list of remote meals if we can (and should) and update whatever local meals are also remote
@@ -1238,26 +1238,29 @@ public partial class Meal : ObservableObjectPlus
     {
         private set
         {
-            if (value != summary)
+            if (value != field)
             {
-                if (summary is not null)
+                if (field is not null)
                 {
-                    summary.PropertyChanged -= Summary_PropertyChanged;
-                    if (!string.IsNullOrEmpty(value?.VenueName) && !string.IsNullOrEmpty(summary.VenueName))
+                    field.PropertyChanged -= Summary_PropertyChanged;
+                    if (!string.IsNullOrEmpty(value?.VenueName) && !string.IsNullOrEmpty(field.VenueName))
                     {
-                        Debug.Assert(value.VenueName == summary.VenueName
-                            && Utilities.WithinOneSecond(value.CreationTime, summary.CreationTime),
+                        Debug.Assert(value.VenueName == field.VenueName
+                            && Utilities.WithinOneSecond(value.CreationTime, field.CreationTime),
                             "A Summary replacement would change significant properties");
                     }
                 }
-                summary = value;
-                summary.PropertyChanged += Summary_PropertyChanged;
+                field = value;
+                field.PropertyChanged += Summary_PropertyChanged;
                 MarkAsChanged();
             }
         }
-        get => summary ??= new MealSummary();
+        get => field ??= new MealSummary();
     }
 
+    /// <summary>
+    /// Forwards property change notifications from the MealSummary to the Meal
+    /// </summary>
     private void Summary_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         OnPropertyChanged(e.PropertyName);
@@ -2644,8 +2647,7 @@ public partial class Meal : ObservableObjectPlus
             costItem.SwapSharerID(newDinerID, oldDinerID);
         // Find if a PersonCost used to use this DinerID and if so give it the ID from this one
         PersonCost previousPersonCost = Costs.FirstOrDefault(item => item.DinerID == newDinerID);
-        if (previousPersonCost is not null)
-            previousPersonCost.DinerID = pc.DinerID;
+        previousPersonCost?.DinerID = pc.DinerID;
         pc.DinerID = newDinerID;
     }
 
