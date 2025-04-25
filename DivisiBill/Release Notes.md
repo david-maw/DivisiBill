@@ -1,3 +1,11 @@
+# 6.2.27
+
+## Improve Scrolling Bill List
+
+When scrolling the list of bills using the scroll buttons they are hidden and no scrolling animation is used. When the scroll completes the appropriate button or buttons reappear. Scrolling to the beginning or end of the list using a long press on one of the buttons is now much quicker. Scrolling using swipe up or down is unchanged.
+
+The scroll buttons themselves are larger and surrounded by a semi-transparent area.
+
 # 6.2.26
 
 ## Redefine Distances that are 'Close'
