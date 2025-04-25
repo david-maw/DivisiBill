@@ -101,7 +101,7 @@ internal partial class DataManagementViewModel : ObservableObject
             DateOnly.FromDateTime(StartDate),
             DateOnly.FromDateTime(FinishDate),
             OnlyRelated, OnlySelectedMeals);
-        if (!archive.Meals.Any())
+        if (archive.Meals.Count == 0)
         {
             await Utilities.DisplayAlertAsync("Archiving Error", "No bills meet the archive criteria");
             return;
