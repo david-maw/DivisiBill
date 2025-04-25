@@ -1193,7 +1193,7 @@ public partial class Meal : ObservableObjectPlus
     }
     private void SaveToFile()
     {
-        Debug.Assert(!(this == CurrentMeal && !IsLastChangeTimeSet), "Should not store an unchanged current meal");
+        Debug.Assert(!(this == CurrentMeal && !IsLastChangeTimeSet && SavedToFile), "Should not store an unchanged current meal");
         if (Costs.Count == 0 && LineItems.Count == 0) // This is an empty bill, do not store it
         {
             DebugMsg($"In Meal.SaveToFile: Bill {Summary.Id} is empty, ignoring it");
