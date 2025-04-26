@@ -28,6 +28,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         Meal.LocalMealList.CollectionChanged += LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged += RemoteMealList_CollectionChanged;
         App.MyLocationChanged += App_MyLocationChanged;
+        scrollEndTimer = new(_ => IsMealListScrolling = false, null, int.MaxValue, 0);
     }
     private void App_MyLocationChanged(object sender, EventArgs e)
     {
@@ -39,6 +40,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         Meal.LocalMealList.CollectionChanged -= LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged -= RemoteMealList_CollectionChanged;
         App.MyLocationChanged -= App_MyLocationChanged;
+        scrollEndTimer.Dispose();
     }
 
     public async Task OnAppearing()
@@ -1040,6 +1042,12 @@ public partial class MealListViewModel : ObservableObjectPlus
         });
 
     #region Scrolling Item list
+    /// On the face of it scrolling (probably of a CollectionView) is simple, in practice scroll notification it 
+    /// differs somewhat on Windows and Android but the key is if you're scrolling a long way, don't animate it 
+    /// because that slows things down a lot.
+    /// The other major wrinkle is that we have to deal with the fact that the CollectionView doesn't
+    /// support scrolling notifications in a consistent manner across platforms and there is no way to
+    /// reliably determine when scrolling has ended, so we do it with a timer.
     private int LastItemIndex => (IsGrouped && MealSummaryGroups is not null) ? MealSummaryGroups.Count - 1 : (MealList is not null) ? MealList.Count - 1 : -1;
 
     [ObservableProperty]
@@ -1048,33 +1056,76 @@ public partial class MealListViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial bool IsSwipeDownAllowed { get; set; }
 
+    /// <summary>
+    /// The index of the first visible item on the page as set by a UI event (probably OnCollectionViewScrolled)
+    /// </summary>
     [ObservableProperty]
     public partial int FirstVisibleItemIndex { get; set; }
 
-    partial void OnFirstVisibleItemIndexChanged(int value) => IsSwipeDownAllowed = value > 0;
+    partial void OnFirstVisibleItemIndexChanged(int value)
+    {
+        IsSwipeDownAllowed = value > 0;
+        scrollEndTimer.Change(50, 0); // Notify end of scroll if we do not see this change for a while
+    }
 
+    /// <summary>
+    /// The index of the last visible item on the page as set by a UI event (probably OnCollectionViewScrolled)
+    /// </summary>
     [ObservableProperty]
     public partial int LastVisibleItemIndex { get; set; }
 
-    partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < LastItemIndex;
-
-    public Action<int, bool> ScrollItemsTo = null;
-
-    [RelayCommand]
-    private void ScrollItems(string whereTo)
+    partial void OnLastVisibleItemIndexChanged(int value)
     {
-        if (FirstVisibleItemIndex == LastVisibleItemIndex || ScrollItemsTo is null || MealList is null || (IsGrouped && MealSummaryGroups is null))
-            return;
-        if (LastItemIndex <= 1)
+        IsSwipeUpAllowed = value > 0 && value < LastItemIndex;
+    }
+
+    private readonly Timer scrollEndTimer; // fires when we think scrolling has ended
+
+    [ObservableProperty]
+    public partial bool IsMealListScrolling { get; private set; } = false;
+
+    /// <summary>
+    /// Scroll the control displaying the items to a particular item index.
+    /// The item is scrolled to the top or bottom of the control depending on the value of itemPositionRelativeToEnd.
+    /// </summary>
+    /// <param name="index">The index of the item we are scrolling to</param>
+    /// <param name="itemPositionRelativeToEnd">Should the item be shown at the beginning or end of the page</param>
+    /// <param name="animate">Should the scrolling be animated</param>
+    public delegate void ScrollItemsToDelegate(int index, bool itemPositionRelativeToEnd, bool animate = true);
+
+    /// <summary>
+    /// A <see cref="ScrollItemsToDelegate"/> function which is called to scroll the list of items, provided by the page.
+    /// </summary>
+    public ScrollItemsToDelegate ScrollItemsTo = null;
+
+    /// <summary>
+    /// <para>Scroll back and forth through the list of items. We can scroll to the first or last item in the list
+    /// as well as scrolling a page at a time to the first or last visible item. When we scroll to the beginning or 
+    /// end of the list and that's more than a few (30 at this point) records we disable the collection view so that
+    /// we don't have to keep updating the UI. This is a performance optimization but also looks better to the user.
+    /// </para><para>
+    /// The algorithmic complexity comes from the fact that ScrollItemsTo is a fire-and-forget function which scrolls the
+    /// control incrementally and we don't want to continue until it is done.
+    /// </para>
+    /// </summary>
+    /// <param name="whereTo"></param>
+    [RelayCommand]
+    private async Task ScrollItems(string whereTo)
+    {
+        if (FirstVisibleItemIndex == LastVisibleItemIndex // There's only one item
+            || ScrollItemsTo is null // We were not passed a ScrollTo function
+            || LastItemIndex <= 1 // There are one or zero items
+            || MealList is null // We don't even have a list
+            || (IsGrouped && MealSummaryGroups is null)) // We don't have a list of groups
             return;
         try
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < LastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
-                case "Down": if (FirstVisibleItemIndex > 0) ScrollItemsTo(FirstVisibleItemIndex, true); break;
-                case "End": if (LastVisibleItemIndex < LastItemIndex) ScrollItemsTo(LastItemIndex, false); break;
-                case "Start": if (FirstVisibleItemIndex > 0) ScrollItemsTo(0, true); break;
+                case "Up": if (LastVisibleItemIndex < LastItemIndex) await ScrollItemsImpl(LastVisibleItemIndex, false); break;
+                case "Down": if (FirstVisibleItemIndex > 0) await ScrollItemsImpl(FirstVisibleItemIndex, true); break;
+                case "End": if (LastVisibleItemIndex < LastItemIndex) { await ScrollItemsImpl(LastItemIndex, false); } break;
+                case "Start": if (FirstVisibleItemIndex > 0) { await ScrollItemsImpl(0, true); } break;
                 default: break;
             }
         }
@@ -1083,6 +1134,14 @@ public partial class MealListViewModel : ObservableObjectPlus
             ex.ReportCrash("fault attempting to scroll");
             // Do nothing, we do not really care if a scroll attempt fails
         }
+    }
+    private async Task ScrollItemsImpl(int scrollToIndex, bool scrollUp)
+    {
+        IsMealListScrolling = true;
+        await Task.Yield(); // allow the UI to update before we call ScrollItemsTo
+        const int manyItems = 30; // 30 items is our definition of scrolling a long way
+        int scrollDistance = Math.Abs(scrollToIndex - (scrollUp ? LastVisibleItemIndex : FirstVisibleItemIndex)); // How many items we'll be scrolling past
+        ScrollItemsTo(scrollToIndex, scrollUp, scrollDistance < manyItems); // For a short scroll it's ok to animate, but it's slow so we don't use it for long scrolls  
     }
     #endregion
 }

@@ -480,20 +480,30 @@
         <!--#endregion-->
         <!--#region Scroll Up/Down "Buttons" -->
         <Border
-            IsVisible="{Binding IsSwipeDownAllowed}"
             services:ColumnLayout.SameRow="True"
             HorizontalOptions="Center"
             VerticalOptions="Start"
             StrokeShape="Ellipse"
             StrokeThickness="0"
-            Padding="5"
-            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+            Padding="30">
+            <Border.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
+                    <GradientStop Color="{AppThemeBinding Light={StaticResource TransparentWhite}, Dark=Transparent}" Offset="1.0" />
+                </RadialGradientBrush>
+            </Border.Background>
             <Label Text="{StaticResource TextArrowUp}"
                FontFamily="mdicons"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               FontSize="50"
+               FontSize="80"
                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <Border.IsVisible>
+                <MultiBinding Converter="{StaticResource All}">
+                    <Binding Path="IsSwipeDownAllowed"/>
+                    <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
+                </MultiBinding>
+            </Border.IsVisible>
             <Border.Behaviors>
                 <toolkit:TouchBehavior
                     BindingContext="{Binding Source={x:Reference BrowseItemsPage}, Path=BindingContext, x:DataType=ContentPage}"
@@ -502,20 +512,30 @@
             </Border.Behaviors>
         </Border>
         <Border
-            IsVisible="{Binding IsSwipeUpAllowed}"
             services:ColumnLayout.SameRow="True"
             HorizontalOptions="Center"
             VerticalOptions="End"
             StrokeShape="Ellipse"
             StrokeThickness="0"
-            Padding="5"
-            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}">
+            Padding="30">
+            <Border.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
+                    <GradientStop Color="{AppThemeBinding Light={StaticResource TransparentWhite}, Dark=Transparent}" Offset="1.0" />
+                </RadialGradientBrush>
+            </Border.Background>
             <Label Text="{StaticResource TextArrowDown}"
                FontFamily="mdicons"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               FontSize="50"
+               FontSize="80"
                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <Border.IsVisible>
+                <MultiBinding Converter="{StaticResource All}">
+                    <Binding Path="IsSwipeUpAllowed"/>
+                    <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
+                </MultiBinding>
+            </Border.IsVisible>
             <Border.Behaviors>
                 <toolkit:TouchBehavior
                     BindingContext="{Binding Source={x:Reference BrowseItemsPage}, Path=BindingContext, x:DataType=ContentPage}"
