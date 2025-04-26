@@ -502,6 +502,7 @@
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeDownAllowed"/>
                     <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
+                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
                 </MultiBinding>
             </Border.IsVisible>
             <Border.Behaviors>
@@ -534,6 +535,7 @@
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeUpAllowed"/>
                     <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
+                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
                 </MultiBinding>
             </Border.IsVisible>
             <Border.Behaviors>
