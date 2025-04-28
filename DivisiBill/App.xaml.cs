@@ -686,10 +686,13 @@ public partial class App : Application, INotifyPropertyChanged
         try
         {
             Location L = FakeLocation ?? await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);
-            if (L.Accuracy.GetValueOrDefault(Distances.Inaccurate) <= Distances.AccuracyLimit && L.GetDistanceTo(MyLocation) > 20) // Don't report on small changes, it's needlessly disruptive
+            if (L is null || (L.Accuracy.GetValueOrDefault(Distances.Inaccurate) <= Distances.AccuracyLimit && L.GetDistanceTo(MyLocation) > 20)) // Don't report on small changes, it's needlessly disruptive
             {
-                MyLocation = L;
-                MyLocationChanged?.Invoke(null, null);
+                if (MyLocation != L)
+                {
+                    MyLocation = L;
+                    MyLocationChanged?.Invoke(null, null);
+                }
             }
         }
         catch (FeatureNotSupportedException)
