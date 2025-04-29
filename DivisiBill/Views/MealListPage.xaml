@@ -503,7 +503,7 @@
             VerticalOptions="Start"
             StrokeShape="Ellipse"
             StrokeThickness="0"
-            Padding="30">
+            Padding="20">
             <Border.Background>
                 <RadialGradientBrush>
                     <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
@@ -514,7 +514,7 @@
                FontFamily="mdicons"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               FontSize="80"
+               FontSize="70"
                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <Border.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
@@ -536,7 +536,7 @@
             VerticalOptions="End"
             StrokeShape="Ellipse"
             StrokeThickness="0"
-            Padding="30">
+            Padding="20">
             <Border.Background>
                 <RadialGradientBrush>
                     <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
@@ -547,7 +547,7 @@
                FontFamily="mdicons"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               FontSize="80"
+               FontSize="70"
                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <Border.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
