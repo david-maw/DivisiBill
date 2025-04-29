@@ -464,12 +464,6 @@
                                         <Label Text="{Binding VenueName}" FontSize="Large" />
                                         <Label Text="{Binding CountText, StringFormat='({0})'}" FontSize="Large" />
                                     </HorizontalStackLayout>
-                                    <Button
-                                        Text="All Bills"
-                                        Command="{Binding ShowMealsForVenueCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}"
-                                        CommandParameter="{Binding VenueName}"
-                                        IsVisible="{Binding CountLarge}"
-                                        HorizontalOptions="End" />
                                 </Grid>
                                 <Grid ColumnDefinitions="*, auto"
                                         IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType = toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
@@ -486,10 +480,18 @@
                             </VerticalStackLayout>
                         </toolkit:Expander.Header>
                         <toolkit:Expander.Content>
-                            <CollectionView 
+                            <VerticalStackLayout>
+                                <CollectionView 
                                 ItemsSource="{Binding FirstMealSummaries}" 
                                 ItemTemplate="{OnPlatform Default={StaticResource WithSwipe},
                                                           WinUI={StaticResource NoSwipe}}"/>
+                                <Button
+                                    Text="Show All Bills for This Venue"
+                                    Command="{Binding ShowMealsForVenueCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}"
+                                    CommandParameter="{Binding VenueName}"
+                                    IsVisible="{Binding CountLarge}"
+                                    HorizontalOptions="Center" />
+                            </VerticalStackLayout>
                         </toolkit:Expander.Content>
                     </toolkit:Expander>
                 </DataTemplate>
