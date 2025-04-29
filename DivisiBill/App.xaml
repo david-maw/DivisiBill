@@ -26,6 +26,9 @@
             <services:IsNonZeroConverter x:Key="IsNonZero" />
             <services:IsNegativeConverter x:Key="IsNegative" />
 
+            <toolkit:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpace" />
+            <toolkit:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpace" />
+
             <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> 
             <!--  This is defined in code  -->
 

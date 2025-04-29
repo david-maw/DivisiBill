@@ -11,14 +11,7 @@ namespace DivisiBill.ViewModels;
 /// This manages the list of bills sorted and filtered in various ways. The contents of the list (MealList) is composed of the same set of MealSummaries that other instances see so setting some
 /// property on one propagates to other views.
 /// </summary>
-#region Query Properties
-[QueryProperty(nameof(Sort), "sort")]
-[QueryProperty(nameof(IsSelectableList), "IsSelectableList")]
-[QueryProperty(nameof(SetCount), "count")]
-[QueryProperty(nameof(ShowLocalMeals), "ShowLocal")]
-[QueryProperty(nameof(ShowRemoteMeals), "ShowRemote")]
-#endregion
-public partial class MealListViewModel : ObservableObjectPlus
+public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributable
 {
     public Func<MealSummary, Task> UseMealParam { get; set; }
     public Func<MealSummary, Task> ShowDetailsParam { get; set; }
@@ -660,7 +653,7 @@ public partial class MealListViewModel : ObservableObjectPlus
     }
 
     private CancellationTokenSource cancellationTokenSource = null;
-
+    #region Commands
     [RelayCommand]
     private void Cancel() => cancellationTokenSource?.Cancel();
 
@@ -722,7 +715,7 @@ public partial class MealListViewModel : ObservableObjectPlus
         }
         SelectedMealSummariesCount = howMany;
     }
-
+    #endregion
     /// <summary>
     /// Force future callers to reevaluate the list because we know it has changed
     /// </summary>
@@ -745,6 +738,14 @@ public partial class MealListViewModel : ObservableObjectPlus
         SelectedMealSummariesCount -= howMany;
     }
 
+    /// <summary>
+    /// Set to filter on a specific venue
+    /// </summary>
+    [ObservableProperty]
+    public partial string FilteredVenueName { get; set; } = string.Empty;
+
+    partial void OnFilteredVenueNameChanged(string value) => InvalidateMealList();
+    #region Sorting
     public string SortOrderName => SortOrder == SortOrderType.byName ? "name" : SortOrder == SortOrderType.byDate ? "age" : SortOrder == SortOrderType.byDistance ? "distance" : "unknown";
     public enum SortOrderType { byDate, byDistance, byName };
     public void NextSortOrder()
@@ -768,7 +769,7 @@ public partial class MealListViewModel : ObservableObjectPlus
             SortOrder = sortRequest.Equals("name") ? SortOrderType.byName : SortOrderType.byDate;
         }
     }
-
+    #endregion
     [RelayCommand]
     private void ShowGroup(MealSummaryGroup group)
     {
@@ -788,6 +789,9 @@ public partial class MealListViewModel : ObservableObjectPlus
         }
     }
 
+    [RelayCommand]
+    private async Task ShowMealsForVenue(string venueName) => await App.GoToAsync(Routes.MealListByAgePage,
+            $"venue={Uri.EscapeDataString(venueName)}&ShowLocal={ShowLocalMeals}&ShowRemote={ShowRemoteMeals}");
     [RelayCommand]
     private void OnGroupExpanded(object o)
     {
@@ -905,14 +909,14 @@ public partial class MealListViewModel : ObservableObjectPlus
 
             List<MealSummary> GetList()
             {
-                if (ShowLocalMeals)
-                {
-                    if (ShowRemoteMeals)
-                        return [.. Meal.LocalMealList.Union(Meal.RemoteMealList).OrderByDescending(ms => ms.CreationTime)]; // merge the two lists
-                    else
-                        return [.. Meal.LocalMealList];
-                }
-                else return ShowRemoteMeals ? [.. Meal.RemoteMealList] : [];
+                IEnumerable<MealSummary> mealSummaries = ShowLocalMeals
+                    ? (ShowRemoteMeals)
+                        ? Meal.LocalMealList.Union(Meal.RemoteMealList).OrderByDescending(ms => ms.CreationTime) // merge the two lists
+                        : Meal.LocalMealList
+                    : ShowRemoteMeals ? Meal.RemoteMealList : [];
+                if (!string.IsNullOrWhiteSpace(FilteredVenueName))
+                    mealSummaries = mealSummaries.Where(ms => ms.VenueName.Equals(FilteredVenueName, StringComparison.OrdinalIgnoreCase));
+                return [.. mealSummaries];
             }
 
             static IOrderedEnumerable<MealSummary> SortByDistance(IEnumerable<MealSummary> mealSummaries) => App.MyLocation is null
@@ -1144,4 +1148,25 @@ public partial class MealListViewModel : ObservableObjectPlus
         ScrollItemsTo(scrollToIndex, scrollUp, scrollDistance < manyItems); // For a short scroll it's ok to animate, but it's slow so we don't use it for long scrolls  
     }
     #endregion
+    // IQueryAttributable interface
+    // This handles Add this new method to handle query parameters
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        static bool boolValue(object value) => value is string s && bool.TryParse(s, out bool parsedBool) ? parsedBool : value is bool b && b;
+
+        #region Leave alone if not set
+        if (query.TryGetValue("sort", out var sortValue))
+            Sort = sortValue?.ToString();
+        if (query.TryGetValue("ShowLocal", out var showLocalValue))
+            ShowLocalMeals = boolValue(showLocalValue);
+        if (query.TryGetValue("ShowRemote", out var showRemoteValue))
+            ShowRemoteMeals = boolValue(showRemoteValue);
+        #endregion
+        #region Default values if not set
+        IsSelectableList = query.TryGetValue("IsSelectableList", out var selectableValue) && boolValue(selectableValue);
+        IsGrouped = query.TryGetValue("grouped", out var groupValue) && boolValue(groupValue);
+        SetCount = query.TryGetValue("count", out var countValue) && boolValue(countValue);
+        FilteredVenueName = query.TryGetValue("venue", out var venueValue) && venueValue is string venueName ? Uri.UnescapeDataString(venueName).ToString() : null;
+        #endregion
+    }
 }

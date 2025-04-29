@@ -24,6 +24,9 @@ public partial class MealSummaryGroup : ObservableObject
 
     private void MealSummaries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
+        // If the list of MealSummaries changed then the shortened list may have, so regenerate it
+        // Cleverer code would update it but it doesn't seem worth the bother for such a short list
+        OnPropertyChanged(nameof(FirstMealSummaries)); // just in case it changed
         // Keeps track of count but not CreationTime;
         switch (e.Action)
         {
@@ -58,8 +61,17 @@ public partial class MealSummaryGroup : ObservableObject
     }
 
     public string ApproximateAge => CreationTime.ApproximateAge();
+
+    private const int maxMeals = 9;
+
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CountText))]
+    [NotifyPropertyChangedFor(nameof(CountLarge))]
     public partial int Count { get; set; } = 0;
+
+    public bool CountLarge => Count > maxMeals;
+
+    public string CountText => Count <= maxMeals ? $"{Count}" : $"{maxMeals} of {Count}";
     public int Distance
     {
         get
@@ -69,6 +81,7 @@ public partial class MealSummaryGroup : ObservableObject
         }
     }
     public ObservableCollection<MealSummary> MealSummaries { get; } = [];
+    public ObservableCollection<MealSummary> FirstMealSummaries => new(MealSummaries.Take(maxMeals));
     [ObservableProperty]
     public partial bool IsExpanded { get; set; } = false;
     #endregion

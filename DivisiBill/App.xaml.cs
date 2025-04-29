@@ -495,19 +495,97 @@ public partial class App : Application, INotifyPropertyChanged
     }
     #endregion
     #region Navigation
+    /// <summary>
+    /// Shell navigation passing a relative location and a query string like "x=1&amp;y=2".
+    /// The string will be converted to <see cref="ShellNavigationQueryParameters"/> so it is only passed once.
+    /// </summary>
+    /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
+    /// <param name="navigationParameters">Query string</param>
+    /// <returns>An awaitable task that's caused when navigation completes</returns>
+    public static Task PushAsync(string location, string navigationParameters) =>
+        PushAsync(location, UriQueryToParameters(navigationParameters));
+
+    /// <summary>
+    /// Shell navigation passing a relative location and a name/object pair parameter.
+    /// The parameter is passed in ShellNavigationQueryParameters so it is only passed once.
+    /// </summary>
+    /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
+    /// <param name="navigationParameterName">The name of the query parameter</param>
+    /// <param name="navigationParameterValue">The parameter value (which may be any object)</param>
+    /// <returns>An awaitable task that's caused when navigation completes</returns>
     public static Task PushAsync(string location, string navigationParameterName, object navigationParameterValue) =>
         PushAsync(location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
+
+    /// <summary>
+    /// Shell navigation passing a relative location and a ShellNavigationQueryParameters as a parameter.
+    /// </summary>
+    /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
+    /// <param name="navigationParameter">A <see cref="ShellNavigationQueryParameters"/> object</param>
+    /// <returns>An awaitable task that's caused when navigation completes</returns>
     public static Task PushAsync(string location, ShellNavigationQueryParameters navigationParameter = null) => Shell.Current is not null
         ? navigationParameter is null
             ? Shell.Current.GoToAsync(location)
             : Shell.Current.GoToAsync(location, navigationParameter)
         : Task.CompletedTask;
 
+    /// <summary>
+    /// Shell navigation passing an absolute location and a query string like "x=1&amp;y=2".
+    /// The string will be converted to <see cref="ShellNavigationQueryParameters"/> so it is only passed once.
+    /// </summary>
+    /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
+    /// <param name="navigationParameters">Query string</param>
+    /// <returns>An awaitable task that's caused when navigation completes</returns>
+    public static Task GoToAsync(string location, string navigationParameters = null) =>
+        PushAsync("//" + location, navigationParameters);
+
+    /// <summary>
+    /// Shell navigation passing an absolute location and a name/object pair parameter.
+    /// The parameter is passed in ShellNavigationQueryParameters so it is only passed once.
+    /// </summary>
+    /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
+    /// <param name="navigationParameterName">The name of the query parameter</param>
+    /// <param name="navigationParameterValue">The parameter value (which may be any object)</param>
+    /// <returns>An awaitable task that's caused when navigation completes</returns>
     public static Task GoToAsync(string location, string navigationParameterName, object navigationParameterValue) =>
         PushAsync("//" + location, new ShellNavigationQueryParameters() { { navigationParameterName, navigationParameterValue } });
-    public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter = null) =>
+
+    /// <summary>
+    /// Shell navigation passing a relative location and a ShellNavigationQueryParameters as a parameter.
+    /// </summary>
+    /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
+    /// <param name="navigationParameter">A <see cref="ShellNavigationQueryParameters"/> object</param>
+    /// <returns>An awaitable task that's caused when navigation completes</returns>
+    public static Task GoToAsync(string location, ShellNavigationQueryParameters navigationParameter) =>
         PushAsync("//" + location, navigationParameter);
 
+    /// <summary>
+    /// Convert a URI query string into a <see cref="ShellNavigationQueryParameters"/> object containing the parsed parameters as string pairs (name/value).
+    /// </summary>
+    /// <param name="uriQuery">The URI query string to convert.</param>
+    /// <returns>A <see cref="ShellNavigationQueryParameters"/> object containing the parsed parameters.</returns>
+    private static ShellNavigationQueryParameters UriQueryToParameters(string uriQuery)
+    {
+        var parameters = new ShellNavigationQueryParameters();
+
+        if (string.IsNullOrEmpty(uriQuery))
+            return parameters;
+
+        // Remove leading '?' if present
+        var query = uriQuery.TrimStart('?');
+
+        foreach (var param in query.Split('&'))
+        {
+            var parts = param.Split('=');
+            if (parts.Length != 2)
+                continue;
+
+            var key = Uri.UnescapeDataString(parts[0]);
+            var value = Uri.UnescapeDataString(parts[1]);
+            parameters.Add(key, value);
+        }
+
+        return parameters;
+    }
     public static Task PopAsync() => Shell.Current is not null ? Shell.Current.Navigation.PopAsync() : Task.CompletedTask;
 
     public static async Task GoToHomeAsync() => await GoToAsync(isTutorialMode ? Routes.TutorialPage : Routes.LineItemsPage);

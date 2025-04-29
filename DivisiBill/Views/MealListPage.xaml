@@ -64,11 +64,17 @@
                     <!--#region Bill Summary Info-->
                     <VerticalStackLayout Margin="0,0,2,0">
                         <Label
-                            IsVisible="{Binding IsGrouped, Converter={StaticResource Not}, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            Text="{Binding VenueName}"
                             Margin="0,-3,0,-3"
                             FontSize="Large"
-                            LineBreakMode="TailTruncation"
-                            Text="{Binding VenueName}" />
+                            LineBreakMode="TailTruncation">
+                            <Label.IsVisible>
+                                <MultiBinding Converter="{StaticResource All}">
+                                    <Binding Path="IsGrouped" Converter="{StaticResource Not}" Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" x:DataType="vm:MealListViewModel"/>
+                                    <Binding Path="FilteredVenueName" Converter="{StaticResource IsStringNullOrWhiteSpace}" Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" x:DataType="vm:MealListViewModel"/>
+                                </MultiBinding>
+                            </Label.IsVisible>
+                        </Label>
                         <Grid ColumnDefinitions="*, auto">
                             <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"/>
                             <Label
@@ -173,11 +179,17 @@
                 <!--#region Bill Summary Info-->
                 <VerticalStackLayout Grid.Column="1" Grid.ColumnSpan="3">
                     <Label
-                        IsVisible="{Binding IsGrouped, Converter={StaticResource Not}, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                         Margin="0,0,0,-5"
                         FontSize="Large"
                         LineBreakMode="TailTruncation"
-                        Text="{Binding VenueName}" />
+                        Text="{Binding VenueName}">
+                        <Label.IsVisible>
+                            <MultiBinding Converter="{StaticResource All}">
+                                <Binding Path="IsGrouped" Converter="{StaticResource Not}" Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" x:DataType="vm:MealListViewModel"/>
+                                <Binding Path="FilteredVenueName" Converter="{StaticResource IsStringNullOrWhiteSpace}" Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" x:DataType="vm:MealListViewModel"/>
+                            </MultiBinding>
+                        </Label.IsVisible>
+                    </Label>
                     <Grid ColumnDefinitions="*, auto">
                         <Label FontSize="Small"
                             Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"/>
@@ -344,6 +356,8 @@
     </ContentPage.ToolbarItems>
     <services:ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading -->
+        <Label FontSize="Medium" HorizontalOptions="Center" Text="{Binding FilteredVenueName,StringFormat='For {0}'}"
+               IsVisible="{Binding FilteredVenueName, Converter={StaticResource IsStringNotNullOrWhiteSpace}}"/>
         <Label FontSize="Medium" HorizontalOptions="Center">
             <Label.FormattedText>
                 <FormattedString>
@@ -445,10 +459,18 @@
                         Command ="{Binding ShowGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}">
                         <toolkit:Expander.Header>
                             <VerticalStackLayout>
-                                <HorizontalStackLayout Spacing="10">
-                                    <Label Text="{Binding VenueName}" FontSize="Large" />
-                                    <Label Text="{Binding Count, StringFormat='({0})'}" FontSize="Large" />
-                                </HorizontalStackLayout>
+                                <Grid ColumnDefinitions="*, auto">
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Label Text="{Binding VenueName}" FontSize="Large" />
+                                        <Label Text="{Binding CountText, StringFormat='({0})'}" FontSize="Large" />
+                                    </HorizontalStackLayout>
+                                    <Button
+                                        Text="All Bills"
+                                        Command="{Binding ShowMealsForVenueCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}"
+                                        CommandParameter="{Binding VenueName}"
+                                        IsVisible="{Binding CountLarge}"
+                                        HorizontalOptions="End" />
+                                </Grid>
                                 <Grid ColumnDefinitions="*, auto"
                                         IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType = toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
                                     <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"/>
@@ -460,16 +482,12 @@
                                         Text="{Binding Path=Distance, Converter={StaticResource Distance}}">
                                     </Label>
                                 </Grid>
-                                <BoxView
-                                    HeightRequest="1"
-                                    VerticalOptions="End"
-                                    Color="{AppThemeBinding Light={StaticResource Gray900},
-                                            Dark={StaticResource White}}" />
+                                <BoxView VerticalOptions="End" HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                             </VerticalStackLayout>
                         </toolkit:Expander.Header>
                         <toolkit:Expander.Content>
                             <CollectionView 
-                                ItemsSource="{Binding MealSummaries}" 
+                                ItemsSource="{Binding FirstMealSummaries}" 
                                 ItemTemplate="{OnPlatform Default={StaticResource WithSwipe},
                                                           WinUI={StaticResource NoSwipe}}"/>
                         </toolkit:Expander.Content>
