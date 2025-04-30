@@ -26,6 +26,8 @@
             <services:IsNonZeroConverter x:Key="IsNonZero" />
             <services:IsNegativeConverter x:Key="IsNegative" />
 
+            <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All"/>
+            <toolkit:VariableMultiValueConverter x:Key="Any" ConditionType="Any" />
             <toolkit:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpace" />
             <toolkit:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpace" />
 

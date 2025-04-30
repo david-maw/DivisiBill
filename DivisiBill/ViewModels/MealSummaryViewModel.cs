@@ -1,3 +1,4 @@
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 ﻿using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
@@ -8,7 +9,7 @@ namespace DivisiBill.ViewModels;
 [QueryProperty(nameof(Summary), "Summary")]
 [QueryProperty(nameof(CurrentMeal), "Meal")]
 [QueryProperty(nameof(ShowStorage), "ShowStorage")]
-public partial class MealSummaryViewModel
+public partial class MealSummaryViewModel : ObservableObject
 {
     public MealSummaryViewModel() { }
 
