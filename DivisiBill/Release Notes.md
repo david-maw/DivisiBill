@@ -1,3 +1,16 @@
+
+# 6.2.28
+
+## Show a Few Bills Per Group
+
+When grouping bills by venue on a bill list page only the first few bills for each venue are shown.
+
+To see all the bills for a venue you can tap to expand the venue heading to see the most recent bills. If there are too many to show conveniently there will be an "all bills" button at the end of the short list that you can tap to open a new page containing all the bills for that venue in creation order (newest first).
+
+## Improved Bill List Layout
+
+The individual entries in a bill list are laid out slightly more neatly, especially when the list is grouped by venue name so there is no venue name on individual entries.
+
 # 6.2.27
 
 ## Improve Scrolling Bill List
