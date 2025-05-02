@@ -6,6 +6,7 @@
     xmlns:models="clr-namespace:DivisiBill.Models"
     xmlns:services="clr-namespace:DivisiBill.Services"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewsPartial="clr-namespace:DivisiBill.ViewsPartial"
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     x:Name="BrowseItemsPage"
     Title="Bills"
@@ -425,73 +426,41 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
         <!--#endregion-->
-        <!--#region Scroll Up/Down "Buttons"-->
-        <Border
-            services:ColumnLayout.SameRow="True"
-            HorizontalOptions="Center"
-            VerticalOptions="Start"
-            StrokeShape="Ellipse"
-            StrokeThickness="0"
-            Padding="20">
-            <Border.Background>
-                <RadialGradientBrush>
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource TransparentWhite}, Dark=Transparent}" Offset="1.0" />
-                </RadialGradientBrush>
-            </Border.Background>
-            <Label Text="{StaticResource TextArrowUp}"
-               FontFamily="mdicons"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               FontSize="70"
-               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <Border.IsVisible>
+        <!--#region Scroll Up/Down-->
+        <viewsPartial:ScrollButton
+            services:ColumnLayout.SameRow="True">
+            <viewsPartial:ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeDownAllowed"/>
                     <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
                     <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
                 </MultiBinding>
-            </Border.IsVisible>
-            <Border.Behaviors>
+            </viewsPartial:ScrollButton.IsVisible>
+            <viewsPartial:ScrollButton.Behaviors>
                 <toolkit:TouchBehavior
                     BindingContext="{Binding Source={x:Reference BrowseItemsPage}, Path=BindingContext, x:DataType=ContentPage}"
                     Command="{Binding ScrollItemsCommand}" CommandParameter = "Down"
                     LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="Start"/>
-            </Border.Behaviors>
-        </Border>
-        <Border
+            </viewsPartial:ScrollButton.Behaviors>
+        </viewsPartial:ScrollButton>
+        <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
-            HorizontalOptions="Center"
-            VerticalOptions="End"
-            StrokeShape="Ellipse"
-            StrokeThickness="0"
-            Padding="20">
-            <Border.Background>
-                <RadialGradientBrush>
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource TransparentWhite}, Dark=Transparent}" Offset="1.0" />
-                </RadialGradientBrush>
-            </Border.Background>
-            <Label Text="{StaticResource TextArrowDown}"
-               FontFamily="mdicons"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               FontSize="70"
-               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <Border.IsVisible>
+            Down="True"
+            VerticalOptions="End">
+            <viewsPartial:ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeUpAllowed"/>
                     <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
                     <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
                 </MultiBinding>
-            </Border.IsVisible>
-            <Border.Behaviors>
+            </viewsPartial:ScrollButton.IsVisible>
+            <viewsPartial:ScrollButton.Behaviors>
                 <toolkit:TouchBehavior
                     BindingContext="{Binding Source={x:Reference BrowseItemsPage}, Path=BindingContext, x:DataType=ContentPage}"
-                    Command="{Binding ScrollItemsCommand}" CommandParameter = "Up"
+                    Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
                     LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="End"/>
-            </Border.Behaviors>
-        </Border>
+            </viewsPartial:ScrollButton.Behaviors>
+        </viewsPartial:ScrollButton>
         <!--#endregion-->
         <!--#region Undelete-->
         <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">

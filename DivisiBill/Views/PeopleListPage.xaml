@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewsPartial="clr-namespace:DivisiBill.ViewsPartial"
              x:Name="Page"
              x:Class="DivisiBill.Views.PeopleListPage"
              x:DataType="vm:PeopleListViewModel"
@@ -93,61 +94,29 @@
             ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
             ItemSizingStrategy="MeasureFirstItem"
             ItemsSource="{Binding AllPeople}"/>
-        <!--#region Scroll Up/Down "Buttons" -->
-        <Border
-            IsVisible="{Binding IsSwipeDownAllowed}"
+        <!--#region Scroll Up/Down-->
+        <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
-            HorizontalOptions="Center"
-            VerticalOptions="Start"
-            StrokeShape="Ellipse"
-            StrokeThickness="0"
-            Padding="20">
-            <Label Text="{StaticResource TextArrowUp}"
-               FontFamily="mdicons"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               FontSize="70"
-               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <Border.Background>
-                <RadialGradientBrush>
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource TransparentWhite}, Dark=Transparent}" Offset="1.0" />
-                </RadialGradientBrush>
-            </Border.Background>
-            <Border.Behaviors>
+            IsVisible="{Binding IsSwipeDownAllowed}">
+            <viewsPartial:ScrollButton.Behaviors>
                 <toolkit:TouchBehavior
                     BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=ContentPage}"
                     Command="{Binding ScrollItemsCommand}" CommandParameter = "Down"
                     LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="Start"/>
-            </Border.Behaviors>
-        </Border>
-        <Border
-            IsVisible="{Binding IsSwipeUpAllowed}"
+            </viewsPartial:ScrollButton.Behaviors>
+        </viewsPartial:ScrollButton>
+        <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
-            HorizontalOptions="Center"
-            VerticalOptions="End"
-            StrokeShape="Ellipse"
-            StrokeThickness="0"
-            Padding="20">
-            <Label Text="{StaticResource TextArrowDown}"
-               FontFamily="mdicons"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               FontSize="70"
-               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <Border.Background>
-                <RadialGradientBrush>
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
-                    <GradientStop Color="{AppThemeBinding Light={StaticResource TransparentWhite}, Dark=Transparent}" Offset="1.0" />
-                </RadialGradientBrush>
-            </Border.Background>
-            <Border.Behaviors>
+            IsVisible="{Binding IsSwipeUpAllowed}"
+            Down="True"
+            VerticalOptions="End">
+            <viewsPartial:ScrollButton.Behaviors>
                 <toolkit:TouchBehavior
                     BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=ContentPage}"
                     Command="{Binding ScrollItemsCommand}" CommandParameter = "Up"
                     LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="End"/>
-            </Border.Behaviors>
-        </Border>
+            </viewsPartial:ScrollButton.Behaviors>
+        </viewsPartial:ScrollButton>
         <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint -->

@@ -6,9 +6,12 @@
     xmlns:model="clr-namespace:DivisiBill.Models"
     xmlns:services="clr-namespace:DivisiBill.Services"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:views="clr-namespace:DivisiBill.Views"
+    xmlns:viewsPartial="clr-namespace:DivisiBill.ViewsPartial"
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     Title="Items"
     x:DataType="vm:MealViewModel"
+    x:Name="Page"
     BindingContext="{DynamicResource MealViewModel}"
     Shell.FlyoutBehavior="Flyout">
     <!--#region ToolBar-->
@@ -337,16 +340,28 @@
             <!--#endregion-->
         </CollectionView>
         <!--#region Scroll Up/Down-->
-        <Button
+        <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
-            Command="{Binding ScrollItemsCommand}"
-            IsVisible="{Binding IsLineItemSwipeDownAllowed}"
-            Style="{StaticResource ScrollUpButtonStyle}" />
-        <Button
+            IsVisible="{Binding IsLineItemSwipeDownAllowed}">
+            <viewsPartial:ScrollButton.Behaviors>
+                <toolkit:TouchBehavior
+                    BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=views:LineItemsPage}"
+                    Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
+                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="Start"/>
+            </viewsPartial:ScrollButton.Behaviors>
+        </viewsPartial:ScrollButton>
+        <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
-            Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsLineItemSwipeUpAllowed}"
-            Style="{StaticResource ScrollDownButtonStyle}" />
+            Down="True"
+            VerticalOptions="End">
+            <viewsPartial:ScrollButton.Behaviors>
+                <toolkit:TouchBehavior
+                    BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=views:LineItemsPage}"
+                    Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
+                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="End"/>
+            </viewsPartial:ScrollButton.Behaviors>
+        </viewsPartial:ScrollButton>
         <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint-->
