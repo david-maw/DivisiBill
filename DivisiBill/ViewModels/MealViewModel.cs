@@ -463,11 +463,7 @@ public partial class MealViewModel : ObservableObjectPlus
     private void LoadLineItemNameString() => LineItemNameString = SelectedLineItem.ItemName;
 
     [RelayCommand]
-    private void UnloadLineItemNameString()
-    {
-        if (SelectedLineItem is not null)
-            SelectedLineItem.ItemName = LineItemNameString;
-    }
+    private void UnloadLineItemNameString() => SelectedLineItem?.ItemName = LineItemNameString;
 
     [ObservableProperty]
     public partial string LineItemNameString { get; set; }

@@ -101,8 +101,7 @@ public class ScannedBill
             { // The name column is offset below the cost column
                 OrderLines.ForEach(orderLine =>
                 {
-                    if (priorItem is not null)
-                        priorItem.ItemName = orderLine.ItemName;
+                    priorItem?.ItemName = orderLine.ItemName;
                     priorItem = orderLine;
                 });
                 OrderLines.RemoveAt(lastLineInx);
@@ -111,8 +110,7 @@ public class ScannedBill
             { // The cost column is offset below the name column
                 OrderLines.ForEach(orderLine =>
                 {
-                    if (priorItem is not null)
-                        priorItem.ItemCost = orderLine.ItemCost;
+                    priorItem?.ItemCost = orderLine.ItemCost;
                     priorItem = orderLine;
                 });
                 OrderLines.RemoveAt(lastLineInx);

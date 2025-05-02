@@ -93,8 +93,7 @@ public partial class FileListViewModel : ObservableObjectPlus
                 SelectedItem = null;  // deselecting current item
             else
             {
-                if (SelectedItem is not null) // Selecting a new item where something was selected before
-                    SelectedItem.Selected = false; // so deselect the old one 
+                SelectedItem?.Selected = false; // so deselect the old one 
                 SelectedItem = remoteItemInfo;
             }
         }

@@ -17,7 +17,7 @@ public class PercentConverter : IValueConverter
         return Math.Abs(d) > 1
             ? (d < 0) ? -100 : 100
             : targetType == typeof(string)
-            ? value.GetType() == typeof(int) ? string.Format("{0:##0%}", d) : (object)string.Format("{0:##0.00#%}", d)
+            ? value.GetType() == typeof(int) ? string.Format("{0:##0%}", d) : string.Format("{0:##0.00#%}", d)
             : value;
     }
 

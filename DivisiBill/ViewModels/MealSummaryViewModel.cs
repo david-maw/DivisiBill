@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;

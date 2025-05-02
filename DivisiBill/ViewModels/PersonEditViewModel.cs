@@ -60,8 +60,7 @@ internal partial class PersonEditViewModel(Person personParameter, Action CloseP
                     originalPerson.UpsertInAllPeople();
                     // If this person is in the current meal (meaning IsInUse would have been true if we had tested it) make sure the nicknames are consistent
                     PersonCost? originalPersonCost = Meal.CurrentMeal.Costs.FirstOrDefault(pc => pc.Diner is not null && pc.Diner == originalPerson);
-                    if (originalPersonCost is not null)
-                        originalPersonCost.Nickname = originalPerson.Nickname;
+                    originalPersonCost?.Nickname = originalPerson.Nickname;
                     // Make sure any changes are persisted
                     await Person.SaveSettingsIfChangedAsync();
                     closePage = true;
