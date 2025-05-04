@@ -1,3 +1,10 @@
+# 6.2.29
+
+## Use Consistent Scroll Buttons
+
+Any list that could get longer than a single page (items, bills, people, venues, people lists and venue lists) is scrollable and has indicators (an up or down arrow in a circle) showing the direction in which there are unseen elements. The indicators also act as buttons and can be tapped or long pressed to scroll up or down a page or move to the ends of the list.
+
+These buttons used to be different on some lists, now they look and work identically across all lists and provide visual feedback when used.
 
 # 6.2.28
 
