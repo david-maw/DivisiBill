@@ -24,7 +24,7 @@
             TrueObject="{StaticResource FileGlyphLocal}" />
         <DataTemplate x:Key="WithSwipe" x:DataType="models:MealSummary">
             <!--#region Bill Summary Info Surrounded by SwipeView-->
-            <!--#region SwipeView Start -->
+            <!--#region SwipeView Start-->
             <SwipeView Grid.Column="1" Grid.ColumnSpan="4">
                 <SwipeView.LeftItems>
                     <SwipeItems Mode="Execute">
@@ -214,7 +214,7 @@
                     <!--#endregion-->
                 </Grid>
                 <!--#endregion-->
-            <!--#region SwipeView End -->
+                <!--#region SwipeView End-->
             </SwipeView>
             <!--#endregion-->
             <!--#endregion-->
@@ -285,9 +285,12 @@
             Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}" />
     </ContentPage.ToolbarItems>
     <services:ColumnLayout Margin="0,0,0,10">
-        <!--#region Page Heading -->
-        <Label FontSize="Medium" HorizontalOptions="Center" Text="{Binding FilteredVenueName,StringFormat='For {0}'}"
-               IsVisible="{Binding FilteredVenueName, Converter={StaticResource IsStringNotNullOrWhiteSpace}}"/>
+        <!--#region Page Heading-->
+        <Label
+            FontSize="Medium"
+            HorizontalOptions="Center"
+            IsVisible="{Binding FilteredVenueName, Converter={StaticResource IsStringNotNullOrWhiteSpace}}"
+            Text="{Binding FilteredVenueName, StringFormat='For {0}'}" />
         <Label FontSize="Medium" HorizontalOptions="Center">
             <Label.FormattedText>
                 <FormattedString>
@@ -307,19 +310,6 @@
             VerticalOptions="End"
             Color="{AppThemeBinding Light={StaticResource Gray900},
                                     Dark={StaticResource White}}" />
-        <!--#endregion-->
-        <!--#region Busy Indicator when Meals are Loading-->
-        <VerticalStackLayout IsVisible="{Binding IsMealListLoading}">
-            <Label
-                FontSize="Title"
-                HorizontalOptions="Center"
-                Text="Loading List..." />
-            <ActivityIndicator
-                HeightRequest="100"
-                IsRunning="True"
-                Color="{AppThemeBinding Light={StaticResource Gray900},
-                                        Dark={StaticResource White}}" />
-        </VerticalStackLayout>
         <!--#endregion-->
         <!--#region Progress Reporting and Cancel-->
         <Border
@@ -357,8 +347,8 @@
             SelectionMode="{Binding MealCollectionMode}">
             <CollectionView.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
-                    <Binding Path="IsGrouped" Converter="{StaticResource Not}" />
-                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
+                    <Binding Converter="{StaticResource Not}" Path="IsGrouped" />
+                    <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
             </CollectionView.IsVisible>
         </CollectionView>
@@ -366,59 +356,59 @@
         <!--#region List of Meals Grouped by Venue-->
         <CollectionView
             x:Name="CurrentGroupView"
-            services:ColumnLayout.SameRow="True"
             services:ColumnLayout.Fill="True"
+            services:ColumnLayout.SameRow="True"
             EmptyView="No bill groups found"
             ItemSizingStrategy="MeasureAllItems"
             ItemsSource="{Binding MealSummaryGroups}"
             Scrolled="OnCollectionViewScrolled"
-            SelectionMode="Single"
-            SelectedItem="{Binding SelectedGroup}">
+            SelectedItem="{Binding SelectedGroup}"
+            SelectionMode="Single">
             <CollectionView.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
-                    <Binding Path="IsGrouped"/>
-                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
+                    <Binding Path="IsGrouped" />
+                    <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
             </CollectionView.IsVisible>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:MealSummaryGroup">
                     <toolkit:Expander
-                        IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
-                        CommandParameter ="{Binding}"
-                        Command ="{Binding ShowGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}">
+                        Command="{Binding ShowGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                        CommandParameter="{Binding}"
+                        IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                         <toolkit:Expander.Header>
                             <VerticalStackLayout>
                                 <Grid ColumnDefinitions="*, auto">
                                     <HorizontalStackLayout Spacing="10">
-                                        <Label Text="{Binding VenueName}" FontSize="Large" />
-                                        <Label Text="{Binding CountText, StringFormat='({0})'}" FontSize="Large" />
+                                        <Label FontSize="Large" Text="{Binding VenueName}" />
+                                        <Label FontSize="Large" Text="{Binding CountText, StringFormat='({0})'}" />
                                     </HorizontalStackLayout>
                                 </Grid>
-                                <Grid ColumnDefinitions="*, auto"
-                                        IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType = toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
-                                    <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"/>
+                                <Grid ColumnDefinitions="*, auto" IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType=toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
+                                    <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}" />
                                     <Label
                                         Grid.Column="1"
                                         Margin="0,0,34,0"
                                         FontSize="Small"
                                         HorizontalOptions="End"
-                                        Text="{Binding Path=Distance, Converter={StaticResource Distance}}">
-                                    </Label>
+                                        Text="{Binding Path=Distance, Converter={StaticResource Distance}}" />
                                 </Grid>
-                                <BoxView VerticalOptions="End" HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                                <BoxView
+                                    HeightRequest="1"
+                                    VerticalOptions="End"
+                                    Color="{AppThemeBinding Light={StaticResource Gray900},
+                                                            Dark={StaticResource White}}" />
                             </VerticalStackLayout>
                         </toolkit:Expander.Header>
                         <toolkit:Expander.Content>
                             <VerticalStackLayout>
-                                <CollectionView 
-                                    ItemsSource="{Binding FirstMealSummaries}"
-                                    ItemTemplate="{StaticResource WithSwipe}"/>
+                                <CollectionView ItemTemplate="{StaticResource WithSwipe}" ItemsSource="{Binding FirstMealSummaries}" />
                                 <Button
-                                    Text="Show All Bills for This Venue"
-                                    Command="{Binding ShowMealsForVenueCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType = vm:MealListViewModel}"
+                                    Command="{Binding ShowMealsForVenueCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                                     CommandParameter="{Binding VenueName}"
+                                    HorizontalOptions="Center"
                                     IsVisible="{Binding CountLarge}"
-                                    HorizontalOptions="Center" />
+                                    Text="Show All Bills for This Venue" />
                             </VerticalStackLayout>
                         </toolkit:Expander.Content>
                     </toolkit:Expander>
@@ -427,40 +417,51 @@
         </CollectionView>
         <!--#endregion-->
         <!--#region Scroll Up/Down-->
-        <viewsPartial:ScrollButton
-            services:ColumnLayout.SameRow="True">
+        <viewsPartial:ScrollButton services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}">
             <viewsPartial:ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
-                    <Binding Path="IsSwipeDownAllowed"/>
-                    <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
-                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
+                    <Binding Path="IsSwipeDownAllowed" />
+                    <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
             </viewsPartial:ScrollButton.IsVisible>
-            <viewsPartial:ScrollButton.Behaviors>
-                <toolkit:TouchBehavior
-                    BindingContext="{Binding Source={x:Reference BrowseItemsPage}, Path=BindingContext, x:DataType=ContentPage}"
-                    Command="{Binding ScrollItemsCommand}" CommandParameter = "Down"
-                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="Start"/>
-            </viewsPartial:ScrollButton.Behaviors>
         </viewsPartial:ScrollButton>
         <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
-            Down="True"
+            Command="{Binding ScrollItemsCommand}"
             VerticalOptions="End">
             <viewsPartial:ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
-                    <Binding Path="IsSwipeUpAllowed"/>
-                    <Binding Path="IsMealListScrolling" Converter="{StaticResource Not}"/>
-                    <Binding Path="IsMealListLoading" Converter="{StaticResource Not}"/>
+                    <Binding Path="IsSwipeUpAllowed" />
+                    <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
             </viewsPartial:ScrollButton.IsVisible>
-            <viewsPartial:ScrollButton.Behaviors>
-                <toolkit:TouchBehavior
-                    BindingContext="{Binding Source={x:Reference BrowseItemsPage}, Path=BindingContext, x:DataType=ContentPage}"
-                    Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
-                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="End"/>
-            </viewsPartial:ScrollButton.Behaviors>
         </viewsPartial:ScrollButton>
+        <!--#endregion-->
+        <!--#region Busy Indicator when Meals are Loading or Scrolling-->
+        <Label
+            services:ColumnLayout.SameRow="True"
+            Padding="2,10"
+            FontSize="Title"
+            HorizontalOptions="Center"
+            Text="Loading Bills..."
+            IsVisible="{Binding IsMealListLoading}"
+            VerticalOptions="Center"/>
+        <ActivityIndicator
+            services:ColumnLayout.SameRow="True"
+            Margin="-1"
+            WidthRequest="240"
+            HeightRequest="240"
+            HorizontalOptions="Center"
+            IsRunning="True"
+            VerticalOptions="Center"
+            Color="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+            <ActivityIndicator.IsVisible>
+                <MultiBinding Converter="{StaticResource Any}">
+                    <Binding Path="IsMealListLoading" />
+                    <Binding Path="IsMealListScrollingFar" />
+                </MultiBinding>
+            </ActivityIndicator.IsVisible>
+        </ActivityIndicator>
         <!--#endregion-->
         <!--#region Undelete-->
         <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">

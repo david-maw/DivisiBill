@@ -21,7 +21,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         Meal.LocalMealList.CollectionChanged += LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged += RemoteMealList_CollectionChanged;
         App.MyLocationChanged += App_MyLocationChanged;
-        scrollEndTimer = new(_ => IsMealListScrolling = false, null, int.MaxValue, 0);
+        scrollEndTimer = new(_ => IsMealListScrollingFar = false, null, int.MaxValue, 0);
     }
     private void App_MyLocationChanged(object sender, EventArgs e)
     {
@@ -1069,7 +1069,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     partial void OnFirstVisibleItemIndexChanged(int value)
     {
         IsSwipeDownAllowed = value > 0;
-        scrollEndTimer.Change(50, 0); // Notify end of scroll if we do not see this change for a while
+        //IsMealListScrollingFar = true; // Enable to turn on manual scroll detection
+        scrollEndTimer.Change(200, 0); // Notify end of scroll if we do not see this change for a while
     }
 
     /// <summary>
@@ -1086,7 +1087,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     private readonly Timer scrollEndTimer; // fires when we think scrolling has ended
 
     [ObservableProperty]
-    public partial bool IsMealListScrolling { get; private set; } = false;
+    public partial bool IsMealListScrollingFar { get; private set; } = false;
 
     /// <summary>
     /// Scroll the control displaying the items to a particular item index.
@@ -1141,10 +1142,11 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     }
     private async Task ScrollItemsImpl(int scrollToIndex, bool scrollUp)
     {
-        IsMealListScrolling = true;
-        await Task.Yield(); // allow the UI to update before we call ScrollItemsTo
         const int manyItems = 30; // 30 items is our definition of scrolling a long way
         int scrollDistance = Math.Abs(scrollToIndex - (scrollUp ? LastVisibleItemIndex : FirstVisibleItemIndex)); // How many items we'll be scrolling past
+        if (scrollDistance >= manyItems)
+            IsMealListScrollingFar = true;
+        await Task.Yield(); // allow the UI to update before we call ScrollItemsTo
         ScrollItemsTo(scrollToIndex, scrollUp, scrollDistance < manyItems); // For a short scroll it's ok to animate, but it's slow so we don't use it for long scrolls  
     }
     #endregion

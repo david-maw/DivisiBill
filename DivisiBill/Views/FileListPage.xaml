@@ -229,26 +229,13 @@
         <!--#region Scroll Up/Down-->
         <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
-            IsVisible="{Binding IsSwipeDownAllowed}">
-            <viewsPartial:ScrollButton.Behaviors>
-                <toolkit:TouchBehavior
-                    BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=views:FileListPage}"
-                    Command="{Binding ScrollItemsCommand}" CommandParameter="Down"
-                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="Start"/>
-            </viewsPartial:ScrollButton.Behaviors>
-        </viewsPartial:ScrollButton>
+            Command="{Binding ScrollItemsCommand}"
+            IsVisible="{Binding IsSwipeDownAllowed}"/>
         <viewsPartial:ScrollButton
             services:ColumnLayout.SameRow="True"
+            Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"
-            Down="True"
-            VerticalOptions="End">
-            <viewsPartial:ScrollButton.Behaviors>
-                <toolkit:TouchBehavior
-                    BindingContext="{Binding Source={x:Reference Page}, Path=BindingContext, x:DataType=views:FileListPage}"
-                    Command="{Binding ScrollItemsCommand}" CommandParameter="Up"
-                    LongPressCommand="{Binding ScrollItemsCommand}" LongPressCommandParameter="End"/>
-            </viewsPartial:ScrollButton.Behaviors>
-        </viewsPartial:ScrollButton>
+            VerticalOptions="End"/>
         <!--#endregion-->
     </services:ColumnLayout>
 </ContentPage>
