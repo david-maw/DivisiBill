@@ -54,39 +54,4 @@
                     LongPressCommandParameter="{Binding Down, Converter={StaticResource StartEndTextConverter}, Source={x:Reference scrollButton}}"/>
         </Border.Behaviors>
     </Border>
-    <VisualStateManager.VisualStateGroups>
-        <VisualStateGroupList>
-            <VisualStateGroup Name="CommonStates">
-                <VisualState Name="Normal">
-                    <VisualState.Setters>
-                        <Setter TargetName="label" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-                        <Setter TargetName="border" Property="Border.StrokeThickness" Value="0" />
-                        <Setter TargetName="label" Property="Label.Scale" Value="1.0"/>
-                    </VisualState.Setters>
-                </VisualState>
-
-                <VisualState Name="Focused"/>
-
-                <VisualState Name="Disabled">
-                    <VisualState.Setters>
-                        <Setter TargetName="label" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray500}}"/>
-                    </VisualState.Setters>
-                </VisualState>
-
-                <VisualState Name="PointerOver"/>
-
-                <VisualState Name="Pressed">
-                    <VisualState.Setters>
-                        <Setter TargetName="label" Property="Label.Scale" Value="0.8"/>
-                    </VisualState.Setters>
-                </VisualState>
-
-                <VisualState Name="LongPressed">
-                    <VisualState.Setters>
-                        <Setter TargetName="label" Property="Label.Scale" Value="1.2"/>
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateGroupList>
-    </VisualStateManager.VisualStateGroups>
 </ContentView>

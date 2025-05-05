@@ -18,7 +18,7 @@ public partial class ScrollButton : ContentView
     public ScrollButton()
     {
         InitializeComponent();
-        StateTimer = new Timer(_ => MainThread.BeginInvokeOnMainThread(() => VisualStateManager.GoToState(this, "Normal")));
+        StateTimer = new Timer(_ => MainThread.InvokeOnMainThreadAsync(() => VisualStateManager.GoToState(this, "Normal")));
     }
 
     /// <summary>
@@ -28,8 +28,8 @@ public partial class ScrollButton : ContentView
     [RelayCommand(CanExecute = nameof(CanPress))]
     public async Task Press(string parameter)
     {
-        VisualStateManager.GoToState(this, "Pressed");
-        await Task.Yield(); // Give the UI chance to update
+        await this.ScaleTo(0.5, 100);
+        await this.ScaleTo(1.0, 100);
         Command.Execute(parameter);
         StateTimer.Change(200, Timeout.Infinite);
     }
@@ -42,8 +42,8 @@ public partial class ScrollButton : ContentView
     [RelayCommand(CanExecute = nameof(CanLongPress))]
     public async Task LongPress(string parameter)
     {
-        VisualStateManager.GoToState(this, "LongPressed");
-        await Task.Yield(); // Give the UI chance to update
+        await this.ScaleTo(1.5, 100);
+        await this.ScaleTo(1.0, 100);
         Command.Execute(parameter);
         StateTimer.Change(200, Timeout.Infinite);
     }
