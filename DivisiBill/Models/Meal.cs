@@ -1213,7 +1213,7 @@ public partial class Meal : ObservableObjectPlus
         Summary.IsLocal = true;
         SavedToFile = true;
         if (SavedToApp)
-            MainThread.BeginInvokeOnMainThread(() => App.Settings.MealSavedToFile = true);
+            MainThread.InvokeOnMainThreadAsync(() => App.Settings.MealSavedToFile = true);
     }
     private async Task SaveToRemoteAsync()
     {

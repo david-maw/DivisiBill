@@ -21,7 +21,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         Meal.LocalMealList.CollectionChanged += LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged += RemoteMealList_CollectionChanged;
         App.MyLocationChanged += App_MyLocationChanged;
-        scrollEndTimer = new(_ => IsMealListScrollingFar = false, null, int.MaxValue, 0);
+        scrollEndTimer = new(_ => MainThread.InvokeOnMainThreadAsync(() => IsMealListScrollingFar = false), null, Timeout.Infinite, Timeout.Infinite);
     }
     private void App_MyLocationChanged(object sender, EventArgs e)
     {
