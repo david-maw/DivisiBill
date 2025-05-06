@@ -297,7 +297,9 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     public void OverwriteCurrent()
     {
+        MealSummary priorMealSummary = CurrentMeal.Summary;
         CurrentMeal = this;
+        MealSummary.NotifyCurrentMealChanged(priorMealSummary, Summary);
         // It is important to reassign CurrentMeal early so downstream code which wants to remove it from lists of meals
         // will recognize the correct meal. Such code may well be triggered by events, so beware.
 
@@ -786,9 +788,10 @@ public partial class Meal : ObservableObjectPlus
         if (!MonitorChanges)
             return;
         if (Frozen)
-        {   // We're going to make an identical new bill from the same venue except the CreationTime will be now
-            // We know there's already a persisted copy of the current bill (that's what 'Frozen' means 
+        {   // We're going to make an identical new bill from the same venue except the CreationTime will be 'now'
+            // We know there's already a persisted copy of the current bill (that's what 'Frozen' means). 
             // However, the current bill MealSummary will be in the summary list, so stop using it and make a new one
+            // and notify the MealSummary class that we did that, so the old summary is no longer current, the new one is
             Frozen = false;
             MealSummary OriginalSummary = Summary;
             Summary = OriginalSummary.ShallowCopy(); // This will call MarkAsChanged, but this time Frozen will be false
@@ -828,6 +831,7 @@ public partial class Meal : ObservableObjectPlus
             Summary.IsRemote = false;
             SaveToFile();
             Summary.Show();
+            MealSummary.NotifyCurrentMealChanged(OriginalSummary, Summary);
         }
         else
             ActualLastChangeTime = DateTime.Now;
@@ -837,6 +841,7 @@ public partial class Meal : ObservableObjectPlus
         SavedToFile = false;
         SavedToRemote = false;
     }
+
     /// <summary>
     /// Mark the bill as being a new one and save the current state of it to disk if it has not already
     /// been saved.

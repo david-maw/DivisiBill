@@ -115,6 +115,12 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
 
     public bool IsForCurrentMeal => Meal.CurrentMeal is not null && CreationTime == Meal.CurrentMeal.CreationTime;
 
+    public static void NotifyCurrentMealChanged(MealSummary old, MealSummary newMs)
+    {
+        old?.OnPropertyChanged(nameof(IsForCurrentMeal));
+        newMs?.OnPropertyChanged(nameof(IsForCurrentMeal));
+    }
+
     /// <summary>
     /// Last time a bill was changed unlike ActualLastChangeTime this defaults to creation time if not set
     /// </summary>

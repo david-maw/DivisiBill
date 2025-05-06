@@ -46,7 +46,7 @@
                 </SwipeView.RightItems>
                 <!--#endregion-->
                 <!--#region Bill Summary Info, but SwipeView does not work with a mouse on Windows so two extra overlaid buttons are made visible-->
-                <Grid ColumnDefinitions="Auto, 2*, *, 2*, 50" RowDefinitions="auto,auto">
+                <Grid ColumnDefinitions="Auto, 2*, *, 2*, Auto" RowDefinitions="auto,auto">
                     <!--#region MealSummary Display-->
                     <!--#region Item Selection Area-->
                     <Grid
@@ -125,25 +125,35 @@
                         Grid.Row="0"
                         Grid.RowSpan="2"
                         Grid.Column="4"
-                        ColumnDefinitions="25,25"
-                        HorizontalOptions="Start"
+                        ColumnDefinitions="Auto, 25,25"
                         RowDefinitions="25,25"
+                        HorizontalOptions="Start"
                         VerticalOptions="Center">
+                        <!--#region Icon indicating current Meal-->
                         <Image
+                            Grid.Row="0"
                             Grid.RowSpan="2"
                             Grid.Column="0"
+                            IsVisible="{Binding IsForCurrentMeal}"
+                            HorizontalOptions="End"
+                            WidthRequest="30"
+                            Source="{StaticResource ListGlyphCurrentMeal}"/>
+                        <!--#endregion-->
+                        <Image
+                            Grid.RowSpan="2"
+                            Grid.Column="1"
                             IsVisible="{Binding HasImage}"
                             Source="{StaticResource FileGlyphImage}" />
                         <!--  Only show these if cloud access is allowed, otherwise they do not tell the user anything  -->
                         <Image
                             Grid.Row="0"
-                            Grid.Column="1"
-                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            Grid.Column="2"
+                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealSummaryViewModel}}, x:DataType=vm:MealSummaryViewModel}"
                             Source="{Binding IsRemote, Converter={StaticResource RemoteIconConverter}}" />
                         <Image
                             Grid.Row="1"
-                            Grid.Column="1"
-                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            Grid.Column="2"
+                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealSummaryViewModel}}, x:DataType=vm:MealSummaryViewModel}"
                             Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}" />
                     </Grid>
                     <!--#endregion-->

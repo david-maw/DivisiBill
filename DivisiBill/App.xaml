@@ -62,6 +62,7 @@
 
             <FontImageSource x:Key="ListGlyphUnselected"        Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0130;" FontFamily="mdicons"/> <!--checkbox-blank-circle-outline-->
             <FontImageSource x:Key="ListGlyphSelected"          Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0134;" FontFamily="mdicons"/> <!--checkbox-marked-circle-outline-->
+            <FontImageSource x:Key="ListGlyphCurrentMeal"       Color="{AppThemeBinding Light={StaticResource ImageGlyphDark}, Dark={StaticResource ImageGlyphLight}}"  Glyph="&#xF1A7D;" FontFamily="mdicons"/> <!--text-box-edit-outline-->
 
             <FontImageSource x:Key="GlyphAdd"                   Color="White" Glyph="&#xF0419;" FontFamily="mdicons"/> <!--plus-circle-outline-->
             <FontImageSource x:Key="GlyphCamera"                Color="White" Glyph="&#xF0D5D;" FontFamily="mdicons"/> <!--camera-outline-->
