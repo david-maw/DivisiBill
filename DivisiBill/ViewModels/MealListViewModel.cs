@@ -204,6 +204,17 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             InvalidateMealList();
         }
     }
+
+    /// <summary>
+    /// Determines the best meal summary to use based on the provided input and the current state of the meal selection.
+    /// </summary>
+    /// <remarks>This method prioritizes the provided meal summary. If the input is null, it
+    /// falls back to the first selected meal in the list, provided the list is selectable. If no meals are selected or
+    /// the list is not selectable, the currently selected meal summary is used as a final fallback.</remarks>
+    /// <param name="ms">The meal summary to evaluate. If not null, this value will be returned.</param>
+    /// <returns>The provided <paramref name="ms"/> if it is not null; otherwise, the first meal summary from the meal list where
+    /// the file is selected, if the list is selectable. If no such meal exists or the list is not selectable, the
+    /// currently selected meal summary is returned.</returns>
     private MealSummary BestMealSummary(MealSummary ms) => ms is not null ? ms : IsSelectableList ? MealList.Where(ms => ms.FileSelected).FirstOrDefault() : SelectedMealSummary;
 
     /// <summary>
@@ -666,7 +677,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             ms.FileSelected = !ms.FileSelected;
             SelectedMealSummariesCount += (ms.FileSelected) ? 1 : -1;
         }
-        else
+        else if (Utilities.IsUWP || !SelectedMealSummaryChangedRecently())
             SelectedMealSummary = SelectedMealSummary == ms ? null : ms;
     }
 
@@ -869,6 +880,22 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
 
     [ObservableProperty]
     public partial MealSummary SelectedMealSummary { get; set; }
+
+    private DateTime SelectedMealSummaryChangeTime = DateTime.MinValue;
+    partial void OnSelectedMealSummaryChanged(MealSummary value)
+    {
+        SelectedMealSummaryChangeTime = DateTime.Now;
+    }
+    /// <summary>
+    /// Checks if the selected meal summary has changed recently. Used to kludge around Android selecting
+    /// a new item in a CollectionView unexpectedly. See also <seealso cref="SelectedMealSummaryChangeTime"/>.
+    /// </summary>
+    /// <returns>True if the selected meal summary has changed within the last 300 milliseconds; otherwise, false.</returns>
+    private bool SelectedMealSummaryChangedRecently()
+    {
+        TimeSpan timeSpan = (DateTime.Now - SelectedMealSummaryChangeTime);
+        return timeSpan.TotalMilliseconds < 300;
+    }
     public int SelectedMealSummariesCount
     {
         get;
