@@ -1,3 +1,17 @@
+# 6.2.30
+
+## ## Indicate the Current Meal
+
+The bill list now shows an icon to denote the current bill.
+
+## Enhance meal selection Button logic
+
+On Android tapping in the center of a different meal list item would just clear the current selection. This has been corrected and now also selects the new bill.
+
+## Use Explicit Scaling in Scroll Buttons
+
+The scroll button size change when tapped is now more obvious.
+
 # 6.2.29
 
 ## Use Consistent Scroll Buttons
