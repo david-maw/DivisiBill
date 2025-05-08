@@ -148,13 +148,13 @@
                         <Image
                             Grid.Row="0"
                             Grid.Column="2"
-                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealSummaryViewModel}}, x:DataType=vm:MealSummaryViewModel}"
-                            Source="{Binding IsRemote, Converter={StaticResource RemoteIconConverter}}" />
+                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            Source="{Binding IsRemote, Converter={StaticResource RemoteIconConverter}}"/>
                         <Image
                             Grid.Row="1"
                             Grid.Column="2"
-                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealSummaryViewModel}}, x:DataType=vm:MealSummaryViewModel}"
-                            Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}" />
+                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}"/>
                     </Grid>
                     <!--#endregion-->
                     <!--#endregion-->
