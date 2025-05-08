@@ -1,6 +1,12 @@
+# 6.2.31
+    
+## Improve meal List User Interface Responsiveness
+
+You can tap in the center of a bill list item to select or deselect it but for the past couple of releases that tap would be mistaken for a swipe initiation. This no longer happens, swipe actions may only be initiated from right or left of center.
+
 # 6.2.30
 
-## ## Indicate the Current Meal
+## Indicate the Current Meal
 
 The bill list now shows an icon to denote the current bill.
 
