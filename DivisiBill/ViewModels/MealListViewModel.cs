@@ -677,7 +677,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             ms.FileSelected = !ms.FileSelected;
             SelectedMealSummariesCount += (ms.FileSelected) ? 1 : -1;
         }
-        else if (Utilities.IsUWP || !SelectedMealSummaryChangedRecently())
+        else
             SelectedMealSummary = SelectedMealSummary == ms ? null : ms;
     }
 
@@ -880,22 +880,6 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
 
     [ObservableProperty]
     public partial MealSummary SelectedMealSummary { get; set; }
-
-    private DateTime SelectedMealSummaryChangeTime = DateTime.MinValue;
-    partial void OnSelectedMealSummaryChanged(MealSummary value)
-    {
-        SelectedMealSummaryChangeTime = DateTime.Now;
-    }
-    /// <summary>
-    /// Checks if the selected meal summary has changed recently. Used to kludge around Android selecting
-    /// a new item in a CollectionView unexpectedly. See also <seealso cref="SelectedMealSummaryChangeTime"/>.
-    /// </summary>
-    /// <returns>True if the selected meal summary has changed within the last 300 milliseconds; otherwise, false.</returns>
-    private bool SelectedMealSummaryChangedRecently()
-    {
-        TimeSpan timeSpan = (DateTime.Now - SelectedMealSummaryChangeTime);
-        return timeSpan.TotalMilliseconds < 300;
-    }
     public int SelectedMealSummariesCount
     {
         get;
