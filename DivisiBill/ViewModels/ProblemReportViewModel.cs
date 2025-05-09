@@ -47,7 +47,7 @@ internal partial class ProblemReportViewModel : ObservableObject
         var message = new EmailMessage
         {
             Subject = "DivisiBill Message",
-            Body = !Utilities.IsUWP ? body // Detour an annoying bug where UWP/Windows/Outlook truncates longer messages, this text makes that obvious
+            Body = !Utilities.IsWinUI ? body // Detour an annoying bug where Windows/Outlook truncates longer messages, this text makes that obvious
                     : "*** Start of Message (verify end is also present) ***\n" + body + "\n*** End of Message***\n",
         };
         message.To!.Add("support@autopl.us");

@@ -263,7 +263,7 @@ internal static class Billing
     /// </summary>
     internal static async Task ConsumeDepletedOcrLicense()
     {
-        if (Utilities.IsUWP)
+        if (Utilities.IsWinUI)
             return; // Not implemented for Windows 
         int purchaseCount = await GetHasOcrLicenseAsync();
         Utilities.DebugMsg("In ConsumeDepletedOcrLicense, license purchase test returned " + purchaseCount);

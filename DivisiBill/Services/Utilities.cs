@@ -468,7 +468,7 @@ public static partial class Utilities // Partial for regex generator
     /// <summary>
     /// True if we're running on Windows
     /// </summary>
-    internal static bool IsUWP => DeviceInfo.Platform == DevicePlatform.WinUI;
+    internal static bool IsWinUI => DeviceInfo.Platform == DevicePlatform.WinUI;
     /// <summary>
     /// True if we're running on Android
     /// </summary>

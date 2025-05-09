@@ -1133,7 +1133,7 @@ public partial class Meal : ObservableObjectPlus
         MemoryStream s = new(buf);
         SaveToStream(s);
         string myString = Encoding.UTF8.GetString(buf, 0, (int)s.Position);
-        if (Utilities.IsUWP && myString.Length > 4096) // too large to store on Windows
+        if (Utilities.IsWinUI && myString.Length > 4096) // too large to store on Windows
         {
             Utilities.DisplayAlertAsync("Error", $"Bill is too large ({myString.Length * 2} bytes) to store in App on Windows");
             myString = string.Empty;

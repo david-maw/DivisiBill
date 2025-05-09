@@ -110,7 +110,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     private async Task ShowMap()
     {
         mapSettings = new(ActiveVenue.Name, ActiveVenue.Location);
-        if (!Utilities.IsUWP || App.BingMapsAllowed)
+        if (!Utilities.IsWinUI || App.BingMapsAllowed)
             await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
     }
     #endregion
