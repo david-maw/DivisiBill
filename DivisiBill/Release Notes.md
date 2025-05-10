@@ -1,3 +1,9 @@
+# 6.2.32
+    
+## Make Current Bill Visible
+
+When you navigate to a list of bills the current bill (or the venue it is from) will always be visible. 
+
 # 6.2.31
     
 ## Improve meal List User Interface Responsiveness
