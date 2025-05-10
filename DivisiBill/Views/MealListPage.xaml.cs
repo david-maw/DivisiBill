@@ -63,12 +63,18 @@ public partial class MealListPage : ContentPage
         }
     }
     #region Collection Scrolling
-    private void ScrollItemsTo(int index, bool itemPositionRelativeToEnd, bool animate = true) // Passed in to viewModel
+    /// <summary>
+    /// A method to pass into the viewModel to permit it to scroll the active collection view to a specific item.  
+    /// </summary>
+    /// <param name="index">The index of the item to scroll to.</param>
+    /// <param name="scrollToPosition">The position in the window to position the item (Start or End usually).</param>
+    /// <param name="animate">Indicates whether the scrolling should be animated.</param>
+    private void ScrollItemsTo(int index, ScrollToPosition scrollToPosition, bool animate = true) // Passed in to viewModel
     {
         if (viewModel.IsGrouped)
-            CurrentGroupView.ScrollTo(index, position: itemPositionRelativeToEnd ? ScrollToPosition.End : ScrollToPosition.Start, animate: animate);
+            CurrentGroupView.ScrollTo(index, position: scrollToPosition, animate: animate);
         else
-            CurrentCollectionView.ScrollTo(index, position: itemPositionRelativeToEnd ? ScrollToPosition.End : ScrollToPosition.Start, animate: animate);
+            CurrentCollectionView.ScrollTo(index, position: scrollToPosition, animate: animate);
     }
     // Ideally this would be handled in properties of the CollectionView but it isn't
     // Also beware, on Windows it is not always called

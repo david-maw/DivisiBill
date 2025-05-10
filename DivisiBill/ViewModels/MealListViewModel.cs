@@ -75,7 +75,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                                 if (UpsertIntoMealSummaryGroupList(group))
                                 {
                                     int index = MealSummaryGroups.IndexOf(group);
-                                    ScrollItemsTo(index, false);
+                                    ScrollItemsTo(index, ScrollToPosition.Start);
                                 }
                             }
                         }
@@ -104,7 +104,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                                 if (UpsertIntoMealSummaryGroupList(group))
                                 {
                                     int index = MealSummaryGroups.IndexOf(group);
-                                    ScrollItemsTo(index, false);
+                                    ScrollItemsTo(index, ScrollToPosition.Start);
                                 }
                             }
                         }
@@ -1081,7 +1081,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     {
         IsSwipeDownAllowed = value > 0;
         //IsMealListScrollingFar = true; // Enable to turn on manual scroll detection
-        scrollEndTimer.Change(200, 0); // Notify end of scroll if we do not see this change for a while
+        scrollEndTimer.Change(200, 0); // Notify end of scroll if we do not see FirstVisibleItemIndex change for a while
     }
 
     /// <summary>
@@ -1107,7 +1107,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     /// <param name="index">The index of the item we are scrolling to</param>
     /// <param name="itemPositionRelativeToEnd">Should the item be shown at the beginning or end of the page</param>
     /// <param name="animate">Should the scrolling be animated</param>
-    public delegate void ScrollItemsToDelegate(int index, bool itemPositionRelativeToEnd, bool animate = true);
+    public delegate void ScrollItemsToDelegate(int index, ScrollToPosition scrollToPosition, bool animate = true);
 
     /// <summary>
     /// A <see cref="ScrollItemsToDelegate"/> function which is called to scroll the list of items, provided by the page.
@@ -1120,11 +1120,13 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     /// end of the list and that's more than a few (30 at this point) records we disable the collection view so that
     /// we don't have to keep updating the UI. This is a performance optimization but also looks better to the user.
     /// </para><para>
+    /// The scroll direction is the direction the items appear to move, not the direction the window appears to move.
+    /// </para><para>
     /// The algorithmic complexity comes from the fact that ScrollItemsTo is a fire-and-forget function which scrolls the
-    /// control incrementally and we don't want to continue until it is done.
+    /// control incrementally and we don't want to continue until it is done so we end up using a timer to do that.
     /// </para>
     /// </summary>
-    /// <param name="whereTo"></param>
+    /// <param name="whereTo">A string containing Up/Down/Start/End describing the place to scroll to or the direction to scroll</param>
     [RelayCommand]
     private async Task ScrollItems(string whereTo)
     {
@@ -1138,10 +1140,10 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < LastItemIndex) await ScrollItemsImpl(LastVisibleItemIndex, false); break;
-                case "Down": if (FirstVisibleItemIndex > 0) await ScrollItemsImpl(FirstVisibleItemIndex, true); break;
-                case "End": if (LastVisibleItemIndex < LastItemIndex) { await ScrollItemsImpl(LastItemIndex, false); } break;
-                case "Start": if (FirstVisibleItemIndex > 0) { await ScrollItemsImpl(0, true); } break;
+                case "Up": if (LastVisibleItemIndex < LastItemIndex) await ScrollItemsImpl(LastVisibleItemIndex, ScrollToPosition.End); break;
+                case "Down": if (FirstVisibleItemIndex > 0) await ScrollItemsImpl(FirstVisibleItemIndex, ScrollToPosition.Start); break;
+                case "End": if (LastVisibleItemIndex < LastItemIndex) { await ScrollItemsImpl(LastItemIndex, ScrollToPosition.End); } break;
+                case "Start": if (FirstVisibleItemIndex > 0) { await ScrollItemsImpl(0, ScrollToPosition.Start); } break;
                 default: break;
             }
         }
@@ -1151,14 +1153,15 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             // Do nothing, we do not really care if a scroll attempt fails
         }
     }
-    private async Task ScrollItemsImpl(int scrollToIndex, bool scrollUp)
+    private async Task ScrollItemsImpl(int scrollToIndex, ScrollToPosition scrollToPosition)
     {
         const int manyItems = 30; // 30 items is our definition of scrolling a long way
-        int scrollDistance = Math.Abs(scrollToIndex - (scrollUp ? LastVisibleItemIndex : FirstVisibleItemIndex)); // How many items we'll be scrolling past
+        bool scrollingDown = scrollToPosition == ScrollToPosition.Start;
+        int scrollDistance = Math.Abs(scrollToIndex - (scrollingDown ? LastVisibleItemIndex : FirstVisibleItemIndex)); // How many items we'll be scrolling past
         if (scrollDistance >= manyItems)
             IsMealListScrollingFar = true;
         await Task.Yield(); // allow the UI to update before we call ScrollItemsTo
-        ScrollItemsTo(scrollToIndex, scrollUp, scrollDistance < manyItems); // For a short scroll it's ok to animate, but it's slow so we don't use it for long scrolls  
+        ScrollItemsTo(scrollToIndex, scrollToPosition, scrollDistance < manyItems); // For a short scroll it's ok to animate, but it's slow so we don't use it for long scrolls  
     }
     #endregion
     // IQueryAttributable interface
