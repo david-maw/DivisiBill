@@ -28,6 +28,11 @@ public partial class MealListPage : ContentPage
         await viewModel.OnDisappearing();
         base.OnDisappearing();
     }
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        viewModel.OnNavigatedTo();
+    }
 
     private async Task ShowSummary(MealSummary ms)
     {

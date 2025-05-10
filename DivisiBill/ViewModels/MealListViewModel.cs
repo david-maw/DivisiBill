@@ -48,6 +48,24 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         ForgetDeleted();
         await App.StopMonitoringLocation();
     }
+    public void OnNavigatedTo()
+    {
+        int targetIndex = -1;
+        if (IsGrouped)
+        {
+            var targetGroup = MealSummaryGroups.FirstOrDefault(g => g.VenueName == Meal.CurrentMeal.VenueName);
+            if (targetGroup is not null)
+                targetIndex = MealSummaryGroups.IndexOf(targetGroup);
+        }
+        else
+        { // Not grouped, so just find the meal
+            var targetMeal = MealList.FirstOrDefault(ms => ms.IsForCurrentMeal);
+            if (targetMeal is not null)
+                targetIndex = MealList.IndexOf(targetMeal);
+        }
+        if (targetIndex >= 0)
+            ScrollItemsTo(targetIndex, ScrollToPosition.Center, false); // Don't animate the initial scroll
+    }
 
     /// <summary>
     /// Called whenever the local Meal list changes, which can happen if asynchronous restore or recover operations are in process
