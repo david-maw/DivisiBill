@@ -1,0 +1,32 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="ReleaseTest" />
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".github/workflows/dotnet-build-android.yml" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="DivisiBill.Tests/DivisiBill.Tests.csproj">
+    <BuildType Solution="ReleaseTest|Any CPU" Project="Release" />
+    <Build Solution="ReleaseTest|Any CPU" Project="false" />
+    <Build Solution="Release|Any CPU" Project="false" />
+  </Project>
+  <Project Path="DivisiBill/DivisiBill.csproj">
+    <BuildType Solution="ReleaseTest|x64" Project="Debug" />
+    <Deploy Solution="*|Any CPU" />
+    <Deploy Solution="Debug|x64" />
+  </Project>
+  <Project Path="web/web.csproj">
+    <BuildType Solution="ReleaseTest|*" Project="Release" />
+    <Deploy Solution="Debug|Any CPU" />
+  </Project>
+</Solution>
