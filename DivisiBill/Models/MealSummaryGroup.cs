@@ -15,10 +15,13 @@ public partial class MealSummaryGroup : ObservableObject
         VenueName = msParameter.VenueName;
         CreationTime = msParameter.CreationTime;
         MealSummaries.CollectionChanged += MealSummaries_CollectionChanged;
+        Meal.CurrentMealSummaryChanged += Meal_CurrentMealSummaryChanged;
         MealSummaries.Add(msParameter);
     }
     ~MealSummaryGroup()
     {
+        // Unsubscribe from events to avoid memory leaks
+        Meal.CurrentMealSummaryChanged -= Meal_CurrentMealSummaryChanged;
         MealSummaries.CollectionChanged -= MealSummaries_CollectionChanged;
     }
 
@@ -47,6 +50,7 @@ public partial class MealSummaryGroup : ObservableObject
                 break;
         }
     }
+    private void Meal_CurrentMealSummaryChanged(MealSummary old, MealSummary newMs) => IsForCurrentMeal = string.Equals(VenueName, newMs.VenueName, StringComparison.OrdinalIgnoreCase);
 
     #region Properties
     public string VenueName { get; }
@@ -72,6 +76,9 @@ public partial class MealSummaryGroup : ObservableObject
     public bool CountLarge => Count > maxMeals;
 
     public string CountText => Count <= maxMeals ? $"{Count}" : $"{maxMeals} of {Count}";
+
+    [ObservableProperty]
+    public partial bool IsForCurrentMeal { get; set; } = false;
     public int Distance
     {
         get

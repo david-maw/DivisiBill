@@ -121,7 +121,7 @@
                         IsRunning="{Binding IsBusy}"
                         VerticalOptions="Fill" />
                         <!--#endregion-->
-                        <!--#region Image, Local and Remote Indicators-->
+                        <!--#region Current Meal, Image, Local and Remote Indicators-->
                         <!--  The fixed height row definitions in this grid guarantee the whole grid always occupies a minimum height  -->
                         <Grid
                         Grid.Row="0"
@@ -210,7 +210,7 @@
                         <!--#endregion-->
                     </Grid>
                     <!--#endregion-->
-                    <!--#region SwipeView End-->
+                <!--#region SwipeView End-->
                 </SwipeView>
                 <!--#endregion-->
                 <!--#endregion-->
@@ -393,14 +393,14 @@
                         CommandParameter="{Binding}"
                         IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                         <toolkit:Expander.Header>
-                            <VerticalStackLayout>
+                            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*,Auto">
                                 <Grid ColumnDefinitions="*, auto">
                                     <HorizontalStackLayout Spacing="10">
                                         <Label FontSize="Large" Text="{Binding VenueName}" />
                                         <Label FontSize="Large" Text="{Binding CountText, StringFormat='({0})'}" />
                                     </HorizontalStackLayout>
                                 </Grid>
-                                <Grid ColumnDefinitions="*, auto" IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType=toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
+                                <Grid Grid.Row="1" ColumnDefinitions="*, auto" IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType=toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
                                     <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}" />
                                     <Label
                                         Grid.Column="1"
@@ -409,12 +409,24 @@
                                         HorizontalOptions="End"
                                         Text="{Binding Path=Distance, Converter={StaticResource Distance}}" />
                                 </Grid>
+                                <!--#region Icon indicating current Meal-->
+                                <Image
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="2"
+                                    IsVisible="{Binding IsForCurrentMeal}"
+                                    HorizontalOptions="End"
+                                    WidthRequest="30"
+                                    Source="{StaticResource ListGlyphCurrentMeal}"/>
+                                <!--#endregion-->
                                 <BoxView
+                                    Grid.Row="1"
+                                    Grid.ColumnSpan="2"
                                     HeightRequest="1"
                                     VerticalOptions="End"
                                     Color="{AppThemeBinding Light={StaticResource Gray900},
                                                             Dark={StaticResource White}}" />
-                            </VerticalStackLayout>
+                            </Grid>
                         </toolkit:Expander.Header>
                         <toolkit:Expander.Content>
                             <VerticalStackLayout>

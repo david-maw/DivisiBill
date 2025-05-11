@@ -1035,6 +1035,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                     mealSummaryGroup = new(mealSummary);
                     workingVenueName = mealSummary.VenueName;
                 }
+                if (mealSummary.IsForCurrentMeal)
+                    mealSummaryGroup.IsForCurrentMeal = true;
             }
             // Add the final group if there is one
             if (!string.IsNullOrWhiteSpace(mealSummaryGroup.VenueName))
