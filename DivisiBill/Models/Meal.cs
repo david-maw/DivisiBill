@@ -297,9 +297,7 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     public void OverwriteCurrent()
     {
-        MealSummary priorMealSummary = CurrentMeal.Summary;
         CurrentMeal = this;
-        MealSummary.NotifyCurrentMealChanged(priorMealSummary, Summary);
         // It is important to reassign CurrentMeal early so downstream code which wants to remove it from lists of meals
         // will recognize the correct meal. Such code may well be triggered by events, so beware.
 
@@ -344,7 +342,23 @@ public partial class Meal : ObservableObjectPlus
             Utilities.DebugMsg("In Meal.CostListResequence, exception: " + ex);
         }
     }
-    public static Meal CurrentMeal { get; private set; }
+    public static Meal CurrentMeal
+    {
+        get;
+        private set
+        {
+            if (field != value)
+            {
+                MealSummary prior = field?.Summary;
+                field = value;
+                CurrentMealSummaryChanged?.Invoke(prior, value?.Summary);
+            }
+        }
+    }
+
+    public delegate void CurrentMealSummaryChangedEventHandler(MealSummary oldSummary, MealSummary newSummary);
+
+    public static event CurrentMealSummaryChangedEventHandler CurrentMealSummaryChanged;
 
     /// <summary>
     /// Loop saving the bill locally as necessary
@@ -831,7 +845,7 @@ public partial class Meal : ObservableObjectPlus
             Summary.IsRemote = false;
             SaveToFile();
             Summary.Show();
-            MealSummary.NotifyCurrentMealChanged(OriginalSummary, Summary);
+            CurrentMealSummaryChanged?.Invoke(OriginalSummary, Summary);
         }
         else
             ActualLastChangeTime = DateTime.Now;

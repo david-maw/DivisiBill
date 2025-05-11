@@ -23,7 +23,11 @@ namespace DivisiBill.Models;
 public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 {
     #region Global
-    public MealSummary() { }
+    public MealSummary() => Meal.CurrentMealSummaryChanged += NotifyCurrentMealSummaryChanged;
+    ~MealSummary()
+    {
+        Meal.CurrentMealSummaryChanged -= NotifyCurrentMealSummaryChanged;
+    }
 
     public MealSummary ShallowCopy() => MemberwiseClone() as MealSummary;
 
@@ -115,7 +119,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
 
     public bool IsForCurrentMeal => Meal.CurrentMeal is not null && CreationTime == Meal.CurrentMeal.CreationTime;
 
-    public static void NotifyCurrentMealChanged(MealSummary old, MealSummary newMs)
+    public static void NotifyCurrentMealSummaryChanged(MealSummary old, MealSummary newMs)
     {
         old?.OnPropertyChanged(nameof(IsForCurrentMeal));
         newMs?.OnPropertyChanged(nameof(IsForCurrentMeal));
