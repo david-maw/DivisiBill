@@ -28,9 +28,12 @@ public partial class MealListPage : ContentPage
         await viewModel.OnDisappearing();
         base.OnDisappearing();
     }
-    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
+        // Android requires a little 'breathing space' or the scroll request is ignored
+        if (Utilities.IsAndroid)
+            await Task.Yield();
         viewModel.OnNavigatedTo();
     }
 
