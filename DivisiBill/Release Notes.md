@@ -2,7 +2,15 @@
     
 ## Make Current Bill Visible
 
-When you navigate to a list of bills the current bill (or the venue it is from) will always be visible. 
+When you navigate to a list of bills we scroll the current bill into view (or the current venue if bills are grouped by venue).
+
+## Allow Bill Groups to be Deselected
+
+Tapping a selected bill in the center already deselected it, the same action now works when bills are grouped by venue. 
+
+## Add a "Scroll to Current" Bill Command
+
+The bill list pages now have a command to scroll the current bill into view (or the current venue if bills are grouped by venue).
 
 # 6.2.31
     
