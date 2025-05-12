@@ -296,6 +296,10 @@
             Order="Secondary"
             Text="{Binding ShowLocalMeals, Converter={StaticResource ShowLocalText}}" />
         <ToolbarItem
+            Command="{Binding ShowCurrentCommand}"
+            Order="Secondary"
+            Text="Scroll To Current" />
+        <ToolbarItem
             Command="{Binding ChangeShowRemoteMealsCommand}"
             Order="Secondary"
             Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}" />
