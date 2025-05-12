@@ -687,6 +687,29 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     private void Cancel() => cancellationTokenSource?.Cancel();
 
     [RelayCommand]
+    private void ExpandGroup(MealSummaryGroup group)
+    {
+        if (group is null) return;
+        group.IsExpanded = !group.IsExpanded;
+    }
+
+    [RelayCommand]
+    private void SelectGroup(MealSummaryGroup group)
+    {
+        if (group is null) return;
+        if (SelectedGroup == group)
+        {
+            group.IsExpanded = false;
+            SelectedGroup = null;
+        }
+        else
+        {
+            group.IsExpanded = true;
+            SelectedGroup = group;
+        }
+    }
+
+    [RelayCommand]
     private void SelectMeal(MealSummary ms)
     {
         if (ms is null) return;
@@ -694,6 +717,12 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         {
             ms.FileSelected = !ms.FileSelected;
             SelectedMealSummariesCount += (ms.FileSelected) ? 1 : -1;
+        }
+        else if (IsGrouped)
+        {
+            // find what group we are in and either deselect it if it is selected, or select it
+            MealSummaryGroup thisGroup = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
+            SelectedGroup = SelectedGroup == thisGroup ? null : thisGroup;
         }
         else
             SelectedMealSummary = SelectedMealSummary == ms ? null : ms;
@@ -847,7 +876,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     public partial MealSummaryGroup SelectedGroup { get; set; } = null;
     partial void OnSelectedGroupChanged(MealSummaryGroup oldValue, MealSummaryGroup newValue)
     {
-        if (oldValue is not null)
+        if (oldValue is not null && newValue is not null)
         {
             oldValue.IsExpanded = false;
         }

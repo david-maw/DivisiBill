@@ -426,6 +426,25 @@
                                     VerticalOptions="End"
                                     Color="{AppThemeBinding Light={StaticResource Gray900},
                                                             Dark={StaticResource White}}" />
+                            <!--#region Select/Deselect/Details Button -->
+                            <!--This button is in the center on top of the SwipeView to allow simple tap/double tap without unintentional swipe-->
+                            <ImageButton
+                                    Grid.RowSpan="2"
+                                    HorizontalOptions="Center"
+                                    WidthRequest="80"
+                                    BackgroundColor="Transparent">
+                                <ImageButton.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding SelectGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                        CommandParameter="{Binding}"
+                                        NumberOfTapsRequired="1" />
+                                    <TapGestureRecognizer
+                                        Command="{Binding ExpandGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                        CommandParameter="{Binding}"
+                                        NumberOfTapsRequired="2" />
+                                </ImageButton.GestureRecognizers>
+                            </ImageButton>
+                            <!--#endregion-->
                             </Grid>
                         </toolkit:Expander.Header>
                         <toolkit:Expander.Content>
