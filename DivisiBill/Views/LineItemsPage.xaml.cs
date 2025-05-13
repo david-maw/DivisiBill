@@ -146,7 +146,7 @@ public partial class LineItemsPage : ContentPage
                 button.BorderWidth = 0;
                 button.IsVisible = true;
                 button.CommandParameter = c;
-                button.Text = buttonNumber == c.DinerIndex ? c.Nickname : c.DinerIDText + c.Nickname;
+                button.Text = c.Nickname;
                 button.WidthRequest = buttonWidth;
                 buttonNumber++;
             }

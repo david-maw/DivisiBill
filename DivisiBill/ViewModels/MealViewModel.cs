@@ -125,8 +125,9 @@ public partial class MealViewModel : ObservableObjectPlus
             return false; // The list is already full
 
         if (endInx < 0 // costs list is empty, the merge is trivial
-            || (pc.DinerIndex == endInx + 1)) // the one after the last element, so there's an empty slot
+            || (pc.DinerIndex >= endInx + 1)) // after the last element, so there's an unused DinerID available
         {
+            pc.DinerID = (LineItem.DinerID)(endInx + 2); // Force it to use the next ID
             Costs.Add(pc);
             return true;
         }
