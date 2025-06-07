@@ -1,3 +1,17 @@
+# 6.2.33
+
+## Add confirmation for renaming in-use venues
+
+You are prompted for confirmation before renaming a venue that is currently in use.
+
+## Reorder Affected Lists When a Venue Location Changes
+
+When a venue location changes, the list of bills by distance was not being updated; this has been corrected.
+    
+## Always Allow Diner Undelete
+
+Rarely, a stored bill would have non-contiguous DinerIDs, for example 1 and 6. In this case, the dinerID would be shown on the assignment button, which was unnecessary and confusing. If deleted, the diner could not be undeleted. These problems have been corrected.
+
 # 6.2.32
     
 ## Make Current Bill Visible
