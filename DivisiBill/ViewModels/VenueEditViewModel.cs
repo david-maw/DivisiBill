@@ -95,8 +95,15 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         }
         else
         {
-            await SaveChanges();
-            await App.PopAsync();
+            // Before making changes permanent, ensure that the user really wants to rename an in-use venue
+            var count = 0;
+            if (!Name.Equals(ActiveVenue.Name))
+                count = Meal.LocalMealList.Count((ms) => ms.IsLocal && ms.VenueName == ActiveVenue.Name);
+            if (count == 0 || await Utilities.AskAsync("Question", $"There are {count} local bills for \"{ActiveVenue.Name}\", do you still want to rename it?"))
+            {
+                await SaveChanges();
+                await App.PopAsync();
+            }
         }
     }
 
