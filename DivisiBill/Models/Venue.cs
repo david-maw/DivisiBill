@@ -15,6 +15,8 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 {
     public const string VenueFolderName = "Venues";
     public const string TargetFileName = "Venues.xml";
+    public static event EventHandler<VenueDistanceChangedEventArgs> DistanceChanged;
+
     private static string TargetPathName = null;
     private readonly Location MiddleOfNowhere = new(20, 170); // Middle of the Pacific, not close to anything
 
@@ -468,20 +470,19 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             if ((Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid)
             {
                 value = Distances.Inaccurate;
-                //if (Utilities.IsDebug)
-                //    throw new ArgumentException("Attempt to set Distance to an invalid Venue Location");
             }
             if (field != value)
             {
+                int oldDistance = field;
                 field = value;
                 if (allVenuesByDistanceIsSorted & allVenuesByDistance.Contains(this))
                     MoveToCorrectPlaceByDistance();
                 OnPropertyChanged();
+                DistanceChanged?.Invoke(this, new VenueDistanceChangedEventArgs(this, oldDistance, value));
             }
         }
         get;
-    } = Distances.Inaccurate;
-    [XmlIgnore]
+    } = Distances.Inaccurate; [XmlIgnore]
     public int SimplifiedDistance => Distances.Simplified(Distance);
 
     private string name;
@@ -603,4 +604,10 @@ public class VenueRoot
 
     [XmlElement("Restaurant")]
     public List<Venue> Venues { get; set; }
+}
+public class VenueDistanceChangedEventArgs(Venue venue, int oldDistance, int newDistance) : EventArgs
+{
+    public Venue Venue { get; } = venue;
+    public int OldDistance { get; } = oldDistance;
+    public int NewDistance { get; } = newDistance;
 }

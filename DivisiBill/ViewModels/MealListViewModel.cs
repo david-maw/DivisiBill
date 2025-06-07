@@ -21,7 +21,30 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         Meal.LocalMealList.CollectionChanged += LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged += RemoteMealList_CollectionChanged;
         App.MyLocationChanged += App_MyLocationChanged;
+        Venue.DistanceChanged += Venue_DistanceChanged;
         scrollEndTimer = new(_ => MainThread.InvokeOnMainThreadAsync(() => IsMealListScrollingFar = false), null, Timeout.Infinite, Timeout.Infinite);
+    }
+    private void Venue_DistanceChanged(object sender, VenueDistanceChangedEventArgs e)
+    {
+        var changedMeals = Meal.LocalMealList.Where(m => m.VenueName.Equals(e.Venue.Name));
+        foreach (MealSummary ms in changedMeals)
+            ms.Distance = e.Venue.Distance; // Update the distance for the changed venue
+        if (SortOrder == SortOrderType.byDistance)
+        {
+            if (IsGrouped)
+            {
+                MealSummaryGroup groupForChangedVenue = MealSummaryGroups.FirstOrDefault(g => g.VenueName.Equals(e.Venue.Name));
+                if (groupForChangedVenue is null) // If the group for the changed venue is not in the list then something is wrong
+                    InvalidateMealList(); // Force the list to be rebuilt
+                else
+                    UpsertIntoMealSummaryGroupList(groupForChangedVenue); // Update the group
+            }
+            else
+            {
+                foreach (MealSummary ms in changedMeals)
+                    UpsertIntoMealList(ms);
+            }
+        }
     }
     private void App_MyLocationChanged(object sender, EventArgs e)
     {
@@ -33,6 +56,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         Meal.LocalMealList.CollectionChanged -= LocalMealList_CollectionChanged;
         Meal.RemoteMealList.CollectionChanged -= RemoteMealList_CollectionChanged;
         App.MyLocationChanged -= App_MyLocationChanged;
+        Venue.DistanceChanged -= Venue_DistanceChanged;
         scrollEndTimer.Dispose();
     }
 
