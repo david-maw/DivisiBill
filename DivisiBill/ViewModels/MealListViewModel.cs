@@ -714,10 +714,16 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     }
 
     [RelayCommand]
-    private void ExpandGroup(MealSummaryGroup group)
+    private void ShowVenueDetails(MealSummaryGroup group)
     {
-        if (group is null) return;
-        group.IsExpanded = !group.IsExpanded;
+        if (group is null)
+            return;
+        Venue v = Venue.FindVenueByName(group.VenueName);
+        if (v is not null)
+        {
+            SelectedGroup = group;
+            App.PushAsync(Routes.VenueEditPage, "Venue", v);
+        }
     }
 
     [RelayCommand]
@@ -1181,7 +1187,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     /// The item is scrolled to the top or bottom of the control depending on the value of itemPositionRelativeToEnd.
     /// </summary>
     /// <param name="index">The index of the item we are scrolling to</param>
-    /// <param name="itemPositionRelativeToEnd">Should the item be shown at the beginning or end of the page</param>
+    /// <param name="scrollToPosition">Where on the page should the item be shown</param>
     /// <param name="animate">Should the scrolling be animated</param>
     public delegate void ScrollItemsToDelegate(int index, ScrollToPosition scrollToPosition, bool animate = true);
 

@@ -443,7 +443,7 @@
                                         CommandParameter="{Binding}"
                                         NumberOfTapsRequired="1" />
                                     <TapGestureRecognizer
-                                        Command="{Binding ExpandGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                        Command="{Binding ShowVenueDetailsCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                                         CommandParameter="{Binding}"
                                         NumberOfTapsRequired="2" />
                                 </ImageButton.GestureRecognizers>
