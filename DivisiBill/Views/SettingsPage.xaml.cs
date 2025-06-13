@@ -5,44 +5,52 @@ namespace DivisiBill.Views;
 
 public partial class SettingsPage : ContentPage
 {
-    private MapSettings mapSettings;
-    private MealViewModel mvm;
+    private SettingsViewModel svm = null;
+    private MealViewModel mvm = null;
     public SettingsPage() => InitializeComponent();
     protected override async void OnAppearing()
     {
-        Utilities.DebugMsg("In OnAppearing, perhaps returning from modifying subscription");
-        if (Application.Current.Resources.TryGetValue("MealViewModel", out object mvmObject))
-            mvm = mvmObject as MealViewModel;
-        MealSection.BindingContext = mvm;
-        mvm.LoadSettings();
         base.OnAppearing();
-        var svm = BindingContext as ViewModels.SettingsViewModel;
-        svm.RefreshValues();
-        if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
-        {
-            bool locationChanged = App.MyLocation is not null;
-            if (mapSettings.VenueLocation is not null && locationChanged)
-            {
-                await Utilities.ShowAppSnackBarAsync("Will set fake location in 10s");
-                await Task.Delay(10_000);
-            }
-            await App.SetFakeLocation(mapSettings.VenueLocation);
-            mapSettings.VenueLocationHasChanged = false; // So we do not reuse it accidentally
-        }
         await App.StartMonitoringLocation();
     }
     protected override async void OnDisappearing()
     {
+        base.OnDisappearing();
+        await App.StopMonitoringLocation();
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        Utilities.DebugMsg($"Entering {nameof(SettingsPage)}.{nameof(OnNavigatedTo)}");
+        // Reestablish the MealViewModel in case the current meal changed while we were away
+        if (Application.Current.Resources.TryGetValue("MealViewModel", out object mvmObject))
+            mvm = mvmObject as MealViewModel;
+        MealSection.BindingContext = mvm;
+        mvm.LoadSettings();
+        // establish the SettingsViewModel, only need to do this once
+        svm ??= BindingContext as ViewModels.SettingsViewModel;
+        svm.OnNavigatedTo();
+        base.OnNavigatedTo(args);
+    }
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
         if (IsEnabled)
         {
             mvm.UnloadSettings();
-            await App.StopMonitoringLocation();
-            base.OnDisappearing();
+            base.OnNavigatedFrom(args);
         }
     }
-    private async void OnSetLocation(object sender, EventArgs e)
+
+    private async void OnToggledUseFakeLocation(object sender, ToggledEventArgs e)
     {
-        mapSettings = new("Home", App.MyLocation);
-        await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
+        if (e.Value && svm.FakeLocation is not null)
+        {
+            await SettingsViewModel.UseFakeLocationAsync();
+        }
+        else
+        {
+            await Utilities.ShowAppSnackBarAsync("Real location restored");
+            await App.InitializeLocationAsync();
+        }
     }
 }

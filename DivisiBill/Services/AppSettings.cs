@@ -189,37 +189,40 @@ public class AppSettings : ISettings
         get => FakeAccuracy >= Distances.AccuracyLimit ? null : new Location(FakeLatitude, FakeLongitude) { Accuracy = FakeAccuracy };
         set
         {
-            FakeAccuracy = value.AccuracyOrDefault();
-            if (FakeAccuracy >= Distances.AccuracyLimit) // clear it
+            if (value is null)
             {
                 FakeLatitude = 0;
                 FakeLongitude = 0;
+                FakeAccuracy = Distances.Inaccurate;
             }
             else
             {
-                FakeLatitude = Utilities.Adjusted(value.Latitude, FakeAccuracy);
-                FakeLongitude = Utilities.Adjusted(value.Longitude, FakeAccuracy);
+                FakeAccuracy = value.AccuracyOrDefault();
+                if (FakeAccuracy >= Distances.AccuracyLimit) // clear it
+                {
+                    FakeLatitude = 0;
+                    FakeLongitude = 0;
+                }
+                else
+                {
+                    FakeLatitude = Utilities.Adjusted(value.Latitude, FakeAccuracy);
+                    FakeLongitude = Utilities.Adjusted(value.Longitude, FakeAccuracy);
+                }
             }
         }
     }
 
     private int FakeAccuracy
     {
-        get;
+        get => Preferences.Get(nameof(FakeAccuracy), Distances.Inaccurate);
         set
         {
             if (value is 0 or >= Distances.AccuracyLimit) // clear it
-            {
-                Preferences.Clear(nameof(FakeAccuracy)); // invalidates FakeLatitude/Longitude as well
-                field = Distances.Inaccurate;
-            }
+                Preferences.Remove(nameof(FakeAccuracy)); // invalidates FakeLatitude/Longitude as well
             else
-            {
                 Preferences.Set(nameof(FakeAccuracy), value);
-                field = value;
-            }
         }
-    } = Distances.Inaccurate;
+    }
 
     private double FakeLatitude
     {
@@ -227,7 +230,7 @@ public class AppSettings : ISettings
         set
         {
             if (value == 0)
-                Preferences.Clear(nameof(FakeLatitude));
+                Preferences.Remove(nameof(FakeLatitude));
             else
                 Preferences.Set(nameof(FakeLatitude), value);
         }
@@ -239,7 +242,7 @@ public class AppSettings : ISettings
         set
         {
             if (value == 0)
-                Preferences.Clear(nameof(FakeLongitude));
+                Preferences.Remove(nameof(FakeLongitude));
             else
                 Preferences.Set(nameof(FakeLongitude), value);
         }

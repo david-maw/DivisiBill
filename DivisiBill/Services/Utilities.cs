@@ -861,15 +861,22 @@ public static partial class Utilities // Partial for regex generator
     #region Geo
     public const int close = 5; // Anything within this distance is just 'close' because GPS is usually less certain then this 
 
+    // Distance between 2 locations in meters, or a special value if the second is null
     public static int GetDistanceTo(this Location location1, Location location2)
     {
-
-        int i = location1.IsAccurate() && location2.IsAccurate()
+        ArgumentNullException.ThrowIfNull(location1, nameof(location1));
+        int i = location1.IsAccurate() && location2 is not null && location2.IsAccurate()
             ? (int)Math.Round(Location.CalculateDistance(location1, location2, DistanceUnits.Kilometers) * 1000)
             : Distances.Inaccurate;
         return i;
     }
-
+    /// <summary>
+    /// Two locations are considered very close if they are within 1 meter of each other, or both null. 
+    /// </summary>
+    /// <param name="location1"></param>
+    /// <param name="location2"></param>
+    /// <returns></returns>
+    public static bool IsVeryCloseTo(this Location location1, Location location2) => (location1?.GetDistanceTo(location2) < 1) || (location1, location2) is (null, null);
     /// <summary>
     /// Copy the few of basic location elements we care about
     /// </summary>

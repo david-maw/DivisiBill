@@ -138,8 +138,7 @@
             </Grid>
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <!--#endregion-->
-            <!--#region Diagnostic and Developer stuff -->
-            <!--#region Debug Builds Only -->
+            <!--#region Diagnostic and Developer stuff (Debug Builds Only)-->
             <VerticalStackLayout IsVisible="{x:Static services:Utilities.IsDebug}">
                 <!--Large blank space before-->
                 <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 350, 0, 0" />
@@ -172,9 +171,13 @@
                     </Picker>
                 </HorizontalStackLayout>
                 <!--#endregion-->
-                <Button Text="Set Fake Location" Clicked="OnSetLocation" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                <Label Text="{Binding Path=FakeLocation, StringFormat='Fake Location={0}', Converter={StaticResource Location}, TargetNullValue='No Fake Location'}" HorizontalOptions="Center"/>
+                <Button Text="Set Fake Location" Command="{Binding SetFakeLocationCommand}" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Label Text="Use Fake Location" VerticalOptions="Center"/>
+                    <Switch IsToggled="{Binding UseFakeLocation}" Toggled="OnToggledUseFakeLocation" VerticalOptions="Center" IsEnabled="{Binding IsFakeLocationSet}" />
+                </HorizontalStackLayout>
             </VerticalStackLayout>
-            <!--#endregion-->
             <!--#endregion-->
         </VerticalStackLayout>
     </ScrollView>

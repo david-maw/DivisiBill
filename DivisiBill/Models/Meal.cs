@@ -2899,8 +2899,8 @@ public partial class Meal : ObservableObjectPlus
             else
             {
                 DebugMsg($"Null meal detected in BackupLoopAsync for summary: {ms}");
-                if (Utilities.IsDebug)
-                    Debugger.Break();
+                //if (Utilities.IsDebug)
+                //    Debugger.Break();
             }
         }
     }

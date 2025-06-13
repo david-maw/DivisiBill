@@ -217,8 +217,15 @@ internal partial class DataManagementViewModel : ObservableObject
                             App.Settings.ShowVenuesHint = archive.UserSettings.ShowVenuesHint;
                             App.Settings.ShowPeopleHint = archive.UserSettings.ShowPeopleHint;
 
-                            if (Utilities.IsDebug && archive.UserSettings.FakeLocation is not null && archive.UserSettings.FakeLocation.IsLocationValid)
-                                await App.SetFakeLocation(archive.UserSettings.FakeLocation);
+                            if (archive.UserSettings.FakeLocation is not null)
+                            {
+                                App.FakeLocation = archive.UserSettings.FakeLocation;
+                                if (App.UseFakeLocation) // The location was already fake
+                                {
+                                    await App.ApplyFakeLocationAsync(); // Start using the new fake location
+                                    await Utilities.ShowAppSnackBarAsync("Fake location changed");
+                                }
+                            }
                         }
                         // Now restore all the other items (which are not part of this ViewModel)
                         archive.DeleteBeforeRestore = DeleteBeforeRestore;

@@ -12,6 +12,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     {
         if (!App.LicenseChecked)
             App.ProEditionVerified += App_ProEditionVerified;
+        FakeLocationMapSettings = new MapSettings("Fake Location", FakeLocation ?? App.MyLocation);
         currentApp = Application.Current is null ? throw new NullReferenceException() : Application.Current;
         ScanOption = 2;
         App.MyLocationChanged += App_MyLocationChanged;
@@ -50,8 +51,22 @@ public partial class SettingsViewModel : ObservableObjectPlus
         OnPropertyChanged(nameof(InvalidOcrLicense));
         OnPropertyChanged(nameof(OcrLicenseId));
         OnPropertyChanged(nameof(Dark));
+        OnPropertyChanged(nameof(FakeLocation));
+        OnPropertyChanged(nameof(IsFakeLocationSet));
+        OnPropertyChanged(nameof(UseFakeLocation));
     }
 
+    public void OnNavigatedTo()
+    {
+        RefreshValues();
+        if (FakeLocationMapSettings.VenueLocationHasChanged)
+        {
+            FakeLocation = FakeLocationMapSettings.VenueLocation;
+            FakeLocationMapSettings.VenueLocationHasChanged = false; // So we do not reuse it accidentally
+        }
+    }
+
+    #region Commands
     [RelayCommand]
     private async Task OpenWebAsync() => await Launcher.OpenAsync(new Uri("https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui"));
 
@@ -121,6 +136,8 @@ public partial class SettingsViewModel : ObservableObjectPlus
 
     [RelayCommand]
     private void ResetCheckBoxes() => App.Settings.ResetCheckboxes();
+    #endregion
+    #region Transient Properties
     public bool IsLimited
     {
         get => App.IsLimited;
@@ -146,6 +163,8 @@ public partial class SettingsViewModel : ObservableObjectPlus
             }
         }
     }
+    #endregion
+    #region Persistent Properties
     public bool SendCrashYes
     {
         get => App.Settings.SendCrashYes;
@@ -193,6 +212,8 @@ public partial class SettingsViewModel : ObservableObjectPlus
             }
         }
     }
+    #endregion
+    #region Cloud Access Properties
     /// <summary>
     /// Whether or not Internet access exists
     /// </summary>
@@ -216,6 +237,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
                 return "No WiFi detected";
         }
     }
+    #endregion
     public bool WsAllowed => App.WsAllowed;
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;
@@ -238,4 +260,38 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
     public bool UseLocation => App.UseLocation;
     public Location AppLocation => App.MyLocation;
+    #region Fake Location Management (Debug Only)
+    [RelayCommand]
+    private async Task SetFakeLocation()
+    {
+        FakeLocationMapSettings.VenueLocation = FakeLocation ?? App.MyLocation;
+        await App.PushAsync(Routes.MapPage, "MapSettings", FakeLocationMapSettings);
+    }
+
+    public MapSettings FakeLocationMapSettings { get; private set; }
+    public bool UseFakeLocation => App.UseFakeLocation;
+    public static async Task UseFakeLocationAsync()
+    {
+        await Utilities.ShowAppSnackBarAsync("Will set fake location in 10s"); // Message shows for about 3 seconds
+        await Task.Delay(7_000);
+        App.UseFakeLocation = true;
+        await App.ApplyFakeLocationAsync();
+        await Utilities.ShowAppSnackBarAsync("Fake location set");
+
+    }
+    public Location FakeLocation
+    {
+        get => App.FakeLocation;
+        set
+        {
+            if (!Utilities.IsVeryCloseTo(App.FakeLocation, value))
+            {
+                App.FakeLocation = value;
+                OnPropertyChanged(nameof(IsFakeLocationSet));
+                OnPropertyChanged(nameof(FakeLocation));
+            }
+        }
+    }
+    public bool IsFakeLocationSet => App.FakeLocation is not null;
+    #endregion
 }

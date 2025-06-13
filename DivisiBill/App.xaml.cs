@@ -367,6 +367,7 @@ public partial class App : Application, INotifyPropertyChanged
     #region Licensing
     internal static event EventHandler ProEditionVerified;
     private static DateTime NextLicenseCheckTime = DateTime.MinValue;
+
     /// <summary>
     /// Check for the presence of licenses and subscriptions. This is called during startup an on entering the Settings page.
     /// </summary>
@@ -635,17 +636,22 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     public static Location FakeLocation
     {
-        get;
+        get => Settings.FakeLocation;
         set
         {
-            if (field != value)
-            //Needs a better test
+            if (!Settings.FakeLocation.IsVeryCloseTo(value))
             {
-                Settings.FakeLocation = field = value;
+                Settings.FakeLocation = value;
+                if (value is null)
+                    UseFakeLocation = false; // If we set it to null, we don't want to use a fake location
             }
         }
-    } = null;
-
+    }
+    public static bool UseFakeLocation
+    {
+        get => field;
+        set => field = value && Utilities.IsDebug && FakeLocation is not null;
+    }
     /// <summary>
     /// Settable to permit unit testing
     /// </summary>
@@ -657,15 +663,12 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     /// <param name="newFakeLocation">The new value to use</param>
     /// <returns></returns>
-    public static async Task SetFakeLocation(Location newFakeLocation)
+    public static async Task ApplyFakeLocationAsync()
     {
-        bool fakeLocationIsValid = FakeLocation is not null;
-        bool myLocationIsValid = MyLocation is not null;
-        FakeLocation = newFakeLocation;
-        await GetMyLocationAsync(CancellationToken.None);
-        if ((fakeLocationIsValid != myLocationIsValid) || // Only one of the locations is null
-            (fakeLocationIsValid && myLocationIsValid && MyLocation.GetDistanceTo(FakeLocation) > 1))
-            await Utilities.ShowAppSnackBarAsync("Location changed");
+        if (MyLocation.IsVeryCloseTo(FakeLocation))
+            await Utilities.ShowAppSnackBarAsync("Fake location was too close to use");
+        else
+            await GetMyLocationAsync(CancellationToken.None);
     }
     /// <summary>
     /// If location use is permitted try and initialize App.Location from a fake one stored in app settings
@@ -674,10 +677,7 @@ public partial class App : Application, INotifyPropertyChanged
     {
         if (UseLocation)
         {
-            if (Utilities.IsDebug)
-            {
-                FakeLocation = Settings.FakeLocation;
-            }
+            UseFakeLocation = false;
             await TryGetMyLocationAsync(LocationMonitorCancellationTokenSource.Token);
         }
     }
@@ -685,7 +685,13 @@ public partial class App : Application, INotifyPropertyChanged
     {
         try
         {
-            Location L = FakeLocation ?? await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);
+            if (UseFakeLocation)
+            {
+                MyLocation = FakeLocation; // Use the fake location if we are using a fake one
+                MyLocationChanged?.Invoke(null, null);
+                return;
+            }
+            Location L = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);
             if (L is null || (L.Accuracy.GetValueOrDefault(Distances.Inaccurate) <= Distances.AccuracyLimit && L.GetDistanceTo(MyLocation) > 20)) // Don't report on small changes, it's needlessly disruptive
             {
                 if (MyLocation != L)
