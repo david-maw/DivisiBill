@@ -1,3 +1,9 @@
+# 6.2.34
+
+## Double Tap To Edit Venue
+
+In a bill list that is grouped by venue, double tapping on a venue name will open the venue edit page for that venue.
+
 # 6.2.33
 
 ## Add confirmation for renaming in-use venues
