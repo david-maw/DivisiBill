@@ -661,8 +661,6 @@ public partial class App : Application, INotifyPropertyChanged
     /// Set, reset, or change the fake location to a specified value
     /// Notify the user so as to allow app page switching. 
     /// </summary>
-    /// <param name="newFakeLocation">The new value to use</param>
-    /// <returns></returns>
     public static async Task ApplyFakeLocationAsync()
     {
         if (MyLocation.IsVeryCloseTo(FakeLocation))

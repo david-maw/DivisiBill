@@ -37,7 +37,10 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                 if (groupForChangedVenue is null) // If the group for the changed venue is not in the list then something is wrong
                     InvalidateMealList(); // Force the list to be rebuilt
                 else
+                {
+                    groupForChangedVenue.NotifyDistanceChanged(); // Update the distance for the group
                     UpsertIntoMealSummaryGroupList(groupForChangedVenue); // Update the group
+                }
             }
             else
             {

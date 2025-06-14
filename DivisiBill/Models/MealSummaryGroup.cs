@@ -87,6 +87,7 @@ public partial class MealSummaryGroup : ObservableObject
             return v is null ? Distances.Unknown : v.SimplifiedDistance;
         }
     }
+    public void NotifyDistanceChanged() => OnPropertyChanged(nameof(Distance));
     public ObservableCollection<MealSummary> MealSummaries { get; } = [];
     public ObservableCollection<MealSummary> FirstMealSummaries => new(MealSummaries.Take(maxMeals));
     [ObservableProperty]
