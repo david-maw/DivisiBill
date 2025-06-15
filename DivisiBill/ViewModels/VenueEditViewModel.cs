@@ -116,6 +116,11 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task ShowMap()
     {
+        if (Utilities.IsWinUI)
+        {
+            await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
+            return;
+        }
         mapSettings = new(ActiveVenue.Name, ActiveVenue.Location);
         if (!Utilities.IsWinUI || App.BingMapsAllowed)
             await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);

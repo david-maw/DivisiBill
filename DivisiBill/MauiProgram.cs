@@ -61,6 +61,9 @@ public static class MauiProgram
                 ));
 #endif
             })
+#if !WINDOWS
+            .UseMauiMaps()
+#endif
             .UseMauiCommunityToolkit()
             .UseMauiCommunityToolkitCamera()
             .ConfigureFonts(fonts =>
@@ -70,12 +73,7 @@ public static class MauiProgram
 #if WINDOWS
                 fonts.AddFont("Segoe-UI.ttf", "monospace");
 #endif
-            })
-#if WINDOWS
-            .UseMauiCommunityToolkitMaps(Generated.BuildInfo.DivisiBillBingMapsSecret); // You should add your own key here from bingmapsportal.com
-#else
-            .UseMauiMaps();
-#endif
+            });
         builder.Services.AddTransient<Views.CameraPage>();
 
         return builder.Build();

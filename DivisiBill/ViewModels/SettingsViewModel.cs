@@ -264,6 +264,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task SetFakeLocation()
     {
+        if (Utilities.IsWinUI)
+        {
+            await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
+            return;
+        }
         FakeLocationMapSettings.VenueLocation = FakeLocation ?? App.MyLocation;
         await App.PushAsync(Routes.MapPage, "MapSettings", FakeLocationMapSettings);
     }
