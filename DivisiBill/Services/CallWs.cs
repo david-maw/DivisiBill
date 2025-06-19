@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Models;
 using Plugin.InAppBilling;
 using System.Diagnostics;
@@ -42,9 +42,13 @@ internal static class CallWs
         Task<HttpResponseMessage> webCallTask = webCall();
         await webCallTask.OrDelay(5000); // If it responds quickly, don't even bother to show a dialog
         // Call the web service and wait for a response or until the user gives up 
-        return webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode
-            ? webCallTask.Result
-            : (HttpResponseMessage)await Shell.Current.ShowPopupAsync(new Views.CheckWebPage(webCallTask, webCall, webStopwatch));
+        if (webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode)
+            return webCallTask.Result;
+        else
+        { // The call did not complete successfully, so show a popup to let the user know and give them a chance to retry or abandon it}
+            var popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Views.CheckWebPage(webCallTask, webCall, webStopwatch), Utilities.GetNullPopupOptions());
+            return popupResult?.Result ?? new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout); // If the user closed the popup without retrying, return a timeout result
+        }
     }
     #region Header Management
     private static void StoreTokenHeader(this HttpResponseMessage response)

@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Diagnostics;
-using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Generated;
 using DivisiBill.Models;
 using DivisiBill.ViewModels;
@@ -25,6 +25,12 @@ public static partial class Utilities // Partial for regex generator
 #else
     public static readonly bool IsDebug = false;
 #endif
+    internal static CommunityToolkit.Maui.PopupOptions GetNullPopupOptions(bool CanBeDismissedByTappingOutsideOfPopup = true) => new()
+    {
+        CanBeDismissedByTappingOutsideOfPopup = CanBeDismissedByTappingOutsideOfPopup,
+        Shape = null,
+        Shadow = null
+    };
     /// <summary>
     /// Create a pseudo random string of letters and digits for use ans a randomized key
     /// </summary>
@@ -590,7 +596,7 @@ public static partial class Utilities // Partial for regex generator
     /// </summary>
     /// <param name="paymentsViewModel">A <see cref="PaymentsViewModel"/> populated with the required payment information</param>
     /// <returns></returns>
-    internal static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel));
+    internal static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel), Utilities.GetNullPopupOptions());
     /// <summary>
     /// Show an application message that will go away by itself if not acknowledged
     /// </summary>
@@ -599,7 +605,7 @@ public static partial class Utilities // Partial for regex generator
     internal static Task ShowAppSnackBarAsync(string message)
     {
         DebugMsg("Snack message to user: " + message);
-        return Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message));
+        return Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message), Utilities.GetNullPopupOptions());
     }
 
     /// <summary>

@@ -7,8 +7,9 @@
              xmlns:views="clr-namespace:DivisiBill.Views"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              x:DataType="vm:PaymentsViewModel"
-             Color="Transparent"
-             Size="{OnPlatform Default='300,250', WinUI='400,350'}"
+             BackgroundColor="Transparent"
+             Padding="0"
+             Margin="0"
              x:Class="DivisiBill.Views.PaymentsPage">
     <toolkit:Popup.Resources>
         <ResourceDictionary>
@@ -21,10 +22,10 @@
             </Style>
         </ResourceDictionary>
     </toolkit:Popup.Resources>
-    <Border StrokeThickness="2" StrokeShape="RoundRectangle 10" HorizontalOptions="Center" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
-        <Border.GestureRecognizers>
-            <TapGestureRecognizer Tapped="ClosePopup"/>
-        </Border.GestureRecognizers>
+    <Border StrokeThickness="2" StrokeShape="RoundRectangle 10" 
+            HorizontalOptions="Center"
+            Padding="5"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
             <VerticalStackLayout.GestureRecognizers>
             </VerticalStackLayout.GestureRecognizers>

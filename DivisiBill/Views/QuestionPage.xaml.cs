@@ -1,7 +1,8 @@
-﻿using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.Maui.Views;
+using System.Runtime.CompilerServices;
 
 namespace DivisiBill.Views;
-public partial class QuestionPage : CommunityToolkit.Maui.Views.Popup
+public partial class QuestionPage : Popup<QuestionResponse>
 {
     public QuestionPage(string titleParam, string textParam, bool initialYes)
     {
@@ -12,12 +13,12 @@ public partial class QuestionPage : CommunityToolkit.Maui.Views.Popup
         Yes = initialYes;
     }
 
-    private void Button_Clicked(object sender, System.EventArgs e)
+    private async void Button_Clicked(object sender, System.EventArgs e)
     {
         // Pass back the values that were set in the UI
-        dynamic d = new { Yes, Ask = AskAgain };
+        QuestionResponse d = new() { Yes = Yes, Ask = AskAgain };
         // Close the dialog
-        Close(d);
+        await this.CloseAsync(d);
     }
     public bool Yes { get; set => SetProperty(ref field, value); } = false;
     public bool AskAgain { get; set => SetProperty(ref field, value); } = true; // Must start out true or we wouldn't be in this page
@@ -33,4 +34,9 @@ public partial class QuestionPage : CommunityToolkit.Maui.Views.Popup
         OnPropertyChanged(propertyName);
         return true;
     }
+}
+public class QuestionResponse()
+{
+    public bool Yes;
+    public bool Ask;
 }

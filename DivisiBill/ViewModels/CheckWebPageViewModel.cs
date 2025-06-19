@@ -6,7 +6,7 @@ using System.Net;
 
 namespace DivisiBill.ViewModels;
 
-public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall, Stopwatch webStopwatch) : ObservableObject
+public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> ClosePopupAsync, Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall, Stopwatch webStopwatch) : ObservableObject
 {
     /// <summary>
     /// Flag to indicate if we should keep trying to connect or not
@@ -17,13 +17,12 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
     /// Close the popup window and return the result
     /// </summary>
     /// <param name="result">True if the web service call worked, false if the user elected to abandon it</param>
-    private void StopTrying(object result)
+    private async Task StopTrying(HttpResponseMessage result)
     {
         Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.InvokeClose({result})");
         keepTrying = false;
-        ClosePopup?.Invoke(result);
+        await ClosePopupAsync?.Invoke(result);
     }
-
 
     /// <summary>
     /// Set the status message fields to tell the user what is going on and the extra message to tell them how long for.
@@ -54,7 +53,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
 
 
     [RelayCommand]
-    private void ClosePopupWindow() => StopTrying(new HttpResponseMessage(HttpStatusCode.RequestTimeout)); // User elected to abandon the web service call
+    private async Task ClosePopupWindow() => await StopTrying(new HttpResponseMessage(HttpStatusCode.RequestTimeout)); // User elected to abandon the web service call
 
     /// <summary>
     /// Wait for a successful call to the version web service or until the user commands us to quit
@@ -64,7 +63,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
     {
 
         // Ensure we were initialized correctly
-        ArgumentNullException.ThrowIfNull(ClosePopup);
+        ArgumentNullException.ThrowIfNull(ClosePopupAsync);
         ArgumentNullException.ThrowIfNull(webCallTask);
         #region Timer Handling
         const int waitSeconds = 30;
@@ -94,7 +93,7 @@ public partial class CheckWebPageViewModel(Action<object> ClosePopup, Task<HttpR
                 if (webCallTask.IsCompletedSuccessfully && webCallTask.Result.IsSuccessStatusCode)
                 {
                     Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompletedSuccessfully and successful result = " + webCallTask.Result.StatusCode + " in " + ToSecondsText(ElapsedSeconds()));
-                    StopTrying(webCallTask.Result); // The request completed without error, we can continue on
+                    await StopTrying(webCallTask.Result); // The request completed without error, we can continue on
                 }
                 else
                 {

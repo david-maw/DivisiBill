@@ -7,10 +7,11 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:views="clr-namespace:DivisiBill.Views"
     x:DataType="views:QuestionPage"
+    x:TypeArguments="views:QuestionResponse"
     BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:QuestionPage}"
-    CanBeDismissedByTappingOutsideOfPopup="False"
-    Size="350,350"
-    Color="transparent">
+    BackgroundColor="Transparent"
+    Padding="0"
+    Margin="0">
     <Border
         Padding="10"
         BackgroundColor="{AppThemeBinding Light={StaticResource White},
@@ -25,13 +26,16 @@
                 Text="{Binding Title}" />
             <Label Text="{Binding Text}" />
             <RadioButton
-                Margin="0,10,0,0"
+                Margin="7,10,0,0"
                 Content="Yes"
                 IsChecked="{Binding Yes}" />
-            <RadioButton Content="No" IsChecked="{Binding Yes, Converter={StaticResource Not}}" />
+            <RadioButton 
+                Margin="7,-10,0,0"
+                Content="No"
+                IsChecked="{Binding Yes, Converter={StaticResource Not}}" />
             <HorizontalStackLayout>
-                <Label Text="Do not ask me again" VerticalOptions="Center" />
                 <CheckBox IsChecked="{Binding AskAgain, Converter={StaticResource Not}}" />
+                <Label Text="Do not ask again" VerticalOptions="Center" />
             </HorizontalStackLayout>
             <Button
                 Clicked="Button_Clicked"

@@ -238,15 +238,7 @@ public partial class Meal : ObservableObjectPlus
             }
         }
     }
-    /// <summary>
-    /// Used when restarting without reinitializing
-    /// </summary>
-    /// <returns></returns>
-    public static async Task RestartAsync()
-    {
-        await TrySaveOldBillAsync();
-        Application.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // The Resource dictionary was rebuilt, so put this back
-    }
+
     /// <summary>
     /// Used when App is resuming
     /// </summary>

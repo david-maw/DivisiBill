@@ -17,19 +17,19 @@ public partial class AppSnackBarPage : CommunityToolkit.Maui.Views.Popup
         Closed -= AppSnackBarPage_Closed;
     }
 
-    private void AppSnackBarPage_Closed(object sender, CommunityToolkit.Maui.Core.PopupClosedEventArgs e) => isOpen = false;
+    private void AppSnackBarPage_Closed(object sender, EventArgs e) => isOpen = false;
 
-    private async void AppSnackBarPage_Opened(object sender, CommunityToolkit.Maui.Core.PopupOpenedEventArgs e)
+    private async void AppSnackBarPage_Opened(object sender, EventArgs e)
     {
         isOpen = true;
-        await Task.Delay(5000);
+        await Task.Delay(5_000);
         if (isOpen)
-            Close();
+            await CloseAsync();
     }
 
     public string Text
     {
-        get;
+        get => field;
         set
         {
             if (field != value)
@@ -39,5 +39,4 @@ public partial class AppSnackBarPage : CommunityToolkit.Maui.Views.Popup
             }
         }
     }
-    private void OnOk(object sender, System.EventArgs e) => Close();
 }

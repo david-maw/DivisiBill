@@ -6,13 +6,14 @@ namespace DivisiBill.Views;
 /// Popup window to check a web service call, returns true if the original call or a retry completed false 
 /// if the user elected to abandon it or not retry.
 /// </summary>
-public partial class CheckWebPage : CommunityToolkit.Maui.Views.Popup
+public partial class CheckWebPage : CommunityToolkit.Maui.Views.Popup<HttpResponseMessage>  // The object is the result of the web call, if any, or null if the user did not retry or closed the popup without a retry.
 {
     private readonly ViewModels.CheckWebPageViewModel ViewModel;
     public CheckWebPage(Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall, Stopwatch webStopwatch)
     {
         InitializeComponent();
-        BindingContext = ViewModel = new ViewModels.CheckWebPageViewModel(result => Close(result), webCallTask, webCall, webStopwatch);
+        BindingContext = ViewModel = new ViewModels.CheckWebPageViewModel(
+            (HttpResponseMessage result) => this.CloseAsync(result), webCallTask, webCall, webStopwatch);
         Opened += async (sender, e) => await ViewModel.WaitForConnection();
     }
 }
