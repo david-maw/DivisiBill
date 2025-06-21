@@ -1,6 +1,9 @@
 ﻿using static DivisiBill.Services.Utilities;
 
 namespace DivisiBill.Views;
+/// <summary>
+/// This page exists in order to permit the user to be taken to the help pages automatically when they first run the program.
+/// </summary>
 public partial class GettingStartedPage : ContentPage
 {
     public GettingStartedPage() => InitializeComponent();

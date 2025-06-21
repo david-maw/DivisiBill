@@ -117,7 +117,7 @@ public partial class App : Application, INotifyPropertyChanged
         static bool IsRepeated(string what)
         {
             bool result = string.Equals(priorWhat, what);
-            Utilities.DebugMsg("Main Window state = " + what + (result ? " (repeated)" : "") + ", previously " + priorWhat);
+            Utilities.DebugMsg("Main Window state = " + what + (result ? " (repeated)" : ", previously " + priorWhat));
             priorWhat = what;
             return result;
         }
@@ -128,7 +128,7 @@ public partial class App : Application, INotifyPropertyChanged
         // Save off any persistent state - this can be called multiple times without any problem
         async void ActualPersistAsNeeded()
         {
-            Utilities.DebugMsg($"In PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
+            Utilities.DebugMsg($"In CreateWindow.PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
             if (!InitializationComplete.Task.IsCompleted)
                 return; // There's no knowing what state we're in, so don't do anything
             Settings?.LastUse = DateTime.Now; // Note when we last did anything
@@ -174,7 +174,7 @@ public partial class App : Application, INotifyPropertyChanged
         {
             if (!IsRepeated("Activated"))
             {
-                Utilities.DebugMsg($"In window.Activated; initialization completed = {InitializationComplete.Task.IsCompleted}");
+                Utilities.DebugMsg($"In Window.Activated; initialization completed = {InitializationComplete.Task.IsCompleted}");
                 if (InitializationComplete.Task.IsCompleted)
                 {
                     if (LicenseChecked) // If we have checked licenses before, do it again, otherwise don't bother so as not to keep complaining about a bad connection

@@ -355,7 +355,7 @@ public static partial class Utilities // Partial for regex generator
         });
     }
     /// <summary>
-    /// Diagnostic messages visible in release builds, not just debug builds
+    /// Diagnostic messages visible in release builds (via Sentry), not just debug builds
     /// </summary>
     /// <param name="msg"></param>
     /// <param name="sourceFilePath"></param>
