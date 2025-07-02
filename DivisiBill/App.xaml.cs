@@ -71,7 +71,7 @@ public partial class App : Application, INotifyPropertyChanged
                 // Get rid of On/Off label beside switch, to match other platforms
                 h.PlatformView.OffContent = string.Empty;
                 h.PlatformView.OnContent = string.Empty;
-                h.PlatformView.MinWidth = 0;
+                h.PlatformView.MinWidth = 40;
                 //h.PlatformView.BorderBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red);
                 //h.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(3);
             });
