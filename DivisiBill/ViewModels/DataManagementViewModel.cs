@@ -222,7 +222,7 @@ internal partial class DataManagementViewModel : ObservableObject
                                 App.FakeLocation = archive.UserSettings.FakeLocation;
                                 if (App.UseFakeLocation) // The location was already fake
                                 {
-                                    await App.ApplyFakeLocationAsync(); // Start using the new fake location
+                                    await App.RefreshLocationAsync(); // Start using the new fake location
                                     await Utilities.ShowAppSnackBarAsync("Fake location changed");
                                 }
                             }

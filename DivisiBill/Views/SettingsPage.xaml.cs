@@ -40,17 +40,4 @@ public partial class SettingsPage : ContentPage
             base.OnNavigatedFrom(args);
         }
     }
-
-    private async void OnToggledUseFakeLocation(object sender, ToggledEventArgs e)
-    {
-        if (e.Value && svm.FakeLocation is not null)
-        {
-            await SettingsViewModel.UseFakeLocationAsync();
-        }
-        else
-        {
-            await Utilities.ShowAppSnackBarAsync("Real location restored");
-            await App.InitializeLocationAsync();
-        }
-    }
 }

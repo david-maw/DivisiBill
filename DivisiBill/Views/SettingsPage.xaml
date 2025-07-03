@@ -171,12 +171,18 @@
                     </Picker>
                 </HorizontalStackLayout>
                 <!--#endregion-->
+                <!--#region Fake Location -->
+                <ActivityIndicator IsRunning="{Binding IsSwitchingToFakeLocation}" Margin="10"/>
                 <Label Text="{Binding Path=FakeLocation, StringFormat='Fake Location={0}', Converter={StaticResource Location}, TargetNullValue='No Fake Location'}" HorizontalOptions="Center"/>
-                <Button Text="Set Fake Location" Command="{Binding SetFakeLocationCommand}" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                <HorizontalStackLayout HorizontalOptions="Center" Margin="0,10,0,0" Spacing="10">
+                    <Button Text="Set Fake Location" Command="{Binding SetFakeLocationCommand}"/>
+                    <Button Text="Clear Fake Location" Command="{Binding ClearFakeLocationCommand}"/>
+                </HorizontalStackLayout>
                 <HorizontalStackLayout HorizontalOptions="Center" Spacing="{OnPlatform 10, Android=0}">
                     <Label Text="Use Fake Location" VerticalOptions="Center"/>
-                    <Switch IsToggled="{Binding UseFakeLocation}" Toggled="OnToggledUseFakeLocation" VerticalOptions="Center" IsEnabled="{Binding IsFakeLocationSet}" />
+                    <Switch IsToggled="{Binding UseFakeLocation}" VerticalOptions="Center" IsEnabled="{Binding IsFakeLocationChangeable}" />
                 </HorizontalStackLayout>
+                <!--#endregion-->
             </VerticalStackLayout>
             <!--#endregion-->
         </VerticalStackLayout>

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
 
@@ -17,6 +18,41 @@ public partial class SettingsViewModel : ObservableObjectPlus
         ScanOption = 2;
         App.MyLocationChanged += App_MyLocationChanged;
         Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
+        PropertyChanged += SettingsViewModel_PropertyChanged;
+    }
+
+    private async void SettingsViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(UseFakeLocation))
+        {
+            if (UseFakeLocation)
+            {
+                if (App.UseFakeLocation)
+                {
+                    // Nothing to do we're already using fake location
+                }
+                else if (FakeLocation is null)
+                {
+                    await Utilities.ShowAppSnackBarAsync("Please set a fake location first");
+                    UseFakeLocation = false;
+                }
+                else
+                {
+                    IsSwitchingToFakeLocation = true;
+                    await Utilities.ShowAppSnackBarAsync("Will use fake location in 10s"); // Message shows for about 3 seconds
+                    await Task.Delay(7_000);
+                    App.UseFakeLocation = true; // Start using the fake location
+                    await App.RefreshLocationAsync();
+                    await Utilities.ShowAppSnackBarAsync("Fake location in use");
+                    IsSwitchingToFakeLocation = false;
+                }
+            }
+            else
+            {
+                App.UseFakeLocation = false; // Stop using the fake location
+                await App.RefreshLocationAsync();
+            }
+        }
     }
 
     ~SettingsViewModel()
@@ -37,10 +73,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
 
     public void RefreshValues()
     {
+        // These are the values which are held externally and might change while we're on another page
+        // This first set are just readonly views of App or billing values 
         OnPropertyChanged(nameof(IsLimited));
         OnPropertyChanged(nameof(IsCloudAccessAllowed));
         OnPropertyChanged(nameof(InternetEnabledAndLicensed));
-        OnPropertyChanged(nameof(ScanOption));
         OnPropertyChanged(nameof(LicenseChecked));
         OnPropertyChanged(nameof(HasProSubscription));
         OnPropertyChanged(nameof(InvalidProSubscription));
@@ -50,10 +87,9 @@ public partial class SettingsViewModel : ObservableObjectPlus
         OnPropertyChanged(nameof(HasOcrLicense));
         OnPropertyChanged(nameof(InvalidOcrLicense));
         OnPropertyChanged(nameof(OcrLicenseId));
-        OnPropertyChanged(nameof(Dark));
-        OnPropertyChanged(nameof(FakeLocation));
-        OnPropertyChanged(nameof(IsFakeLocationSet));
-        OnPropertyChanged(nameof(UseFakeLocation));
+        // These are fake location related and they should change whenever it does 
+        FakeLocation = App.FakeLocation;
+        UseFakeLocation = App.UseFakeLocation;
     }
 
     public void OnNavigatedTo()
@@ -61,8 +97,13 @@ public partial class SettingsViewModel : ObservableObjectPlus
         RefreshValues();
         if (FakeLocationMapSettings.VenueLocationHasChanged)
         {
-            FakeLocation = FakeLocationMapSettings.VenueLocation;
             FakeLocationMapSettings.VenueLocationHasChanged = false; // So we do not reuse it accidentally
+            if (FakeLocationMapSettings.VenueLocation is null || FakeLocationMapSettings.VenueLocation.IsAccurate())
+            {
+                if (FakeLocationMapSettings.VenueLocation is null)
+                    UseFakeLocation = false;
+                FakeLocation = FakeLocationMapSettings.VenueLocation;
+            }
         }
     }
 
@@ -273,30 +314,27 @@ public partial class SettingsViewModel : ObservableObjectPlus
         await App.PushAsync(Routes.MapPage, "MapSettings", FakeLocationMapSettings);
     }
 
+    [RelayCommand]
+    private void ClearFakeLocation() => FakeLocation = null;
     public MapSettings FakeLocationMapSettings { get; private set; }
-    public bool UseFakeLocation => App.UseFakeLocation;
-    public static async Task UseFakeLocationAsync()
-    {
-        await Utilities.ShowAppSnackBarAsync("Will set fake location in 10s"); // Message shows for about 3 seconds
-        await Task.Delay(7_000);
-        App.UseFakeLocation = true;
-        await App.ApplyFakeLocationAsync();
-        await Utilities.ShowAppSnackBarAsync("Fake location set");
 
-    }
-    public Location FakeLocation
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFakeLocationChangeable))]
+    public partial bool UseFakeLocation { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsSwitchingToFakeLocation { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFakeLocationChangeable))]
+    public partial Location? FakeLocation { get; set; }
+    partial void OnFakeLocationChanged(Location? value)
     {
-        get => App.FakeLocation;
-        set
-        {
-            if (!Utilities.IsVeryCloseTo(App.FakeLocation, value))
-            {
-                App.FakeLocation = value;
-                OnPropertyChanged(nameof(IsFakeLocationSet));
-                OnPropertyChanged(nameof(FakeLocation));
-            }
-        }
+        App.FakeLocation = value;
+        if (value is null)
+            UseFakeLocation = false;
     }
-    public bool IsFakeLocationSet => App.FakeLocation is not null;
+
+    public bool IsFakeLocationChangeable => UseFakeLocation || (FakeLocation is not null && !FakeLocation.IsVeryCloseTo(App.GpsLocation));
     #endregion
 }

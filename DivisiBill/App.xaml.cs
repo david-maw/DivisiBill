@@ -44,6 +44,7 @@ public partial class App : Application, INotifyPropertyChanged
     //   ..AppData\Local\Packages\D9049CD2-5037-432D-BC7E-2E2FB39EBA1C_9zz4h110yvjzm\LocalCache\Local\DivisiBillDebug
     // The 'magic number' is the package.appxmanifest 'package family name'.
     internal static Location MyLocation;
+    internal static Location GpsLocation; // The most recent location the GPS returned
     private static Task LocationMonitorTask;
     private static CancellationTokenSource LocationMonitorCancellationTokenSource = new();
     internal static CancellationTokenSource SaveProcessCancellationTokenSource = new();
@@ -661,13 +662,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// Set, reset, or change the fake location to a specified value
     /// Notify the user so as to allow app page switching. 
     /// </summary>
-    public static async Task ApplyFakeLocationAsync()
-    {
-        if (MyLocation.IsVeryCloseTo(FakeLocation))
-            await Utilities.ShowAppSnackBarAsync("Fake location was too close to use");
-        else
-            await GetMyLocationAsync(CancellationToken.None);
-    }
+    public static async Task RefreshLocationAsync() => await GetMyLocationAsync(CancellationToken.None);
     /// <summary>
     /// If location use is permitted try and initialize App.Location from a fake one stored in app settings
     /// </summary>
@@ -689,12 +684,12 @@ public partial class App : Application, INotifyPropertyChanged
                 MyLocationChanged?.Invoke(null, null);
                 return;
             }
-            Location L = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);
-            if (L is null || (L.Accuracy.GetValueOrDefault(Distances.Inaccurate) <= Distances.AccuracyLimit && L.GetDistanceTo(MyLocation) > 20)) // Don't report on small changes, it's needlessly disruptive
+            App.GpsLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);
+            if (App.GpsLocation is null || (App.GpsLocation.Accuracy.GetValueOrDefault(Distances.Inaccurate) <= Distances.AccuracyLimit && App.GpsLocation.GetDistanceTo(MyLocation) > 20)) // Don't report on small changes, it's needlessly disruptive
             {
-                if (MyLocation != L)
+                if (MyLocation != App.GpsLocation)
                 {
-                    MyLocation = L;
+                    MyLocation = App.GpsLocation;
                     MyLocationChanged?.Invoke(null, null);
                 }
             }

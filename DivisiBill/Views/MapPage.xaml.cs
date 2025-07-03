@@ -6,12 +6,21 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 namespace DivisiBill.Views;
 
+/// <summary>
+/// This page is used whenever it is necessary to specify a map location, either when editing
+/// a venue or specifying a fake location in debug mode. It allows the user to select a location on a map
+/// and gives an indication of the location name and accuracy.
+/// </summary>
 [QueryProperty(nameof(MapSettings), "MapSettings")]
 public partial class MapPage : ContentPage
 {
     private Location originalVenueLocation; // Use to restore location if the user asks
     private readonly Pin pin = new() { Type = PinType.Place }; // No location or name yet
     public MapPage() => InitializeComponent();
+    /// <summary>
+    /// Used to specify the name and location of a venue, or to specify a fake location in debug mode.
+    /// This is input to the MapPage, which allows the user to select change the location on a map or clear it.
+    /// </summary>
     public MapSettings MapSettings { get; set; }
     protected override async void OnAppearing()
     {
