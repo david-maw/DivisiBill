@@ -24,7 +24,7 @@ public partial class CameraPage : ContentPage
         base.OnAppearing();
         await viewModel?.SetCameraAvailabilityAsync();
     }
-    private void OnPictureTaken(object sender, CommunityToolkit.Maui.Views.MediaCapturedEventArgs e)
+    private void OnPictureTaken(object sender, MediaCapturedEventArgs e)
     {
         async void DoIt()
         {
