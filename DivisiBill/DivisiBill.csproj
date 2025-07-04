@@ -100,10 +100,10 @@
       <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.81" />
       <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
       <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
-     <PackageReference Include="CommunityToolkit.Maui" Version="12.0.0" />
+     <PackageReference Include="CommunityToolkit.Maui" Version="12.1.0" />
      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="9.0.81" />
-      <PackageReference Include="Plugin.InAppBilling" Version="8.0.5" />
+      <PackageReference Include="Plugin.InAppBilling" Version="9.1.0" />
       <PackageReference Include="Sentry.Maui" Version="5.11.2" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
       <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="5.11.2" />
