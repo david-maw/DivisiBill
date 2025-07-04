@@ -1,3 +1,9 @@
+# 6.2.35
+
+## Update Meal Group Venue Location When It Changes
+
+If a venue location was updated and meals grouped by venue were being shown the location shown with the venue would not be updated, it is now.
+
 # 6.2.34
 
 ## Double Tap To Edit Venue
