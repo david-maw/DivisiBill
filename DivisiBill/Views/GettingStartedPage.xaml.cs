@@ -9,33 +9,36 @@ public partial class GettingStartedPage : ContentPage
     public GettingStartedPage()
     {
         InitializeComponent();
-        Loaded += GettingStartedPage_Loaded;
+        Loaded += async (s, e) =>
+        {
+            DebugMsg($"Enter GettingStartedPage_Loaded");
+
+            if (App.Settings.FirstUse)
+            {
+                DebugMsg("In GettingStartedPage_Loaded, about to invoke getting started Help Page");
+                await App.PushAsync(Routes.HelpPage + "?page=gettingstarted");
+            }
+            else
+            {
+                DebugMsg("In GettingStartedPage_Loaded, about to call GotoAsync to Splash");
+                await App.GoToAsync(Routes.SplashPage);
+            }
+
+            DebugMsg($"Leave GettingStartedPage_Loaded");
+        };
+        Shell.Current.Navigating += Current_Navigating;
     }
 
-    private bool helpInvoked = false;
-    private int nesting = 0;
-    private async void GettingStartedPage_Loaded(object sender, EventArgs e)
+    private async void Current_Navigating(object sender, ShellNavigatingEventArgs e)
     {
-        DebugMsg($"Enter GettingStartedPage_Loaded, helpInvoked={helpInvoked}, nesting={nesting}");
-        if (nesting > 0)
+        if (e.Source == ShellNavigationSource.PopToRoot)
         {
-            RecordMsg("Leave GettingStartedPage_Loaded, nested call, nothing to do");
+            DebugMsg($"In GettingStartedPage_Navigating, returning from help, redirect to splash page");
+            // If we are navigating to the root page, we want to go to the splash page, not the GettingStartedPage
+            Shell.Current.Navigating -= Current_Navigating; // We don't need to care anymore, from now on the app never returns to this page
+            e.Cancel(); // Cancel the navigation back to this page
+            await App.GoToAsync(Routes.SplashPage); // go to the splash page instead, just as if this were not the first use
             return;
         }
-        nesting++;
-
-        if (App.Settings.FirstUse && !helpInvoked) // First use of the program and help not yet shown
-        {
-            helpInvoked = true;
-            DebugMsg("In GettingStartedPage_Loaded, about to invoke getting started Help Page");
-            await App.PushAsync(Routes.HelpPage + "?page=gettingstarted");
-        }
-        else // Reopening this page after exiting from the help subsystem, or no help needed
-        {
-            DebugMsg("In GettingStartedPage_Loaded, about to call GotoAsync to Splash");
-            await App.GoToAsync(Routes.SplashPage);
-        }
-        nesting--;
-        DebugMsg($"Leave GettingStartedPage_Loaded, helpInvoked ={helpInvoked}, nesting = {nesting}");
     }
 }
