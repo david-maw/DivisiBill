@@ -2,10 +2,19 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False"
+             Title="Starting Divisibill, please wait"
+             BackgroundColor="Red"
              x:Class="DivisiBill.Views.GettingStartedPage">
+    <!--This layout intentionally emulates an empty SplashPage, so that the user can see the DivisiBill logo and a message while the app is loading.-->
     <ContentPage.Content>
         <VerticalStackLayout>
-            <Label Text="Getting Started"
+            <ActivityIndicator Color="Black"
+                               IsRunning="true"
+                               Margin="0,40,0,60"/>
+            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10"
+                   WidthRequest="250" HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=Image}"/>
+            <Label Text="Getting Started" TextColor="Black"
                 VerticalOptions="Center" 
                 HorizontalOptions="Center" />
         </VerticalStackLayout>

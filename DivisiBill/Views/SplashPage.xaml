@@ -18,11 +18,13 @@
     </Shell.TitleView>
     <ContentPage.Content>
         <Grid RowDefinitions="1*,2.5*,auto,auto,3*" >
+            <!--The early part of this layout is intentionally the same as the GettingStartedPage, so that the user can see the DivisiBill logo and a message while the app is loading.-->
             <ActivityIndicator Color="Black"
                                IsRunning="{Binding IsPaused, Converter={StaticResource Not}}"
                                Margin="10"/>
             <Label Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="22" HorizontalOptions="Center" VerticalOptions="End"/>
-            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10">
+            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10" 
+                   WidthRequest="250" HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=Image}" >
                 <Image.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnStatusTapped"/>
                 </Image.GestureRecognizers>

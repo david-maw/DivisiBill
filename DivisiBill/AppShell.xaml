@@ -41,7 +41,7 @@
     </Shell.MenuItemTemplate>
     <TabBar>
         <!--This is the initial page, used to decide what to show the user first, it is normally never visible -->
-        <ShellContent Title="Getting Started" ContentTemplate="{DataTemplate view:GettingStartedPage}"/>
+        <ShellContent Title="Getting Started" ContentTemplate="{DataTemplate view:GettingStartedPage}" Route="{x:Static local:Routes.GettingStartedPage}"/>
         <!--This is the initialization page the user normally sees-->
         <ShellContent Title="Startup" ContentTemplate="{DataTemplate view:SplashPage}" Route="{x:Static local:Routes.SplashPage}"/>
     </TabBar>

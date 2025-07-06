@@ -6,19 +6,20 @@ namespace DivisiBill.Views;
 /// </summary>
 public partial class GettingStartedPage : ContentPage
 {
-    public GettingStartedPage() => InitializeComponent();
+    public GettingStartedPage()
+    {
+        InitializeComponent();
+        Loaded += GettingStartedPage_Loaded;
+    }
+
     private bool helpInvoked = false;
     private int nesting = 0;
-    private bool splashInvoked = false;
-
-
-    protected override async void OnAppearing()
+    private async void GettingStartedPage_Loaded(object sender, EventArgs e)
     {
-        DebugMsg($"Enter GettingStartedPage.OnAppearing, helpInvoked={helpInvoked}, nesting={nesting}");
+        DebugMsg($"Enter GettingStartedPage_Loaded, helpInvoked={helpInvoked}, nesting={nesting}");
         if (nesting > 0)
         {
-            DebugMsg("Leave GettingStartedPage.OnAppearing, nested call, nothing to do");
-            base.OnAppearing();
+            RecordMsg("Leave GettingStartedPage_Loaded, nested call, nothing to do");
             return;
         }
         nesting++;
@@ -26,27 +27,15 @@ public partial class GettingStartedPage : ContentPage
         if (App.Settings.FirstUse && !helpInvoked) // First use of the program and help not yet shown
         {
             helpInvoked = true;
-            DebugMsg("In GettingStartedPage.OnAppearing, about to invoke getting started Help Page");
+            DebugMsg("In GettingStartedPage_Loaded, about to invoke getting started Help Page");
             await App.PushAsync(Routes.HelpPage + "?page=gettingstarted");
         }
         else // Reopening this page after exiting from the help subsystem, or no help needed
         {
-            if (!splashInvoked)
-            {
-#if WINDOWS
-                splashInvoked = false; // Because this page is opened twice in NET8 RC2 
-#else
-                splashInvoked = true;
-#endif
-                DebugMsg("In GettingStartedPage.OnAppearing, about to call GotoAsync to Splash");
-                await Task.Delay(1); // Needed to avoid crashes in Windows, see https://github.com/dotnet/maui/issues/6653 (was 12313)
-                await App.GoToAsync(Routes.SplashPage);
-            }
-            else
-                DebugMsg("In GettingStartedPage.OnAppearing, splashInvoked already true, nothing to do");
+            DebugMsg("In GettingStartedPage_Loaded, about to call GotoAsync to Splash");
+            await App.GoToAsync(Routes.SplashPage);
         }
-        base.OnAppearing();
         nesting--;
-        DebugMsg($"Leave GettingStartedPage.OnAppearing, helpInvoked ={helpInvoked}, nesting = {nesting}");
+        DebugMsg($"Leave GettingStartedPage_Loaded, helpInvoked ={helpInvoked}, nesting = {nesting}");
     }
 }

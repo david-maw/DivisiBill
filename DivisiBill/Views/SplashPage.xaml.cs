@@ -11,7 +11,9 @@ public partial class SplashPage : ContentPage
     {
         InitializeComponent();
         StatusMsgInvoked += LocalStatusMsg;
+        Loaded += SplashPage_Loaded;
     }
+
 
     ~SplashPage()
     { StatusMsgInvoked -= LocalStatusMsg; }
@@ -24,7 +26,7 @@ public partial class SplashPage : ContentPage
     /// redo it all. Of course it is possible external state (like the bills stored locally or remotely, or cloud
     /// accessibility) might have changed, so we check the ones we display.
     /// </summary>
-    protected override async void OnAppearing()
+    private async void SplashPage_Loaded(object sender, EventArgs e)
     {
         base.OnAppearing();
         // reevaluate some values that may have changed
@@ -37,18 +39,18 @@ public partial class SplashPage : ContentPage
         if (initializationStarted)
         {
             // Once it has started initialization this page has nothing else to do except act as a place to show progress
-            DebugMsg("In SplashPage.OnAppearing, initialization already started, nothing else to do.");
+            DebugMsg("In SplashPage_Loaded, initialization already started, nothing else to do.");
         }
         else
         {
             initializationStarted = true;
-            DebugMsg("In SplashPage.OnAppearing, initialization not started, starting it now.");
+            DebugMsg("In SplashPage_Loaded, initialization not started, starting it now.");
             await Task.Delay(50); // Let Navigation settle down or Popup V2 will wait forever
             await InitializeApp();
-            RecordMsg("In SplashPage.OnAppearing, navigating away from Initialization");
+            RecordMsg("In SplashPage_Loaded, navigating away from Initialization");
             await App.GoToHomeAsync();
         }
-        DebugMsg("Exit SplashPage.OnAppearing");
+        DebugMsg("Exit SplashPage_Loaded");
     }
     public static async Task InitializeApp()
     {
