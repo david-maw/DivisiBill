@@ -1225,8 +1225,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < LastItemIndex) await ScrollItemsImpl(LastVisibleItemIndex, ScrollToPosition.End); break;
-                case "Down": if (FirstVisibleItemIndex > 0) await ScrollItemsImpl(FirstVisibleItemIndex, ScrollToPosition.Start); break;
+                case "Up": if (LastVisibleItemIndex < LastItemIndex) await ScrollItemsImpl(LastVisibleItemIndex, ScrollToPosition.Start); break;
+                case "Down": if (FirstVisibleItemIndex > 0) await ScrollItemsImpl(FirstVisibleItemIndex, ScrollToPosition.End); break;
                 case "End": if (LastVisibleItemIndex < LastItemIndex) { await ScrollItemsImpl(LastItemIndex, ScrollToPosition.End); } break;
                 case "Start": if (FirstVisibleItemIndex > 0) { await ScrollItemsImpl(0, ScrollToPosition.Start); } break;
                 default: break;
