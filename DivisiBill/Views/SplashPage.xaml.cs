@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Models;
 using DivisiBill.Services;
+using Sentry;
 using static DivisiBill.Services.Utilities;
 
 namespace DivisiBill.Views;
@@ -137,13 +138,26 @@ public partial class SplashPage : ContentPage
             }
             else
             {
-                e.Cancel();
-                RecordMsg("Splash Page: Navigation canceled because it was not for a popup");
+                string errorMessage = $"""
+                    Splash Page: Navigation canceled because it was not for a popup
+                    Current: {e.Current.Location.OriginalString}
+                    Target: {e.Target.Location.OriginalString}
+                    Source: {e.Source}
+
+                    {Utilities.GetAppInformation()}
+                    """;
+                // Report this so we can figure out how often it happens
+                SentrySdk.CaptureMessage(SentryEventProcessor.PrematureNavigationTitle, scope =>
+                {
+                    // Attach app information and comments
+                    scope.AddAttachment(System.Text.Encoding.Latin1.GetBytes(errorMessage), "ErrorMsg.txt", AttachmentType.Default, "text/plain");
+                });
+                e.Cancel(); // Cancel the navigation
             }
         }
         else
         {
-            // If we can't cancel the navigation, just log it
+            // If we can't cancel the navigation, just log it in case there's a fault later
             RecordMsg("Splash Page: Navigation not canceled because CanCancel was false");
         }
     }

@@ -1007,6 +1007,7 @@ public class AwaitableQueue<T>
 public class SentryEventProcessor : ISentryEventProcessor
 {
     public const string UserFeedbackTitle = "User Feedback";
+    public const string PrematureNavigationTitle = "PrematureNavigation";
     private static int skipBreaks = 0; // Just set this to skip the next however many breaks
     public SentryEvent Process(SentryEvent sentryEvent)
     {
@@ -1021,10 +1022,12 @@ public class SentryEventProcessor : ISentryEventProcessor
                 skipBreaks--;
             return null;
         }
-        // User feedback gets reported regardless of general telemetry settings
-        bool userMessage = !string.IsNullOrWhiteSpace(sentryEvent.Message?.Message) && sentryEvent.Message.Message.Equals(UserFeedbackTitle);
-        if (userMessage || (App.Settings is not null && App.Settings.SendCrashYes))
-            return sentryEvent; // this is on a separate line so it's east to use in "set next statement" 
+        // Some messages get reported regardless of general telemetry settings
+        bool mustSendMessage = !string.IsNullOrWhiteSpace(sentryEvent.Message?.Message)
+            && (sentryEvent.Message.Message.Equals(UserFeedbackTitle)
+                || sentryEvent.Message.Message.Equals(PrematureNavigationTitle));
+        if (mustSendMessage || (App.Settings is not null && App.Settings.SendCrashYes))
+            return sentryEvent; // this is on a separate line so it's easy to use in debugger "set next" command 
         return null;
     }
 }
