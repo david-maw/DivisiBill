@@ -4,6 +4,10 @@
 
 If a venue location was updated and meals grouped by venue were being shown the location shown with the venue would not be updated, it is now.
 
+## Correct 'Save' Action on Properties Page
+
+Previously tapping the 'Save' icon was not correctly saving any image file associated with the bill, or entering the newly saved bill into the bill list. These errors have been corrected.
+
 # 6.2.34
 
 ## Double Tap To Edit Venue
