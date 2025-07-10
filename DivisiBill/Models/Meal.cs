@@ -194,7 +194,7 @@ public partial class Meal : ObservableObjectPlus
                     await StatusMsgAsync("Creating fake bill list so we have something to work with");
                     CreateFakeStoredBills();
                 }
-                Meal AppMeal = LoadFromApp();
+                Meal AppMeal = LoadFromApp(tryExistingSummary: true); // load the meal but use an existing summary if there is one
 
                 if (!App.RecentlyUsed && AppMeal is not null && AppMeal.TooOldToContinue)
                 {
@@ -912,7 +912,7 @@ public partial class Meal : ObservableObjectPlus
     /// MealSummary from the list rather than creating a new one.
     /// </summary>
     /// <returns>The stored Meal or null if there wasn't one</returns>
-    public static Meal LoadFromApp()
+    public static Meal LoadFromApp(bool tryExistingSummary)
     {
         string myString = App.Settings.StoredMeal;
         if (string.IsNullOrWhiteSpace(myString))
@@ -923,7 +923,7 @@ public partial class Meal : ObservableObjectPlus
             MemoryStream s = new(buf);
             Meal m = LoadFromStream(s);
             DebugMsg("in Meal.LoadFromApp meal = " + m.Summary);
-            MealSummary existingMealSummary = LocalMealList.Where(ms => ms.Id.Equals(m.Summary.Id)).FirstOrDefault();
+            MealSummary existingMealSummary = tryExistingSummary ? LocalMealList.Where(ms => ms.Id.Equals(m.Summary.Id)).FirstOrDefault() : null;
             m.SavedToApp = true;
             m.SavedToFile = existingMealSummary is not null;
             if (m.SavedToFile)
@@ -1319,7 +1319,7 @@ public partial class Meal : ObservableObjectPlus
     public async Task SaveSnapshotAsync()
     {
         // First clone the Meal
-        Meal m = LoadFromApp();
+        Meal m = LoadFromApp(tryExistingSummary: false); // load up the meal with an independent summary
         // From now on we deal only with the cloned Meal
         m.SaveReason = "Command"; // Does not need to be preserved since all saves change it
         // Now make the creation time be now so the file is saved with a distinct name
@@ -1330,10 +1330,13 @@ public partial class Meal : ObservableObjectPlus
         m.SavedToApp = false;
         m.SavedToFile = false;
         m.SavedToRemote = false;
-        m.Summary.IsLocal = false;
+        m.Summary.IsLocal = true; // because the file will be stored locally below
         m.Summary.IsRemote = false;
         if (HasImage && File.Exists(ImagePath)) // Copy the image file to the new location if it exists
+        {
             File.Copy(ImagePath, m.ImagePath, true);
+            m.Summary.CheckImageFiles(); // Make sure the summary reflects the image
+        }
         await m.SaveToFileAsync();
         // Now make the snapshot visible
         m.Summary.Show();
