@@ -565,7 +565,7 @@ public static partial class Utilities // Partial for regex generator
     /// <returns>True of the user selected yes, false if they selected no</returns>
     private static async Task<bool> ActualAskAsync(string title, string message, string yesCaption, string noCaption)
     {
-        DebugMsg("Question to user: " + message);
+        RecordMsg("Question to user: " + message);
 #if ANDROID
         // The captions appear in reverse order in Android, so swap them round
         bool androidAnswer = await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, noCaption, yesCaption));
@@ -587,7 +587,7 @@ public static partial class Utilities // Partial for regex generator
     internal static DisplayAlertAsyncType DisplayAlertAsync = ActualDisplayAlertAsync;
     private static Task ActualDisplayAlertAsync(string title, string message, string accept = null)
     {
-        DebugMsg("Alert to user: " + message);
+        RecordMsg("Alert to user: " + message);
         return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, "OK"));
     }
 
@@ -598,14 +598,14 @@ public static partial class Utilities // Partial for regex generator
     /// <returns></returns>
     internal static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel), Utilities.GetNullPopupOptions());
     /// <summary>
-    /// Show an application message that will go away by itself if not acknowledged
+    /// Show an application message that will go away by itself if not acknowledged. Can be invoked from any thread.
     /// </summary>
     /// <param name="message">The message to show the user</param>
     /// <returns></returns>
     internal static Task ShowAppSnackBarAsync(string message)
     {
-        DebugMsg("Snack message to user: " + message);
-        return Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message), Utilities.GetNullPopupOptions());
+        RecordMsg("Snack message to user: " + message);
+        return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message), Utilities.GetNullPopupOptions()));
     }
 
     /// <summary>

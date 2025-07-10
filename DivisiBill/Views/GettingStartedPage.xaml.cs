@@ -21,6 +21,7 @@ public partial class GettingStartedPage : ContentPage
             else
             {
                 DebugMsg("In GettingStartedPage_Loaded, about to call GotoAsync to Splash");
+                Shell.Current.Navigating -= Current_Navigating; // We don't need to care anymore, from now on the app never returns to this page
                 await App.GoToAsync(Routes.SplashPage);
             }
 
