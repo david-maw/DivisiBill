@@ -5,7 +5,8 @@
              xmlns:views="clr-namespace:DivisiBill.Views"
              BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:TutorialPage}"
              x:DataType="views:TutorialPage"
-             x:Class="DivisiBill.Views.TutorialPage">
+             x:Class="DivisiBill.Views.TutorialPage"
+             Shell.FlyoutBehavior="Disabled">
     <ScrollView>
         <VerticalStackLayout Margin="20,0">
             <Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto, auto, auto" >

@@ -9,7 +9,8 @@
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     Title="Manage Data"
     x:DataType="vm:DataManagementViewModel"
-    BindingContext="{vm:DataManagementViewModel}">
+    BindingContext="{vm:DataManagementViewModel}"
+    Shell.FlyoutBehavior="Flyout">
     <VerticalStackLayout Spacing="10">
         <!--#region Archive / Restore-->
         <Border Margin="30,10">

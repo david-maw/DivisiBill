@@ -10,11 +10,9 @@ public partial class ImagePage : ContentPage
         InitializeComponent();
         viewModel = (ImageViewModel)BindingContext;
     }
-    private FlyoutBehavior savedFlyoutBehavior;
-    protected override async void OnAppearing()
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
-        base.OnAppearing();
-        savedFlyoutBehavior = Shell.Current.FlyoutBehavior;
+        base.OnNavigatedTo(args);
         Shell.Current.FlyoutBehavior = Shell.Current.Navigation.NavigationStack.Count > 1 // we got here by navigation
             ? FlyoutBehavior.Disabled
             : FlyoutBehavior.Flyout;
@@ -27,7 +25,6 @@ public partial class ImagePage : ContentPage
     {
         viewModel.Store();
         base.OnDisappearing();
-        Shell.Current.FlyoutBehavior = savedFlyoutBehavior;
     }
 }
 

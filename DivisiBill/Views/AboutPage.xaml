@@ -9,7 +9,8 @@
              xmlns:services="clr-namespace:DivisiBill.Services"
              BindingContext="{vm:SettingsViewModel}"
              x:DataType="vm:SettingsViewModel"
-             Title="About">
+             Title="About"
+             Shell.FlyoutBehavior="Flyout">
 
     <Grid x:DataType="vm:SettingsViewModel" RowDefinitions="*, Auto,*, Auto">
         <ContentView Padding="10" BackgroundColor="Red">

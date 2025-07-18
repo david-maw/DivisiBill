@@ -10,7 +10,6 @@ namespace DivisiBill.Views;
 public partial class PeopleListPage : ContentPage
 {
     private readonly ViewModels.PeopleListViewModel context = null;
-    private FlyoutBehavior savedFlyoutBehavior;
     public PeopleListPage() : this(null)
     {
     }
@@ -23,13 +22,12 @@ public partial class PeopleListPage : ContentPage
     }
     ~PeopleListPage() { context.ScrollItemsTo = null; }
 
-    protected override async void OnAppearing()
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
-        base.OnAppearing();
-        await Task.Delay(100); // nasty kludge to allow time for navigation to complete
-        savedFlyoutBehavior = Shell.Current.FlyoutBehavior;
-        if (Navigation.NavigationStack.Count > 1) // we got here by navigation
-            Shell.Current.FlyoutBehavior = FlyoutBehavior.Disabled;
+        base.OnNavigatedTo(args);
+        Shell.Current.FlyoutBehavior = Shell.Current.Navigation.NavigationStack.Count > 1 // we got here by navigation
+            ? FlyoutBehavior.Disabled
+            : FlyoutBehavior.Flyout;
         context.ShowPeopleHint = App.Settings.ShowPeopleHint;
     }
 
@@ -68,7 +66,6 @@ public partial class PeopleListPage : ContentPage
     {
         base.OnDisappearing();
         context.ForgetDeletedPeople();
-        Shell.Current.FlyoutBehavior = savedFlyoutBehavior;
     }
     #region Collection Scrolling
     private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel

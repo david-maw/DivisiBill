@@ -9,7 +9,6 @@ public partial class VenueListPage : ContentPage
 {
     protected ViewModels.VenueListViewModel context;
     private MapSettings? mapSettings = null;
-    private FlyoutBehavior savedFlyoutBehavior;
 
     public VenueListPage()
     {
@@ -25,9 +24,14 @@ public partial class VenueListPage : ContentPage
     {
         base.OnAppearing();
         await App.StartMonitoringLocation();
-        savedFlyoutBehavior = Shell.Current.FlyoutBehavior;
-        if (Shell.Current.Navigation.NavigationStack.Count > 1) // we got here by navigation
-            Shell.Current.FlyoutBehavior = FlyoutBehavior.Disabled;
+    }
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        await Task.CompletedTask; // Just to avoid warning about async with no await on a Windows build
+        Shell.Current.FlyoutBehavior = Shell.Current.Navigation.NavigationStack.Count > 1 // we got here by navigation
+            ? FlyoutBehavior.Disabled
+            : FlyoutBehavior.Flyout;
         if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
         {
             mapSettings.VenueLocationHasChanged = false; // don't execute this code again unnecessarily
@@ -59,8 +63,6 @@ public partial class VenueListPage : ContentPage
         context.ForgetDeletedVenues();
         if (!Venue.IsSaved)
             await Venue.SaveSettingsAsync();
-        if (Shell.Current.Navigation.NavigationStack.Count > 1) // we got here by navigation
-            Shell.Current.FlyoutBehavior = savedFlyoutBehavior;
         base.OnDisappearing();
         await App.StopMonitoringLocation();
     }
@@ -68,7 +70,7 @@ public partial class VenueListPage : ContentPage
     private async void OnShowMap(object sender, EventArgs e)
     {
         if (Utilities.IsWinUI)
-        { 
+        {
             await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
             return;
         }

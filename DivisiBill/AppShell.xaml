@@ -42,7 +42,7 @@
     <TabBar>
         <!--This is the initial page, used to decide what to show the user first, it is normally never visible -->
         <ShellContent Title="Getting Started" ContentTemplate="{DataTemplate view:GettingStartedPage}" Route="{x:Static local:Routes.GettingStartedPage}"/>
-        <!--This is the initialization page the user normally sees-->
+        <!--This is the initialization page the user normally sees, ShellContent items with routes are navigated to in code-->
         <ShellContent Title="Startup" ContentTemplate="{DataTemplate view:SplashPage}" Route="{x:Static local:Routes.SplashPage}"/>
     </TabBar>
     <ShellContent Title="Items" ContentTemplate="{DataTemplate view:LineItemsPage}" Route="{x:Static local:Routes.LineItemsPage}"/>
@@ -65,6 +65,6 @@
     </FlyoutItem>
     <MenuItem     Text="Help Index" Clicked="OnHelpIndexClicked"/>
     <MenuItem     Text="Help" Clicked="OnHelpClicked"/>
-    <ShellContent Title="Tutorial" ContentTemplate="{DataTemplate view:TutorialPage}" Shell.FlyoutBehavior="Disabled" Route="{x:Static local:Routes.TutorialPage}"/>
+    <ShellContent Title="Tutorial" ContentTemplate="{DataTemplate view:TutorialPage}" Route="{x:Static local:Routes.TutorialPage}"/>
     <MenuItem     Text ="Exit" Clicked="OnExitClicked"/>
 </Shell>
