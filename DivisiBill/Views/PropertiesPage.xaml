@@ -6,7 +6,6 @@
              Title="Properties of the bill"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              xmlns:DivisiBill="clr-namespace:DivisiBill"
-             Shell.FlyoutBehavior="Disabled"
              x:Class="DivisiBill.Views.PropertiesPage"
              x:DataType="vm:PropertiesViewModel"
              BindingContext="{vm:PropertiesViewModel}">

@@ -22,9 +22,14 @@ public partial class PropertiesPage : ContentPage
         base.OnDisappearing();
         viewModel.UnloadProperties();
     }
-
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        Shell.Current.FlyoutBehavior = Shell.Current.Navigation.NavigationStack.Count > 1 // we got here by navigation
+            ? FlyoutBehavior.Disabled
+            : FlyoutBehavior.Flyout;
+    }
     private void GoToVenuesByName(object sender, EventArgs e) => Navigation.PushAsync(new VenueListByNamePage());
-
     private async void OnEntryFocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry focusedEntry)
@@ -32,7 +37,6 @@ public partial class PropertiesPage : ContentPage
             await focusedEntry.ShowKeyboardAsync();
         }
     }
-
     private async void OnEntryCompleted(object sender, EventArgs e)
     {
         if (sender is Entry focusedEntry)

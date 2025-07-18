@@ -49,7 +49,7 @@
     <ShellContent Title="Totals" ContentTemplate="{DataTemplate view:TotalsPage}" Route="{x:Static local:Routes.TotalsPage}"/>
     <MenuItem      Text="Camera" Clicked="GoToImagePageWithCamera"/>
     <ShellContent Title="Image" ContentTemplate="{DataTemplate view:ImagePage}" Route="{x:Static local:Routes.ImagePage}"/>
-    <MenuItem      Text= "Properties" Clicked="PushProperties" />
+    <ShellContent Title="Properties" ContentTemplate="{DataTemplate view:PropertiesPage}" Route="{x:Static local:Routes.PropertiesPage}"/>
     <ShellContent Title="List Saved Bills by Age" ContentTemplate="{DataTemplate view:MealListByAgePage}" Route="{x:Static local:Routes.MealListByAgePage}"/>
     <ShellContent Title="List Saved Bills by Name" ContentTemplate="{DataTemplate view:MealListByNamePage}"/>
     <ShellContent Title="List Saved Bills by Distance" ContentTemplate="{DataTemplate view:MealListByDistancePage}"/>
