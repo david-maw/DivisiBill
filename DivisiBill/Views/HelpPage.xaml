@@ -8,6 +8,7 @@
              Shell.TabBarIsVisible="False"
              Shell.FlyoutBehavior="Disabled"
              Title="Help">
+    <!--We might be called from a page with a NavBar, so we turn it off above, just in case-->
     <ContentPage.ToolbarItems>
         <ToolbarItem Clicked="OnIndexIconClicked" IconImageSource="{StaticResource GlyphToc}"/>
         <ToolbarItem Clicked="OnExitIconClicked" IconImageSource="{StaticResource GlyphExit}"/>

@@ -1011,7 +1011,7 @@ public class SentryEventProcessor : ISentryEventProcessor
     private static int skipBreaks = 0; // Just set this to skip the next however many breaks
     public SentryEvent Process(SentryEvent sentryEvent)
     {
-        Utilities.DebugMsg($"In SentryEventProcessor.Process, Sentry EventId: {sentryEvent.EventId}");
+        Utilities.DebugMsg($"In SentryEventProcessor.Process, Event:\"{sentryEvent.Message}\", EventId: {sentryEvent.EventId}");
         if (Utilities.IsDebug)
         {
             // Never report anything on a debug build but you can put a breakpoint here to look at them

@@ -4,8 +4,6 @@
        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:view="clr-namespace:DivisiBill.Views"
        xmlns:local="clr-namespace:DivisiBill"
-       TabBarIsVisible="False"
-       FlyoutBehavior="Disabled"
        Title="DivisiBill"
        x:Class="DivisiBill.AppShell">
 
@@ -41,9 +39,9 @@
     </Shell.MenuItemTemplate>
     <TabBar>
         <!--This is the initial page, used to decide what to show the user first, it is normally never visible -->
-        <ShellContent Title="Getting Started" ContentTemplate="{DataTemplate view:GettingStartedPage}" Route="{x:Static local:Routes.GettingStartedPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate view:GettingStartedPage}" Route="{x:Static local:Routes.GettingStartedPage}"/>
         <!--This is the initialization page the user normally sees, ShellContent items with routes are navigated to in code-->
-        <ShellContent Title="Startup" ContentTemplate="{DataTemplate view:SplashPage}" Route="{x:Static local:Routes.SplashPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate view:SplashPage}" Route="{x:Static local:Routes.SplashPage}"/>
     </TabBar>
     <ShellContent Title="Items" ContentTemplate="{DataTemplate view:LineItemsPage}" Route="{x:Static local:Routes.LineItemsPage}"/>
     <ShellContent Title="Totals" ContentTemplate="{DataTemplate view:TotalsPage}" Route="{x:Static local:Routes.TotalsPage}"/>
