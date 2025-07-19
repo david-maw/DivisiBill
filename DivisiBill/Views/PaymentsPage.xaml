@@ -28,6 +28,7 @@
             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
             <VerticalStackLayout.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnPopupTapped" NumberOfTapsRequired="1"/>
             </VerticalStackLayout.GestureRecognizers>
             <Label Text="Payment Breakdown" FontSize="Large" FontAttributes="Bold" TextDecorations="Underline" HorizontalOptions="Center"/>
             <Grid ColumnDefinitions="*, auto" RowDefinitions="auto, auto, auto" ColumnSpacing="10" HorizontalOptions="Center">
