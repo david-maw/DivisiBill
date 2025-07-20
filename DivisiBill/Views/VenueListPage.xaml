@@ -31,12 +31,34 @@
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <VerticalStackLayout x:DataType="model:Venue">
-                        <Grid ColumnDefinitions="*, auto">
+                        <Grid ColumnDefinitions="*, auto, auto">
+                            <!--#region Context Menu to Replace Swipe -->
+                            <FlyoutBase.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem
+                                            Text="Use"
+                                            CommandParameter="{Binding}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
+                                    <MenuFlyoutItem
+                                            Text="Delete"
+                                            CommandParameter="{Binding}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
+                                </MenuFlyout>
+                            </FlyoutBase.ContextFlyout>
                             <Label Text="{Binding Path=Name}" FontSize="Large" LineBreakMode="TailTruncation"/>
-                            <Label Grid.Column="1" Text="{Binding Path=Distance, Converter={StaticResource Distance}}" FontSize="Small" VerticalOptions="Center" HorizontalOptions="End"/>
+                            <!--#region Icon indicating current Meal-->
+                            <Image
+                            Grid.Column="1"
+                            IsVisible="{Binding IsForCurrentMeal}"
+                            HorizontalOptions="End"
+                            WidthRequest="20"
+                            Source="{StaticResource ListGlyphCurrentMeal}"/>
+                            <!--#endregion-->
+                            <Label Grid.Column="2" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="Small" VerticalOptions="Center" HorizontalOptions="End"/>
                         </Grid>
                         <BoxView Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
                     </VerticalStackLayout>
+                    <!--#endregion-->
                 </SwipeView>
                 <!--#region Select/Deselect/Details button -->
                 <Rectangle Grid.Column="1" x:DataType="model:Venue">
@@ -44,51 +66,6 @@
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=SelectVenueCommand, x:DataType=vm:VenueListViewModel}"/>
-                        <TapGestureRecognizer NumberOfTapsRequired="2"
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
-                <!--#endregion-->
-            </Grid>
-        </DataTemplate>
-        <DataTemplate x:Key="NoSwipe">
-            <Grid ColumnDefinitions="*,*,*"  x:DataType="model:Venue">
-                <VerticalStackLayout Grid.ColumnSpan="3">
-                    <Grid ColumnDefinitions="*, auto">
-                        <Label Text="{Binding Path=Name}" FontSize="Large" LineBreakMode="TailTruncation"/>
-                        <Label Grid.Column="1" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="Small" VerticalOptions="Center" HorizontalOptions="End"/>
-                    </Grid>
-                    <BoxView Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
-                    <!--#region Context Menu to Replace Swipe -->
-                    <FlyoutBase.ContextFlyout>
-                        <MenuFlyout >
-                            <MenuFlyoutItem
-                                    Text="Use"
-                                    CommandParameter="{Binding}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
-                            <MenuFlyoutItem
-                                    Text="Map"
-                                    CommandParameter="{Binding}"
-                                    Clicked="OnShowMap"/>
-                            <MenuFlyoutItem
-                                    Text="Edit Details"
-                                    CommandParameter="{Binding}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
-                            <MenuFlyoutItem
-                                    Text="Delete"
-                                    CommandParameter="{Binding}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
-                        </MenuFlyout>
-                    </FlyoutBase.ContextFlyout>
-                    <!--#endregion-->
-                </VerticalStackLayout>
-                <!--#region Select/Deselect/Details button -->
-                <Rectangle Grid.Column="1">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer
-                            CommandParameter="{Binding}"
-                            Command="{Binding SelectVenueCommand, Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, x:DataType=vm:VenueListViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2"
                             CommandParameter="{Binding}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
@@ -111,7 +88,7 @@
         <CollectionView x:Name="CurrentCollectionView"
             x:DataType="vm:VenueListViewModel"
             Scrolled="OnCollectionViewScrolled"
-            ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
+            ItemTemplate="{StaticResource WithSwipe}"
             SelectionMode="Single"
             SelectedItem="{Binding CurrentItem}"
             Margin="10,0"                

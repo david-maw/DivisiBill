@@ -17,7 +17,7 @@
             1 - it allows the Notes field to occupy all the available space
             2 - it simplifies the layout of the name input line-->
     <Grid Margin="10,0,10,10" ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *">
-        <Label Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Path=OriginalName}" 
+        <Label Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Path=Name}" 
                    HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
         <Label Grid.Row="1" Grid.ColumnSpan="2" Text="(in use)" IsVisible="{Binding IsInUse}" HorizontalOptions="Center"/>
         <Label Grid.Row="2" Grid.ColumnSpan="2" HorizontalOptions="Center">

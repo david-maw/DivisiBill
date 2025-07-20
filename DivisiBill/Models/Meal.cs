@@ -34,9 +34,8 @@ namespace DivisiBill.Models;
  * 2) A user enters a bill, pauses for a while, then replaces it with a stored bill.
  *    This should trigger saving the first bill. 
  *    
- * 3) A user loads a stored bill, then replaces it with a stored bill.
- *    This should not trigger a new bill to be stored, it should do nothing except a periodic save for 
- *    safety (see below) but does lead to case 1 or 2.
+ * 3) A user loads a stored bill, then replaces it with a stored bill without changing anything.
+ *    This should not trigger a new bill to be stored.
  * 
  * 4) A user loads a stored bill, then edits it
  *    This should do nothing except a periodic save for safety (see below) but does lead to case 1 or 2.
@@ -45,8 +44,8 @@ namespace DivisiBill.Models;
  *    After the pause of many minutes they scan a bill image and apply it to the prepared bill. This should 
  *    do nothing except a periodic save for safety (see below) but does lead to case 1 or 2.
  * 
- * The consequence of all this is that a bill is not added to the list of stored bills until we are sure it
- * is finished with, and that only happens when more than 90 minutes (App.MinimumIdleTime) have elapsed
+ * To sum up, a bill is not final ("Frozen") until we are sure it is finished with, 
+ * and that only happens when more than 90 minutes (App.MinimumIdleTime) have elapsed
  * and something important (like the venue name) changes. After an additional hour (App.MaximumIdleTime) has 
  * elapsed since the bill was changed any subsequent change represents a new bill. The current bill is evaluated
  * only occasionally (currently when the app initializes, when a bill is loaded, when items from a scanned bill 
@@ -72,32 +71,35 @@ namespace DivisiBill.Models;
  * The implementation is that there are a list of meals (bills) stored locally in XML files and, optionally, 
  * images (in JPG files) a list of those files is in LocalMealList which has pointers to a MealSummary
  * for each meal. Each MealSummary includes the name of the file it is in and the name of the image if there is one. All the 
- * meals are in that list with the exception of the current meal.
+ * meals are in that list, including the current meal.
  * 
  * The current meal is stored in the application dictionary - it may also be stored on disk, but might not be.
  * For example it is persisted to disk when the program exits and periodically if it changes. The same
- * the same bill will be reloaded when the program next starts although it may be marked as Frozen depending how old it is.
+ * bill will be reloaded when the program next starts, although it may be marked as Frozen depending on how old it is.
  * 
- * Any change to a Frozen bill results in it being persisted to local storage (aka disk) and a new copy made (with
- * a new creation time) for subsequent updates.
+ * Any change to a Frozen bill results in it being persisted to local storage (aka disk) if it has unsaved changes
+ * but either way a new copy made (with a new creation time) for subsequent updates.
  * 
- * The files are stored in public external storage for debug builds, so from outside you see a DivisiBillDebug
- * folder in Phone/Documents and within it are Meals and Images folders containing Meals and their images
- * respectively. Internally Android exposes this as /Storage/Emulated/0/Documents/DivisiBillDebug. The release
- * build files are in an app-private folder (/data/user/0/com.autoplus.divisibill2/files)
+ * Implementation Details
+ * 
+ * The files representing persisted Meal objects are stored in different folders for debug builds, so from outside you see
+ * a DivisiBill or DivisiBillDebug folder and within it are Meals and Images folders containing Meals and their images
+ * respectively. Android uses an encrypted app-private folder (/data/user/0/com.autoplus.divisibill/files) in Windows it's 
+ * an unencrypted folder in the user's Documents folder, making debugging on Windows much easier than Android.
  * 
  * So there's always exactly one current meal, the question is when to persist it to a new file, in 
  * other words when is it a distinct bill, and when is it an existing one you've updated some more (case 4 above).
- * Initially a meal is marked as SavedToApp and SavedToFile = true and whenever anything significant is done 
- * to it, it is marked as SavedToApp and SavedToFile = false. When certain actions are performed we check whether
- * it has been marked changed (SavedToApp or SavedToFile are false), and if it has we persist the file in XML to
+ * Initially a meal is marked as SavedToApp and SavedToFile true and whenever anything significant is done 
+ * to it, the bill is marked as SavedToApp and SavedToFile false. When certain actions are performed we check whether
+ * it has been marked changed (SavedToApp or SavedToFile false) and, if it has, we persist the file in XML to
  * either the app dictionary or a file, or both (done by calling SaveIfChangedAsync) this is also one of 
  * the opportunities to see if it is appropriate to save to disk the version of the meal preceding the change
  * by calling MarkAsNewAsync and passing a parameter to say why it seemed worthwhile to save a snapshot of the meal.
  * 
- * Once a meal is saved the current meal is marked as Frozen and unchanged and the name of the file it is 
+ * Once a meal is saved, the current meal is marked as Frozen and unchanged and the name of the file it is 
  * stored in is saved (mostly for historical reasons, this algorithm used to be different). If a frozen meal
- * is marked as changed the meal CreationTime is set as well as resetting Frozen and clearing the storage file name. 
+ * is marked as changed, the meal CreationTime is set as well as resetting Frozen and changing the storage file name
+ * (which is derived from the CreationTime).
  * 
  * The very first time the program runs there won't be a stored bill, so we create one and mark it as SavedToApp and
  * SavedToFile = true and IsDefault - such a bill never needs storing to a permanent file until it is changed (just 
@@ -107,8 +109,8 @@ namespace DivisiBill.Models;
  * MealLoadTime - the time when it was updated (so it's a bit of a misnomer). These are hangovers from the old algorithm.
  * 
  * Each meal itself has a variety of interesting properties:
- *    Summary - a reference to the mealSummary for this Meal
- *    SavedToFile - means it has been persisted to local storage (meaning it is in a file named according to the
+ *    Summary - a reference to the MealSummary for this Meal
+ *    SavedToFile - means it has been persisted to local storage (in a file named according to the
  *       CreationTime of the bill) since the last time it was updated.
  *    Summary.IsLocal - meaning this MealSummary represents a Meal stored in a local file, possibly not the
  *       latest version (SavedToFile is what indicates that)
@@ -138,18 +140,19 @@ namespace DivisiBill.Models;
  *           remote storage)
  *       MakeVisible - if a meal has been saved to disk add it to the LocalMealList so it is visible
  *       
- *    So the general idea is that we flag a bill as changed whenever something which would be persisted changes in the bill
- *    and call SaveIfChanged periodically so if the app, or system crashes, you'll be able to recover from a recent point. 
- *    We periodically save the current bill to a file in case DivisiBill is uninstalled, when the current bill in the app 
- *    dictionary would be lost. Less frequently, we save the current bill to the cloud, just in case a real catastrophe 
+ *    The general idea is that we flag a bill as changed whenever something which would be persisted changes in the bill
+ *    and call SaveIfChanged periodically, so if the app, or system, crashes, you'll be able to recover from a recent point. 
+ *    Occasionally, we save the current bill to the cloud, just in case a real catastrophe 
  *    happens and all local bills are lost (as of Android 30 this can happen if you uninstall the app).
  *    
- *    It is important not to mark bills as changed when values which are not persisted change so that, for example, calculating the
- *    subtotal on a newly loaded bill has no effect.
- *    
+ *    It is important NOT to mark bills as changed when values which are not persisted change, so that, for example, changing the
+ *    subtotal on a newly loaded bill has no effect, but changing an item on the bill does, so in practice, all significant
+ *    changes are persisted.
+ *       
  *    Meal images are handled as distinct files, the most recent image, if there is one, is always in a file
  *    named like the Meal file, but with a JPG extension instead of XML. As of 2022 image processing is used to shrink 
- *    images but they are still 10s of kB so they are much larger than Meal files which are typically 2kB.
+ *    images but they are still 10s of kB so they are much larger than Meal files which are typically 2kB or less. For this reason
+ *    and Archive operation saves bills but not images.
 */
 
 [DebuggerDisplay("{DebugDisplay}")]
@@ -343,6 +346,7 @@ public partial class Meal : ObservableObjectPlus
             {
                 MealSummary prior = field?.Summary;
                 field = value;
+                Venue.SetCurrentByName(value?.VenueName);
                 CurrentMealSummaryChanged?.Invoke(prior, value?.Summary);
             }
         }
@@ -485,7 +489,7 @@ public partial class Meal : ObservableObjectPlus
             }
             if (!localMealNames.Contains(meal.Summary.Id))
             {
-                if (!meal.IsDefault) // never save the default meal to persistent storage
+                if (meal.IsLastChangeTimeSet) // never save an unchanged meal to persistent storage
                 {
                     meal.SaveToFile();
                     meal.Summary.IsLocal = true;
@@ -1402,6 +1406,7 @@ public partial class Meal : ObservableObjectPlus
         Debug.Assert(!string.IsNullOrWhiteSpace(value));
         if (VenueName != value)
         {
+            Venue.SetCurrentByName(value);
             await MarkAsNewAsync("NewVenue"); // Flag for storage in a different location
             VenueName = value;
         }
@@ -1416,6 +1421,7 @@ public partial class Meal : ObservableObjectPlus
             if (VenueName != value)
             {
                 Summary.VenueName = value;
+                OnPropertyChanged();
                 MarkAsChanged();
             }
         }

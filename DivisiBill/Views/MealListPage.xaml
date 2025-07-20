@@ -139,7 +139,7 @@
                             Grid.Column="0"
                             IsVisible="{Binding IsForCurrentMeal}"
                             HorizontalOptions="End"
-                            WidthRequest="30"
+                            WidthRequest="25"
                             Source="{StaticResource ListGlyphCurrentMeal}"/>
                             <!--#endregion-->
                             <Image
@@ -421,7 +421,7 @@
                                     Grid.Column="2"
                                     IsVisible="{Binding IsForCurrentMeal}"
                                     HorizontalOptions="End"
-                                    WidthRequest="30"
+                                    WidthRequest="25"
                                     Source="{StaticResource ListGlyphCurrentMeal}"/>
                                 <!--#endregion-->
                                 <BoxView

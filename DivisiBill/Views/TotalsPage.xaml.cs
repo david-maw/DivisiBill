@@ -1,4 +1,5 @@
 using DivisiBill.Models;
+using DivisiBill.Services;
 using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
@@ -9,6 +10,7 @@ public partial class TotalsPage : ContentPage
     public TotalsPage() => InitializeComponent();
     protected override void OnAppearing()
     {
+        Utilities.DebugMsg("In TotalsPage.OnAppearing");
         base.OnAppearing();
         viewModel = BindingContext as MealViewModel; // It may have changed
         viewModel.DistributeCostsIfNeeded();

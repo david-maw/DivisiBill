@@ -327,6 +327,16 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
             await App.GoToAsync(Routes.MealListByAgePage);
         }
     }
+    [RelayCommand]
+    private async Task OpenVenue()
+    {
+        if (Venue.FindVenueByName(VenueName) is Venue venue)
+            await App.PushAsync(Routes.VenueListByNamePage);
+        else if (await Utilities.AskAsync("Question", $"Venue \"{VenueName}\" not found, do you want to create it?"))
+            await App.PushAsync(Routes.VenueEditPage, "Venue", Venue.SelectOrAddVenue(VenueName, $"Created from bill {Meal.CurrentMeal?.Summary?.Id} on {DateTime.Now:d}"));
+        else
+            await App.PushAsync(Routes.VenueListByNamePage);
+    }
     #endregion
     #region Venue Notes
     [ObservableProperty]

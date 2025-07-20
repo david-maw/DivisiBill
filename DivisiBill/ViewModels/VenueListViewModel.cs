@@ -22,7 +22,12 @@ public partial class VenueListViewModel : ObservableObjectPlus
         App.MyLocationChanged += App_MyLocationChanged;
         this.NavigateToDetails = NavigateToDetails;
         this.NavigateToHome = NavigateToHome;
+        CurrentItem = Venue.Current; // Initially the selected venue is the one for the current meal, if any
+        Meal.CurrentMealSummaryChanged += Meal_CurrentMealSummaryChanged;
     }
+
+    private void Meal_CurrentMealSummaryChanged(MealSummary oldSummary, MealSummary newSummary) => Venue.SetCurrentByName(newSummary?.VenueName);
+
     ~VenueListViewModel()
     {
         ((INotifyCollectionChanged)Venue.AllVenues).CollectionChanged -= AllVenues_CollectionChanged;
@@ -73,6 +78,9 @@ public partial class VenueListViewModel : ObservableObjectPlus
     private async Task UnDeleteAllVenues() => await UndeleteAllVenuesAsync();
     #endregion
     #region Properties
+    /// <summary>
+    /// The currently selected Venue (bound to CurrentCollectionView.SelectedItem on VenueListPage).
+    /// </summary>
     [ObservableProperty]
     public partial Venue? CurrentItem { get; set; }
 

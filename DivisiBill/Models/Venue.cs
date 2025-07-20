@@ -23,7 +23,19 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     private static readonly ObservableCollection<Venue> allVenues = [];
     private static readonly ObservableCollection<Venue> allVenuesByDistance = [];
     private static bool allVenuesByDistanceIsSorted = true;
-    public static Venue Current { get; set; } = null;
+    public static Venue Current
+    {
+        get => field;
+        private set
+        {
+            if (field != value)
+            {
+                field?.IsForCurrentMeal = false;
+                field = value;
+                value?.IsForCurrentMeal = true;
+            }
+        }
+    }
     private static void LoadDefaultVenues()
     {
         var initialVenues = new List<Venue>() {
@@ -366,11 +378,12 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 
     public static Venue FindVenueByName(string desiredName)
     {
-        if (!(allVenues?.Count > 0)) // initializing or there just aren't any
+        if (string.IsNullOrWhiteSpace(desiredName) || !(allVenues?.Count > 0)) // the current venue has been renamed or we're initializing or there just aren't any venues
             return null;
         Venue v = allVenues.Where(v1 => v1.Name.Equals(desiredName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
         return v;
     }
+    public static void SetCurrentByName(string desiredName) => Current = FindVenueByName(desiredName);
     public int CompareTo(Venue otherVenue) => string.Compare(this.Name, otherVenue.Name, ignoreCase: true);
     public static int CompareDistances(Venue item1, Venue item2) => item1.CompareDistanceTo(item2);
     public int CompareDistanceTo(Venue otherVenue)
@@ -523,7 +536,19 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         get;
     }
 
-    public bool IsCurrentMeal => !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Meal.CurrentMeal.VenueName) && Name == Meal.CurrentMeal.VenueName;
+    [XmlIgnore]
+    public bool IsForCurrentMeal
+    {
+        get => field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+    } = false;
 
     [XmlAttribute(AttributeName = "Latitude"), DefaultValue(0.0)]
     public double AdjustedLatitude
@@ -586,6 +611,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     public bool Forget() => allVenues.Remove(this) && allVenuesByDistance.Remove(this);
     public static void ForgetAllVenues()
     {
+        Current = null; // Clear the current venue so it doesn't point to a deleted one
         allVenues.Clear();
         allVenuesByDistance.Clear();
     }

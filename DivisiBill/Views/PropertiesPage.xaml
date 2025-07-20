@@ -40,9 +40,9 @@
             <!--#region Page heading - Venue Name, bill creation and last use times -->
             <Label Text="{Binding VenueName}" HorizontalOptions="Center" FontSize="Title">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="GoToVenuesByName"/>
-                    <TapGestureRecognizer Tapped="GoToVenuesByName" NumberOfTapsRequired="1"  Buttons="Secondary"/>
-                    <TapGestureRecognizer Tapped="GoToVenuesByName" NumberOfTapsRequired="2" />
+                    <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1"  Buttons="Primary"/>
+                    <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1"  Buttons="Secondary"/>
+                    <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="2" />
                 </Label.GestureRecognizers>
             </Label>
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDefault}" Text="Default Bill"/>

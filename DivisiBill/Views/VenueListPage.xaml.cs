@@ -50,21 +50,20 @@ public partial class VenueListPage : ContentPage
         }
         context.ShowVenuesHint = App.Settings.ShowVenuesHint;
 
-        // TODO This causes crashes on Windows as of .NET 8 rc2 - restore it when that's fixed, see https://github.com/dotnet/maui/issues/18530
-#if ANDROID
         await Task.Delay(200); // Without the delay the scroll doesn't work
 
         try { CurrentCollectionView.ScrollTo(context.CurrentItem); }
         catch (Exception) { } // Don't care if the selection fails
-#endif
     }
     protected override async void OnDisappearing()
     {
+        Utilities.DebugMsg($"Enter VenueListPage.OnDisappearing, stack depth = {Shell.Current.Navigation.NavigationStack.Count}");
         context.ForgetDeletedVenues();
         if (!Venue.IsSaved)
             await Venue.SaveSettingsAsync();
         base.OnDisappearing();
         await App.StopMonitoringLocation();
+        Utilities.DebugMsg($"Leave VenueListPage.OnDisappearing");
     }
 
     private async void OnShowMap(object sender, EventArgs e)

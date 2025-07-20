@@ -51,15 +51,20 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial int Distance { get; set; } = Distances.Unknown;
 
-    public bool IsInUse => ActiveVenue.IsCurrentMeal;
+    public bool IsForCurrentMeal => ActiveVenue.IsForCurrentMeal;
     public bool HasUnsavedChanges => !(Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name) && Utilities.StringFunctionallyEqual(Notes, ActiveVenue.Notes));
     public bool IsNewNameInvalid => string.IsNullOrWhiteSpace(Name) || Venue.AllVenues.Any((v) => ActiveVenue != v && Name.Equals(v.Name, StringComparison.Ordinal));
     #endregion
     public async Task SaveChanges()
     {
         // if the name being changed is the same as the one on the current meal, fix the meal too
-        if (IsInUse)
+        if (IsForCurrentMeal)
             await Meal.CurrentMeal.ChangeVenueAsync(Name);
+        // Check to see if the current venue has changed
+        if (ActiveVenue == Venue.Current)
+            Venue.SetCurrentByName(null); // we have renamed the current venue, so there will not be a current venue until one is created
+        else if (Venue.Current == null && Meal.CurrentMeal.VenueName == ActiveVenue.Name)
+            Venue.SetCurrentByName(Meal.CurrentMeal.VenueName); // There wasn't previously a current venue but this is now it
         // Change the stored name
         ActiveVenue.Name = Name;
         ActiveVenue.Notes = Notes;
@@ -71,7 +76,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task Delete()
     {
-        if (!IsInUse)
+        if (!IsForCurrentMeal)
         {
             ActiveVenue.Forget();
             var mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == ActiveVenue.Name);
@@ -95,13 +100,16 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         }
         else
         {
-            // Before making changes permanent, ensure that the user really wants to rename an in-use venue
+            // Before making changes permanent, ensure that the user really wants to rename a Venue used with stored meals
             var count = 0;
-            if (!Name.Equals(ActiveVenue.Name))
-                count = Meal.LocalMealList.Count((ms) => ms.IsLocal && ms.VenueName == ActiveVenue.Name);
-            if (count == 0 || await Utilities.AskAsync("Question", $"There are {count} local bills for \"{ActiveVenue.Name}\", do you still want to rename it?"))
+            count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name && !ms.IsForCurrentMeal);
+            if (count == 0 || await Utilities.AskAsync("Question",
+                $"There are {count} stored local bills for \"{ActiveVenue.Name}\", rename it anyway and disassociate them?"))
             {
                 await SaveChanges();
+                count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name);
+                if (count > 0)
+                    await Utilities.ShowAppSnackBarAsync($"{count} local stored bills use \"{ActiveVenue.Name}\"");
                 await App.PopAsync();
             }
         }
