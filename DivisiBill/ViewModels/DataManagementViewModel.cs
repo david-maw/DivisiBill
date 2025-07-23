@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
+using System.IO.Compression;
 
 namespace DivisiBill.ViewModels;
 
@@ -147,6 +148,8 @@ internal partial class DataManagementViewModel : ObservableObject
     [RelayCommand]
     public async Task RestoreArchiveAsync()
     {
+        ZipArchive? zipArchive = null; // The zip archive containing the archive data, we are not loading XML directly
+        Stream? archiveStream = null; // The stream containing archived data, either from a zip file or directly from an XML file.
         try
         {
             var result = await FilePicker.PickAsync(new PickOptions()
@@ -154,50 +157,77 @@ internal partial class DataManagementViewModel : ObservableObject
                 PickerTitle = "Please select an archive file",
                 FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
-                        { DevicePlatform.Android, [ "text/xml" ] },
-                        { DevicePlatform.WinUI, [ ".xml" ] },
+                        { DevicePlatform.Android, new[] { "text/xml", "application/zip" } },
+                        { DevicePlatform.WinUI, new[] { ".xml", "*.zip" } },
                 }),
             });
             if (result is not null)
             {
                 IsBusy = true;
-                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: file name {result.FileName}");
-                if (Path.GetExtension(result.FileName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
+                string archiveName = result.FileName;
+                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: file name {archiveName}");
+                if (Path.GetExtension(archiveName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        zipArchive = ZipFile.OpenRead(result.FullPath);
+                        Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: opened zip archive {archiveName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.ReportCrash();
+                        await Utilities.ShowAppSnackBarAsync("Failed to open archive file");
+                        return;
+                    }
+                    if (zipArchive is not null)
+                    {
+                        ZipArchiveEntry? zipArchiveEntry = zipArchive.Entries.FirstOrDefault();
+                        if (zipArchiveEntry is not null)
+                        {
+                            archiveName = zipArchiveEntry.Name;
+                            archiveStream = zipArchiveEntry.Open();
+                        }
+                        else
+                            await Utilities.ShowAppSnackBarAsync("Archive file is empty");
+                    }
+                    else
+                        await Utilities.ShowAppSnackBarAsync("Archive file is not a valid zip file");
+                }
+                else if (Path.GetExtension(archiveName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
+                    archiveStream = await result.OpenReadAsync();
+                else
+                    await Utilities.ShowAppSnackBarAsync("Archive file must be a zip or xml file");
+                // By this point we have an archive name and a stream to the archive, either from a zip file or directly from an XML file
+                if (Path.GetExtension(archiveName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
                 {
                     Archive? archive = null;
                     // For convenience we allow individual files to be deserialized 
-                    if (result.FileName.StartsWith("Venues"))
+                    if (archiveName.StartsWith("Venues"))
                     {
-                        using Stream stream = await result.OpenReadAsync();
-                        List<Venue> vl = Venue.DeserializeList(stream);
+                        List<Venue> vl = Venue.DeserializeList(archiveStream);
                         if (vl is not null)
                             archive = new Archive() { Venues = vl };
                         else
-                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Venue.DeserializeList returned null");
+                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} Venue.DeserializeList returned null");
                     }
-                    else if (result.FileName.StartsWith("People"))
+                    else if (archiveName.StartsWith("People"))
                     {
-                        using Stream stream = await result.OpenReadAsync();
-                        List<Person> pl = Person.DeserializeList(stream);
+                        List<Person> pl = Person.DeserializeList(archiveStream);
                         if (pl is not null)
                             archive = new Archive() { Persons = pl };
                         else
-                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Person.DeserializeList returned null");
+                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} Person.DeserializeList returned null");
                     }
-                    else if (Utilities.TryDateTimeFromName(result.FileName, out _)) // Serialized Meal name format
+                    else if (Utilities.TryDateTimeFromName(archiveName, out _)) // Serialized Meal name format
                     {
-                        using Stream stream = await result.OpenReadAsync();
-                        Meal m = Meal.LoadFromStream(stream);
+                        Meal m = Meal.LoadFromStream(archiveStream);
                         if (m is not null)
                             archive = new Archive() { Meals = new List<Meal>() { { m } } };
                         else
-                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} Meal.LoadFromStream returned null");
+                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} Meal.LoadFromStream returned null");
                     }
                     else // Assume it is an archive
-                    {
-                        var stream = await result.OpenReadAsync();
-                        archive = Archive.FromStream(stream);
-                    }
+                        archive = Archive.FromStream(archiveStream);
                     if (archive is null)
                         await Utilities.ShowAppSnackBarAsync("Restore Failed, Archive was unusable");
                     else
@@ -236,7 +266,7 @@ internal partial class DataManagementViewModel : ObservableObject
                     }
                 }
                 else
-                    Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {result.FileName} did not end with .xml");
+                    Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} was not an xml or zip file");
             }
             else
                 Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: returned file name was null");
@@ -250,6 +280,8 @@ internal partial class DataManagementViewModel : ObservableObject
         }
         finally
         {
+            archiveStream?.Dispose();
+            zipArchive?.Dispose();
             IsBusy = false;
         }
     }
