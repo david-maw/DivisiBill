@@ -108,32 +108,49 @@ internal partial class DataManagementViewModel : ObservableObject
             return;
         }
 
-        var filePath = Path.Combine(FileSystem.CacheDirectory, "DivisiBill" + archive.TimeName + ".xml");
+        string xmlFileName = "DivisiBill" + archive.TimeName + ".xml";
+        string xmlFilePath = Path.Combine(FileSystem.CacheDirectory, xmlFileName);
+        string zipFilePath = Path.ChangeExtension(xmlFilePath, ".zip");
         try
         {
+            using (Stream s = new FileStream(xmlFilePath, FileMode.OpenOrCreate))
+            {
+                s.SetLength(0); // Clear the file if it exists
+                archive.AsXmlStream(s);
+                s.Flush(); // Ensure the stream is written to disk before zipping
+            }
+            using (ZipArchive archiveZip = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
+            {
+                archiveZip.CreateEntryFromFile(xmlFilePath, xmlFileName);
+                File.Delete(xmlFilePath); // Delete the XML file after zipping
+                Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: created zip archive {zipFilePath} containing {xmlFileName}");
+            }
+            // At this point we have a zip archive file on disk containing a single XML file containing the archive data
             if (ArchiveShare)
             {
-                Stream s = new FileStream(filePath, FileMode.OpenOrCreate);
-                archive.AsJsonStream(s);
-                await Share.RequestAsync(new ShareFileRequest
+
+                Task sharing = Share.RequestAsync(new ShareFileRequest
                 {
-                    Title = "Archive " + Path.GetFileName(filePath),
-                    File = new ShareFile(filePath)
+                    Title = "Archive " + xmlFileName,
+                    File = new ShareFile(zipFilePath)
                 });
-                await Utilities.ShowAppSnackBarAsync("Archive Complete");
+                await sharing;
+                if (sharing.IsCompletedSuccessfully)
+                    await Utilities.ShowAppSnackBarAsync("Archive Sharing Complete");
+                else
+                    await Utilities.ShowAppSnackBarAsync("Archive Sharing Failed");
             }
             else if (ArchiveToDisk)
             {
-                if (archive.AsJsonStream() is Stream s)
-                {
-                    FileSaverResult fileSaverResult = new(null, null);
-                    fileSaverResult = await FileSaver.Default.SaveAsync(Path.GetFileName(filePath), s);
-                    if (!fileSaverResult.IsSuccessful)
-                        await Utilities.ShowAppSnackBarAsync("Archive Failed");
-                }
+                using Stream s = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read);
+                FileSaverResult fileSaverResult = await FileSaver.Default.SaveAsync(Path.ChangeExtension(xmlFileName, ".zip"), s);
+                if (fileSaverResult.IsSuccessful)
+                    await Utilities.ShowAppSnackBarAsync("Archive to disk completed successfully");
                 else
-                    await Utilities.ShowAppSnackBarAsync("Archive Stream Creation Failed");
+                    await Utilities.ShowAppSnackBarAsync("Archive Failed");
             }
+            else
+                await Utilities.ShowAppSnackBarAsync("Archive Stream Creation Failed");
         }
         catch (Exception ex)
         {

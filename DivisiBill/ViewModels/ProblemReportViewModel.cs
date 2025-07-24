@@ -30,7 +30,7 @@ internal partial class ProblemReportViewModel : ObservableObject
             scope.AddAttachment(Encoding.Latin1.GetBytes(Utilities.GetAppInformation() + "\n" + DescriptionText), "UserMsg.txt", AttachmentType.Default, "text/plain");
             // Attach an archive of just the current bill
             var archive = new Archive([Meal.CurrentMeal], true);
-            scope.AddAttachment(archive.AsJsonStream(), "archive-" + mealFileName);
+            scope.AddAttachment(archive.AsXmlStream(), "archive-" + mealFileName);
             // Attach a copy of the bill image if there is one
             if (Meal.CurrentMeal.HasImage && File.Exists(Meal.CurrentMeal.ImagePath))
                 scope.AddAttachment(Meal.CurrentMeal.ImagePath);
@@ -58,7 +58,7 @@ internal partial class ProblemReportViewModel : ObservableObject
             // Attach an archive of just the current bill
             var archive = new Archive([Meal.CurrentMeal], true);
             MemoryStream stream = new();
-            if (archive.AsJsonStream(stream) is not null)
+            if (archive.AsXmlStream(stream) is not null)
             {
                 await File.WriteAllBytesAsync(tempFilePath, stream.ToArray());
                 message.Attachments!.Add(new EmailAttachment(tempFilePath));

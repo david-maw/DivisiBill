@@ -111,7 +111,7 @@ public class Archive
     public List<GuidMappingEntry> AliasGuids { get; set; } = null;
     public List<Meal> Meals { get; set; } = null;
 
-    public Stream AsJsonStream(Stream stream = null)
+    public Stream AsXmlStream(Stream stream = null)
     {
         stream ??= new MemoryStream();
         var originalPosition = stream.Position;
@@ -126,9 +126,9 @@ public class Archive
             return null;
         }
     }
-    public string AsJsonString()
+    public string AsXmlString()
     {
-        if (AsJsonStream() is Stream stream)
+        if (AsXmlStream() is Stream stream)
         {
             using var reader = new StreamReader(stream);
             return reader.ReadToEnd();
