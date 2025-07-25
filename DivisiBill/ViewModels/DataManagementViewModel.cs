@@ -124,6 +124,15 @@ internal partial class DataManagementViewModel : ObservableObject
                 archiveZip.CreateEntryFromFile(xmlFilePath, xmlFileName);
                 File.Delete(xmlFilePath); // Delete the XML file after zipping
                 Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: created zip archive {zipFilePath} containing {xmlFileName}");
+                if (SaveImages)
+                {
+                    // Save bill images if requested
+                    foreach (var meal in archive.Meals.Where(m => m.HasImage && File.Exists(m.ImagePath)))
+                    {
+                        archiveZip.CreateEntryFromFile(meal.ImagePath, meal.ImageName);
+                        Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: added image {meal.ImageName} to zip archive");
+                    }
+                }
             }
             // At this point we have a zip archive file on disk containing a single XML file containing the archive data
             if (ArchiveShare)
@@ -136,16 +145,23 @@ internal partial class DataManagementViewModel : ObservableObject
                 });
                 await sharing;
                 if (sharing.IsCompletedSuccessfully)
+                {
+                    File.Delete(zipFilePath); // Delete the zip file after sharing
                     await Utilities.ShowAppSnackBarAsync("Archive Sharing Complete");
+                }
                 else
                     await Utilities.ShowAppSnackBarAsync("Archive Sharing Failed");
             }
             else if (ArchiveToDisk)
             {
-                using Stream s = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read);
-                FileSaverResult fileSaverResult = await FileSaver.Default.SaveAsync(Path.ChangeExtension(xmlFileName, ".zip"), s);
+                FileSaverResult? fileSaverResult = null;
+                using (Stream s = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read))
+                { fileSaverResult = await FileSaver.Default.SaveAsync(Path.ChangeExtension(xmlFileName, ".zip"), s); }
                 if (fileSaverResult.IsSuccessful)
+                {
+                    File.Delete(zipFilePath);
                     await Utilities.ShowAppSnackBarAsync("Archive to disk completed successfully");
+                }
                 else
                     await Utilities.ShowAppSnackBarAsync("Archive Failed");
             }
@@ -198,14 +214,32 @@ internal partial class DataManagementViewModel : ObservableObject
                     }
                     if (zipArchive is not null)
                     {
-                        ZipArchiveEntry? zipArchiveEntry = zipArchive.Entries.FirstOrDefault();
+                        // Find the first XML file in the zip archive and assume it is an archive file
+                        ZipArchiveEntry? zipArchiveEntry = zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".xml", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         if (zipArchiveEntry is not null)
                         {
                             archiveName = zipArchiveEntry.Name;
                             archiveStream = zipArchiveEntry.Open();
                         }
                         else
-                            await Utilities.ShowAppSnackBarAsync("Archive file is empty");
+                        {
+                            await Utilities.ShowAppSnackBarAsync("zip file does not contain a DivisiBill archive");
+                            return;
+                        }
+                        // Now extract all the images from the zip archive to the image folder
+                        foreach (var entry in zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".jpg", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            string fullFilename = Path.Combine(Meal.ImageFolderPath, entry.Name);
+                            if (DeleteBeforeRestore && File.Exists(fullFilename)) // Delete the file if it exists and we are deleting before restore
+                                File.Delete(fullFilename);
+                            if (File.Exists(fullFilename)) // Only extract if the file is not already present
+                                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)} file not restored {entry.Name} already exists");
+                            else
+                            {
+                                entry.ExtractToFile(fullFilename, false); // Extract image file to the image directory
+                                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: zip archive entry {entry.Name} extracted to image folder");
+                            }
+                        }
                     }
                     else
                         await Utilities.ShowAppSnackBarAsync("Archive file is not a valid zip file");
@@ -314,6 +348,12 @@ internal partial class DataManagementViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial bool ArchiveToDisk { get; set; } = false;
+
+    /// <summary>
+    /// Indicates whether to save images during archiving operations. Defaults to false.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool SaveImages { get; set; } = true;
 
     /// <summary>
     /// Indicates whether all meals or only selected meals are candidates for archiving. Defaults to false.

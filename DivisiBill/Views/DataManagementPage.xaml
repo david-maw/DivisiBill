@@ -31,7 +31,7 @@
                         Margin="5"
                         Command="{Binding ArchiveCommand}"
                         Text="Archive" />
-                    <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
+                    <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="10">
                         <RadioButton
                             Content="To Share"
                             GroupName="ArchiveGroup"
@@ -44,6 +44,10 @@
                     <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
                         <CheckBox IsChecked="{Binding OnlySelectedMeals}" />
                         <Label Text="Only Selected Bills" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                        <CheckBox IsChecked="{Binding SaveImages}" />
+                        <Label Text="Store Bill Images" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                 </Grid>
                 <Grid
