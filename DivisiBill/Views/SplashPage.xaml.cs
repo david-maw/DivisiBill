@@ -13,11 +13,13 @@ public partial class SplashPage : ContentPage
         InitializeComponent();
         StatusMsgInvoked += LocalStatusMsg;
         Loaded += SplashPage_Loaded;
+        App.ProEditionVerified += (s, e) => editionSpan.Text = App.IsLimited ? " Basic Edition" : " Pro Edition";
     }
-
-
     ~SplashPage()
-    { StatusMsgInvoked -= LocalStatusMsg; }
+    {
+        // Unsubscribe from the event to prevent memory leaks
+        StatusMsgInvoked -= LocalStatusMsg;
+    }
 
     private bool initializationStarted = false;
 
@@ -32,7 +34,6 @@ public partial class SplashPage : ContentPage
         base.OnAppearing();
         // reevaluate some values that may have changed
         App.Current.Initialize_Connectivity();
-        editionSpan.Text = App.IsLimited ? " Basic Edition" : " Pro Edition";
 
         // The following code takes care of the case where the user switches away from the splash page, then back.
         // This used to happen  when logging in to OneDrive, for example, because the OAUTH login used required a switch

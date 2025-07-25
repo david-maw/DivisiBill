@@ -5,8 +5,9 @@
              xmlns:views="clr-namespace:DivisiBill.Views"
              BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:HelpPage}"
              x:DataType="views:HelpPage"
-             Shell.TabBarIsVisible="False"
              Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              Title="Help">
     <!--We might be called from a page with a NavBar, so we turn it off above, just in case-->
     <ContentPage.ToolbarItems>

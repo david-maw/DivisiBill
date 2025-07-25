@@ -1,22 +1,57 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:appmodel ="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              Title="Starting Divisibill, please wait"
              BackgroundColor="Red"
              x:Class="DivisiBill.Views.GettingStartedPage">
-    <!--This layout intentionally emulates an empty SplashPage, so that the user can see the DivisiBill logo and a message while the app is loading.-->
+    <!--This layout is intentionally identical to an empty SplashPage, so that the user can see the DivisiBill logo and a message while the app is loading.-->
     <ContentPage.Content>
-        <VerticalStackLayout>
+        <Grid RowDefinitions="1*,2.5*,auto,auto,3*" >
+            <!--#region Busy/Paused Indicator -->
             <ActivityIndicator Color="Black"
                                IsRunning="true"
-                               Margin="0,40,0,60"/>
-            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10"
-                   WidthRequest="250" HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=Image}"/>
-            <Label Text="Getting Started" TextColor="Black"
-                VerticalOptions="Center" 
-                HorizontalOptions="Center" />
-        </VerticalStackLayout>
+                               Margin="10"/>
+            <!--#endregion-->
+            <!--#region DivisiBill Icon -->
+            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10" 
+                   WidthRequest="250" HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=Image}" >
+            </Image>
+            <!--#endregion-->
+            <!--#region App name and version information -->
+            <Label Grid.Row="2" FontSize="22" HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span Text="DivisiBill " FontSize="22" />
+                            <Span Text="{x:Static services:Utilities.VersionName}" FontSize="22" FontAttributes="Bold" />
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <!--#endregion-->
+            <!--#region Build Information -->
+            <Label Grid.Row="3" HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span Text="{x:Static services:Utilities.DebugString}"/>
+                            <Span Text="{Binding Source={x:Static appmodel:AppInfo.BuildString}, x:DataType=x:String, StringFormat=' Build {0}'}"/>
+                            <Span Text="{Binding Source={x:Static services:Utilities.BuildTime}, x:DataType=x:String, StringFormat=' at {0}'}"/>
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <!--#endregion-->
+            <!--#region Scrolling initialization progress -->
+            <ScrollView Grid.Row="4" x:Name="statusScrollView"  VerticalOptions="Start" Margin="10">
+                <Label Text="Starting DivisiBill" HorizontalOptions="Start" VerticalOptions="Start" VerticalTextAlignment="Start"/>
+            </ScrollView>
+            <!--#endregion-->
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
