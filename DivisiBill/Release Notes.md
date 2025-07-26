@@ -1,3 +1,25 @@
+# 6.2.36
+
+## Enhanced Archive Files
+
+All bill archives are now created within zip compressed containers which typically reduces their size by a factor of 10.
+
+There's now an option on the "Manage Data" page to allow bill images to be archived along with bills.
+
+Archive restore will now restore the first XML file in a zip container along with JPG images of any restored bills, if they are in the container.
+
+## Show a "Current" Icon in Venue List
+
+The venue for the current bill is now indicated by an icon in a venue list.
+
+## Make properties Shell Selection Navigable
+
+The "Properties" selection now allows use of the hamburger menu to navigate away from it. The Properties page shown by tapping the venue name on the "Items" or "Totals" pages returns only to those pages, as before.
+
+## Always Allow Appropriate Page Navigation
+
+Occasionally, the hamburger icon would be hidden when it should be present. This has been corrected so that the hamburger icon is always shown when it is appropriate to navigate to another page.
+
 # 6.2.35
 
 ## Update Meal Group Venue Location When It Changes
