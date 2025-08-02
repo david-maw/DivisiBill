@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
+using Android.Views;
 using Android.Widget;
 using AndroidX.Activity;
 
@@ -17,6 +18,7 @@ public class MainActivity : MauiAppCompatActivity
         base.OnCreate(savedInstanceState);
         Platform.Init(this, savedInstanceState);
         OnBackPressedDispatcher.AddCallback(this, new BackPress(this));
+        Window.AddFlags(WindowManagerFlags.Fullscreen);
     }
     protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data) => base.OnActivityResult(requestCode, resultCode, data);
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
