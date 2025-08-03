@@ -489,7 +489,7 @@ public partial class Meal : ObservableObjectPlus
             }
             if (!localMealNames.Contains(meal.Summary.Id))
             {
-                if (meal.IsLastChangeTimeSet) // never save an unchanged meal to persistent storage
+                if (meal.IsLastChangeTimeSet || !File.Exists(meal.FilePath)) // never replace an unchanged meal
                 {
                     meal.SaveToFile();
                     meal.Summary.IsLocal = true;

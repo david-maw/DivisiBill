@@ -161,12 +161,8 @@ public class Archive
         try
         {
             App.IsCloudAllowed = false; // No backups while this is going on
-                                        // if we're handling only limited dates reevaluate the list
-            if (startDate > DateOnly.MinValue || finishDate < DateOnly.MaxValue)
-            {
-                // Filter the meal list by date
-                Meals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate)];
-            }
+            // Filter the meal list by date and sort the result, just in case the archive used a weird order.
+            Meals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderByDescending(m => m.CreationTime)];
             if (!onlyRelatedParam)
             {
                 // filter other lists to limit them to required items
@@ -225,7 +221,11 @@ public class Archive
             if (Meals is not null)
             {
                 if (DeleteBeforeRestore)
+                {
                     MealSummary.PermanentlyDeleteLocalMeals(startDate, finishDate);
+                    Meal.LocalMealList.Clear(); // Clear any fake meals
+                }
+                // Go looking for the first meal that is not a fake meal (Size >= 0) to be the new current meal
                 Meal m = Meals.Where(m => m.Size >= 0).FirstOrDefault();
                 if (m is not null)
                 {
@@ -236,7 +236,7 @@ public class Archive
                     m.FinalizeSetup();
                     m.OverwriteCurrent();
                 }
-                // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files
+                // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files already
                 foreach (Meal meal in Meals)
                     meal.Summary.CheckImageFiles();
                 App.HandleActivityChanges(); // So we can check for remote meals if necessary
