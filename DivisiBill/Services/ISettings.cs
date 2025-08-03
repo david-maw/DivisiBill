@@ -29,11 +29,15 @@ public interface ISettings
     /// </summary>
     bool IsCloudAccessAllowed { get; set; }
     /// <summary>
-    /// Is WiFi access required before the Internet can be used
+    /// Use the alternate Web Service not the primary one (debug only)
     /// </summary>
     bool UseAlternateWs { get; set; }
     /// <summary>
-    /// Use the alternate Web Service not the primary one (debug only)
+    /// Forget the existing state before going on
+    /// </summary>
+    bool StartFresh { get; set; }
+    /// <summary>
+    /// Is WiFi access required before the Internet can be used
     /// </summary>
     bool WiFiOnly { get; set; }
     bool FirstUse { get; set; }

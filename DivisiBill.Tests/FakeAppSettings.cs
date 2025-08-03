@@ -18,6 +18,7 @@ internal class FakeAppSettings : ISettings
     public bool MealSavedToRemote { get; set; } = true;
     public bool IsCloudAccessAllowed { get; set; } = true;
     public bool UseAlternateWs { get; set; } = false;
+    public bool StartFresh { get; set; } = false;
     public bool WiFiOnly { get; set; } = false;
     public bool FirstUse { get; set; } = false;
     public DateTime LastUse { get; set; } = DateTime.Now - TimeSpan.FromMinutes(30);

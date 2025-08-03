@@ -241,6 +241,18 @@ public partial class SettingsViewModel : ObservableObjectPlus
             }
         }
     }
+    public bool StartFresh
+    {
+        get => App.Settings.StartFresh;
+        set
+        {
+            if (App.Settings.StartFresh != value) // The value changed
+            {
+                App.Settings.StartFresh = value;
+                OnPropertyChanged();
+            }
+        }
+    }
     public bool WiFiOnly
     {
         get => App.Settings.WiFiOnly;

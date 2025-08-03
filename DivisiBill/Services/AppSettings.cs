@@ -2,6 +2,15 @@
 
 public class AppSettings : ISettings
 {
+    public AppSettings()
+    {
+        if (StartFresh)
+        { // If we are starting fresh, clear all preferences except UseAlternateWs because it might be what we're testing
+            bool useAlternateWs = UseAlternateWs;
+            Preferences.Clear(); // This will include clearing StartFresh so we won't do this again until asked to
+            UseAlternateWs = useAlternateWs; // restore the value
+        }
+    }
     public string StoredMeal
     {
         get => Preferences.Get("Meal", string.Empty);
@@ -73,6 +82,15 @@ public class AppSettings : ISettings
         set
         {
             Preferences.Set(nameof(UseAlternateWs), value);
+            App.HandleActivityChanges();
+        }
+    }
+    public bool StartFresh
+    {
+        get => Preferences.Get(nameof(StartFresh), false);
+        set
+        {
+            Preferences.Set(nameof(StartFresh), value);
             App.HandleActivityChanges();
         }
     }
