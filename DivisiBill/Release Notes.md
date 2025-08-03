@@ -1,12 +1,16 @@
 # 6.2.36
 
+## Show Full Page
+
+DivisiBill once again covers the entire page, including the device status bar at the top of the page. You can swipe down from the top margin to see the device status bar temporarily.
+
 ## Enhanced Archive Files
 
 All bill archives are now created within zip compressed containers which typically reduces their size by a factor of 10.
 
 There's now an option on the "Manage Data" page to allow bill images to be archived along with bills.
 
-Archive restore will now restore the first XML file in a zip container along with JPG images of any restored bills, if they are in the container.
+Archive restore from a zip container will now restore the first XML file and search the container for JPG images of any bills restored from that XML file.
 
 ## Show a "Current" Icon in Venue List
 
