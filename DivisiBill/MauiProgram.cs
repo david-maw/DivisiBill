@@ -73,6 +73,10 @@ public static class MauiProgram
 #if WINDOWS
                 fonts.AddFont("Segoe-UI.ttf", "monospace");
 #endif
+            })
+            .ConfigureEssentials(essentials =>
+            {
+                essentials.UseVersionTracking();
             });
         builder.Services.AddTransient<Views.CameraPage>();
 

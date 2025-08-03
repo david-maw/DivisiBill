@@ -50,7 +50,18 @@ public partial class SplashPage : ContentPage
             await Task.Delay(50); // Let Navigation settle down or Popup V2 will wait forever
             await InitializeApp();
             RecordMsg("In SplashPage_Loaded, navigating away from Initialization");
-            await App.GoToHomeAsync();
+            if (VersionTracking.IsFirstLaunchForCurrentVersion)
+            {
+                // This is the first use of this version, so show the release notes
+                DebugMsg($"In SplashPage_Loaded, first use of version {VersionTracking.CurrentVersion}, going to release notes page");
+                await App.GoToAsync(Routes.ReleaseNotesPage);
+            }
+            else
+            {
+                // Otherwise we go to the home page
+                DebugMsg("In SplashPage_Loaded, going to Home Page");
+                await App.GoToHomeAsync();
+            }
         }
         DebugMsg("Exit SplashPage_Loaded");
     }

@@ -58,7 +58,7 @@
     <ShellContent Title="Program Settings" ContentTemplate="{DataTemplate view:SettingsPage}"/>
     <FlyoutItem Title="Information and Problems" Route="Information" FlyoutDisplayOptions="AsSingleItem">
         <ShellContent Title="About" ContentTemplate="{DataTemplate view:AboutPage}" Shell.TabBarIsVisible="True"/>
-        <ShellContent Title="Release Notes" ContentTemplate="{DataTemplate view:ReleaseNotesPage}" Shell.TabBarIsVisible="True"/>
+        <ShellContent Title="Release Notes" ContentTemplate="{DataTemplate view:ReleaseNotesPage}" Shell.TabBarIsVisible="True" Route="{x:Static local:Routes.ReleaseNotesPage}"/>
         <ShellContent Title="Report a problem" ContentTemplate="{DataTemplate view:ProblemReportPage}" Shell.TabBarIsVisible="True"/>
     </FlyoutItem>
     <MenuItem     Text="Help Index" Clicked="OnHelpIndexClicked"/>
