@@ -1,3 +1,9 @@
+# 6.2.37
+
+## Show Release Notes at Startup
+
+If this is the first use of a new version of DivisiBill the release notes page will be shown after startup instead of the items page.
+
 # 6.2.36
 
 ## Show Full Page
