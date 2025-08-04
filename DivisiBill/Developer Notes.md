@@ -51,7 +51,7 @@ the bulk of which are DivisiBill help files.
 Along with these is a small MAUI app which displays just the DivisiBill help files
 so you can easily get a sense of how they'll look in an Android app, for example. 
 
-Most of these files are generated from MarkDown sources with the HTML being auto-generated
+Most of the HTML files are generated from MarkDown sources with the HTML being auto-generated
 by a Visual Studio MarkDown extension (see below).
 
 Some of the files are svg files used to create overlays of page images with clickable hot spots.
@@ -59,8 +59,8 @@ You can hand edit these (svg files are XML files) but it's easier to use an edit
 
 There's also a small amount of javaScript.
 
-Required Visual Studio Extensions
----------------------------------
+Useful Visual Studio Extensions
+-------------------------------
 
 The Release Notes.html file is generated automatically from Release Notes.md
 by using the Markdown Editor NuGet (v1) package and enabling "Generate HTML File".
@@ -70,8 +70,14 @@ Likewise, the AutoPlus web site files in the web project (which include DivisiBi
 are also generated from MarkDown files which use the same MarkDown extension to automatically
 generate HTML when saved. 
 
-Not required, but very helpful is the spell checking extension. It can occasionally be
+Not required, but very helpful is the Microsoft spell checking extension. It can occasionally be
 annoying but saves a lot of typos.
+
+For XAML processing, the "XAML Styler" extension is very helpful for keeping XAML files 
+readable and consistent. However, I did turn off reformatting on save and reordering of attributes
+because they caused too much disruption by making changes when I was just trying to change something else.
+
+The Bright XAML extension has some handy features.
 
 Handy Additional Tools
 ----------------------
