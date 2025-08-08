@@ -29,10 +29,11 @@ copy of a bill while leaving the other copy untouched.</li>
 manipulation of the list of selected bills. Note that Select All
 actually selects all except the current bill and that bills
 which are hidden are still deselected.</li>
-<li>Show Bills / Show Venues - Allows you to show all bills or just
-the latest one for each venue.</li>
+<li>Show Bills / Show Venues - Allows you to show all bills individually or
+group them by venue.</li>
 <li>Show/Hide Local/Remote which allows you to limit the display
 of bills to only those stored locally or remotely or both.</li>
+<li>Scroll to current - scrolls up or down as needed until the current bill is visible.</li>
 </ul>
 <h2 id="selected-count">Selected Count</h2>
 <p>This tells you the page is in multiple item selection mode (press the Selection Mode icon to toggle this mode) and how many items are currently selected.</p>
@@ -42,15 +43,21 @@ of bills to only those stored locally or remotely or both.</li>
 <p>This tells you whether &quot;Show Bills&quot; or &quot;Show Venues&quot; are currently selected, change this by tapping the <a href="#ellipsis">ellipsis</a> and selecting Show Bills or Show Venues.If you are showing venues a list with the venue name,the number of bills for that venue and the date of the newest bill is shown. The bills for each venue can be shown sorted from newest to oldest by tapping on the venue name.</p>
 <h2 id="selected">Selected</h2>
 <p>This column is only visible if the selection mode has been used to choose multiple selection. It indicates whether a given item has been selected.</p>
+<h2 id="current">Current</h2>
+<p>This icon (<u>󱩽</u>) shows on the current bill, or the current venue if bills are being shown by venue, (see <a href="#filter-indicator">Filter Indicator</a>). The current bill can be changed by swiping right on a bill.</p>
+<h2 id="scroll-view-up">Scroll View Up (<u>󰳢</u>)</h2>
+<p>This button allows you to scroll the view up to the top of the list of bills. It is only visible if there are bills not visible above the top of the page. Tap once to scroll the view up a page, long press to move to the beginning of the list.</p>
+<h2 id="image">Image (<u>󰥶</u>)</h2>
+<p>This column has an image icon (<u>󰥶</u>) in it if the bill has a stored image.</p>
+<h2 id="location">Location</h2>
+<p>If cloud access is allowed (available and enabled) this column shows whether the bill is stored locally (<u>󰉖</u>/<u>󰉋</u>), in the cloud (<u>󰅣</u>/<u>󰅟</u>), or both. A filled icon means the item is stored there, an outline one means it is not.</p>
+<p>If cloud access is allowed but you are not currently showing remote (cloud resident) bills, local bills will still show the cloud icon to indicate whether or not they are also stored in the cloud.</p>
+<p>For a remote (cloud) only bill, tapping on this area will download it, use the <a href="datamanagementpage.html">Manage Data</a> page to select all such bills. Note that there is no Upload selection because all local bills are uploaded automatically if cloud storage is available and enabled.</p>
 <h2 id="bill">Bill</h2>
 <p>Each entry in this list represents a single bill. You can swipe it left to delete a copy of the bill (if both local and remote ones are shown it will delete the local one), or swipe right to make it the current bill (which may save the bill you were using previously if it has been changed). The current bill never shows in this list.</p>
 <p>Tapping on the center of a bill will select or deselect it, double tapping will show a quick summary of it.</p>
-<h2 id="image">Image</h2>
-<p>This column has an image icon (<u>󰥶</u>) in it if the bill has a stored image.</p>
-<h2 id="location">Location</h2>
-<p>If cloud access is available and enabled this column shows whether the bill is stored locally (<u>󰉖</u>/<u>󰉋</u>), in the cloud (<u>󰅣</u>/<u>󰅟</u>), or both. A filled icon means the item is stored there, an outline one means it is not.</p>
-<p>If cloud access is allowed but you are not currently showing remote (cloud resident) bills, local bills will still show the cloud icon to indicate whether or not they are also stored in the cloud.</p>
-<p>For a remote (cloud) only bill, tapping on this area will download it, use the <a href="datamanagementpage.html">Manage Data</a> page to select all such bills. Note that there is no Upload selection because all local bills are uploaded automatically if cloud storage is available and enabled.</p>
+<h2 id="scroll-view-down">Scroll View Down (<u>󰳜</u>)</h2>
+<p>This button allows you to scroll down to the bottom of the list of bills. It is only visible if there are bills not visible below the bottom of the page. Tap once to scroll the view down a page, long press to move to the end of the list.</p>
 
 <script src="script.js"></script>
 </body>

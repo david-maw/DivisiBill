@@ -1,6 +1,7 @@
 ﻿# List of Bills
 
-The Bills page is where the list of stored bills is shown. Individual bills may be stored locally, in the cloud, or both (if cloud access is allowed DivisiBill will copy local bills to the cloud for safekeeping). The same page layout is used regardless of the order of the bills in the list.
+The Bills page is where the list of stored bills is shown, either as individual bills or grouped by venue. 
+Bills may be stored locally, in the cloud, or both (if cloud access is allowed DivisiBill will copy local bills to the cloud for safekeeping). The same page layout is used regardless of the order of the bills in the list but by default bills sorted by age are shown individually, whereas those sorted by name or distance are grouped by venue.
 
 Tap on a highlighted area to see what it does (on a desktop browser you can also hover over an area to see its name).
 

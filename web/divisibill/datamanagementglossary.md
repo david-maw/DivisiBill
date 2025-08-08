@@ -4,7 +4,7 @@ This is a list of areas on the Manage Data page as seen from left to right, top 
 
 ## Archive Button
 
-Tap this to create an archive file containing all the locally stored Bills, Venues and People currently saved, as well as selected program defaults. A cloud storage app like Microsoft OneDrive or Google Drive lets you store archives in the cloud for free with as much or as little encryption as you like.
+Tap this to create an archive file containing all the locally stored Bills, Venues and People currently saved, as well as selected program defaults. A cloud storage app like Microsoft OneDrive or Google Drive lets you store archives in the cloud for free with as much or as little encryption as you like. If you attempt to archive with no bills selected the app produces an error message instead of creating an empty archive.
 
 ## Share Archive
 
@@ -18,13 +18,17 @@ Select this option to send the archive to a disk location of your choice.
 
 Changes the behavior of the Archive button so it only operates on selected bills. You can select bills in the [bill list](meallistpage.html) page.
 
+## Store Images
+
+Select this option to include images in the archive file. If you do not select this option, images will not be included in the archive file, which will make it smaller and faster to create and restore.
+
 ## Restore Button
 
-Tap this to locate an archive file previously created by the "Archive" action and restore its contents.
+Tap this to locate an archive file previously created by the "Archive" action and restore its contents. After the restore completes it will switch to the list of bills page.
 
 ## Delete Option
 
-Select "Delete Everything First" to remove all people, venues and bills before the restore is performed. 
+Select "Delete Everything First" to remove all people, venues and bills before restoring them. 
 
 ## Overwrite Option
 
