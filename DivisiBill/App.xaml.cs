@@ -680,8 +680,11 @@ public partial class App : Application, INotifyPropertyChanged
         {
             if (UseFakeLocation)
             {
-                MyLocation = FakeLocation; // Use the fake location if we are using a fake one
-                MyLocationChanged?.Invoke(null, null);
+                if (Utilities.GetDistanceBetween(MyLocation, FakeLocation) > 20) // do not report small changes 
+                {
+                    MyLocation = FakeLocation;
+                    MyLocationChanged?.Invoke(null, null);
+                }
                 return;
             }
             App.GpsLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(30)), cancellationToken);

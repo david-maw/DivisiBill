@@ -48,9 +48,18 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                     UpsertIntoMealList(ms);
             }
         }
+        else if (IsGrouped)
+        {
+            MealSummaryGroup groupForChangedVenue = MealSummaryGroups.FirstOrDefault(g => g.VenueName.Equals(e.Venue.Name));
+            if (groupForChangedVenue is null) // If the group for the changed venue is not in the list then something is wrong
+                InvalidateMealList(); // Force the list to be rebuilt
+            else
+                groupForChangedVenue.NotifyDistanceChanged(); // Update the distance for the group
+        }
     }
-    private void App_MyLocationChanged(object sender, EventArgs e)
+    private async void App_MyLocationChanged(object sender, EventArgs e)
     {
+        await Venue.UpdateAllDistances();
         if (SortOrder == SortOrderType.byDistance)
             InvalidateMealList();
     }

@@ -433,8 +433,9 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     [XmlIgnore]
     public partial bool HasDeletedImage { get; private set; } = false;
 
+    [ObservableProperty]
     [XmlIgnore]
-    public int Distance { get; set; } = Distances.Inaccurate;
+    public partial int Distance { get; set; } = Distances.Inaccurate;
     #endregion
     #region Persistence
     private static readonly DataContractJsonSerializer mealSummarySerializer = new(typeof(MealSummary));
