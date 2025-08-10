@@ -100,16 +100,24 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         }
         else
         {
-            // Before making changes permanent, ensure that the user really wants to rename a Venue used with stored meals
-            var count = 0;
-            count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name && !ms.IsForCurrentMeal);
-            if (count == 0 || await Utilities.AskAsync("Question",
-                $"There are {count} stored local bills for \"{ActiveVenue.Name}\", rename it anyway and disassociate them?"))
+            bool nameChanged = !ActiveVenue.Name.Equals(Name, StringComparison.Ordinal);
+            if (nameChanged)
+            {
+                // Before making name changes permanent, ensure that the user really wants to rename a Venue used with stored meals
+                var count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name && !ms.IsForCurrentMeal);
+                if (count == 0 || await Utilities.AskAsync("Question",
+                    $"There are {count} stored local bills for \"{ActiveVenue.Name}\", rename it anyway and disassociate them?"))
+                {
+                    await SaveChanges();
+                    count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name);
+                    if (count > 0)
+                        await Utilities.ShowAppSnackBarAsync($"{count} local stored bills use \"{ActiveVenue.Name}\"");
+                    await App.PopAsync();
+                }
+            }
+            else // name didn't change
             {
                 await SaveChanges();
-                count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name);
-                if (count > 0)
-                    await Utilities.ShowAppSnackBarAsync($"{count} local stored bills use \"{ActiveVenue.Name}\"");
                 await App.PopAsync();
             }
         }
