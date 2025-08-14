@@ -265,4 +265,16 @@ public class AppSettings : ISettings
                 Preferences.Set(nameof(FakeLongitude), value);
         }
     }
+
+    public bool BackupImages
+    {
+        get => Preferences.Get(nameof(BackupImages), false);
+        set => Preferences.Set(nameof(BackupImages), value);
+    }
+
+    public bool BackupImagesOnlyWiFi
+    {
+        get => Preferences.Get(nameof(BackupImagesOnlyWiFi), true);
+        set => Preferences.Set(nameof(BackupImagesOnlyWiFi), value);
+    }
 }

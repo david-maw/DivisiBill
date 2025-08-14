@@ -35,4 +35,6 @@ internal class FakeAppSettings : ISettings
     public Location FakeLocation { get; set; } = null;
     public bool HadProSubscription { get; set; } = false;
     public Rect InitialPosition { get; set; } = new Rect(0, 0, 0, 0);
+    public bool BackupImages { get; set; } = false;
+    public bool BackupImagesOnlyWiFi { get; set; } = true;
 }

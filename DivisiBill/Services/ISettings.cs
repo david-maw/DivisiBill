@@ -53,6 +53,16 @@ public interface ISettings
     Rect InitialPosition { get; set; }
     Location FakeLocation { get; set; }
     bool HadProSubscription { get; set; }
+
+    /// <summary>
+    /// Indicates whether images should be included in backups.
+    /// </summary>
+    bool BackupImages { get; set; }
+
+    /// <summary>
+    /// Indicates whether image backups should only occur when on WiFi.
+    /// </summary>
+    bool BackupImagesOnlyWiFi { get; set; }
     void EnableHints()
     {
         ShowLineItemsHint = true;

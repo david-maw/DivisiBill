@@ -224,7 +224,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
             if (App.Settings.IsCloudAccessAllowed != value)
             {
                 App.Settings.IsCloudAccessAllowed = value;
-                if (!value) WiFiOnly = true; // so that if it's turned on again wifi is required
+                if (!value)
+                {
+                    WiFiOnly = true; // so that if it's turned on again wifi is required
+                    BackupImages = false; // No backing up images unless backup is enabled
+                }
                 OnPropertyChanged();
             }
         }
@@ -264,6 +268,29 @@ public partial class SettingsViewModel : ObservableObjectPlus
                 OnPropertyChanged();
             }
         }
+    }
+    /// <summary>
+    /// Indicates whether images should be backed up to the cloud.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool BackupImages { get; set; } = App.Settings.BackupImages;
+    partial void OnBackupImagesChanged(bool value)
+    {
+        App.Settings.BackupImages = value;
+        if (!value)
+            BackupImagesOnlyWiFi = true; // If we ever switch to backing up images we should only do it on WiFi by default
+    }
+
+    /// <summary>
+    /// Indicates whether image backups should only occur when on WiFi.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool BackupImagesOnlyWiFi { get; set; } = App.Settings.BackupImagesOnlyWiFi;
+    partial void OnBackupImagesOnlyWiFiChanged(bool value)
+    {
+        App.Settings.BackupImagesOnlyWiFi = value;
+        if (!value)
+            WiFiOnly = false; // If you can backup images you can surely backup text
     }
     #endregion
     #region Cloud Access Properties
