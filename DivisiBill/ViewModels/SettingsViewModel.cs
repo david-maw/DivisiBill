@@ -206,91 +206,54 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
     #endregion
     #region Persistent Properties
-    public bool SendCrashYes
+    [ObservableProperty]
+    public partial bool SendCrashYes { get; set; } = App.Settings.SendCrashYes;
+    partial void OnSendCrashYesChanged(bool value) => App.Settings.SendCrashYes = value;
+
+    [ObservableProperty]
+    public partial bool SendCrashAsk { get; set; } = App.Settings.SendCrashAsk;
+    partial void OnSendCrashAskChanged(bool value) => App.Settings.SendCrashAsk = value;
+
+    [ObservableProperty]
+    public partial bool IsCloudAccessAllowed { get; set; } = App.Settings.IsCloudAccessAllowed;
+    partial void OnIsCloudAccessAllowedChanged(bool value)
     {
-        get => App.Settings.SendCrashYes;
-        set => App.Settings.SendCrashYes = value;
-    }
-    public bool SendCrashAsk
-    {
-        get => App.Settings.SendCrashAsk;
-        set => App.Settings.SendCrashAsk = value;
-    }
-    public bool IsCloudAccessAllowed
-    {
-        get => App.Settings.IsCloudAccessAllowed;
-        set
+        App.Settings.IsCloudAccessAllowed = value;
+        if (!value)
         {
-            if (App.Settings.IsCloudAccessAllowed != value)
-            {
-                App.Settings.IsCloudAccessAllowed = value;
-                if (!value)
-                {
-                    WiFiOnly = true; // so that if it's turned on again wifi is required
-                    BackupImages = false; // No backing up images unless backup is enabled
-                }
-                OnPropertyChanged();
-            }
+            WiFiOnly = true;
+            BackupImages = false;
         }
     }
-    public bool UseAlternateWs
-    {
-        get => App.Settings.UseAlternateWs;
-        set
-        {
-            if (App.Settings.UseAlternateWs != value) // The value changed
-            {
-                App.Settings.UseAlternateWs = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-    public bool StartFresh
-    {
-        get => App.Settings.StartFresh;
-        set
-        {
-            if (App.Settings.StartFresh != value) // The value changed
-            {
-                App.Settings.StartFresh = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-    public bool WiFiOnly
-    {
-        get => App.Settings.WiFiOnly;
-        set
-        {
-            if (App.Settings.WiFiOnly != value)
-            {
-                App.Settings.WiFiOnly = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-    /// <summary>
-    /// Indicates whether images should be backed up to the cloud.
-    /// </summary>
+
+    [ObservableProperty]
+    public partial bool UseAlternateWs { get; set; } = App.Settings.UseAlternateWs;
+    partial void OnUseAlternateWsChanged(bool value) => App.Settings.UseAlternateWs = value;
+
+    [ObservableProperty]
+    public partial bool StartFresh { get; set; } = App.Settings.StartFresh;
+    partial void OnStartFreshChanged(bool value) => App.Settings.StartFresh = value;
+
+    [ObservableProperty]
+    public partial bool WiFiOnly { get; set; } = App.Settings.WiFiOnly;
+    partial void OnWiFiOnlyChanged(bool value) => App.Settings.WiFiOnly = value;
+
     [ObservableProperty]
     public partial bool BackupImages { get; set; } = App.Settings.BackupImages;
     partial void OnBackupImagesChanged(bool value)
     {
         App.Settings.BackupImages = value;
         if (!value)
-            BackupImagesOnlyWiFi = true; // If we ever switch to backing up images we should only do it on WiFi by default
+            BackupImagesOnlyWiFi = true;
     }
 
-    /// <summary>
-    /// Indicates whether image backups should only occur when on WiFi.
-    /// </summary>
     [ObservableProperty]
     public partial bool BackupImagesOnlyWiFi { get; set; } = App.Settings.BackupImagesOnlyWiFi;
     partial void OnBackupImagesOnlyWiFiChanged(bool value)
     {
         App.Settings.BackupImagesOnlyWiFi = value;
         if (!value)
-            WiFiOnly = false; // If you can backup images you can surely backup text
+            WiFiOnly = false;
     }
     #endregion
     #region Cloud Access Properties
