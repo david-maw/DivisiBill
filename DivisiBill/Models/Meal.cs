@@ -2725,6 +2725,7 @@ public partial class Meal : ObservableObjectPlus
     private static Task BackupTask = null;
     private static readonly CancellationTokenSource BackupCancellationTokenSource = new();
     private static readonly AwaitableQueue<MealSummary> backupQueue = new();
+    private static readonly AwaitableQueue<MealSummary> imageBackupQueue = new();
     internal static void StartBackupToRemote() => BackupTask ??= StartBackupToRemoteAsync(BackupCancellationTokenSource.Token);
     internal static async Task StopBackupToRemoteAsync()
     {
@@ -2767,6 +2768,9 @@ public partial class Meal : ObservableObjectPlus
             if (!ms.IsFake)
                 backupQueue.Enqueue(ms);
         }
+        // Now queue each image that is not remote for transmission
+        var remoteImages = await RemoteWs.GetImageListAsync(); // Get the list of remote images
+        HashSet<string> remoteImageNames = [.. remoteImages.Select(o => o.name)];
     }
     /// <summary>
     /// Enter a loop sending each queued meal and removing it from the queue. In the meantime
@@ -2891,17 +2895,44 @@ public partial class Meal : ObservableObjectPlus
     {
         while (true)
         {
-            MealSummary ms = await backupQueue.DequeueAsync(cancellationToken);
+            var backupTask = backupQueue.DequeueAsync(cancellationToken);
+            var imageTask = imageBackupQueue.DequeueAsync(cancellationToken);
+            var firstCompleted = await Task.WhenAny(backupTask, imageTask);
+            bool backupImage = firstCompleted == imageTask;
+            MealSummary ms = await firstCompleted;
             await App.CloudAllowedSource.WaitWhilePausedAsync();
             cancellationToken.ThrowIfCancellationRequested();
-            Meal m = LoadFromFile(ms);
-            if (m is not null) // there's a small timing hole where the file might be removed while the request is in the queue
-                await m.SaveToRemoteAsync();
+            if (backupImage)
+            {
+                // backup the image for this MealSummary to the cloud
+                if (ms.HasImage)
+                {
+                    if (File.Exists(ms.ImagePath))
+                    {
+                        try
+                        {
+                            await RemoteWs.PutImageAsync(ms);
+                            DebugMsg($"Image for {ms.DebugDisplay} saved to remote storage");
+                        }
+                        catch (Exception ex)
+                        {
+                            DebugMsg($"In BackupLoopAsync: Failed to save image for {ms.DebugDisplay} to remote storage: {ex.Message}");
+                        }
+                    }
+                    else
+                        DebugMsg($"In BackupLoopAsync: Image file {ms.ImageName} does not exist for {ms.DebugDisplay}");
+                }
+                else
+                    DebugMsg($"In BackupLoopAsync: {ms.DebugDisplay} has no associated image");
+            }
             else
             {
-                DebugMsg($"Null meal detected in BackupLoopAsync for summary: {ms}");
-                //if (Utilities.IsDebug)
-                //    Debugger.Break();
+                // Backup the MealSummary to the cloud
+                Meal m = LoadFromFile(ms);
+                if (m is not null) // there's a small timing hole where the file might be removed while the request is in the queue
+                    await m.SaveToRemoteAsync();
+                else
+                    DebugMsg($"Null meal detected in BackupLoopAsync for summary: {ms}");
             }
         }
     }
