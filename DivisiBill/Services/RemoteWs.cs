@@ -6,7 +6,8 @@ using System.Text.Json;
 namespace DivisiBill.Services;
 
 /// <summary>
-/// The public representation of data from the storage web service outside this 
+/// The public representation of data from the storage web service. Each remote item is either a
+/// Person List, a Venue List or a Meal. The Name is the unique identifier for each item,
 /// </summary>
 public partial class RemoteItemInfo : ObservableObject
 {
@@ -251,5 +252,34 @@ public static class RemoteWs
         return await CallWs.PutItemAsync(MealTypeName, ms.Id, mealData, ms.GetJsonString());
     }
     public static async Task DeleteMealAsync(MealSummary ms) => await CallWs.DeleteItemAsync(MealTypeName, ms.Id);
+    #endregion
+    #region Image
+    internal static async Task<bool> PutImageAsync(MealSummary ms)
+    {
+        try
+        {
+            await App.CloudAllowedSource.WaitWhilePausedAsync();
+            await CallWs.UploadFileAsync(ms.ImagePath);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Utilities.ReportCrash(ex);
+            return false;
+        }
+    }
+    internal static async Task<List<ImageItem>> GetImageListAsync()
+    {
+        try
+        {
+            await App.CloudAllowedSource.WaitWhilePausedAsync();
+            return await CallWs.EnumerateFilesAsync();
+        }
+        catch (Exception ex)
+        {
+            Utilities.ReportCrash(ex);
+            return null;
+        }
+    }
     #endregion
 }

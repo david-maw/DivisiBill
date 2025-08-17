@@ -2,7 +2,10 @@
 using DivisiBill.Models;
 using Plugin.InAppBilling;
 using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace DivisiBill.Services;
 
@@ -402,4 +405,92 @@ internal static class CallWs
         return temp;
     }
     #endregion
+
+    #region Image Files
+    public static async Task UploadFileAsync(string filePath)
+    {
+        using var form = new MultipartFormDataContent();
+        using var fileStream = File.OpenRead(filePath);
+        var fileName = Path.GetFileName(filePath);
+        // Detect a few common MIME types based on the file extension
+        string mediaType = fileName switch
+        {
+            var f when f.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) => "text/plain",
+            var f when f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) => "image/jpeg",
+            var f when f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) => "image/jpeg",
+            var f when f.EndsWith(".png", StringComparison.OrdinalIgnoreCase) => "image/png",
+            _ => "application/octet-stream"
+        };
+        var fileContent = new StreamContent(fileStream)
+        {
+            Headers =
+            {
+                ContentType = new MediaTypeHeaderValue(mediaType),
+                ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                {
+                    Name = "\"file\"",
+                    FileName = "\"" + fileName + "\""
+                }
+            }
+        };
+        form.Add(fileContent);
+        var response = await CallWebServiceAsync(() => client.PostAsync("file", form));
+    }
+
+    public static async Task DownloadFileAsync(string fileName, string savePath)
+    {
+        var response = await CallWebServiceAsync(() => client.GetAsync($"file/{fileName}"));
+        if (response.IsSuccessStatusCode)
+        {
+            var fileBytes = await response.Content.ReadAsByteArrayAsync();
+            await File.WriteAllBytesAsync(savePath, fileBytes);
+            Console.WriteLine($"Downloaded to {savePath}");
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+        }
+    }
+
+    public static async Task DeleteFileAsync(string fileName)
+    {
+        var response = await client.DeleteAsync($"file/{fileName}");
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
+    }
+    public static async Task<List<ImageItem>> EnumerateFilesAsync()
+    {
+        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+
+        HttpResponseMessage httpResponse;
+        try
+        {
+            httpResponse = await client.GetAsync("files");
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                Console.Error.WriteLine($"HTTP {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}");
+                var body = await httpResponse.Content.ReadAsStringAsync();
+                if (!string.IsNullOrWhiteSpace(body))
+                    Console.Error.WriteLine(body);
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Request failed: {ex.Message}");
+            return null;
+        }
+
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
+        var items = await httpResponse.Content.ReadFromJsonAsync<List<ImageItem>>(options) ?? new List<ImageItem>();
+        return items;
+    }
+    #endregion
+
+}
+public sealed class ImageItem
+{
+    public string name { get; set; }
+    public string contentType { get; set; }
+    public long size { get; set; }
+    public DateTimeOffset? lastModified { get; set; }
 }
