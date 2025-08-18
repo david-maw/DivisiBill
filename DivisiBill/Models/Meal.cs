@@ -282,6 +282,7 @@ public partial class Meal : ObservableObjectPlus
         SavedToRemote = true;
         Summary.IsLocal = false;
         Summary.IsRemote = false;
+        Summary.HasRemoteImage = false;
         Frozen = true;
         SaveToApp(); // We do want to save it to App storage so the old version doesn't reappear after a restart
     }
@@ -839,6 +840,7 @@ public partial class Meal : ObservableObjectPlus
                 }
             }
             Summary.IsRemote = false;
+            Summary.HasRemoteImage = false; // because it is a new bill, with a new name
             SaveToFile();
             Summary.Show();
             CurrentMealSummaryChanged?.Invoke(OriginalSummary, Summary);
@@ -1310,6 +1312,7 @@ public partial class Meal : ObservableObjectPlus
     public string ImagePath => Summary.ImagePath;
     public bool HasImage => Summary.HasImage;
     public bool HasDeletedImage => Summary.HasDeletedImage;
+    public bool HasRemoteImage => Summary.HasRemoteImage;
     public void DeleteImage() => Summary.DeleteImage();
     public void TryUndeleteImage() => Summary.TryUndeleteImage();
     public bool ReplaceImage(string s) => Summary.ReplaceImage(s);
@@ -1336,6 +1339,7 @@ public partial class Meal : ObservableObjectPlus
         m.SavedToRemote = false;
         m.Summary.IsLocal = true; // because the file will be stored locally below
         m.Summary.IsRemote = false;
+        m.Summary.HasRemoteImage = false; // because the image of this new bill is not stored remotely (yet)
         if (HasImage && File.Exists(ImagePath)) // Copy the image file to the new location if it exists
         {
             File.Copy(ImagePath, m.ImagePath, true);
@@ -1473,6 +1477,7 @@ public partial class Meal : ObservableObjectPlus
                     SavedToRemote = false;
                     Summary.IsLocal = true; // even if the prototype was a remote bill, the modified version is only local until such time as it is backed up
                     Summary.IsRemote = false;
+                    Summary.HasRemoteImage = false; // the image is not remote until we save it to remote storage
                 }
                 Summary.CreationTime = value;
                 MarkAsChanged();
@@ -1630,6 +1635,7 @@ public partial class Meal : ObservableObjectPlus
             if (Summary.IsRemote) info.Append(", IsRemote");
             if (SavedToRemote) info.Append(", SavedToRemote");
             if (HasImage) info.Append(", HasImage");
+            if (HasRemoteImage) info.Append(", HasRemoteImage");
             if (HasDeletedImage) info.Append(", HasDeletedImage");
             return info.ToString();
         }
@@ -2756,7 +2762,10 @@ public partial class Meal : ObservableObjectPlus
         foreach (var ms in LocalMealList)
         {
             if (remoteMealNames.Contains(ms.Id))
+            {
                 ms.IsRemote = true;
+                ms.HasRemoteImage = remoteFileInfoDict[ms.Id].HasRemoteImage;
+            }
             localMealNames.Add(ms.Id);
         }
         // Queue each MealSummary that is not remote for transmission
@@ -2863,6 +2872,7 @@ public partial class Meal : ObservableObjectPlus
                         }
                         m.SavedToRemote = true;
                         m.Summary.IsRemote = true;
+                        m.Summary.HasRemoteImage = rfi.HasRemoteImage;
                         m.SaveToFile();
                         m.Summary.LocationChanged(isLocal: true);
                         filesWithoutError++;
@@ -2913,6 +2923,7 @@ public partial class Meal : ObservableObjectPlus
                         {
                             await RemoteWs.PutImageAsync(ms);
                             DebugMsg($"Image for {ms.DebugDisplay} saved to remote storage");
+                            ms.HasRemoteImage = true; // An image is now in remote storage
                         }
                         catch (Exception ex)
                         {
@@ -2942,6 +2953,7 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     /// <param name="ms"></param>
     public static void QueueForBackup(MealSummary ms) => backupQueue.Enqueue(ms);
+    public static void QueueForImageBackup(MealSummary ms) => imageBackupQueue.Enqueue(ms);
     #endregion
 }
 

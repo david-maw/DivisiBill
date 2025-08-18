@@ -142,11 +142,19 @@
                             WidthRequest="25"
                             Source="{StaticResource ListGlyphCurrentMeal}"/>
                             <!--#endregion-->
+                            <!--#region Icons Indicating local or remote image -->
                             <Image
-                            Grid.RowSpan="2"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            IsVisible="{Binding HasRemoteImage}"
+                            Source="{StaticResource FileGlyphImage}" />
+                            <Image
+                            Grid.Row="1"
                             Grid.Column="1"
                             IsVisible="{Binding HasImage}"
                             Source="{StaticResource FileGlyphImage}" />
+                            <!--#endregion-->
+                            <!--#region Icons showing whether files are resident locally, remotely, or both -->
                             <!--  Only show these if cloud access is allowed, otherwise they do not tell the user anything  -->
                             <Image
                             Grid.Row="0"
@@ -159,6 +167,7 @@
                             IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                             Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}"/>
                         </Grid>
+                        <!--#endregion-->
                         <!--#endregion-->
                         <!--#endregion-->
                         <!--#region Overlaid Buttons-->

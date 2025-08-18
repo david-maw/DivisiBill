@@ -290,7 +290,9 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
             DeleteImage();
             File.Move(PathToNewImage, ImagePath);
             HasImage = false; // Toggle hasImage so as to trigger a refresh if needed
-            return HasImage = true;
+            HasImage = true;
+            Meal.QueueForImageBackup(this);
+            return true;
         }
         return false;
     }
@@ -432,6 +434,10 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     [ObservableProperty]
     [XmlIgnore]
     public partial bool HasDeletedImage { get; private set; } = false;
+    [ObservableProperty]
+    [XmlIgnore]
+    [NotifyPropertyChangedFor(nameof(DebugDisplay))]
+    public partial bool HasRemoteImage { get; set; } = false;
 
     [ObservableProperty]
     [XmlIgnore]

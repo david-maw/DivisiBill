@@ -47,6 +47,7 @@
         <!--#region Stored Image Status -->
         <Label Text="This bill has a corresponding stored image" IsVisible="{Binding Path=HasImage}"  HorizontalTextAlignment="Center"/>
         <Label Text="This bill has a deleted image" IsVisible="{Binding Path=HasDeletedImage}"  HorizontalTextAlignment="Center"/>
+        <Label Text="This bill has a remote image" IsVisible="{Binding Path=HasRemoteImage}"  HorizontalTextAlignment="Center"/>
         <!--#endregion-->
         <!--#region Storage Location -->
         <VerticalStackLayout IsVisible="{Binding ShowStorage}">

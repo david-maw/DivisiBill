@@ -17,6 +17,7 @@ public partial class RemoteItemInfo : ObservableObject
     public string CreatedDateTimeString => CreatedDateTime.ApproximateDateTime();
     public string SizeText => $"{Size / 1000.0:f1} kB";
     public string Description { get; set; } // An alias for the Summary field
+    public bool HasRemoteImage { get; set; } = false; // This will be set to true if the image exists in blob storage
     public bool ReplaceRequested { get; set; } = false;
     [ObservableProperty]
     public partial bool Selected { get; set; } = false;
@@ -38,6 +39,7 @@ public static class RemoteWs
         public string Data { get; set; } = data;
         public long DataLength { get; set; } = dataLength;
         public string Summary { get; set; } = summary;
+        public bool HasRemoteImage { get; set; } = false; // This is set to true if the image exists in blob storage
     }
     /// <summary>
     /// Get a list of all the remote items of a particular type.
@@ -65,7 +67,8 @@ public static class RemoteWs
                         {
                             Name = item.Name,
                             Size = item.DataLength,
-                            Description = item.Summary
+                            Description = item.Summary,
+                            HasRemoteImage = item.HasRemoteImage,
                         });
                     }
                     if (items.Count < MaxItems) // A truncated list, indicates we're out of items
@@ -192,6 +195,7 @@ public static class RemoteWs
             {
                 // This MealSummary is already stored locally so just flag it as being remote as well and move on
                 ms.IsRemote = true;
+                ms.HasRemoteImage = remoteItem.HasRemoteImage;
             }
             else
             {
@@ -236,9 +240,12 @@ public static class RemoteWs
                     continue;
                 }
                 else
+                { // All the checks passed so this is a good MealSummary and we can set the last few items and add it to the remote list
                     ms.Size = remoteItem.Size;
+                    ms.HasRemoteImage = remoteItem.HasRemoteImage;
+                    Meal.RemoteMealList.Add(ms);
+                }
             }
-            Meal.RemoteMealList.Add(ms);
         }
         return true;
     }

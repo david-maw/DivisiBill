@@ -44,6 +44,7 @@ public partial class MealSummaryViewModel : ObservableObject
     public int LineItemCount => HasMealInfo ? CurrentMeal.LineItems.Count : 0;
     public bool HasImage => ms.HasImage;
     public bool HasDeletedImage => ms.HasDeletedImage;
+    public bool HasRemoteImage => ms.HasRemoteImage;
     public bool IsBad => HasMealInfo && CurrentMeal.Size < 0;
     public string ErrorMessage => IsBad ? CurrentMeal?.CreationReason : string.Empty;
     public string FileName => ms.FileName;
