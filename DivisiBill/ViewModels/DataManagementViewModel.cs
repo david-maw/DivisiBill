@@ -226,6 +226,21 @@ internal partial class DataManagementViewModel : ObservableObject
                             await Utilities.ShowAppSnackBarAsync("zip file does not contain a DivisiBill archive");
                             return;
                         }
+                        // Create an image folder if it does not already exist
+                        if (!Directory.Exists(Meal.ImageFolderPath))
+                        {
+                            try
+                            {
+                                Directory.CreateDirectory(Meal.ImageFolderPath);
+                                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: created image folder {Meal.ImageFolderPath}");
+                            }
+                            catch (Exception ex)
+                            {
+                                ex.ReportCrash();
+                                await Utilities.ShowAppSnackBarAsync("Failed to create image folder");
+                                return;
+                            }
+                        }
                         // Now extract all the images from the zip archive to the image folder
                         foreach (var entry in zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".jpg", StringComparison.OrdinalIgnoreCase)))
                         {
