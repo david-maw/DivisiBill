@@ -336,6 +336,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         if (doRemote && IsRemote)
         {
             await RemoteWs.DeleteMealAsync(this);
+            HasRemoteImage = false;
             LocationChanged(isRemote: false);
         }
         if (IsFake) // neither local nor remote (so only in memory), nothing persistent so just forget it exists

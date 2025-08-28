@@ -712,7 +712,6 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         {
             ms.IsBusy = false;
         }
-        return false;
     }
 
     private CancellationTokenSource cancellationTokenSource = null;
