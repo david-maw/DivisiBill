@@ -84,7 +84,16 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         ForgetDeleted();
         await App.StopMonitoringLocation();
     }
-    public void OnNavigatedTo() => ShowCurrent();
+
+    private Meal lastCurrentShown = null;
+    public void OnNavigatedTo()
+    {
+        if (Meal.CurrentMeal != lastCurrentShown)
+        {
+            ShowCurrent();
+            lastCurrentShown = Meal.CurrentMeal;
+        }
+    }
 
     /// <summary>
     /// Called whenever the local Meal list changes, which can happen if asynchronous restore or recover operations are in process
@@ -1259,7 +1268,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     }
     #endregion
     // IQueryAttributable interface
-    // This handles Add this new method to handle query parameters
+    // This handles query parameters
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         static bool boolValue(object value) => value is string s && bool.TryParse(s, out bool parsedBool) ? parsedBool : value is bool b && b;
