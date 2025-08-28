@@ -245,6 +245,8 @@ public partial class App : Application, INotifyPropertyChanged
         bool wifiIsNotRequiredOrIsPresent = Settings is null || !Settings.WiFiOnly || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
         IsCloudAccessible = Connectivity.NetworkAccess == NetworkAccess.Internet && wifiIsNotRequiredOrIsPresent;
         IsCloudAllowed = Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
+        wifiIsNotRequiredOrIsPresent = Settings is null || !Settings.BackupImagesOnlyWiFi || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
+        IsCloudImageBackupAllowed = Settings.BackupImages && IsCloudAllowed && wifiIsNotRequiredOrIsPresent;
         CallWs.SelectWs(Settings.UseAlternateWs); // Debug only
     }
 
@@ -291,6 +293,16 @@ public partial class App : Application, INotifyPropertyChanged
                 CloudAllowedSource.IsPaused = !value;
         }
     }
+
+    /// <summary>
+    /// Is the cloud accessible (<see cref="App.IsCloudAccessible"/>) and are we permitted to use it 
+    /// for image backup (<see cref="AppSettings.IsCloudAccessAllowed"/>).
+    /// </summary>
+    internal static bool IsCloudImageBackupAllowed
+    {
+        get;
+        set;
+    } = false;
 
     internal static bool RecentlyUsed => DateTime.Now - Settings.LastUse < MinimumIdleTime;
     /// <summary>

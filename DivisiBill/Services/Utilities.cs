@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Diagnostics;
+﻿// Ignore Spelling: Haptic Awaitable
+
+using CommunityToolkit.Diagnostics;
 using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Generated;
 using DivisiBill.Models;
@@ -1013,6 +1015,19 @@ public class AwaitableQueue<T>
         {
             return queue.Dequeue();
         }
+    }
+    public bool TryDequeue(out T item)
+    {
+        if (semaphore.Wait(0))
+        {
+            lock (queueLock)
+            {
+                item = queue.Dequeue();
+                return true;
+            }
+        }
+        item = default;
+        return false;
     }
 }
 /// <summary>

@@ -79,7 +79,7 @@
             <Label Text="Pro subscription backup is unavailable" HorizontalOptions="Center"
                    IsVisible="{Binding InternetEnabledAndLicensed, Converter={StaticResource Not}}"/>
             <!--#endregion-->
-            <!--#region Pro Subscription and Internet Accessible -->
+            <!--#region Pro Subscription and Internet Accessible (Cloud Access and Use) -->
             <VerticalStackLayout IsVisible="{Binding InternetEnabledAndLicensed}">
                 <Label Text="{Binding Path=WiFiStatus,StringFormat='Internet Enabled ({0})'}" HorizontalOptions="Center" Margin="0,10,0,0"/>
                 <Grid ColumnDefinitions ="*, auto, *, auto" RowDefinitions="auto, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">

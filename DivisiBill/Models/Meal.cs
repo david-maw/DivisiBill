@@ -2732,6 +2732,7 @@ public partial class Meal : ObservableObjectPlus
     private static readonly CancellationTokenSource BackupCancellationTokenSource = new();
     private static readonly AwaitableQueue<MealSummary> backupQueue = new();
     private static readonly AwaitableQueue<MealSummary> imageBackupQueue = new();
+    private static readonly AwaitableQueue<MealSummary> slowImageBackupQueue = new();
     internal static void StartBackupToRemote() => BackupTask ??= StartBackupToRemoteAsync(BackupCancellationTokenSource.Token);
     internal static async Task StopBackupToRemoteAsync()
     {
@@ -2743,11 +2744,12 @@ public partial class Meal : ObservableObjectPlus
         await OldBackupTask;
     }
     /// <summary>
-    /// First figure out whether there are any meals that are local, but not remote
-    /// put each of them (more precisely, their MealSummary) in a queue to be transmitted
-    /// then enter a loop sending each meal and removing it from the queue. In the meantime
-    /// the main process may add additional meals to the queue as they are saved (by calling
-    /// QueueForBackup).
+    /// First figure out whether there are any meals or images that are local, but not remote
+    /// put each of them (more precisely, their MealSummary) in a queue to be transmitted. Then, on another
+    /// thread, start up a loop sending each meal or image and removing it from the queue. In the meantime
+    /// the main process may add additional meals or images to a queue as they are saved (by calling
+    /// QueueForBackup). Note that there are multiple queues, one for meals, one for images and one for 
+    /// missing images so that meals have highest priority and missing images have lowest priority.
     /// </summary>
     private static async Task BackupMissingAsync()
     {
@@ -2777,9 +2779,14 @@ public partial class Meal : ObservableObjectPlus
             if (!ms.IsFake)
                 backupQueue.Enqueue(ms);
         }
-        // Now queue each image that is not remote for transmission
-        var remoteImages = await RemoteWs.GetImageListAsync(); // Get the list of remote images
-        HashSet<string> remoteImageNames = [.. remoteImages.Select(o => o.name)];
+        // If we are backing up images, queue each image that is local but not remote for transmission
+        if (App.Settings.BackupImages && App.IsCloudImageBackupAllowed)
+        {
+            foreach (var ms in LocalMealList.Where(ms => ms.HasImage && !ms.HasRemoteImage))
+            {
+                slowImageBackupQueue.Enqueue(ms);
+            }
+        }
     }
     /// <summary>
     /// Enter a loop sending each queued meal and removing it from the queue. In the meantime
@@ -2905,13 +2912,32 @@ public partial class Meal : ObservableObjectPlus
     {
         while (true)
         {
-            var backupTask = backupQueue.DequeueAsync(cancellationToken);
-            var imageTask = imageBackupQueue.DequeueAsync(cancellationToken);
-            var firstCompleted = await Task.WhenAny(backupTask, imageTask);
-            bool backupImage = firstCompleted == imageTask;
-            MealSummary ms = await firstCompleted;
+            // Priority order: backupQueue > imageBackupQueue > slowImageBackupQueue
+            MealSummary ms = null;
+            bool backupImage = false;
+
+            // Try to get from backupQueue first
+            if (backupQueue.TryDequeue(out ms))
+                backupImage = false;
+            // Then try image queues
+            else if (imageBackupQueue.TryDequeue(out ms) || slowImageBackupQueue.TryDequeue(out ms))
+                backupImage = true;
+            else
+            {
+                // If all queues are empty, wait for any to have an item
+                var summaryTask = backupQueue.DequeueAsync(cancellationToken);
+                var imageTask = imageBackupQueue.DequeueAsync(cancellationToken);
+                var slowImageTask = slowImageBackupQueue.DequeueAsync(cancellationToken);
+                var firstCompleted = await Task.WhenAny(summaryTask, imageTask, slowImageTask);
+                // One or more queues have an item, so get it from the one that completed first
+                backupImage = firstCompleted != summaryTask;
+                ms = await firstCompleted;
+            }
+
+            // Do not attempt to actually send anything if he cloud is not allowed (or accessible)
             await App.CloudAllowedSource.WaitWhilePausedAsync();
             cancellationToken.ThrowIfCancellationRequested();
+
             if (backupImage)
             {
                 // backup the image for this MealSummary to the cloud
@@ -2948,8 +2974,9 @@ public partial class Meal : ObservableObjectPlus
         }
     }
     /// <summary>
-    /// Enqueue a meal for backup to remote storage, usually either as a result of scanning the list of meals
-    /// and finding some that are local only or saving a new meal to local storage.
+    /// Enqueue a meal or image for backup to remote storage, usually as a result of saving a new
+    /// meal or image to local storage. These functions exist mostly to permit other code to access
+    /// the queues without having to know about them.
     /// </summary>
     /// <param name="ms"></param>
     public static void QueueForBackup(MealSummary ms) => backupQueue.Enqueue(ms);

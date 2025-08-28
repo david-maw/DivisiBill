@@ -86,6 +86,8 @@ public partial class SplashPage : ContentPage
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
             await App.CheckLicenses(true);
+            if (!App.IsLimited)
+                App.EvaluateCloudAccessible(); // Reevaluate values
         }
         await StatusMsgAsync("Checking location");
         App.UseLocation = await HasLocationPermissionAsync();

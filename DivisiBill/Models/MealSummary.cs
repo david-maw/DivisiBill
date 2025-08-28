@@ -1,3 +1,5 @@
+// Ignore Spelling: Json
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
