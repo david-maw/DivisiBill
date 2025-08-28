@@ -288,5 +288,21 @@ public static class RemoteWs
             return null;
         }
     }
+    internal static Task<bool> DownloadImageFileAsync(string imagePath)
+    {
+        ArgumentNullException.ThrowIfNullOrWhiteSpace(imagePath);
+        try
+        {
+            // Allow a caller to provide a name and store the downloaded image of that name in a file (usually yyyymmddhhmmss.jpg)
+            {
+                return CallWs.DownloadFileAsync(Path.GetFileName(imagePath), imagePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            Utilities.DebugMsg($"Exception in DownloadImageFileAsync: {ex.Message}");
+            return Task.FromResult(false);
+        }
+    }
     #endregion
 }

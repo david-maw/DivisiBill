@@ -1115,6 +1115,18 @@ public partial class Meal : ObservableObjectPlus
             : ms.IsLocal ? LoadFromFile(ms, setup: setup) : ms.IsRemote ? await LoadFromRemoteAsync(ms, setup) : LoadFake(ms);
         return m;
     }
+    public static async Task<bool> LoadImageFromRemoteAsync(MealSummary ms)
+    {
+        if (ms is null || !ms.HasRemoteImage) // nothing to do
+            return false;
+        if (await RemoteWs.DownloadImageFileAsync(ms.ImagePath))
+        {
+            ms.CheckImageFiles();
+            return true;
+        }
+        return false;
+    }
+
     /// <summary>
     /// Indicated that a current copy is saved to app storage
     /// </summary>

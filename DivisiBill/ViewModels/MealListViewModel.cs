@@ -690,16 +690,22 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     {
         try
         {
-            if (CanDownLoadMeal(ms))
+            ArgumentNullException.ThrowIfNull(ms);
+            if (!ms.IsRemote || !App.Settings.IsCloudAccessAllowed)
+                return false;
+            else
             {
-                Meal m = await Meal.LoadFromRemoteAsync(ms);
-                if (m is not null)
+                if (!ms.IsLocal)
                 {
-                    await m.SaveToFileAsync();
-                    if (changeLocation)
-                        ms.LocationChanged(isLocal: true);
-                    return true;
+                    Meal m = await Meal.LoadFromRemoteAsync(ms);
+                    if (m is not null)
+                    {
+                        await m.SaveToFileAsync();
+                        if (changeLocation)
+                            ms.LocationChanged(isLocal: true);
+                    }
                 }
+                return ms.HasRemoteImage ? await Meal.LoadImageFromRemoteAsync(ms) : true;
             }
         }
         finally

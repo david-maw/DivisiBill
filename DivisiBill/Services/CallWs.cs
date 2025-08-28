@@ -405,7 +405,6 @@ internal static class CallWs
         return temp;
     }
     #endregion
-
     #region Image Files
     public static async Task UploadFileAsync(string filePath)
     {
@@ -437,18 +436,20 @@ internal static class CallWs
         var response = await CallWebServiceAsync(() => client.PostAsync("file", form));
     }
 
-    public static async Task DownloadFileAsync(string fileName, string savePath)
+    public static async Task<bool> DownloadFileAsync(string fileName, string savePath)
     {
-        var response = await CallWebServiceAsync(() => client.GetAsync($"file/{fileName}"));
+        HttpResponseMessage response = await CallWebServiceAsync(() => client.GetAsync($"file/{fileName}"));
         if (response.IsSuccessStatusCode)
         {
             var fileBytes = await response.Content.ReadAsByteArrayAsync();
             await File.WriteAllBytesAsync(savePath, fileBytes);
             Console.WriteLine($"Downloaded to {savePath}");
+            return true;
         }
         else
         {
             Console.WriteLine($"Error: {response.StatusCode}");
+            return false;
         }
     }
 
@@ -485,7 +486,6 @@ internal static class CallWs
         return items;
     }
     #endregion
-
 }
 public sealed class ImageItem
 {
