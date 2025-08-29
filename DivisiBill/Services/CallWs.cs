@@ -37,9 +37,10 @@ internal static class CallWs
     /// <summary>
     /// Invoke a web service, wait a few seconds to see if it completes, then pop up a dialog so the user can check progress and abandon it as needed.
     /// </summary>
-    /// <param name="webCall"></param>
+    /// <param name="webCall">The function to call and timeout if necessary</param>
+    /// 
     /// <returns></returns>
-    internal static async Task<HttpResponseMessage> CallWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
+    internal static async Task<HttpResponseMessage> CallUncertainWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
     {
         Stopwatch webStopwatch = Stopwatch.StartNew();
         Task<HttpResponseMessage> webCallTask = webCall();
@@ -78,8 +79,16 @@ internal static class CallWs
         Uri newUri = useAlternateWs ? new Uri(Generated.BuildInfo.DivisiBillAlternateWsUri) : new Uri(Generated.BuildInfo.DivisiBillWsUri);
         if (!newUri.Equals(client.BaseAddress))
         {
-            client.BaseAddress = newUri;
-            KeyString = useAlternateWs ? Generated.BuildInfo.DivisiBillAlternateWsKey : Generated.BuildInfo.DivisiBillWsKey;
+
+            try
+            {
+                client.BaseAddress = newUri;
+                KeyString = useAlternateWs ? Generated.BuildInfo.DivisiBillAlternateWsKey : Generated.BuildInfo.DivisiBillWsKey;
+            }
+            catch (Exception)
+            {
+                Utilities.DebugMsg("SelectWs failed to change the BaseAddress to " + newUri.ToString());
+            }
         }
     }
     #endregion
@@ -174,7 +183,7 @@ internal static class CallWs
         bool WsVersionChecked = false;
         try
         {
-            HttpResponseMessage WsVersionTask = await CallWebServiceAsync(() => client.GetAsync("version"));
+            HttpResponseMessage WsVersionTask = await CallUncertainWebServiceAsync(() => client.GetAsync("version"));
 
             if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
             {
@@ -242,7 +251,7 @@ internal static class CallWs
         {
             Utilities.DebugMsg("In VerifyAndroidPurchase, awaiting verify");
             // validate the license by calling a web service
-            HttpResponseMessage response = await CallWebServiceAsync(() => client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
+            HttpResponseMessage response = await CallUncertainWebServiceAsync(() => client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
                 new StringContent(androidJson, System.Text.Encoding.UTF8, "application/json")));
             if (response.IsSuccessStatusCode)
             {
@@ -279,7 +288,7 @@ internal static class CallWs
             {
                 Utilities.DebugMsg("In VerifyPurchase, awaiting verify");
                 // validate the license by calling a web service
-                var response = await CallWebServiceAsync(() => client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
+                var response = await CallUncertainWebServiceAsync(() => client.PostAsync("verify?subscription=" + (isSubscription ? "1" : "0"),
                     new StringContent(purchase.OriginalJson, Encoding.UTF8, "application/json")));
                 if (response.IsSuccessStatusCode)
                 {
@@ -406,7 +415,7 @@ internal static class CallWs
     }
     #endregion
     #region Image Files
-    public static async Task UploadFileAsync(string filePath)
+    public static async Task<HttpResponseMessage> UploadFileAsync(string filePath)
     {
         using var form = new MultipartFormDataContent();
         using var fileStream = File.OpenRead(filePath);
@@ -433,12 +442,12 @@ internal static class CallWs
             }
         };
         form.Add(fileContent);
-        var response = await CallWebServiceAsync(() => client.PostAsync("file", form));
+        return await client.PostAsync("file", form);
     }
 
     public static async Task<bool> DownloadFileAsync(string fileName, string savePath)
     {
-        HttpResponseMessage response = await CallWebServiceAsync(() => client.GetAsync($"file/{fileName}"));
+        HttpResponseMessage response = await client.GetAsync($"file/{fileName}");
         if (response.IsSuccessStatusCode)
         {
             var fileBytes = await response.Content.ReadAsByteArrayAsync();

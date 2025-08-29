@@ -2957,15 +2957,35 @@ public partial class Meal : ObservableObjectPlus
                 {
                     if (File.Exists(ms.ImagePath))
                     {
+                        static void StopImageBackup()
+                        {
+                            App.Settings.BackupImages = false;
+                            slowImageBackupQueue.Clear();
+                            imageBackupQueue.Clear();
+                        }
+
                         try
                         {
-                            await RemoteWs.PutImageAsync(ms);
-                            DebugMsg($"Image for {ms.DebugDisplay} saved to remote storage");
-                            ms.HasRemoteImage = true; // An image is now in remote storage
+                            HttpResponseMessage resp = await RemoteWs.PutImageAsync(ms);
+                            if (resp.IsSuccessStatusCode)
+                            {
+                                DebugMsg($"Image for {ms.DebugDisplay} saved to remote storage");
+                                ms.HasRemoteImage = true; // An image is now in remote storage
+                            }
+                            else
+                            {
+                                DebugMsg($"In BackupLoopAsync: Failed to save image for {ms.DebugDisplay} to remote storage: {resp.ReasonPhrase}");
+                                // This is a background process so it is not a good idea to keep retrying these, just turn off image backup
+                                StopImageBackup();
+                                await Utilities.DisplayAlertAsync("Cloud Image Backup", $"Image backup has been disabled because of an error: {resp.ReasonPhrase}");
+                            }
                         }
                         catch (Exception ex)
                         {
                             DebugMsg($"In BackupLoopAsync: Failed to save image for {ms.DebugDisplay} to remote storage: {ex.Message}");
+                            // This is a background process so it is not a good idea to keep retrying these, just turn off image backup
+                            StopImageBackup();
+                            await Utilities.DisplayAlertAsync("Cloud Image Backup", $"Image backup has been disabled because of a fault: {ex.Message}");
                         }
                     }
                     else

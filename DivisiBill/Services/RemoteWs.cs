@@ -261,18 +261,17 @@ public static class RemoteWs
     public static async Task DeleteMealAsync(MealSummary ms) => await CallWs.DeleteItemAsync(MealTypeName, ms.Id);
     #endregion
     #region Image
-    internal static async Task<bool> PutImageAsync(MealSummary ms)
+    internal static async Task<HttpResponseMessage> PutImageAsync(MealSummary ms)
     {
         try
         {
             await App.CloudAllowedSource.WaitWhilePausedAsync();
-            await CallWs.UploadFileAsync(ms.ImagePath);
-            return true;
+            return await CallWs.UploadFileAsync(ms.ImagePath);
         }
         catch (Exception ex)
         {
             Utilities.ReportCrash(ex);
-            return false;
+            return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
         }
     }
     internal static async Task<List<ImageItem>> GetImageListAsync()
