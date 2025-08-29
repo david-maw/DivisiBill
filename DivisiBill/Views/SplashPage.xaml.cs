@@ -81,8 +81,18 @@ public partial class SplashPage : ContentPage
             App.Settings.SendCrashAsk = d.Result.Ask;
         }
         App.EvaluateCloudAccessible(); // Set initial values
+        // Ask the user about using an alternate web service on a debug build that can get to the Internet
+        if (Utilities.IsDebug && Connectivity.NetworkAccess == NetworkAccess.Internet && App.Settings.AskAboutUsingAlternateWs)
+        {
+            var d = await Shell.Current.ShowPopupAsync<QuestionResponse>(
+                new QuestionPage("Web Service Test", "Do you want to use the alternate web service?", initialYes: false),
+                Utilities.GetNullPopupOptions(false));
+            App.Settings.AskAboutUsingAlternateWs = d.Result.Ask;
+            if (d.Result.Yes)
+                CallWs.SelectAlternateWs(); // Debug only
+        }
         App.HandleActivityChanges();
-        if (App.WsAllowed)
+        if (App.IsCloudAccessible && App.WsAllowed)
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
             await App.CheckLicenses(true);
@@ -122,7 +132,6 @@ public partial class SplashPage : ContentPage
         await Task.Delay(1000);
         PauseBeforeMessage = false; // Just to be sure it wasn't set at the last possible second
         App.Settings.FirstUse = false;
-        App.Settings.UseAlternateWs = false; // You have to set this again if you want it
         App.isTutorialMode = App.Settings.ShowTutorial; // This is set to true to make the home page be the tutorial, the user can change it as desired
         Shell.Current.Navigating -= PreventPrematureNavigation;
         App.InitializationComplete.SetResult(true);

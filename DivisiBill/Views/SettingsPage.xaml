@@ -156,13 +156,13 @@
                 <!--#endregion-->
                 <!--#region Use Alternate Web Service -->
                 <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
-                    <Label Grid.Row="0" Text="Start With Alternate Web Service" VerticalOptions="Center" HorizontalOptions="End"/>
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding UseAlternateWs}"/>
+                    <Label Grid.Row="0" Text="Ask About Alternate Web Service at Start" VerticalOptions="Center" HorizontalOptions="End"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding AskAboutUsingAlternateWs}"/>
                 </Grid>
                 <!--#endregion-->
                 <!--#region Start Fresh Next Time (handy for testing) -->
                 <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
-                    <Label Grid.Row="0" Text="Start Fresh" VerticalOptions="Center" HorizontalOptions="End"/>
+                    <Label Grid.Row="0" Text="Start Fresh Next Time" VerticalOptions="Center" HorizontalOptions="End"/>
                     <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding StartFresh}"/>
                 </Grid>
                 <!--#endregion-->

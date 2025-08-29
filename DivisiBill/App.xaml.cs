@@ -247,7 +247,6 @@ public partial class App : Application, INotifyPropertyChanged
         IsCloudAllowed = Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
         wifiIsNotRequiredOrIsPresent = Settings is null || !Settings.BackupImagesOnlyWiFi || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
         IsCloudImageBackupAllowed = Settings.BackupImages && IsCloudAllowed && wifiIsNotRequiredOrIsPresent;
-        CallWs.SelectWs(Settings.UseAlternateWs); // Debug only
     }
 
     private static async void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)

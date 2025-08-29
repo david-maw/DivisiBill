@@ -5,10 +5,10 @@ public class AppSettings : ISettings
     public AppSettings()
     {
         if (StartFresh)
-        { // If we are starting fresh, clear all preferences except UseAlternateWs because it might be what we're testing
-            bool useAlternateWs = UseAlternateWs;
+        { // If we are starting fresh, clear all preferences except AskAboutUsingAlternateWs because it might be what we're testing
+            bool shouldAskAboutAlternateWs = AskAboutUsingAlternateWs;
             Preferences.Clear(); // This will include clearing StartFresh so we won't do this again until asked to
-            UseAlternateWs = useAlternateWs; // restore the value
+            AskAboutUsingAlternateWs = shouldAskAboutAlternateWs; // restore the value
         }
     }
     public string StoredMeal
@@ -76,23 +76,15 @@ public class AppSettings : ISettings
             App.HandleActivityChanges();
         }
     }
-    public bool UseAlternateWs
+    public bool AskAboutUsingAlternateWs
     {
-        get => Preferences.Get(nameof(UseAlternateWs), false);
-        set
-        {
-            Preferences.Set(nameof(UseAlternateWs), value);
-            App.HandleActivityChanges();
-        }
+        get => Preferences.Get(nameof(AskAboutUsingAlternateWs), false);
+        set => Preferences.Set(nameof(AskAboutUsingAlternateWs), value);
     }
     public bool StartFresh
     {
         get => Preferences.Get(nameof(StartFresh), false);
-        set
-        {
-            Preferences.Set(nameof(StartFresh), value);
-            App.HandleActivityChanges();
-        }
+        set => Preferences.Set(nameof(StartFresh), value);
     }
     public bool WiFiOnly
     {

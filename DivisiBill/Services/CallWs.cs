@@ -71,24 +71,22 @@ internal static class CallWs
     #endregion
     #region Select Alternate Web Service (debug only) 
     [Conditional("DEBUG")]
-    internal static void SelectWs(bool useAlternateWs)
+    internal static void SelectAlternateWs()
     {
-        if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsUri) // There is no defined URI
-            || string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillAlternateWsUri)) // There is no defined alternate URI
+        if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillAlternateWsUri))
             return;
-        Uri newUri = useAlternateWs ? new Uri(Generated.BuildInfo.DivisiBillAlternateWsUri) : new Uri(Generated.BuildInfo.DivisiBillWsUri);
-        if (!newUri.Equals(client.BaseAddress))
-        {
 
-            try
-            {
-                client.BaseAddress = newUri;
-                KeyString = useAlternateWs ? Generated.BuildInfo.DivisiBillAlternateWsKey : Generated.BuildInfo.DivisiBillWsKey;
-            }
-            catch (Exception)
-            {
-                Utilities.DebugMsg("SelectWs failed to change the BaseAddress to " + newUri.ToString());
-            }
+        Uri newUri = new Uri(Generated.BuildInfo.DivisiBillAlternateWsUri);
+        try
+        {
+            client.BaseAddress = newUri;
+            KeyString = Generated.BuildInfo.DivisiBillAlternateWsKey;
+            if (!string.IsNullOrWhiteSpace(KeyString))
+                UpsertHttpClientHeader(KeyHeaderName, KeyString);
+        }
+        catch (Exception)
+        {
+            Utilities.DebugMsg("SelectAlternateWs failed to change the BaseAddress to " + newUri);
         }
     }
     #endregion

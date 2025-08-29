@@ -31,7 +31,7 @@ public interface ISettings
     /// <summary>
     /// Use the alternate Web Service not the primary one (debug only)
     /// </summary>
-    bool UseAlternateWs { get; set; }
+    bool AskAboutUsingAlternateWs { get; set; }
     /// <summary>
     /// Forget the existing state before going on
     /// </summary>
