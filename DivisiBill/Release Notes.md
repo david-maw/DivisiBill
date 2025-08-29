@@ -5,19 +5,19 @@
 A new option on the "Settings" page allows bill images to be uploaded to the cloud along with bills. This is off by default because it can use a lot of bandwidth and storage.
 When this option is on, any bill that has an image and is uploaded to the cloud will have its image uploaded as well. If a bill is downloaded from the cloud and it has an image stored in the cloud that image will be downloaded along with the bill.
 
-Images are typically much larger than bills (a few hundred kB vs. a few kB) so there is an option to only upload images when WiFi is available. Actual costs vary, but uploading over Google Fi phone network costs broadly $10 per GB, so you could typically upload hundreds of bills for a penny but only a few images.
+Images are typically much larger than bills (a few hundred kB vs. a few kB) so there is an option to only upload images when WiFi is available. Actual costs vary, but as an example uploading using the Google Fi phone network costs $10 per GB, so you could typically upload hundreds of bills for a penny but only a few images.
 
 ## Only Scroll to The Current Bill if it has Changed
 
-Whenever a bill list was shown it would scroll to keep the current bill in view. That is now only done if the current bill changes.
+After selecting a different current bill, a bill list will scroll to keep the current bill in view. The scrolling used to be done always.
 
 ## Improve Venue Edit Page
 
-The app will no longer display a message showing a count of bills using the venue being edited if the venue name is not changed.
+The app displays a message showing a count of bills using the venue only if the venue name has been changed.
 
 ## Update Bill List When Location Changes
 
-When the app location changes by a significant amount (more than 20m currently) update the distances to venues reported in the bill list. This was being done in the list sorted by distance, but not otherwise, that has been corrected and now all bill lists are updated, regardless of how they are sorted.
+When the app location changes by a significant amount (more than 20m currently) the distances to venues reported in the bill list are updated. This was being done in the list sorted by distance, but not otherwise, that has been corrected and now all bill lists are updated, regardless of how they are sorted.
 
 # 6.2.37
 
