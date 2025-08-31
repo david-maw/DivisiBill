@@ -227,10 +227,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    public partial bool AskAboutUsingAlternateWs { get; set; } = App.Settings.AskAboutUsingAlternateWs;
-    partial void OnAskAboutUsingAlternateWsChanged(bool value) => App.Settings.AskAboutUsingAlternateWs = value;
-
-    [ObservableProperty]
     public partial bool StartFresh { get; set; } = App.Settings.StartFresh;
     partial void OnStartFreshChanged(bool value) => App.Settings.StartFresh = value;
 

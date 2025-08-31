@@ -73,20 +73,39 @@ internal static class CallWs
     [Conditional("DEBUG")]
     internal static void SelectAlternateWs()
     {
-        if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillAlternateWsUri))
-            return;
-
-        Uri newUri = new Uri(Generated.BuildInfo.DivisiBillAlternateWsUri);
-        try
+        string wsSuffix = Environment.GetEnvironmentVariable("DIVISIBILL_WS_USE");
+        if (string.IsNullOrWhiteSpace(wsSuffix))
+            return; // No new one requested, just leave the default alone
+        wsSuffix = wsSuffix.ToUpperInvariant();
+        string wsUriText;
+        string wsKeyText;
+        switch (wsSuffix)
         {
-            client.BaseAddress = newUri;
-            KeyString = Generated.BuildInfo.DivisiBillAlternateWsKey;
-            if (!string.IsNullOrWhiteSpace(KeyString))
-                UpsertHttpClientHeader(KeyHeaderName, KeyString);
+            case "ALTERNATE":
+                wsUriText = Environment.GetEnvironmentVariable("DIVISIBILL_ALTERNATE_WS_URI");
+                wsKeyText = Environment.GetEnvironmentVariable("DIVISIBILL_ALTERNATE_WS_KEY");
+                break;
+            default: // Usually "release"
+                wsUriText = Environment.GetEnvironmentVariable("DIVISIBILL_WS_URI_" + wsSuffix);
+                wsKeyText = Environment.GetEnvironmentVariable("DIVISIBILL_WS_KEY_" + wsSuffix);
+                break;
         }
-        catch (Exception)
+
+        if (!string.IsNullOrWhiteSpace(wsUriText) && !string.IsNullOrWhiteSpace(wsKeyText))
         {
-            Utilities.DebugMsg("SelectAlternateWs failed to change the BaseAddress to " + newUri);
+            Uri newUri = new(wsUriText);
+            try
+            {
+                client.BaseAddress = newUri;
+                KeyString = wsKeyText;
+                UpsertHttpClientHeader(KeyHeaderName, KeyString);
+                Utilities.DebugMsg("SelectAlternateWs changed the BaseAddress to DIVISIBILL_WS..." + wsSuffix + " environment variable");
+            }
+            catch (Exception ex)
+            {
+                Utilities.DebugMsg("SelectAlternateWs failed to change the BaseAddress to " + wsUriText + "exception:" + ex.Message);
+            }
+            return;
         }
     }
     #endregion

@@ -29,10 +29,6 @@ public interface ISettings
     /// </summary>
     bool IsCloudAccessAllowed { get; set; }
     /// <summary>
-    /// Use the alternate Web Service not the primary one (debug only)
-    /// </summary>
-    bool AskAboutUsingAlternateWs { get; set; }
-    /// <summary>
     /// Forget the existing state before going on
     /// </summary>
     bool StartFresh { get; set; }

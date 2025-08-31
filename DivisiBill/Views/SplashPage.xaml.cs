@@ -82,15 +82,8 @@ public partial class SplashPage : ContentPage
         }
         App.EvaluateCloudAccessible(); // Set initial values
         // Ask the user about using an alternate web service on a debug build that can get to the Internet
-        if (Utilities.IsDebug && Connectivity.NetworkAccess == NetworkAccess.Internet && App.Settings.AskAboutUsingAlternateWs)
-        {
-            var d = await Shell.Current.ShowPopupAsync<QuestionResponse>(
-                new QuestionPage("Web Service Test", "Do you want to use the alternate web service?", initialYes: false),
-                Utilities.GetNullPopupOptions(false));
-            App.Settings.AskAboutUsingAlternateWs = d.Result.Ask;
-            if (d.Result.Yes)
-                CallWs.SelectAlternateWs(); // Debug only
-        }
+        if (Utilities.IsDebug && Connectivity.NetworkAccess == NetworkAccess.Internet)
+            CallWs.SelectAlternateWs(); // Debug only
         App.HandleActivityChanges();
         if (App.IsCloudAccessible && App.WsAllowed)
         {

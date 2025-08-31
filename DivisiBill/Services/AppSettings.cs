@@ -5,10 +5,8 @@ public class AppSettings : ISettings
     public AppSettings()
     {
         if (StartFresh)
-        { // If we are starting fresh, clear all preferences except AskAboutUsingAlternateWs because it might be what we're testing
-            bool shouldAskAboutAlternateWs = AskAboutUsingAlternateWs;
+        {
             Preferences.Clear(); // This will include clearing StartFresh so we won't do this again until asked to
-            AskAboutUsingAlternateWs = shouldAskAboutAlternateWs; // restore the value
         }
     }
     public string StoredMeal
@@ -75,11 +73,6 @@ public class AppSettings : ISettings
             Preferences.Set(nameof(IsCloudAccessAllowed), value);
             App.HandleActivityChanges();
         }
-    }
-    public bool AskAboutUsingAlternateWs
-    {
-        get => Preferences.Get(nameof(AskAboutUsingAlternateWs), false);
-        set => Preferences.Set(nameof(AskAboutUsingAlternateWs), value);
     }
     public bool StartFresh
     {

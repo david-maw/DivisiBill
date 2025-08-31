@@ -154,12 +154,6 @@
                 <!--#region Show Last Use -->
                 <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
                 <!--#endregion-->
-                <!--#region Use Alternate Web Service -->
-                <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
-                    <Label Grid.Row="0" Text="Ask About Alternate Web Service at Start" VerticalOptions="Center" HorizontalOptions="End"/>
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding AskAboutUsingAlternateWs}"/>
-                </Grid>
-                <!--#endregion-->
                 <!--#region Start Fresh Next Time (handy for testing) -->
                 <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
                     <Label Grid.Row="0" Text="Start Fresh Next Time" VerticalOptions="Center" HorizontalOptions="End"/>
