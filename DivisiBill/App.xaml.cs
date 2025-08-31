@@ -316,14 +316,14 @@ public partial class App : Application, INotifyPropertyChanged
         IsCloudAllowed = appIsPaused != true && Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
     }
     /// <summary>
-    /// Requests to archive data in the cloud, checking various conditions like edition limitations and network access.
+    /// Requests to back up data to the cloud, checking various conditions like edition limitations and network access.
     /// It prompts the user for necessary permissions.
     /// </summary>
     /// <returns>Returns a the value of <see cref="IsCloudAllowed"/> a boolean indicating whether cloud access is allowed.</returns>
-    public async Task<bool> RequestArchive()
+    public async Task<bool> RequestCloudBackup()
     {
         if (IsLimited)
-            await Utilities.DisplayAlertAsync("Cloud Archive Unavailable", "Cloud archiving is not supported in Basic Edition");
+            await Utilities.DisplayAlertAsync("Cloud backup Unavailable", "Cloud backup is not supported in Basic Edition");
         else if (Connectivity.NetworkAccess != NetworkAccess.Internet)
             await Utilities.DisplayAlertAsync("Internet Unavailable", "You have no Internet access");
         else if (Settings.WiFiOnly && !Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi))
@@ -331,8 +331,8 @@ public partial class App : Application, INotifyPropertyChanged
         else if (!IsCloudAccessible)
             await Utilities.DisplayAlertAsync("Cloud Unavailable", "Cloud access is not available");
         else
-            Settings.IsCloudAccessAllowed = await Utilities.AskAsync("Cloud Archive is Off",
-                "The 'Allow Archive to Cloud' program setting is off. Do you want to turn it on?");
+            Settings.IsCloudAccessAllowed = await Utilities.AskAsync("Cloud Backup is Off",
+                "The 'Allow Cloud Backup' program setting is off. Do you want to turn it on?");
         return IsCloudAllowed;
     }
     #endregion

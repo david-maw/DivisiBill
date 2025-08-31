@@ -62,7 +62,7 @@ public partial class MealListPage : ContentPage
         {
             Meal m = await Meal.LoadAsync(ms, true);
             if (m is null)
-                await Utilities.ShowAppSnackBarAsync("Warning: Remote Access is not currently available");
+                await Utilities.ShowAppSnackBarAsync("Warning: Bill could not be loaded");
             else
             {
                 await m.BecomeCurrentMealAsync();

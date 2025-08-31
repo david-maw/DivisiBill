@@ -65,11 +65,11 @@ internal partial class DataManagementViewModel : ObservableObject
         // Make sure it worked correctly
         if (!task.Result)
         {
-            await Utilities.ShowAppSnackBarAsync("Remote Access is not currently available");
+            await Utilities.ShowAppSnackBarAsync("Remote bills are not currently available");
             return;
         }
         if (Meal.RemoteMealList.Count == 0)
-            await Utilities.ShowAppSnackBarAsync($"There are no remote bills");
+            await Utilities.ShowAppSnackBarAsync("There are no remote bills");
         else
         {
             var localMealDict = Meal.LocalMealList.ToDictionary(ms => ms.Id);

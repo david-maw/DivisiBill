@@ -337,16 +337,16 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                 else
                 {
                     IsMealListLoading = false;
-                    await ShowRemoteAccessWarning();
+                    await Utilities.ShowAppSnackBarAsync("Warning: Remote bill list Failed to load");
                 }
             }
             else if (!ShowRemoteMeals)
             {
-                if (await App.Current.RequestArchive())
+                if (await App.Current.RequestCloudBackup())
                     await ChangeShowRemoteMeals();
             }
             else
-                await ShowRemoteAccessWarning();
+                await Utilities.ShowAppSnackBarAsync("Warning: Remote Access is not currently available");
         }
         catch (Exception)
         { // If anything went wrong make sure the client knows
@@ -357,11 +357,6 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             IsMealListLoading = false;
         }
     }
-
-    /// <summary>
-    /// Notify the user that they attempted something that requires remote access and it's not available
-    /// </summary>
-    private static async Task ShowRemoteAccessWarning() => await Utilities.ShowAppSnackBarAsync("Warning: Remote Access is not currently available");
 
     /// <summary>
     /// Make the Meal corresponding to this MealSummary the current one (which may 

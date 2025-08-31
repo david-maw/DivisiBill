@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Windows Machine": {
+    "Windows ": {
       "commandName": "Project",
       "nativeDebugging": false
     }
