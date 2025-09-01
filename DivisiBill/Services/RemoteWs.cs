@@ -193,9 +193,10 @@ public static class RemoteWs
         {
             if (existingLocalMs.TryGetValue(remoteItem.Name, out var ms))
             {
-                // This MealSummary is already stored locally so just flag it as being remote as well and move on
+                // This MealSummary is already stored locally so just flag it as being remote as well, add the summary to the remote list and move on
                 ms.IsRemote = true;
                 ms.HasRemoteImage = remoteItem.HasRemoteImage;
+                Meal.RemoteMealList.Add(ms);
             }
             else
             {
