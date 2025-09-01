@@ -382,6 +382,29 @@ public static partial class Utilities // Partial for regex generator
     }
 
     /// <summary>
+    /// Evaluate a response to see if it was good or not, and audit the error if it was not
+    /// </summary>
+    /// <param name="httpResponse"></param>
+    /// <param name="sourceFilePath"></param>
+    /// <param name="sourceLineNumber"></param>
+    public static async Task<bool> IsGoodAsync(this HttpResponseMessage httpResponse,
+        [CallerMemberName] string callerName = "unknown",
+        [CallerFilePath] string sourceFilePath = "",
+        [CallerLineNumber] int sourceLineNumber = 0)
+    {
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            RecordMsg($"HTTP {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}", callerName, sourceFilePath, sourceLineNumber);
+            var body = await httpResponse.Content.ReadAsStringAsync();
+            if (!string.IsNullOrWhiteSpace(body))
+                Utilities.RecordMsg(body, callerName, sourceFilePath, sourceLineNumber);
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// Send a status message to subscribers of StatusMsgInvoked (used to report progress during initialization)
     /// </summary>
     public delegate void SendMsg(string msg);

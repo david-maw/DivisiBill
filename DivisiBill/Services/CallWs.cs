@@ -468,21 +468,36 @@ internal static class CallWs
         if (response.IsSuccessStatusCode)
         {
             var fileBytes = await response.Content.ReadAsByteArrayAsync();
-            await File.WriteAllBytesAsync(savePath, fileBytes);
-            Console.WriteLine($"Downloaded to {savePath}");
-            return true;
+            try
+            {
+                await File.WriteAllBytesAsync(savePath, fileBytes);
+                Utilities.DebugMsg($"Downloaded to {savePath}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Utilities.ReportCrash(ex, $"In {nameof(DownloadFileAsync)}: Download Failed");
+                return false;
+            }
         }
         else
-        {
-            Console.WriteLine($"Error: {response.StatusCode}");
-            return false;
-        }
+            Utilities.RecordMsg($"In {nameof(DownloadFileAsync)}: network error: {response.StatusCode}");
+        return false;
     }
 
-    public static async Task DeleteFileAsync(string fileName)
+    public static async Task<bool> DeleteFileAsync(string fileName)
     {
-        var response = await client.DeleteAsync($"file/{fileName}");
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        HttpResponseMessage httpResponse;
+        try
+        {
+            httpResponse = await client.DeleteAsync($"file/{fileName}");
+            return await httpResponse.IsGoodAsync();
+        }
+        catch (Exception ex)
+        {
+            Utilities.RecordMsg($"Request failed: {ex.Message}");
+            return false;
+        }
     }
     public static async Task<List<ImageItem>> EnumerateFilesAsync()
     {
@@ -492,18 +507,12 @@ internal static class CallWs
         try
         {
             httpResponse = await client.GetAsync("files");
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                Console.Error.WriteLine($"HTTP {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}");
-                var body = await httpResponse.Content.ReadAsStringAsync();
-                if (!string.IsNullOrWhiteSpace(body))
-                    Console.Error.WriteLine(body);
+            if (!await httpResponse.IsGoodAsync())
                 return null;
-            }
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Request failed: {ex.Message}");
+            Utilities.RecordMsg($"Request failed: {ex.Message}");
             return null;
         }
 
