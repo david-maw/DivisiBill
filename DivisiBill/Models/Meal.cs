@@ -1101,6 +1101,11 @@ public partial class Meal : ObservableObjectPlus
             }
             else
             {
+                if (App.IsCloudImageBackupAllowed && ms.HasRemoteImage && !ms.HasImage) // Meaning there is a remote image but not a local one
+                {
+                    // Load the remote image as well
+                    await LoadImageFromRemoteAsync(ms);
+                }
                 m.Summary.IsRemote = true;
                 m.SavedToRemote = true;
                 m.MonitorChanges = true;
@@ -1110,6 +1115,11 @@ public partial class Meal : ObservableObjectPlus
     }
     public static async Task<Meal> LoadAsync(MealSummary ms, bool setup = false)
     {
+        if (App.IsCloudImageBackupAllowed && ms.IsRemote && !ms.IsLocal && ms.HasRemoteImage && !ms.HasImage) // it is a remote meal with a remote image we don't have
+        {
+            // Load the remote image as well
+            await LoadImageFromRemoteAsync(ms);
+        }
         Meal m = ms.SnapshotValid
             ? LoadFromSavedStream(ms, setup: setup)
             : ms.IsLocal ? LoadFromFile(ms, setup: setup) : ms.IsRemote ? await LoadFromRemoteAsync(ms, setup) : LoadFake(ms);

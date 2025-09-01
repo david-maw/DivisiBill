@@ -700,7 +700,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                             ms.LocationChanged(isLocal: true);
                     }
                 }
-                return ms.HasRemoteImage ? await Meal.LoadImageFromRemoteAsync(ms) : true;
+                return true;
             }
         }
         finally
