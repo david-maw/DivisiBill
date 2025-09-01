@@ -64,7 +64,7 @@ This button allows you to scroll the view up to the top of the list of bills. It
 
 ## Image (<u>&#xF0976;</u>)
 
-This column has an image icon (<u>&#xF0976;</u>) in it if the bill has a stored image.
+This column has an image icon (<u>&#xF0976;</u>) in it corresponding to each location where the bill has a stored image. So an icon in the upper position means there is an image in the cloud, one in the lower position means there is a local image. No icon in a particular position means there is no image stored at the corresponding location. When you make a remote bill current it will be downloaded along with any required image.
 
 ## Location
 

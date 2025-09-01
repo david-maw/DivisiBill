@@ -37,6 +37,15 @@ If you are running the Professional Edition, the "Allow Cloud Backup" switch all
 ## WiFi Switch
 
 This selection is available only in the Professional Edition and is usable only when "Allow Cloud Backup" is set. If you turn on this switch, DivisiBill will automatically back up changed items to the cloud only when a WiFi connection is available to minimize the use of mobile data. If this switch is not set and cloud access is enabled, backup operations will occur whenever Internet connectivity is available. 
+
+## Backup Images
+
+With this switch set bill images will be backed up to the cloud along with the bill data. If this switch is not set, only the bill data will be backed up. Note that images are never backed up in the Basic Edition of DivisiBill.
+
+## Images WiFi
+
+This switch is available only in the Professional Edition and is used only when "Images Backup" is set. If you turn on this switch, DivisiBill will automatically back up bill images to the cloud only when a WiFi connection is available to minimize the use of mobile data. If this switch is not set and image backup is enabled, image backup operations will occur whenever Internet connectivity is available.
+
 ## Licensing Help
 
 Tap here to open up the [licensing help](licensing.html) and learn more about Pro and OCR licenses.
