@@ -15,12 +15,10 @@
     Shell.FlyoutBehavior="Flyout">
 
     <ContentPage.Resources>
-        <toolkit:BoolToObjectConverter
-            x:Key="RemoteIconConverter"
+        <toolkit:BoolToObjectConverter x:Key="RemoteIconConverter"
             FalseObject="{StaticResource FileGlyphRemoteOutline}"
             TrueObject="{StaticResource FileGlyphRemote}" />
-        <toolkit:BoolToObjectConverter
-            x:Key="LocalIconConverter"
+        <toolkit:BoolToObjectConverter x:Key="LocalIconConverter"
             FalseObject="{StaticResource FileGlyphLocalOutline}"
             TrueObject="{StaticResource FileGlyphLocal}" />
         <DataTemplate x:Key="WithSwipe" x:DataType="models:MealSummary">
@@ -245,74 +243,58 @@
             </Grid>
             <!--#endregion-->
         </DataTemplate>
-        <toolkit:BoolToObjectConverter
-            x:Key="IsGroupedConverter"
+        <toolkit:BoolToObjectConverter x:Key="IsGroupedConverter"
             FalseObject=" bills"
             TrueObject=" bills in groups" />
-        <toolkit:BoolToObjectConverter
-            x:Key="ShowBillsText"
+        <toolkit:BoolToObjectConverter x:Key="ShowBillsText"
             FalseObject="Show Venues"
             TrueObject="Show Bills" />
-        <toolkit:BoolToObjectConverter
-            x:Key="ShowLocalText"
+        <toolkit:BoolToObjectConverter x:Key="ShowLocalText"
             FalseObject="Show Local"
             TrueObject="Hide Local" />
-        <toolkit:BoolToObjectConverter
-            x:Key="ShowRemoteText"
+        <toolkit:BoolToObjectConverter x:Key="ShowRemoteText"
             FalseObject="Show Remote"
             TrueObject="Hide Remote" />
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding ChangeListCommand}" IconImageSource="{StaticResource GlyphList}" />
         <ToolbarItem Command="{Binding DeleteMealCommand}" IconImageSource="{StaticResource GlyphDel}" />
-        <ToolbarItem
+        <ToolbarItem Text="Use"
             Command="{Binding InvokeUseMealCommand}"
-            Order="Secondary"
-            Text="Use" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="Show Details"
             Command="{Binding InvokeShowDetailsCommand}"
-            Order="Secondary"
-            Text="Show Details" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="Download"
             Command="{Binding DownloadCommand}"
-            Order="Secondary"
-            Text="Download" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="Delete Local"
             Command="{Binding DeleteLocalMealsCommand}"
-            Order="Secondary"
-            Text="Delete Local" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="Delete Remote"
             Command="{Binding DeleteRemoteMealsCommand}"
-            Order="Secondary"
-            Text="Delete Remote" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="Select None"
             Command="{Binding SelectNoneCommand}"
-            Order="Secondary"
-            Text="Select None" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="Select All"
             Command="{Binding SelectAllCommand}"
-            Order="Secondary"
-            Text="Select All" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="Invert Selection"
             Command="{Binding InvertSelectionCommand}"
-            Order="Secondary"
-            Text="Invert Selection" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="{Binding IsGrouped, Converter={StaticResource ShowBillsText}}"
             Command="{Binding ChangeFilterCommand}"
-            Order="Secondary"
-            Text="{Binding IsGrouped, Converter={StaticResource ShowBillsText}}" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="{Binding ShowLocalMeals, Converter={StaticResource ShowLocalText}}"
             Command="{Binding ChangeShowLocalMealsCommand}"
-            Order="Secondary"
-            Text="{Binding ShowLocalMeals, Converter={StaticResource ShowLocalText}}" />
-        <ToolbarItem
-            Command="{Binding ShowCurrentCommand}"
-            Order="Secondary"
-            Text="Scroll To Current" />
-        <ToolbarItem
+            Order="Secondary" />
+        <ToolbarItem Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}"
             Command="{Binding ChangeShowRemoteMealsCommand}"
-            Order="Secondary"
-            Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}" />
+            Order="Secondary" />
+        <ToolbarItem Text="Scroll To Current"
+            Command="{Binding ShowCurrentCommand}"
+            Order="Secondary" />
     </ContentPage.ToolbarItems>
     <services:ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading-->
