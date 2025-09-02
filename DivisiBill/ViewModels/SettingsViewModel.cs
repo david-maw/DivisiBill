@@ -232,7 +232,12 @@ public partial class SettingsViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     public partial bool WiFiOnly { get; set; } = App.Settings.WiFiOnly;
-    partial void OnWiFiOnlyChanged(bool value) => App.Settings.WiFiOnly = value;
+    partial void OnWiFiOnlyChanged(bool value)
+    {
+        App.Settings.WiFiOnly = value;
+        if (value)
+            BackupImagesOnlyWiFi = true;
+    }
 
     [ObservableProperty]
     public partial bool BackupImages { get; set; } = App.Settings.BackupImages;

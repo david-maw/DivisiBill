@@ -86,11 +86,11 @@
                     <Label Grid.Row="0" Text="Allow Cloud Backup" VerticalOptions="Center" HorizontalOptions="End"/>
                     <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsCloudAccessAllowed}" />
                     <Label Grid.Row="0" Grid.Column="2" Text="Only with WiFi" VerticalOptions="Center" HorizontalOptions="End" Margin="20,0,0,0"/>
-                    <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding WiFiOnly}" />
+                    <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding WiFiOnly}" IsEnabled="{Binding IsCloudAccessAllowed}" />
                     <Label Grid.Row="1" Grid.Column="0" Text="Cloud Backup Images" VerticalOptions="Center" HorizontalOptions="End"/>
                     <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding BackupImages}" IsEnabled="{Binding IsCloudAccessAllowed}" />
                     <Label Grid.Row="1" Grid.Column="2" Text="Images Only with WiFi" VerticalOptions="Center" HorizontalOptions="End" Margin="20,0,0,0"/>
-                    <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding BackupImagesOnlyWiFi}" />
+                    <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding BackupImagesOnlyWiFi}" IsEnabled="{Binding WiFiOnly,Converter={StaticResource Not}}" />
                 </Grid>
             </VerticalStackLayout>
             <!--#endregion-->

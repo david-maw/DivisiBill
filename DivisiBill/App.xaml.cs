@@ -242,11 +242,19 @@ public partial class App : Application, INotifyPropertyChanged
     #region Cloud Accessibility / Connectivity
     public static void EvaluateCloudAccessible()
     {
-        bool wifiIsNotRequiredOrIsPresent = Settings is null || !Settings.WiFiOnly || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
+        if (Settings is null)
+            return; // We cannot do anything useful yet
+        bool wifiIsPresent = Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
+        // Evaluate accessibility for Meals, Venues and People
+        bool wifiIsNotRequiredOrIsPresent = !Settings.WiFiOnly || wifiIsPresent;
         IsCloudAccessible = Connectivity.NetworkAccess == NetworkAccess.Internet && wifiIsNotRequiredOrIsPresent;
-        IsCloudAllowed = Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
-        wifiIsNotRequiredOrIsPresent = Settings is null || !Settings.BackupImagesOnlyWiFi || Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
-        IsCloudImageBackupAllowed = Settings.BackupImages && IsCloudAllowed && wifiIsNotRequiredOrIsPresent;
+        IsCloudAllowed = Settings.IsCloudAccessAllowed && IsCloudAccessible;
+
+        // Evaluate accessibility for image backup and restore
+        wifiIsNotRequiredOrIsPresent = !Settings.BackupImagesOnlyWiFi || wifiIsPresent;
+        IsCloudImageBackupAllowed = Settings.IsCloudAccessAllowed // We can get to the cloud
+            && (Settings.WiFiOnly || Settings.BackupImagesOnlyWiFi) // We are allowed to use the cloud for image backup
+            && (!Settings.BackupImagesOnlyWiFi || wifiIsPresent); // If we require WiFi for image backup, it is present
     }
 
     private static async void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)

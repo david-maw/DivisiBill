@@ -2802,7 +2802,7 @@ public partial class Meal : ObservableObjectPlus
                 backupQueue.Enqueue(ms);
         }
         // If we are backing up images, queue each image that is local but not remote for transmission
-        if (App.Settings.BackupImages && App.IsCloudImageBackupAllowed)
+        if (App.IsCloudImageBackupAllowed)
         {
             foreach (var ms in LocalMealList.Where(ms => ms.HasImage && !ms.HasRemoteImage))
             {
