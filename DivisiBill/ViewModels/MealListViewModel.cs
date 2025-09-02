@@ -690,6 +690,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                 return false;
             else
             {
+                bool didSomething = false;
                 if (!ms.IsLocal)
                 {
                     Meal m = await Meal.LoadFromRemoteAsync(ms);
@@ -699,8 +700,15 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                         if (changeLocation)
                             ms.LocationChanged(isLocal: true);
                     }
+                    didSomething = true;
                 }
-                return true;
+                if (App.IsCloudImageBackupAllowed && ms.HasRemoteImage && !ms.HasImage) // Meaning there is a remote image but not a local one
+                {
+                    // Load the remote image as well
+                    if (await Meal.LoadImageFromRemoteAsync(ms))
+                        didSomething = true;
+                }
+                return didSomething;
             }
         }
         finally
