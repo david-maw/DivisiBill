@@ -464,6 +464,7 @@ internal static class CallWs
 
     public static async Task<bool> DownloadFileAsync(string fileName, string savePath)
     {
+        Directory.CreateDirectory(Path.GetDirectoryName(savePath));
         HttpResponseMessage response = await client.GetAsync($"file/{fileName}");
         if (response.IsSuccessStatusCode)
         {
