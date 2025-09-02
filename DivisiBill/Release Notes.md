@@ -1,3 +1,13 @@
+# 6.2.39
+
+## Add Local Bills to Remote List
+
+Bills that were stored both locally and remotely were not being added to the remote list so if the user chose to hide local meals and show remote ones the bills that were both local and remote did not show up, this has been corrected.
+
+## Download Required Remote Image When Opening a Remote Bill
+
+If a remote bill is made the current one and it has only a remotely stored image both the bill and the image will be downloaded.
+
 # 6.2.38
 
 ## Option to Upload Images with Bills
