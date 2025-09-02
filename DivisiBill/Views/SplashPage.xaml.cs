@@ -85,13 +85,18 @@ public partial class SplashPage : ContentPage
         if (Utilities.IsDebug && Connectivity.NetworkAccess == NetworkAccess.Internet)
             CallWs.SelectAlternateWs(); // Debug only
         App.HandleActivityChanges();
-        if (App.IsCloudAccessible && App.WsAllowed)
+        // Licensing needs Internet access but should work even if backup would require WiFi 
+        if (Connectivity.NetworkAccess == NetworkAccess.Internet && App.WsUriDefined)
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
             await App.CheckLicenses(true);
             if (!App.IsLimited)
                 App.EvaluateCloudAccessible(); // Reevaluate values
         }
+        else if (!App.WsUriDefined)
+            await StatusMsgAsync("Skipped Check for Licenses, web services not allowed");
+        else
+            await StatusMsgAsync("Skipped Check for Licenses, no Internet");
         await StatusMsgAsync("Checking location");
         App.UseLocation = await HasLocationPermissionAsync();
         await App.InitializeLocationAsync();

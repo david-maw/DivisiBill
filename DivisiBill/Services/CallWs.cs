@@ -27,8 +27,8 @@ internal static class CallWs
     #region Class Constructor
     static CallWs()
     {
-        if (!App.WsAllowed)
-            throw new ArgumentNullException("App.WsAllowed");
+        if (!App.WsUriDefined)
+            throw new ArgumentNullException("App.WsUriDefined");
         if (!string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsKey))
             UpsertHttpClientHeader(KeyHeaderName, KeyString);
     }

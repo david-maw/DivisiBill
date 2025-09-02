@@ -277,7 +277,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
         }
     }
     #endregion
-    public bool WsAllowed => App.WsAllowed;
+    public bool WsUriDefined => App.WsUriDefined;
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;
     public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase.State != Plugin.InAppBilling.PurchaseState.Purchased;
@@ -286,7 +286,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public bool HasOcrLicense => Billing.OcrPurchase is not null;
     public bool InvalidOcrLicense => Billing.OcrPurchase is not null && Billing.OcrPurchase.State != Plugin.InAppBilling.PurchaseState.Purchased;
     public string? OcrLicenseId => Billing.OcrPurchase?.Id;
-    public string BaseAddress => App.WsAllowed ? CallWs.BaseAddress.ToString() : "";
+    public string BaseAddress => App.WsUriDefined ? CallWs.BaseAddress.ToString() : "";
     public string LastUse => App.Settings.LastUse.ToString();
     public bool Dark
     {

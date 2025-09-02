@@ -97,9 +97,9 @@
             <!--#endregion-->
             <!--#region In App Purchases -->
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Margin="0, 5, 0, 0" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <Label Text="Pro subscription and OCR feature not available" IsVisible="{Binding WsAllowed, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
-            <Label Text="Program built without web services" IsVisible="{Binding WsAllowed, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
-            <Grid IsVisible="{Binding WsAllowed}">
+            <Label Text="Pro subscription and OCR feature not available" IsVisible="{Binding WsUriDefined, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
+            <Label Text="Program built without web services" IsVisible="{Binding WsUriDefined, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
+            <Grid IsVisible="{Binding WsUriDefined}">
                 <VerticalStackLayout IsVisible="{Binding LicenseChecked}">
                     <Label HorizontalOptions="Center" Margin="0,5">
                         <Label.GestureRecognizers>
