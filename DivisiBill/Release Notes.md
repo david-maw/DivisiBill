@@ -1,3 +1,13 @@
+# 6.2.40
+
+## Check Licenses Should Ignore "Only on WiFi"
+
+The license check would not be attempted if "Only on WiFi" was set and WiFi was not available. This has been corrected, the license check is done as long as there is any Internet connection, even just a metered phone one.
+
+## Improve Evaluation of Backup Options
+
+If "Allow Cloud Backup" is off the rest of the cloud options are ignored and if "Only With WiFi" is turned on, then "Images only With WiFi" is turned on as well.
+
 # 6.2.39
 
 ## Add Local Bills to Remote List
