@@ -37,7 +37,7 @@
     </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout>
-            <!--#region Page heading - Venue Name, bill creation and last use times -->
+            <!--#region Page heading - Venue Name, bill creation and last use times, encryption status -->
             <Label Text="{Binding VenueName}" HorizontalOptions="Center" FontSize="Title">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1"  Buttons="Primary"/>
@@ -50,6 +50,7 @@
                    Text="{Binding CreationTime, StringFormat='Created {}',  Converter={StaticResource ApproximateDateTime}}"/>
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsLastChangeTimeDifferent}"
                Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
+            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsEncrypted}" Text="Remote Data is Encrypted"/>
             <!--#endregion-->
             <!--#region Bill Diagnostics (file name etc.) -->
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{x:Static services:Utilities.IsDebug}" Text="{Binding DiagnosticInfo}"/>

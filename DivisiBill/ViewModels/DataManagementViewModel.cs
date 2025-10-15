@@ -404,4 +404,80 @@ internal partial class DataManagementViewModel : ObservableObject
 
     [ObservableProperty]
     public partial DateTime FinishDate { get; set; } = DateTime.Now.Date;
+
+    /// <summary>
+    /// Password used for archiving/restoring keys.
+    /// </summary>
+    [ObservableProperty]
+    public partial string KeyArchivePassword { get; set; } = string.Empty;
+
+    partial void OnKeyArchivePasswordChanged(string value)
+    {
+        ArchiveKeysCommand.NotifyCanExecuteChanged();
+        RestoreKeysCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Command to archive keys to a selected file using CryptManager.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanArchiveOrRestoreKeys))]
+    private async Task ArchiveKeysAsync()
+    {
+        try
+        {
+            using var stream = new MemoryStream();
+            await CryptManager.ArchivePrivateKeysToZipAsync(KeyArchivePassword, stream);
+            stream.Position = 0; // Reset stream position before saving
+            var result = await FileSaver.Default.SaveAsync("KeysArchive.zip", stream);
+            if (result.IsSuccessful)
+                await Utilities.ShowAppSnackBarAsync($"Keys Archived to {result.FilePath}");
+            else
+                await Utilities.ShowAppSnackBarAsync("Failed to select file for key archive.");
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            await Utilities.ShowAppSnackBarAsync("Exception during key archiving.");
+        }
+    }
+
+    /// <summary>
+    /// Command to restore keys from a selected file using CryptManager.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanArchiveOrRestoreKeys))]
+    private async Task RestoreKeysAsync()
+    {
+        var result = await FilePicker.PickAsync(new PickOptions
+        {
+            PickerTitle = "Select key archive file",
+            FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+            {
+                { DevicePlatform.Android, [ "application/octet-stream" ] },
+                { DevicePlatform.WinUI, [ ".zip" ] },
+            }),
+        });
+
+        if (result is null)
+        {
+            await Utilities.ShowAppSnackBarAsync("No file selected for key restore.");
+            return;
+        }
+
+        try
+        {
+            using var stream = await result.OpenReadAsync();
+            await CryptManager.RestorePrivateKeysFromZipAsync(KeyArchivePassword, stream);
+            await Utilities.ShowAppSnackBarAsync("Keys restored successfully.");
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            await Utilities.ShowAppSnackBarAsync("Exception during key restore.");
+        }
+    }
+
+    private bool CanArchiveOrRestoreKeys()
+    {
+        return !string.IsNullOrWhiteSpace(KeyArchivePassword);
+    }
 }

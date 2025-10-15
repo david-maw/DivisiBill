@@ -93,6 +93,14 @@
                     <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding BackupImagesOnlyWiFi}" IsEnabled="{Binding WiFiOnly,Converter={StaticResource Not}}" />
                 </Grid>
             </VerticalStackLayout>
+            <!--#region Password Control -->
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <!--Only show one of the two following buttons-->
+                <Button Text="Set Password" Command="{Binding ChangePasswordCommand}" Margin="5" IsVisible="{Binding HasPassword,Converter={StaticResource Not}}"/>
+                <Button Text="Change Password" Command="{Binding ChangePasswordCommand}" Margin="5" IsVisible="{Binding HasPassword}"/>
+                <Button Text="Clear Password" Command="{Binding ClearPasswordCommand}" Margin="5" IsVisible="{Binding HasPassword}"/>
+                <!--#endregion-->
+            </HorizontalStackLayout>
             <!--#endregion-->
             <!--#endregion-->
             <!--#region In App Purchases -->

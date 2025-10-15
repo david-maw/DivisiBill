@@ -242,6 +242,12 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// true if any version of the MealSummary file is in remote storage (it may not be the most current version, Meal.SavedToRemote will tell you that)
     /// </summary>
     [XmlIgnore]
+    public bool IsEncrypted { get; set => SetProperty(ref field, value); } = false;
+
+    /// <summary>
+    /// true if any version of the MealSummary file is in remote storage (it may not be the most current version, Meal.SavedToRemote will tell you that)
+    /// </summary>
+    [XmlIgnore]
     public bool IsRemote { get; set => SetProperty(ref field, value, () => OnPropertyChanged(nameof(IsFake))); } = false;
 
     /// <summary>
@@ -561,7 +567,15 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         MealSummary resultMs = null;
         using (Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, name))
         {
-            resultMs = LoadFromMealStream(sourceStream, name);
+
+            if (sourceStream is null)
+            {
+                // No stream was returned so just return null
+                Utilities.DebugMsg($"MealSummary.LoadFromRemoteMeal returning null because RemoteWs.GetItemStreamAsync returned null for name = {name}");
+                return null;
+            }
+            else
+                resultMs = LoadFromMealStream(sourceStream, name);
             if (resultMs is null)
             {
                 // The stream was bad so just return null

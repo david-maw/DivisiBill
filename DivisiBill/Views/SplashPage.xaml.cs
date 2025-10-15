@@ -101,8 +101,17 @@ public partial class SplashPage : ContentPage
         App.UseLocation = await HasLocationPermissionAsync();
         await App.InitializeLocationAsync();
         DebugMsg("BaseFolderPath = " + App.BaseFolderPath);
-        await StatusMsgAsync("Starting backup to remote");
-        Meal.StartBackupToRemote(); // it will pause until cloud access allowed
+        CryptManager.PasswordSalt = App.Settings.UserKey; // may be empty
+        if (CryptManager.HasStoredPassword && !CryptManager.HasStoredRsa)
+        {   // We have a stored password but can't access the corresponding RSA key pair, probably the secure storage has gone away
+            await StatusMsgAsync("Unable to access stored certificate");
+            await Utilities.DisplayAlertAsync("Error", "Unable to access keys for stored password.\nYou will need to re-enter the password to enable remote backup.", "OK");
+        }
+        else
+        {
+            await StatusMsgAsync("Starting backup to remote");
+            Meal.StartBackupToRemote(); // it will pause until cloud access allowed
+        }
         if (App.Settings.IsCloudAccessAllowed)
         {
             App.HandleActivityChanges(false); // make sure IsCloudAccessAllowed is noticed

@@ -304,6 +304,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         get => Meal.CurrentMeal.ScannedTax;
         set => Meal.CurrentMeal.ScannedTax = value;
     }
+    public bool IsEncrypted => Meal.CurrentMeal.Summary.IsEncrypted;
     #endregion    
     #region Meal Manipulation
     [RelayCommand]

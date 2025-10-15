@@ -30,6 +30,9 @@
         <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsLastChangeTimeDifferent}"
                Text="{Binding LastChangeTimeText, StringFormat='Last Updated {0}'}"/>
         <!--#endregion-->
+        <!--#region Encrypted -->
+        <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsEncrypted}" Text="Remote Data is Encrypted"/>
+        <!--#endregion-->
         <!--#region Current Bill Status -->
         <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsForCurrentMeal}"
                Text="This is the current bill"/>

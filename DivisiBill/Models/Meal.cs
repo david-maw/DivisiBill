@@ -15,145 +15,147 @@ using File = System.IO.File;
 
 namespace DivisiBill.Models;
 
-/*
- * Meals and their lifetimes.
- * 
- * Note that the terms meal and bill are synonymous, for historical reasons the objects are called meals
- * internally but public documentation calls them bills.
- * 
- * The objective of the bill lifetime management algorithm is to store bills at a logical time rather than
- * have an explicit 'save' operation. The idea being that the user starts with some bill (either a default 
- * one, or an old one, makes changes to it, looks at the result, then shuts down the app until next time they
- * have a bill to process. At the same time we want to lose as little data as possible if the application halts
- * abruptly (like during an application failure or a system reboot).
- * 
- * The main use cases are:
- * 1) A user enters a bill, does nothing for a while, then reuses the same bill for a different event.
- *    This should trigger saving the old version of the bill.
- * 
- * 2) A user enters a bill, pauses for a while, then replaces it with a stored bill.
- *    This should trigger saving the first bill. 
- *    
- * 3) A user loads a stored bill, then replaces it with a stored bill without changing anything.
- *    This should not trigger a new bill to be stored.
- * 
- * 4) A user loads a stored bill, then edits it
- *    This should do nothing except a periodic save for safety (see below) but does lead to case 1 or 2.
- *    
- * 5) A user loads a stored bill, updates it to remove items then pauses (perhaps to actually consume a meal).
- *    After the pause of many minutes they scan a bill image and apply it to the prepared bill. This should 
- *    do nothing except a periodic save for safety (see below) but does lead to case 1 or 2.
- * 
- * To sum up, a bill is not final ("Frozen") until we are sure it is finished with, 
- * and that only happens when more than 90 minutes (App.MinimumIdleTime) have elapsed
- * and something important (like the venue name) changes. After an additional hour (App.MaximumIdleTime) has 
- * elapsed since the bill was changed any subsequent change represents a new bill. The current bill is evaluated
- * only occasionally (currently when the app initializes, when a bill is loaded, when items from a scanned bill 
- * are inserted or when a venue is changed - look for uses of MarkAsNewAsync to see this).
- * 
- * More specifically the rule is that you can change a bill as often as you like for the first 
- * portion of its life and we'll always assume it's just the same bill being edited and won't store it.
- * After that, venue changes or loading another bill will trigger storing the current bill (if it has been changed). 
- * After the bill is MaximumIdleTime old a scan at program restart will cause it to be persisted and marked as "frozen", 
- * after that it can still be viewed but any attempt to change it simply results in it being viewable in the list of bills
- * and a new bill for the same venue is created. Even if the program is not restarted, if a bill goes 10 
- * minutes without an update it will be checked to see if it has aged out and if necessary frozen so a new one will be started
- * by the next update. 
- * 
- * In order to protect against data loss in an unexpected restart changed bills are periodically backed up to 
- * the application dictionary by Meal.PeriodicSaveAsync which just loops checking for updates periodically or to be
- * asked to do an immediate backup by RequestSnapshot because something important (like a Venue name) changed. 
- * 
- * In order to prevent data loss in the event of a more significant event (like replacing a phone or uninstalling the
- * application) snapshots to local and cloud backups are made. The advent of Android SDK 30 with it's prohibition
- * on the use of shared files makes the file backup less than helpful for replacing the app but the cloud backup works.
- * 
- * The implementation is that there are a list of meals (bills) stored locally in XML files and, optionally, 
- * images (in JPG files) a list of those files is in LocalMealList which has pointers to a MealSummary
- * for each meal. Each MealSummary includes the name of the file it is in and the name of the image if there is one. All the 
- * meals are in that list, including the current meal.
- * 
- * The current meal is stored in the application dictionary - it may also be stored on disk, but might not be.
- * For example it is persisted to disk when the program exits and periodically if it changes. The same
- * bill will be reloaded when the program next starts, although it may be marked as Frozen depending on how old it is.
- * 
- * Any change to a Frozen bill results in it being persisted to local storage (aka disk) if it has unsaved changes
- * but either way a new copy made (with a new creation time) for subsequent updates.
- * 
- * Implementation Details
- * 
- * The files representing persisted Meal objects are stored in different folders for debug builds, so from outside you see
- * a DivisiBill or DivisiBillDebug folder and within it are Meals and Images folders containing Meals and their images
- * respectively. Android uses an encrypted app-private folder (/data/user/0/com.autoplus.divisibill/files) in Windows it's 
- * an unencrypted folder in the user's Documents folder, making debugging on Windows much easier than Android.
- * 
- * So there's always exactly one current meal, the question is when to persist it to a new file, in 
- * other words when is it a distinct bill, and when is it an existing one you've updated some more (case 4 above).
- * Initially a meal is marked as SavedToApp and SavedToFile true and whenever anything significant is done 
- * to it, the bill is marked as SavedToApp and SavedToFile false. When certain actions are performed we check whether
- * it has been marked changed (SavedToApp or SavedToFile false) and, if it has, we persist the file in XML to
- * either the app dictionary or a file, or both (done by calling SaveIfChangedAsync) this is also one of 
- * the opportunities to see if it is appropriate to save to disk the version of the meal preceding the change
- * by calling MarkAsNewAsync and passing a parameter to say why it seemed worthwhile to save a snapshot of the meal.
- * 
- * Once a meal is saved, the current meal is marked as Frozen and unchanged and the name of the file it is 
- * stored in is saved (mostly for historical reasons, this algorithm used to be different). If a frozen meal
- * is marked as changed, the meal CreationTime is set as well as resetting Frozen and changing the storage file name
- * (which is derived from the CreationTime).
- * 
- * The very first time the program runs there won't be a stored bill, so we create one and mark it as SavedToApp and
- * SavedToFile = true and IsDefault - such a bill never needs storing to a permanent file until it is changed (just 
- * setting Frozen would do, but IsDefault allows for a check at storage time).
- * 
- * Several attributes control all this, the app has MealLoadName - the name of the file containing the most recently loaded bill and
- * MealLoadTime - the time when it was updated (so it's a bit of a misnomer). These are hangovers from the old algorithm.
- * 
- * Each meal itself has a variety of interesting properties:
- *    Summary - a reference to the MealSummary for this Meal
- *    SavedToFile - means it has been persisted to local storage (in a file named according to the
- *       CreationTime of the bill) since the last time it was updated.
- *    Summary.IsLocal - meaning this MealSummary represents a Meal stored in a local file, possibly not the
- *       latest version (SavedToFile is what indicates that)
- *    CreationTime - when it was created (the time when a frozen meal was first changed)
- *    LastChangeTime - when it was most recently changed (the time when a frozen bill was last changed)
- *    Frozen - means we've persisted a copy, so CreationTime needs to be updated next time the bill is changed
- *    IsDefault - is it an unmodified sample meal the program created - this never needs to be saved
- *    SavedToApp - means it was not changed since last being persisted to the app dictionary, 
- *    TooOldToContinue - This basically says an existing bill that is about to be updated is really a new bill for 
- *        the same venue, in essence you can keep updating a bill for Meal.TimeLimit (3 hours) but after that we'll 
- *        store a snapshot of it and start a new bill. This mostly happens when initially loading a bill on startup.
- *    OldEnoughToBeNewFile - it was last updated more than App.MinimumIdleTime (15 minutes) ago. This is basically how we
- *        decide if an existing bill that is being saved to disk should be saved to the same file or to a new one.
- *    
- *    The key methods are:
- *       MarkAsNewAsync(string why) - flags a meal as having been recreated (it is created with changed false), this may 
- *          cause the old version to be saved to a file if it has unsaved changes (SavedToFile is false). There are
- *          several reasons to do this:
- *             1) The current bill is so old it must be saved before making updates, this only happens
- *                just after starting the program. 
- *             2) The Venue Name has been changed, so it's obviously now a bill for a new location
- *             3) The current bill is being replaced by an old one
- *             4) It has been a while since the last update
- *          If a bill is old enough for changes to be stored as a new bill (default 15 minutes) when MarkAsNewAsync is
- *          called it is marked as Frozen, so any subsequent change will start a new bill.
- *       SaveIfChangedAsync(string why) - if the meal has changed, then save it (to the app dictionary, local and/or 
- *           remote storage)
- *       MakeVisible - if a meal has been saved to disk add it to the LocalMealList so it is visible
- *       
- *    The general idea is that we flag a bill as changed whenever something which would be persisted changes in the bill
- *    and call SaveIfChanged periodically, so if the app, or system, crashes, you'll be able to recover from a recent point. 
- *    Occasionally, we save the current bill to the cloud, just in case a real catastrophe 
- *    happens and all local bills are lost (as of Android 30 this can happen if you uninstall the app).
- *    
- *    It is important NOT to mark bills as changed when values which are not persisted change, so that, for example, changing the
- *    subtotal on a newly loaded bill has no effect, but changing an item on the bill does, so in practice, all significant
- *    changes are persisted.
- *       
- *    Meal images are handled as distinct files, the most recent image, if there is one, is always in a file
- *    named like the Meal file, but with a JPG extension instead of XML. As of 2022 image processing is used to shrink 
- *    images but they are still 10s of kB so they are much larger than Meal files which are typically 2kB or less. For this reason
- *    and Archive operation saves bills but not images.
-*/
+/// <summary>
+/// Meals and their lifetimes.
+/// <para>Note that the terms meal and bill are synonymous, for historical reasons the objects are called meals
+/// internally but public documentation calls them bills.</para>
+/// <para>The objective of the bill lifetime management algorithm is to store bills at a logical time rather than
+/// have an explicit 'save' operation. The idea being that the user starts with some bill (either a default 
+/// one, or an old one), makes changes to it, looks at the result, then shuts down the app until next time they
+/// have a bill to process. At the same time we want to lose as little data as possible if the application halts
+/// abruptly (like during an application failure or a system reboot).</para>
+/// <para>Main use cases:</para>
+/// <list type="number">
+/// <item>
+/// <description>A user enters a bill, does nothing for a while, then reuses the same bill for a different event.
+/// This scenario should trigger saving the old version of the bill <see cref="MarkAsChanged"/>.</description>
+/// </item>
+/// <item>
+/// <description>A user enters a bill, pauses for a while, then replaces it with a stored bill.
+/// This should trigger saving the first bill again <see cref="MarkAsChanged"/>.</description>
+/// </item>
+/// <item>
+/// <description>A user loads a stored bill, then replaces it with a stored bill without changing anything.
+/// This should not trigger a new bill to be stored because  <see cref="MarkAsChanged"/> will not have been called.</description>
+/// </item>
+/// <item>
+/// <description>A user loads a stored bill, then edits it.
+/// This should do nothing except a periodic save for safety (see below) unless something critical (like the venue name)
+/// is changed but does lead to case 1 or 2.</description>
+/// </item>
+/// <item>
+/// <description>A user loads a stored bill, edits it then pauses (perhaps to actually eat a meal).
+/// After the pause of many minutes they scan a bill image and apply it to the prepared bill. This should 
+/// do nothing except a periodic save for safety (see below) but does lead to case 1 or 2.</description>
+/// </item>
+/// </list>
+/// <para>To sum up, a bill is not final ("Frozen") until we are sure it is finished with, 
+/// and that only happens when more than 90 minutes (App.MinimumIdleTime) have elapsed
+/// and something important (like the venue name) changes. After an additional hour (App.MaximumIdleTime) has 
+/// elapsed since the bill was last changed any subsequent change represents a new bill. The current bill is evaluated
+/// only occasionally (currently when the app initializes, when a bill is loaded, when items from a scanned bill 
+/// are inserted or when a venue is changed - look for uses of <see cref="MarkAsNewAsync"/> to see this).
+/// </para><para>
+/// Put another way, you can change a bill as often as you like for the first 
+/// portion of its life and we'll always assume it's just the same bill being edited and won't store it.
+/// After that, venue changes or loading another bill will trigger storing the current bill (if it has been changed). 
+/// After the bill is <see cref="App.MaximumIdleTime"/> old a scan at program restart will cause it to be persisted and marked as <see cref="Frozen"/>, 
+/// after that it can still be viewed but any attempt to change it simply results in a
+/// a new bill for the same venue is created. Even if the program is not restarted, if a bill goes 10 
+/// minutes without an update it will be checked to see if it has aged out and, if necessary, frozen so a new one will be started
+/// by the next update.</para>
+/// 
+/// <para>In order to protect against data loss in an unexpected restart, application reinstallation or removal and 
+/// reinstall, changed bills are periodically backed up to 
+/// the application dictionary (by <see cref="PeriodicSaveAsync"/>), to 'disk', and, if it is allowed, to the cloud 
+/// (both by <see cref="Saver.TimedLoop"/>). All the methods just loop checking for updates periodically. Otherwise
+/// an immediate backup can be triggered by calling <see cref="RequestSnapshot"/> because something important (like 
+/// a Venue name) changed.</para>
+/// 
+/// <para>The user can also choose to archive the current state to a file at any time, which can be especially handy
+/// if you want to manually port the data to another system..</para>
+/// 
+/// <para>The implementation is that there are a list of meals (bills) stored locally in XML files and, optionally, 
+/// images (in JPG files) a list of those files is in <see cref="LocalMealList"/> which has pointers to a MealSummary
+/// for each meal. Each MealSummary includes the name of the file it is in and the name of the image if there is one. All the 
+/// meals are in that list, including the current meal.</para>
+/// 
+/// <para>The current meal is stored in the application dictionary - it may also be stored on disk, but might not be.
+/// For example it is persisted to disk when the program exits and periodically if it changes. The same
+/// bill will be reloaded when the program next starts, although it may be marked as <see cref="Frozen"/> depending on how old it is.</para>
+/// <para>Any change to a Frozen bill results in it being persisted to local storage (aka disk) if it has unsaved changes
+/// but either way a new copy made (with a new creation time) for subsequent updates.</para>
+/// 
+/// <para>Implementation Details:</para>
+/// <para>The files representing persisted Meal objects are stored in different folders for debug builds, so from outside you see
+/// a DivisiBill or DivisiBillDebug folder and within it are Meals and Images folders containing Meals and their images
+/// respectively. Android uses an encrypted app-private folder (/data/user/0/com.autoplus.divisibill/files) in Windows it's 
+/// an unencrypted folder in the user's Documents folder, making debugging on Windows much easier than Android.</para>
+/// <para>So there's always exactly one current meal, the question is when to persist it to a new file, in 
+/// other words when is it a distinct bill, and when is it an existing one you've updated some more (case 4 above).
+/// Initially a meal is marked as <see cref="SavedToApp"/> and <see cref="SavedToFile"/> true and whenever anything significant is done 
+/// to it, the bill is marked as <see cref="SavedToApp"/> and <see cref="SavedToFile"/> false. When certain actions are performed we check whether
+/// it has been marked changed (SavedToApp or SavedToFile false) and, if it has, we persist the file in XML to
+/// either the app dictionary or a file, or both (done by calling SaveIfChangedAsync) this is also one of 
+/// the opportunities to see if it is appropriate to save to disk the version of the meal preceding the change
+/// by calling <see cref="MarkAsNewAsync"/> and passing a parameter to say why it seemed worthwhile to save a snapshot of the meal.</para>
+/// <para>Once a meal is saved, the current meal is marked as Frozen and unchanged and the name of the file it is 
+/// stored in is saved (mostly for historical reasons, this algorithm used to be different). If a frozen meal
+/// is marked as changed, the meal <see cref="CreationTime"/> is set as well as resetting Frozen and changing the storage file name
+/// (which is derived from the <see cref="CreationTime"/>).</para>
+/// <para>The very first time the program runs there won't be a stored bill, so we create one and mark it as SavedToApp and
+/// SavedToFile = true and IsDefault - such a bill never needs storing to a permanent file until it is changed (just 
+/// setting <see cref="Frozen"/> would do, but <see cref="IsDefault"/> allows for a check at storage time).</para>
+/// <para>Several attributes control all this, the app has a variety of settings it uses to remember the status of the stored bill
+/// <see cref="SavedToApp"/>.</para>
+/// <para>Each meal itself has a variety of relevant properties:</para>
+/// <list type="bullet">
+/// <item><description><see cref="Summary"/> - a reference to the MealSummary for this Meal</description></item>
+/// <item><description><see cref="SavedToFile"/> - means it has been persisted to local storage (in a file named according to the
+/// CreationTime of the bill) since the last time it was updated.</description></item>
+/// <item><description><see cref="MealSummary.IsLocal"/> - meaning this MealSummary represents a Meal stored in a local file, possibly not the
+/// latest version (SavedToFile is what indicates that)</description></item>
+/// <item><description><see cref="CreationTime"/> - when it was created (the time when a frozen meal was first changed)</description></item>
+/// <item><description><see cref="LastChangeTime"/> - when it was most recently changed (the time when a bill was last changed)</description></item>
+/// <item><description><see cref="Frozen"/> - means we've persisted a copy, so a new bill needs to be created next time the bill is changed</description></item>
+/// <item><description><see cref="IsDefault"/> - is it an unmodified sample meal the program created - this never needs to be saved</description></item>
+/// <item><description><see cref="SavedToApp"/> - means it was not changed since last being persisted to the app dictionary</description></item>
+/// <item><description><see cref="TooOldToContinue"/> - This basically says an existing bill that is about to be updated is really a new bill for 
+/// the same venue.</description></item>
+/// </list>
+/// <para>A key method is <see cref="MarkAsNewAsync"/> which flags a meal as having been recreated (it is created with changed false), this may 
+/// cause the old version to be saved to a file if it has unsaved changes (SavedToFile is false). There are
+/// several reasons to do this:</para>
+/// <list type="number">
+/// <item><description>The current bill is so old it must be saved before making updates, this only happens
+/// just after starting the program.</description></item>
+/// <item><description>The Venue Name has been changed, so it's obviously now a bill for a new location</description></item>
+/// <item><description>The current bill is being replaced by an old one</description></item>
+/// <item><description>It has been a while since the last update
+/// If a bill is old enough for changes to be stored as a new bill (default 15 minutes) when <see cref="MarkAsNewAsync"/> is
+/// called it is marked as Frozen, so any subsequent change will start a new bill.</description></item>
+/// </list>
+/// <para>Other methods which relate to bill lifetime management are:</para>
+/// <list type="bullet">
+/// <item><description><see cref="MarkAsChanged"/> - Mark the current meal as changed or if it is frozen create a new bill from it.</description></item>
+/// <item><description><see cref="SaveIfChangedAsync"/> - if the meal has changed, then save it (to the app dictionary, local and/or 
+/// remote storage)</description></item>
+/// <item><description><see cref="MealSummary.LocationChanged"/> - if a meal has been saved add it to the <see cref="LocalMealList"/>
+/// or <see cref="RemoteMealList"/> as appropriate.
+/// so it is visible</description></item>
+/// </list>
+/// <para>The general idea is that we flag a bill as changed whenever something which would be persisted changes in the bill
+/// and call SaveIfChanged periodically, so if the app, or system, crashes, you'll be able to recover from a recent point. 
+/// Occasionally, we save the current bill to the cloud, just in case a real catastrophe 
+/// happens and all local bills are lost (as of Android 30 this can happen if you uninstall the app).</para>
+/// <para>It is important NOT to mark bills as changed when values which are not persisted change, so that, for example, changing the
+/// subtotal on a newly loaded bill has no effect, but changing an item on the bill does, so in practice, all significant
+/// changes are persisted.</para>
+/// <para>Meal images are handled as distinct files, the most recent image, if there is one, is always in a file
+/// named like the Meal file, but with a JPG extension instead of XML. As of 2022 image processing is used to shrink 
+/// images but they are still 10s of kB so they are much larger than Meal files which are typically 2kB or less. For this reason
+/// an Archive operation saves bills but images are optional.</para>
+/// </summary>
 
 [DebuggerDisplay("{DebugDisplay}")]
 public partial class Meal : ObservableObjectPlus
@@ -367,11 +369,6 @@ public partial class Meal : ObservableObjectPlus
         Utilities.DebugMsg($"Enter Meal.PeriodicSaveAsync({delayTime} seconds) awaiting InitializationComplete");
         await App.InitializationComplete.Task;
         Utilities.DebugMsg($"In Meal.PeriodicSaveAsync InitializationComplete happened");
-        for (int i = 0; i < 1000; i++) // test - wait until we explicitly allow continue 
-        {
-            if (!App.pauseInitialization) break;
-            await Task.Delay(10000);
-        }
         while (true)
         {
             if (!(bool)CurrentMeal?.SavedToApp)
@@ -793,7 +790,15 @@ public partial class Meal : ObservableObjectPlus
         }
     }
 
-    protected bool MonitorChanges;
+    private bool MonitorChanges;
+
+    /// <summary>
+    /// Marks the current bill as changed, updating its state and associated summaries as needed.
+    /// </summary>
+    /// <remarks>If the bill is frozen, this method creates a new bill instance with updated timestamps and
+    /// summary information, and notifies related components of the change. Subsequent calls will update the last change
+    /// time. After calling this method, the bill is considered modified and will require saving to persist
+    /// changes.</remarks>
     public void MarkAsChanged()
     {
         if (!MonitorChanges)
@@ -839,7 +844,7 @@ public partial class Meal : ObservableObjectPlus
                     }
                 }
             }
-            Summary.IsRemote = false;
+            Summary.IsRemote = false; // In due course this will be picked up by backupLoopAsync 
             Summary.HasRemoteImage = false; // because it is a new bill, with a new name
             SaveToFile();
             Summary.Show();
@@ -1129,7 +1134,7 @@ public partial class Meal : ObservableObjectPlus
     {
         if (ms is null || !ms.HasRemoteImage) // nothing to do
             return false;
-        if (await RemoteWs.DownloadImageFileAsync(ms.ImagePath))
+        if (await RemoteWs.DownloadImageFileAsync(ms.ImagePath, ms.IsEncrypted))
         {
             ms.CheckImageFiles();
             return true;
@@ -1264,11 +1269,18 @@ public partial class Meal : ObservableObjectPlus
         }
         if (Summary.SnapshotValid)
         {
+            bool wasEncrypted = Summary.IsEncrypted;
             Summary.SnapshotStream.Position = 0;
             Size = Summary.SnapshotStream.Length;
             SavedToRemote = Summary.IsRemote = await RemoteWs.PutMealStreamAsync(Summary, Summary.SnapshotStream);
             if (this == CurrentMeal)
                 App.Settings.MealSavedToRemote = true;
+            if (SavedToRemote && Summary.HasImage && ( // Our Meal is remote and we have a local image
+                !Summary.HasRemoteImage // the image is not stored remotely
+                || (Summary.IsEncrypted != wasEncrypted))) // the remote image has a different encryption state to the meal (because it has changed)
+            {
+                Summary.HasRemoteImage = (await RemoteWs.PutImageAsync(Summary)).IsSuccessStatusCode;
+            }
         }
     }
 
@@ -2789,6 +2801,7 @@ public partial class Meal : ObservableObjectPlus
             {
                 ms.IsRemote = true;
                 ms.HasRemoteImage = remoteFileInfoDict[ms.Id].HasRemoteImage;
+                ms.IsEncrypted = remoteFileInfoDict[ms.Id].IsEncrypted;
             }
             localMealNames.Add(ms.Id);
         }
@@ -2799,7 +2812,7 @@ public partial class Meal : ObservableObjectPlus
         {
             MealSummary ms = LocalMealList.First(foundMs => mealName.Equals(foundMs.Id));
             if (!ms.IsFake)
-                backupQueue.Enqueue(ms);
+                QueueForBackup(ms);
         }
         // If we are backing up images, queue each image that is local but not remote for transmission
         if (App.IsCloudImageBackupAllowed)
@@ -2902,6 +2915,7 @@ public partial class Meal : ObservableObjectPlus
                         m.SavedToRemote = true;
                         m.Summary.IsRemote = true;
                         m.Summary.HasRemoteImage = rfi.HasRemoteImage;
+                        m.Summary.IsEncrypted = rfi.IsEncrypted;
                         m.SaveToFile();
                         m.Summary.LocationChanged(isLocal: true);
                         filesWithoutError++;
@@ -2930,6 +2944,18 @@ public partial class Meal : ObservableObjectPlus
             await Utilities.DisplayAlertAsync("Download Bills",
                 $"{filesWithoutError} cloud-only bills have been downloaded, {filesInError} more had errors");
     }
+    /// <summary>
+    /// Continuously processes backup tasks for meal summaries and associated images, uploading them to remote storage
+    /// as items become available in the backup queues.
+    /// </summary>
+    /// <remarks>The method monitors multiple backup queues in priority order and uploads either meal
+    /// summaries or their images to the cloud, depending on the queue source. Image backup may be disabled
+    /// automatically if repeated upload failures occur. The method runs indefinitely until cancellation is requested
+    /// via the provided token.</remarks>
+    /// <param name="cancellationToken">A cancellation token that can be used to request cancellation of the backup loop. If cancellation is requested,
+    /// the operation will terminate promptly.</param>
+    /// <returns>A task that represents the asynchronous operation of the backup loop. The task loops indefinitely until cancellation is
+    /// requested (normally at program shutdown).</returns>
     private static async Task BackupLoopAsync(CancellationToken cancellationToken)
     {
         while (true)
@@ -3009,7 +3035,9 @@ public partial class Meal : ObservableObjectPlus
                 // Backup the MealSummary to the cloud
                 Meal m = LoadFromFile(ms);
                 if (m is not null) // there's a small timing hole where the file might be removed while the request is in the queue
+                {
                     await m.SaveToRemoteAsync();
+                }
                 else
                     DebugMsg($"Null meal detected in BackupLoopAsync for summary: {ms}");
             }

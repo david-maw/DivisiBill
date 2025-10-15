@@ -20,6 +20,8 @@ public partial class RemoteItemInfo : ObservableObject
     public bool HasRemoteImage { get; set; } = false; // This will be set to true if the image exists in blob storage
     public bool ReplaceRequested { get; set; } = false;
     [ObservableProperty]
+    public partial bool IsEncrypted { get; set; } = false;
+    [ObservableProperty]
     public partial bool Selected { get; set; } = false;
 }
 /// <summary>
@@ -40,6 +42,7 @@ public static class RemoteWs
         public long DataLength { get; set; } = dataLength;
         public string Summary { get; set; } = summary;
         public bool HasRemoteImage { get; set; } = false; // This is set to true if the image exists in blob storage
+        public bool IsEncrypted { get; set; } = false; // This is set to true if the item is encrypted
     }
     /// <summary>
     /// Get a list of all the remote items of a particular type.
@@ -60,21 +63,36 @@ public static class RemoteWs
                 var itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, MaxItems, latestName);
                 if (itemListJson is not null && itemListJson.Length > 0)
                 {
-                    List<WsDataItem> items = JsonSerializer.Deserialize<List<WsDataItem>>(itemListJson);
-                    foreach (var item in items)
+                    List<WsDataItem> wsDataItems = JsonSerializer.Deserialize<List<WsDataItem>>(itemListJson);
+                    foreach (var wsDataItem in wsDataItems)
                     {
+                        string description = wsDataItem.Summary;
+
+                        if (wsDataItem.IsEncrypted && !string.IsNullOrEmpty(wsDataItem.Summary))
+                        {
+                            try
+                            {
+                                description = await CryptManager.DecryptB64StringAsync(wsDataItem.Summary);
+                            }
+                            catch
+                            {
+                                // If decryption fails, ignore this entry
+                                continue;
+                            }
+                        }
                         remoteItemInfoList.Add(new RemoteItemInfo()
                         {
-                            Name = item.Name,
-                            Size = item.DataLength,
-                            Description = item.Summary,
-                            HasRemoteImage = item.HasRemoteImage,
+                            Name = wsDataItem.Name,
+                            Size = wsDataItem.DataLength,
+                            Description = description,
+                            HasRemoteImage = wsDataItem.HasRemoteImage,
+                            IsEncrypted = wsDataItem.IsEncrypted,
                         });
                     }
-                    if (items.Count < MaxItems) // A truncated list, indicates we're out of items
+                    if (wsDataItems.Count < MaxItems) // A truncated list, indicates we're out of items
                         break;
                     else
-                        latestName = items.LastOrDefault()?.Name; // the next query starts where this left off
+                        latestName = wsDataItems.LastOrDefault()?.Name; // the next query starts where this left off
                 }
                 else
                     break;
@@ -129,7 +147,7 @@ public static class RemoteWs
                     return null;
             }
 
-            Stream itemStream = await CallWs.GetItemAsStreamAsync(itemTypeName, name);
+            Stream itemStream = await CallWs.GetItemDataAsStreamAsync(itemTypeName, name);
             return itemStream;
         }
         catch (Exception ex)
@@ -196,6 +214,7 @@ public static class RemoteWs
                 // This MealSummary is already stored locally so just flag it as being remote as well, add the summary to the remote list and move on
                 ms.IsRemote = true;
                 ms.HasRemoteImage = remoteItem.HasRemoteImage;
+                ms.IsEncrypted = remoteItem.IsEncrypted;
                 Meal.RemoteMealList.Add(ms);
             }
             else
@@ -217,6 +236,7 @@ public static class RemoteWs
                             ms.VenueName = "Unknown Venue";
                         }
                         ms.IsRemote = true;
+                        ms.IsEncrypted = remoteItem.IsEncrypted;
                     }
                 }
                 if (ms is null)
@@ -244,8 +264,21 @@ public static class RemoteWs
                 { // All the checks passed so this is a good MealSummary and we can set the last few items and add it to the remote list
                     ms.Size = remoteItem.Size;
                     ms.HasRemoteImage = remoteItem.HasRemoteImage;
+                    ms.IsEncrypted = remoteItem.IsEncrypted;
                     Meal.RemoteMealList.Add(ms);
                 }
+            }
+        }
+        // now iterate through the remote meals which are known to us, updating attributes, these should
+        // not have changed unless another copy of DivisiBill has changed them.
+        foreach (var knownRemoteItem in remoteItems.Where(ri => existingRemoteMs.ContainsKey(ri.Name)))
+        {
+            if (existingRemoteMs.TryGetValue(knownRemoteItem.Name, out var knownMs))
+            {
+                // This MealSummary already exists, just correct any attributes that might have changed
+                knownMs.Size = knownRemoteItem.Size;
+                knownMs.HasRemoteImage = knownRemoteItem.HasRemoteImage;
+                knownMs.IsEncrypted = knownRemoteItem.IsEncrypted;
             }
         }
         return true;
@@ -257,7 +290,10 @@ public static class RemoteWs
         {
             mealData = sr.ReadToEnd();
         }
-        return await CallWs.PutItemAsync(MealTypeName, ms.Id, mealData, ms.GetJsonString());
+        bool stored = await CallWs.PutItemAsync(MealTypeName, ms.Id, mealData, ms.GetJsonString());
+        if (stored)
+            ms.IsEncrypted = CryptManager.HasStoredPassword;
+        return stored;
     }
     public static async Task DeleteMealAsync(MealSummary ms) => await CallWs.DeleteItemAsync(MealTypeName, ms.Id);
     #endregion
@@ -288,14 +324,14 @@ public static class RemoteWs
             return null;
         }
     }
-    internal static Task<bool> DownloadImageFileAsync(string imagePath)
+    internal static Task<bool> DownloadImageFileAsync(string imagePath, bool isEncrypted)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(imagePath);
         try
         {
             // Allow a caller to provide a name and store the downloaded image of that name in a file (usually yyyymmddhhmmss.jpg)
             {
-                return CallWs.DownloadFileAsync(Path.GetFileName(imagePath), imagePath);
+                return CallWs.DownloadFileAsync(Path.GetFileName(imagePath), imagePath, isEncrypted);
             }
         }
         catch (Exception ex)

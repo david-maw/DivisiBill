@@ -55,6 +55,7 @@ public partial class MealSummaryViewModel : ObservableObject
     public bool IsRemote => ms.IsRemote;
     public bool IsFake => ms.IsFake;
     public bool IsForCurrentMeal => ms.IsForCurrentMeal;
+    public bool IsEncrypted => ms.IsEncrypted;
     public bool HasMealInfo => CurrentMeal is not null;
     /// <summary>
     /// Delete a local or remote stored meal but never both 

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
@@ -90,6 +91,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
         // These are fake location related and they should change whenever it does 
         FakeLocation = App.FakeLocation;
         UseFakeLocation = App.UseFakeLocation;
+        HasPassword = CryptManager.HasStoredPassword;
     }
 
     public void OnNavigatedTo()
@@ -108,6 +110,15 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     #region Commands
+    [RelayCommand]
+    private async Task ChangePassword() => _ = await Shell.Current.ShowPopupAsync<bool>(new Views.ChangePasswordPopup());
+    [RelayCommand]
+    private void ClearPassword()
+    {
+        CryptManager.ClearPassword();
+        HasPassword = false;
+    }
+
     [RelayCommand]
     private async Task OpenWebAsync() => await Launcher.OpenAsync(new Uri("https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui"));
 
@@ -256,6 +267,10 @@ public partial class SettingsViewModel : ObservableObjectPlus
         if (!value)
             WiFiOnly = false;
     }
+    #endregion
+    #region Cryptography Properties
+    [ObservableProperty]
+    public partial bool HasPassword { get; set; } 
     #endregion
     #region Cloud Access Properties
     /// <summary>

@@ -46,11 +46,11 @@ internal class Saver
         {
             App.SaveProcessCancellationTokenSource.Token.ThrowIfCancellationRequested();
             await Task.Delay(delayTime * 1000);
-            await App.CloudAllowedSource.WaitWhilePausedAsync(); // Do not do this stuff if cloud is unavailable
+            if (remote)
+                await App.CloudAllowedSource.WaitWhilePausedAsync(); // Do not do cloud store until loud is available
             Meal currentMeal = Meal.CurrentMeal;
             currentMeal.SaveReason = "time";
             await currentMeal.SaveIfChangedAsync(SaveFile: !remote, SaveRemote: remote);
-            // Do not save the image, reading it may confuse other threads
         }
     }
     public static async Task MainLoop()

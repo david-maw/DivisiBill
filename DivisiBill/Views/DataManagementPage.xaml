@@ -11,16 +11,15 @@
     x:DataType="vm:DataManagementViewModel"
     BindingContext="{vm:DataManagementViewModel}"
     Shell.FlyoutBehavior="Flyout">
-    <VerticalStackLayout Spacing="10">
+    <VerticalStackLayout Spacing="5" Margin="5">
         <!--#region Archive / Restore-->
-        <Border Margin="30,10">
-            <VerticalStackLayout>
+        <Border>
+            <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
                 <Label
                     FontSize="Medium"
                     HorizontalOptions="Center"
                     Text="Archive and Restore" />
                 <Grid
-                    Margin="10"
                     ColumnDefinitions="auto, auto"
                     ColumnSpacing="10"
                     HorizontalOptions="Start"
@@ -51,7 +50,6 @@
                     </HorizontalStackLayout>
                 </Grid>
                 <Grid
-                    Margin="10"
                     ColumnDefinitions="auto, auto"
                     ColumnSpacing="10"
                     HorizontalOptions="Start"
@@ -75,7 +73,7 @@
                     </HorizontalStackLayout>
                 </Grid>
                 <Label Text="Use Bills Between" FontAttributes="Bold" HorizontalOptions="Center"/>
-                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-10,0,0">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
                     <DatePicker
                         Date="{Binding StartDate}"
                         MaximumDate="{Binding FinishDate}"
@@ -86,16 +84,36 @@
                         MaximumDate="1/1/2100"
                         MinimumDate="{Binding StartDate}" />
                 </HorizontalStackLayout>
+                <HorizontalStackLayout HorizontalOptions="Center" Margin="0,-20,0,0">
+                    <CheckBox IsChecked="{Binding OnlyRelated}" Margin="0,0,0,-10" />
+                    <Label Text="Only Related People and Venues" VerticalOptions="Center" LineBreakMode="WordWrap" Margin="0,0,0,-10"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+        <!--#endregion-->
+        <!--#region Key Archiving-->
+        <Border>
+            <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
+                <Label
+                    FontSize="Medium"
+                    HorizontalOptions="Center"
+                    Text="Key Archive and Restore" />
                 <HorizontalStackLayout HorizontalOptions="Center">
-                    <CheckBox IsChecked="{Binding OnlyRelated}" />
-                    <Label Text="Only Related People and Venues" VerticalOptions="Center" LineBreakMode="WordWrap"/>
+                    <Label Text="Password (required):" VerticalTextAlignment="Center"/>
+                    <Entry WidthRequest="200" Text="{Binding KeyArchivePassword}" IsPassword="True"/>
+                </HorizontalStackLayout >
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing ="10">
+                    <Button
+                    Text="Archive Keys" Command="{Binding ArchiveKeysCommand}"/>
+                    <Button
+                    Text="Restore Keys" Command="{Binding RestoreKeysCommand}"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
         </Border>
         <!--#endregion-->
         <!--#region Bill Management-->
-        <Border Margin="30,0">
-            <VerticalStackLayout Spacing="10">
+        <Border>
+            <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
                 <Label
                     FontSize="Medium"
                     HorizontalOptions="Center"
@@ -105,7 +123,7 @@
                     HorizontalOptions="Center"
                     Text="Select Downloadable Bills" />
                 <Button
-                    Margin="10"
+                    Margin="0,0,0,0"
                     Command="{Binding SelectOlderCommand}"
                     HorizontalOptions="Center"
                     Text="Select All But Latest Bill Per Venue" />

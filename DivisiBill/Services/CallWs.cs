@@ -2,8 +2,10 @@
 using DivisiBill.Models;
 using Plugin.InAppBilling;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
@@ -337,51 +339,70 @@ internal static class CallWs
     /// <summary>
     /// Get a single item (Meal, PersonList or VenueList)
     /// </summary>
-    /// <param name="itemTypeName">The item type ("meal"/VenueListTypeName/"personlist")</param>
+    /// <param name="itemTypeName">The item type (<see cref="RemoteWs.MealTypeName"/> for example</param>
     /// <param name="id">Name of the item to be retrieved</param>
     /// <returns>The item data (even for meal items), normally an XML encoded object</returns>
-    public static async Task<string> GetItemAsStringAsync(string itemTypeName, string id)
+    /// 
+    public static async Task<string> GetItemDataAsStringAsync(string itemTypeName, string id)
     {
         HttpResponseMessage response = await client.GetAsync($"{itemTypeName}/{id}");
         if (response.IsSuccessStatusCode)
         {
             StoreTokenHeader(response);
-            string temp = await response.Content.ReadAsStringAsync();
-            return temp;
+            bool isEncrypted = string.Equals(response.Content.Headers.ContentType.MediaType, "application/octet-stream");
+            if (isEncrypted)
+            {
+                byte[] encryptedBytes = await response.Content.ReadAsByteArrayAsync();
+                byte[] plaintextBytes = await Task.Run(() => CryptManager.DecryptToBytes(encryptedBytes));
+                return Encoding.UTF8.GetString(plaintextBytes);
+            }
+            else
+                return await response.Content.ReadAsStringAsync();
         }
         else
             return null;
     }
-    public static async Task<Stream> GetItemAsStreamAsync(string itemTypeName, string id)
+    public static async Task<Stream> GetItemDataAsStreamAsync(string itemTypeName, string id)
     {
         HttpResponseMessage response = await client.GetAsync($"{itemTypeName}/{id}");
         if (response.IsSuccessStatusCode)
         {
             StoreTokenHeader(response);
-            Stream temp = await response.Content.ReadAsStreamAsync();
-            return temp;
+            bool isEncrypted = string.Equals(response.Content.Headers.ContentType.MediaType, "application/octet-stream");
+            if (isEncrypted)
+            {
+                byte[] encryptedBytes = await response.Content.ReadAsByteArrayAsync();
+                byte[] plaintextBytes = await Task.Run(() => CryptManager.DecryptToBytes(encryptedBytes));
+                return new MemoryStream(plaintextBytes);
+            }
+            else
+            {
+                return await response.Content.ReadAsStreamAsync();
+            }
         }
         else
             return null;
     }
     /// <summary>
-    /// Store a single item
+    /// Store a single item by sending multiple form fields
     /// </summary>
-    /// <param name="itemTypeName">The item type ("meal"/VenueListTypeName/"personlist")</param>
+    /// <param name="itemTypeName">The item type (<see cref="RemoteWs.MealTypeName"/> for example</param>
     /// <param name="id">Name of the item</param>
     /// <param name="itemData">Data associated with the item</param>
     /// <param name="itemSummary">Summary data for the item (valid only for meal items</param>
     /// <returns>true of the put worked, false if not</returns>
     public static async Task<bool> PutItemAsync(string itemTypeName, string id, string itemData, string itemSummary = null)
     {
-        // Create a multipart form data content message body and send it
-        using var itemDataContent = new StringContent(itemData, Encoding.UTF8, "application/xml");
-        var multipartFormDataContent = new MultipartFormDataContent();
+        if (CryptManager.HasStoredPassword && !CryptManager.HasStoredRsa)
+            throw new CryptographicException("Unable to access stored key");
 
-        StringContent itemSummaryContent = null;
-        if (itemSummary is not null)
-            multipartFormDataContent.Add(itemSummaryContent = new StringContent(itemSummary, Encoding.UTF8, "application/json"), "summary");
-        multipartFormDataContent.Add(itemDataContent, "data");
+        using var multipartFormDataContent = new MultipartFormDataContent
+        {
+            await FormContent("data", itemData)
+        };
+        if (itemSummary != null)
+            multipartFormDataContent.Add(await FormContent("summary", itemSummary));
+
         // Call the web service and show the response 
         string responseData = null;
         try
@@ -397,10 +418,32 @@ internal static class CallWs
             else
                 throw new HttpRequestException(ex.Message + "\n\n" + System.Text.RegularExpressions.Regex.Unescape(responseData), ex);
         }
-        finally
+
+        // Local function to create form content for a field
+        async Task<HttpContent> FormContent(string fieldName, string fieldValue)
         {
-            itemSummaryContent?.Dispose();
-            multipartFormDataContent.Dispose();
+            HttpContent itemDataContent;
+            // Optionally load RSA for encryption
+            using RSA rsa = await CryptManager.GetStoredRsaFromFingerprintAsync();
+            // Build data content (encrypt if RSA available)
+            if (rsa is not null)
+            {
+                byte[] plaintext = Encoding.UTF8.GetBytes(fieldValue);
+                byte[] encrypted = await Task<byte[]>.Run(() => CryptManager.EncryptToBytes(plaintext, rsa));
+                itemDataContent = new ByteArrayContent(encrypted);
+                itemDataContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                itemDataContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                {
+                    Name = fieldName,
+                    FileName = fieldName
+                };
+            }
+            else
+            {
+                itemDataContent = new StringContent(fieldValue, Encoding.UTF8, "application/xml");
+                itemDataContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data") { Name = fieldName };
+            }
+            return itemDataContent;
         }
     }
     public static async Task<string> DeleteItemAsync(string itemTypeName, string id)
@@ -434,55 +477,79 @@ internal static class CallWs
     #region Image Files
     public static async Task<HttpResponseMessage> UploadFileAsync(string filePath)
     {
-        using var form = new MultipartFormDataContent();
-        using var fileStream = File.OpenRead(filePath);
-        var fileName = Path.GetFileName(filePath);
-        // Detect a few common MIME types based on the file extension
-        string mediaType = fileName switch
+        try
         {
-            var f when f.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) => "text/plain",
-            var f when f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) => "image/jpeg",
-            var f when f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) => "image/jpeg",
-            var f when f.EndsWith(".png", StringComparison.OrdinalIgnoreCase) => "image/png",
-            _ => "application/octet-stream"
-        };
-        var fileContent = new StreamContent(fileStream)
-        {
-            Headers =
+            // Local function to detect a few common MIME types based on the file extension
+            static string GetMediaTypeFromName(string fname) => fname switch
             {
-                ContentType = new MediaTypeHeaderValue(mediaType),
-                ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                {
-                    Name = "\"file\"",
-                    FileName = "\"" + fileName + "\""
-                }
+                var f when f.EndsWith(".enc", StringComparison.OrdinalIgnoreCase) => "application/octet-stream",
+                var f when f.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) => "application/pdf",
+                var f when f.EndsWith(".txt", StringComparison.OrdinalIgnoreCase) => "text/plain",
+                var f when f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                       || f.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) => "image/jpeg",
+                var f when f.EndsWith(".png", StringComparison.OrdinalIgnoreCase) => "image/png",
+                _ => "application/octet-stream"
+            };
+
+            Stream fileStream = File.OpenRead(filePath);
+            var blobName = Path.GetFileName(filePath);
+            // Detect a few common MIME types based on the file extension
+            using RSA rsa = CryptManager.HasStoredPassword ? await CryptManager.GetStoredRsaFromFingerprintAsync() : null;
+            if (rsa is not null)
+            {
+                var encrypted = new MemoryStream();
+                await CryptManager.EncryptAsync(fileStream, encrypted, rsa);
+                encrypted.Position = 0;
+                fileStream.Close();
+                fileStream.Dispose();
+                fileStream = encrypted;
+                blobName += ".enc";
             }
-        };
-        form.Add(fileContent);
-        return await client.PostAsync("file", form);
+            using var content = new StreamContent(fileStream);
+            content.Headers.ContentType = new MediaTypeHeaderValue(GetMediaTypeFromName(blobName));
+
+            using var form = new MultipartFormDataContent
+            {
+                { content, "file", blobName }
+            };
+            return await client.PostAsync("file", form);
+        }
+        catch (Exception)
+        {
+            return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            {
+                Content = new StringContent($"Fault in {nameof(UploadFileAsync)}.")
+            };
+        }
     }
 
-    public static async Task<bool> DownloadFileAsync(string fileName, string savePath)
+    public static async Task<bool> DownloadFileAsync(string fileNameValue, string savePath, bool isEncrypted)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(savePath));
-        HttpResponseMessage response = await client.GetAsync($"file/{fileName}");
-        if (response.IsSuccessStatusCode)
+        string blobNameValue = fileNameValue + (isEncrypted ? ".enc" : string.Empty); // Add .enc at the end if necessary
+        try
         {
-            var fileBytes = await response.Content.ReadAsByteArrayAsync();
-            try
+            var response = await client.GetAsync($"file/{Uri.EscapeDataString(blobNameValue)}", HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            using var fileStream = File.Create(savePath);
+            if (isEncrypted)
             {
-                await File.WriteAllBytesAsync(savePath, fileBytes);
-                Utilities.DebugMsg($"Downloaded to {savePath}");
-                return true;
+                using var decrypted = new MemoryStream();
+                await CryptManager.DecryptAsync(responseStream, decrypted);
+                decrypted.Position = 0;
+                await decrypted.CopyToAsync(fileStream);
             }
-            catch (Exception ex)
-            {
-                Utilities.ReportCrash(ex, $"In {nameof(DownloadFileAsync)}: Download Failed");
-                return false;
-            }
+            else
+                await responseStream.CopyToAsync(fileStream);
+            return true;
         }
-        else
-            Utilities.RecordMsg($"In {nameof(DownloadFileAsync)}: network error: {response.StatusCode}");
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Download failed", ex.Message, "OK");
+        }
         return false;
     }
 
