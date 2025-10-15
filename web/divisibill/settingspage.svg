@@ -38,7 +38,7 @@
      inkscape:pagecheckerboard="1"
      showgrid="false"
      inkscape:zoom="0.51316815"
-     inkscape:cx="597.27012"
+     inkscape:cx="598.24445"
      inkscape:cy="1142.9002"
      inkscape:window-width="2055"
      inkscape:window-height="1513"
@@ -138,7 +138,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#status"
-       transform="matrix(0.61697206,0,0,0.51712773,214.66624,754.9568)"
+       transform="matrix(0.61697206,0,0,0.51712773,214.66624,896.9568)"
        inkscape:label="wifi"
        xlink:title="Current Purchase Status"
        target="_parent"
@@ -198,7 +198,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#modify-button"
-       transform="matrix(0.49279487,0,0,1.4454978,282.13475,-847.3563)"
+       transform="matrix(0.49279487,0,0,1.4454978,282.13475,-705.3563)"
        inkscape:label="wifi"
        xlink:title="Change Professional Subscription"
        target="_parent"
@@ -213,7 +213,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#licensing-help"
-       transform="matrix(0.60988113,0,0,0.82859166,213.42333,-18.04259)"
+       transform="matrix(0.60988113,0,0,0.82859166,213.42333,123.95741)"
        inkscape:label="wifi"
        xlink:title="Change Professional Subscription"
        target="_parent"
@@ -257,6 +257,36 @@
          y="1469.5219" />
     </a>
     <a
+       xlink:href="settingsglossary.html#change-password"
+       transform="matrix(0.38043633,0,0,1.5295185,156.94979,-1070.5674)"
+       inkscape:label="wifi"
+       xlink:title="Change the remote storage password"
+       target="_parent"
+       id="a938-8-9-0-6-0">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-98-2-2"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="settingsglossary.html#clear--password"
+       transform="matrix(0.35210901,0,0,1.5295185,567.17456,-1068.6187)"
+       inkscape:label="wifi"
+       xlink:title="Reset the password"
+       target="_parent"
+       id="a938-8-9-0-6-09">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-98-2-1"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
        xlink:href="settingsglossary.html#clear-checkboxes-button"
        transform="matrix(0.38489561,0,0,1.2817533,553.77817,-1302.1536)"
        inkscape:label="wifi"
@@ -273,7 +303,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#scans"
-       transform="matrix(0.84658042,0,0,0.49105019,99.593352,788.64458)"
+       transform="matrix(0.84658042,0,0,0.49105019,99.593352,930.64458)"
        inkscape:label="scans"
        xlink:title="OCR Scan Status"
        target="_parent"
@@ -288,7 +318,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#send-crash-data"
-       transform="matrix(0.516095,0,0,0.38088838,51.36322,1082.0855)"
+       transform="matrix(0.516095,0,0,0.38088838,51.36322,1224.0855)"
        inkscape:label="scans"
        xlink:title="Send Crash Data on Fault"
        target="_parent"
@@ -303,7 +333,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#ask-after-restart"
-       transform="matrix(0.4639131,0,0,0.38088847,531.88722,1084.0341)"
+       transform="matrix(0.4639131,0,0,0.38088847,531.88722,1226.0341)"
        inkscape:label="scans"
        xlink:title="Ask about sending telemetry after restart"
        target="_parent"

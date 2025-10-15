@@ -38,6 +38,18 @@ Select "Overwrite Duplicate Items" to overwrite items of the same name that alre
 
 The Archive and Restore buttons operate only on bills in the specified date range (which by default is every bill to date).
 
+## Key Password
+
+The password to be used to archive or restore keys. Until this is set the "Archive Keys" and "Restore Keys" buttons are disabled.
+
+## Archive Keys
+
+Tap this to create an archive file containing all the locally stored Keys currently saved. A cloud storage app like Microsoft OneDrive or Google Drive lets you store archives in the cloud for free. If you attempt to archive with no keys selected the app produces an error message instead of creating an empty archive.
+
+## Restore Keys
+
+Tap this to locate an archive file previously created by the "Archive Keys" action and restore its contents.
+
 ## Only Related
 
 Changes the behavior of the Archive and Restore buttons so they only include those People and Venues that are used in one or more of the bills being archived or restored.

@@ -46,6 +46,14 @@ With this switch set bill images will be backed up to the cloud along with the b
 
 This switch is available only in the Professional Edition and is used only when "Images Backup" is set. If you turn on this switch, DivisiBill will automatically back up bill images to the cloud only when a WiFi connection is available to minimize the use of mobile data. If this switch is not set and image backup is enabled, image backup operations will occur whenever Internet connectivity is available.
 
+## Change Password
+
+Tap this button to change the password used to encrypt data stored in the cloud. This button is only visible if you are using the Professional Edition and the cloud is available. If a password is not currently set the button is entitled "Set Password". Note that changing the password does not prevent you from reading any previously stored cloud data, since that data was encrypted with a key based on the old password and that key will be retained. Subsequent data stored in the cloud will be encrypted using the new password.
+
+## Clear Password
+
+Tap this button to clear the password used to encrypt data stored in the cloud and stop encrypting uploaded data. This button is only visible if you are using the Professional Edition, the cloud is available, and a password is currently set. Use this button when you have forgotten the current password and want to clear it so you can set a new one. Note that clearing the password does not prevent you from reading any previously stored cloud data, since that data is still encrypted with a key based on the old password and that key will be retained.
+
 ## Licensing Help
 
 Tap here to open up the [licensing help](licensing.html) and learn more about Pro and OCR licenses.
