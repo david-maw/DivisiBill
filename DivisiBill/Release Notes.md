@@ -1,3 +1,13 @@
+# 6.2.41
+
+## Add Encryption Capability For Remote Data
+
+You can now request that remote data be encrypted by adding a password in the cloud settings. This password is used to derive a key that is used to encrypt data before it is sent to the cloud and decrypt it after it is received from the cloud. If you forget your password you will still be able to read your remote data on the system where the password was entered, but forgotten passwords cannot be recovered.
+
+If you change the password, subsequent bills (or images) sent to the cloud will be encrypted with the new password. Previously backed up bills will still be readable (they continue to use the old password but all the encryption keys you use are stored in order to permit recovery).
+
+Your encryption keys are stored only on your device but can be archived and restored if you wish. If you uninstall DivisiBill, or lose access to your device you will lose access to any bills encrypted with a key derived from any password you do not remember. 
+
 # 6.2.40
 
 ## Check Licenses Should Ignore "Only on WiFi"
