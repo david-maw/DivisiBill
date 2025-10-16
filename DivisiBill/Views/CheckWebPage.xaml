@@ -9,6 +9,7 @@
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     x:TypeArguments="http:HttpResponseMessage"
     x:DataType="vm:CheckWebPageViewModel"
+    CanBeDismissedByTappingOutsideOfPopup="False"
     Margin="0,0,0,5"
     Padding="0"
     BackgroundColor="Transparent">

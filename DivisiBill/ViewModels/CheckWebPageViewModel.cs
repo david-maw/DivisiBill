@@ -21,7 +21,15 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
     {
         Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.InvokeClose({result})");
         keepTrying = false;
-        await ClosePopupAsync?.Invoke(result);
+        try
+        {
+            await ClosePopupAsync?.Invoke(result);
+        }
+        catch (Exception ex)
+        {
+            // This sometimes faults while debugging, so just catch it and report it
+            Utilities.ReportCrash(ex);
+        }
     }
 
     /// <summary>
