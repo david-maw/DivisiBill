@@ -105,7 +105,7 @@ public partial class SplashPage : ContentPage
         if (CryptManager.HasStoredPassword && !CryptManager.HasStoredRsa)
         {   // We have a stored password but can't access the corresponding RSA key pair, probably the secure storage has gone away
             await StatusMsgAsync("Unable to access stored certificate");
-            await Utilities.DisplayAlertAsync("Error", "Unable to access keys for stored password.\nYou will need to re-enter the password to enable remote backup.", "OK");
+            await Utilities.DisplayAlertAsync("Error", "Unable to access keys for stored password.\nYou will need to enter a password to enable remote backup.", "OK");
         }
         else
         {

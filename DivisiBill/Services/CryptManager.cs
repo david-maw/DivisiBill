@@ -509,13 +509,16 @@ internal class CryptManager
     /// </summary>
     /// <param name="password">Password used to encrypt private keys.</param>
     /// <param name="outputStream">Destination stream for the zip archive.</param>
-    /// <returns>Task representing the archive operation.</returns>
-    public static async Task ArchivePrivateKeysToZipAsync(string password, Stream outputStream)
+    /// <returns>Task representing the archive operation and an integer representing
+    /// the number of keys archived.</returns>
+    public static async Task<int> ArchivePrivateKeysToZipAsync(string password, Stream outputStream)
     {
         ArgumentNullException.ThrowIfNull(password);
         ArgumentNullException.ThrowIfNull(outputStream);
 
         HashSet<string> fingerprints = await LoadVerifiedRsaFingerprintListAsync();
+        if (fingerprints.Count == 0)
+            return 0;
         using ZipArchive zip = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
         using RSA rsaFromPwd = RsaFromPassword(password);
 
@@ -544,7 +547,7 @@ internal class CryptManager
             byte[] encryptedPrivateKey = EncryptToBytes(pkcs8, rsaFromPwd);
 
             // Add encrypted private key entry
-            ZipArchiveEntry encEntry = zip.CreateEntry(fingerprintHex, CompressionLevel.Optimal);
+            ZipArchiveEntry encEntry = zip.CreateEntry(fingerprintHex+".enc", CompressionLevel.Optimal);
             using (Stream encStream = encEntry.Open())
             {
                 await encStream.WriteAsync(encryptedPrivateKey);
@@ -554,16 +557,19 @@ internal class CryptManager
             Array.Clear(pkcs8);
             Array.Clear(encryptedPrivateKey);
         }
+        return orderedFingerprints.Count;
     }
 
     /// <summary>
     /// Restores only private RSA keys from a zip archive stream.
-    /// Ignores public key entries (.pub) and recreates the fingerprint index from the imported private keys.
+    /// Selects entries that end with .enc recreates the fingerprint index from the imported private keys.
+    /// If the current password fingerprint is not set, it is set from the first ".enc" entry in the zip.
     /// </summary>
     /// <param name="password">Password used to decrypt private keys.</param>
     /// <param name="zipStream">Input stream containing the zip archive.</param>
-    /// <returns>Task representing the restore operation.</returns>
-    public static async Task RestorePrivateKeysFromZipAsync(string password, Stream zipStream)
+    /// <returns>Task representing the restore operation and an integer representing th
+    /// number of keys restored.</returns>
+    public static async Task<(int,int)> RestorePrivateKeysFromZipAsync(string password, Stream zipStream)
     {
         ArgumentNullException.ThrowIfNull(password);
         ArgumentNullException.ThrowIfNull(zipStream);
@@ -575,14 +581,17 @@ internal class CryptManager
         using ZipArchive zip = new ZipArchive(zipStream, ZipArchiveMode.Read, leaveOpen: true);
         using RSA rsaFromPwd = RsaFromPassword(password);
 
-        foreach (ZipArchiveEntry entry in zip.Entries)
+        var keyEntries = zip.Entries.Where((e) => e.Name.EndsWith(".enc")).ToList();
+
+        foreach (ZipArchiveEntry entry in keyEntries)
         {
-            string fingerprintHex = entry.Name;
+            string fingerprintHex = entry.Name[..^4];
             if (!IsHexFingerprint(fingerprintHex))
                 continue;
             if (existingFingerprints.Contains(fingerprintHex))
                 continue; // Do not bother to decrypt keys we already have
 
+            // Read encrypted private key
             using Stream encStream = entry.Open();
             using var ms = new MemoryStream();
             await encStream.CopyToAsync(ms);
@@ -601,13 +610,14 @@ internal class CryptManager
             Array.Clear(encryptedPrivateKey);
         }
 
-        // The Zip entries appear in the list in reverse order, so set the password from the actual first entry if it's not set
-        if (!CryptManager.HasStoredPassword && zip.Entries.Count > 0)
-            SetStoredPasswordFingerprint(zip.Entries[^1].Name);
+        // The key entries appear in the list in reverse order, so set the password from the actual first entry if it's not already set
+        if (!CryptManager.HasStoredPassword && keyEntries.Count > 0)
+            SetStoredPasswordFingerprint(keyEntries[^1].Name[..^4]);
 
         // Merge existing list and new one
         existingFingerprints.UnionWith(importedFingerprints);
         SaveRsaFingerprintList(existingFingerprints);
+        return (importedFingerprints.Count, keyEntries.Count);
     } 
     #endregion
     #region Fingerprint Utilities

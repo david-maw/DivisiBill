@@ -44,7 +44,11 @@ The password to be used to archive or restore keys. Until this is set the "Archi
 
 ## Archive Keys
 
-Tap this to create an archive file containing all the locally stored Keys currently saved. A cloud storage app like Microsoft OneDrive or Google Drive lets you store archives in the cloud for free. If you attempt to archive with no keys selected the app produces an error message instead of creating an empty archive.
+Tap this to create an archive file containing all the locally stored Keys and save it to disk. A cloud storage app like Microsoft OneDrive or Google Drive lets you store archives in the cloud for free. If you attempt to archive and you have no stored keys the app produces an error message instead of creating an empty archive.
+
+## Share Key Archive
+
+Tap this to create an archive file containing all the locally stored Keys and share it (using email for example). If you attempt to archive and you have no stored keys the app produces an error message instead of creating an empty archive.
 
 ## Restore Keys
 

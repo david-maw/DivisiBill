@@ -30,6 +30,8 @@
             <toolkit:VariableMultiValueConverter x:Key="Any" ConditionType="Any" />
             <toolkit:IsStringNotNullOrWhiteSpaceConverter x:Key="IsStringNotNullOrWhiteSpace" />
             <toolkit:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpace" />
+            <toolkit:IsNullConverter x:Key="IsNull" />
+            <toolkit:IsNotNullConverter x:Key="IsNotNull" />
 
             <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> 
             <!--  This is defined in code  -->

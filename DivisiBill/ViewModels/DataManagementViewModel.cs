@@ -146,8 +146,10 @@ internal partial class DataManagementViewModel : ObservableObject
                 await sharing;
                 if (sharing.IsCompletedSuccessfully)
                 {
-                    File.Delete(zipFilePath); // Delete the zip file after sharing
-                    await Utilities.ShowAppSnackBarAsync("Archive Sharing Complete");
+                    // We want to delete the archive file only after the sharing process is done with it
+                    // but there's no easy way to tell when that is, so just leave it in the temp folder for now
+                    // File.Delete(zipFilePath);
+                    await Utilities.ShowAppSnackBarAsync("Archive Sharing Initiated");
                 }
                 else
                     await Utilities.ShowAppSnackBarAsync("Archive Sharing Failed");
@@ -159,7 +161,7 @@ internal partial class DataManagementViewModel : ObservableObject
                 { fileSaverResult = await FileSaver.Default.SaveAsync(Path.ChangeExtension(xmlFileName, ".zip"), s); }
                 if (fileSaverResult.IsSuccessful)
                 {
-                    File.Delete(zipFilePath);
+                    File.Delete(zipFilePath); 
                     await Utilities.ShowAppSnackBarAsync("Archive to disk completed successfully");
                 }
                 else
@@ -421,23 +423,56 @@ internal partial class DataManagementViewModel : ObservableObject
     /// Command to archive keys to a selected file using CryptManager.
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanArchiveOrRestoreKeys))]
-    private async Task ArchiveKeysAsync()
+    private async Task ArchiveKeysAsync(string commandParameter)
     {
+        string archiveName = "KeysArchive-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
         try
         {
             using var stream = new MemoryStream();
-            await CryptManager.ArchivePrivateKeysToZipAsync(KeyArchivePassword, stream);
-            stream.Position = 0; // Reset stream position before saving
-            var result = await FileSaver.Default.SaveAsync("KeysArchive.zip", stream);
-            if (result.IsSuccessful)
-                await Utilities.ShowAppSnackBarAsync($"Keys Archived to {result.FilePath}");
+            int keysArchived = await CryptManager.ArchivePrivateKeysToZipAsync(KeyArchivePassword, stream);
+            if (keysArchived == 0)
+                await Utilities.ShowAppSnackBarAsync("No keys available to archive");
             else
-                await Utilities.ShowAppSnackBarAsync("Failed to select file for key archive.");
+            {
+                stream.Position = 0; // Reset stream position before saving
+                if (commandParameter is null || !commandParameter.Equals("share"))
+                {
+                    var result = await FileSaver.Default.SaveAsync(archiveName, stream);
+                    if (result.IsSuccessful)
+                        await Utilities.ShowAppSnackBarAsync($"{keysArchived} key(s) Archived to {result.FilePath}");
+                    else
+                        await Utilities.ShowAppSnackBarAsync("Failed to select file for key archive");
+                }
+                else
+                {
+                    // Save to a temporary file for sharing
+                    string tempArchiveFilePath = Path.Combine(FileSystem.CacheDirectory, archiveName);
+                    using (var fileStream = new FileStream(tempArchiveFilePath, FileMode.Create, FileAccess.Write))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
+                    Task shareFileInitiationTask = Share.RequestAsync(new ShareFileRequest
+                    {
+                        Title = archiveName,
+                        File = new ShareFile(tempArchiveFilePath)
+                    });
+                    await shareFileInitiationTask;
+                    if (shareFileInitiationTask.IsCompletedSuccessfully)
+                    {
+                        // We want to delete the archive file only after the sharing process is done with it
+                        // but there's no easy way to tell when that is, so just leave it in the temp folder for now
+                        // File.Delete(tempArchiveFilePath); 
+                        await Utilities.ShowAppSnackBarAsync($"Key archive with {keysArchived} key(s) sharing initiated");
+                    }
+                    else
+                        await Utilities.ShowAppSnackBarAsync("Key archive sharing failed");
+                }
+            }
         }
         catch (Exception ex)
         {
             ex.ReportCrash();
-            await Utilities.ShowAppSnackBarAsync("Exception during key archiving.");
+            await Utilities.ShowAppSnackBarAsync("Fault during key archiving");
         }
     }
 
@@ -452,7 +487,7 @@ internal partial class DataManagementViewModel : ObservableObject
             PickerTitle = "Select key archive file",
             FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
-                { DevicePlatform.Android, [ "application/octet-stream" ] },
+                { DevicePlatform.Android, [ "application/zip" ] },
                 { DevicePlatform.WinUI, [ ".zip" ] },
             }),
         });
@@ -466,13 +501,23 @@ internal partial class DataManagementViewModel : ObservableObject
         try
         {
             using var stream = await result.OpenReadAsync();
-            await CryptManager.RestorePrivateKeysFromZipAsync(KeyArchivePassword, stream);
-            await Utilities.ShowAppSnackBarAsync("Keys restored successfully.");
+            (int restoredKeys, int totalKeys) = await CryptManager.RestorePrivateKeysFromZipAsync(KeyArchivePassword, stream);
+            if (restoredKeys == totalKeys)
+                await Utilities.ShowAppSnackBarAsync($"{restoredKeys} keys restored successfully.");
+            else
+                await Utilities.ShowAppSnackBarAsync($"{restoredKeys} of {totalKeys} keys restored successfully.");
+        }
+        catch (InvalidDataException ex)
+        {
+            string details = ex.Message;
+            if (details is not null && details == "RSA fingerprint mismatch.")
+                details = "Incorrect password.";
+            await Utilities.ShowAppSnackBarAsync($"Key restore error: {details}");
         }
         catch (Exception ex)
         {
             ex.ReportCrash();
-            await Utilities.ShowAppSnackBarAsync("Exception during key restore.");
+            await Utilities.ShowAppSnackBarAsync("Fault during key restore.");
         }
     }
 
