@@ -821,14 +821,45 @@ public static partial class Utilities // Partial for regex generator
     }
 
     /// <summary>
-    /// A string extension method to return a string which fits in a specified number of characters, adding ellipses if it is necessary to truncate it 
+    /// A string extension method to return a string which fits in a specified number of characters,
+    /// adding an ellipsis if it is necessary to truncate it 
     /// </summary>
     /// <param name="fullString">The string to be fitted</param>
     /// <param name="maxLen">the length within which it should fit</param>
-    /// <returns></returns>
-    internal static string TruncatedTo(this string fullString, int maxLen) => fullString.Length <= maxLen
-            ? fullString
-            : maxLen <= 3 ? "..." : fullString[..Math.Min(fullString.Length - 1, maxLen - 3)] + "...";
+    /// <returns>The original string if it is short enough, otherwise a truncated version followed
+    /// by an ellipsis.</returns>
+    internal static string TruncatedTo(this string fullString, int maxLen)
+    {
+        // If the input is null/empty/whitespace, treat it as absent and return null
+        if (string.IsNullOrWhiteSpace(fullString))
+            return null;
+
+        // If the string already fits within maxLen, return it unchanged (no allocations)
+        if (fullString.Length <= maxLen)
+            return fullString;
+
+        // If there's no room for characters besides the ellipsis, return just the ellipsis
+        // This covers maxLen values 3 and below.
+        if (maxLen <= 3)
+            return "...";
+
+        // Determine how many characters from the start to keep before adding '...'
+        int prefixLen = Math.Min(fullString.Length, maxLen - 3);
+        int totalLen = prefixLen + 3; // total resulting length including ellipsis
+
+        // Use string.Create to construct the result directly into the final string buffer.
+        // This avoids creating a substring and then concatenating, reducing temporary allocations.
+        // The state provided is a tuple containing the source string and the number of characters to copy.
+        int dummy = 0; // Dummy variable to satisfy the generic parameter requirement
+        return string.Create(totalLen, dummy, (span, state) =>
+        {
+            // Copy the prefix characters from the source string into the destination span
+            fullString.AsSpan(0, prefixLen).CopyTo(span);
+
+            // Copy the ellipsis into the span immediately after the prefix
+            "...".AsSpan().CopyTo(span[prefixLen..]);
+        });
+    }
 
     /// <summary>
     /// Determine if two strings are either equal or both NullOrEmpty
