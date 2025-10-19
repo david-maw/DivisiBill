@@ -232,7 +232,7 @@ internal class CryptManager
     }
     #endregion Password / RSA management
     #region Password hashing primitives
-    [Obsolete("Use GetStoredPasswordHash instead")]
+    [Obsolete($"Use {nameof(GetStoredPasswordFingerprintHex)} instead")]
     public static string? GetStoredPasswordHash()
     {
         string hash = Preferences.Default.Get(PasswordHashKey, string.Empty);
@@ -243,7 +243,7 @@ internal class CryptManager
     /// Hashes a password using PBKDF2-HMAC-SHA256 with a random salt.
     /// Format: {iterations}.{base64 salt}.{base64 key}
     /// </summary>
-    [Obsolete("Use SetPasswordAsync instead.")]
+    [Obsolete($"See {nameof(SetPasswordAsync)} for alternatives.")]
     public static string HashPassword(string password)
     {
         using var rng = RandomNumberGenerator.Create();
@@ -258,7 +258,7 @@ internal class CryptManager
     /// <summary>
     /// Verifies a password against a stored PBKDF2-HMAC-SHA256 hash.
     /// </summary>
-    [Obsolete("Use VerifyPasswordAgainstStoredAsync instead.")]
+    [Obsolete($"Use {nameof(VerifyPasswordAgainstStoredAsync)} instead.")]
     public static bool VerifyPasswordHash(string password, string hashedPassword)
     {
         var parts = hashedPassword.Split('.');
@@ -499,7 +499,6 @@ internal class CryptManager
         return Encoding.UTF8.GetString(plaintextBytes);
     }
     #endregion Hybrid encryption
-
     #region Archive and Restore RSA Keys
     /// <summary>
     /// Archives all stored RSA private keys into a zip file.
