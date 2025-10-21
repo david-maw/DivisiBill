@@ -1,32 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DivisiBill.Models;
+using DivisiBill.ViewModels;
 using System.Diagnostics;
 using System.Text.Json;
 
 namespace DivisiBill.Services;
 
 /// <summary>
-/// The public representation of data from the storage web service. Each remote item is either a
-/// Person List, a Venue List or a Meal. The Name is the unique identifier for each item,
-/// </summary>
-public partial class RemoteItemInfo : ObservableObject
-{
-    public string Name { get; set; }
-    public DateTime CreatedDateTime => Utilities.DateTimeFromName(Name);
-    public long Size { get; set; }
-    public string CreatedDateTimeString => CreatedDateTime.ApproximateDateTime();
-    public string SizeText => $"{Size / 1000.0:f1} kB";
-    public string Description { get; set; } // An alias for the Summary field
-    public bool HasRemoteImage { get; set; } = false; // This will be set to true if the image exists in blob storage
-    public bool ReplaceRequested { get; set; } = false;
-    [ObservableProperty]
-    public partial bool IsEncrypted { get; set; } = false;
-    [ObservableProperty]
-    public partial bool Selected { get; set; } = false;
-}
-/// <summary>
-/// A bridge between the objects in DivisiBill (Meal, VenueList, PeopleList) and the more general methods in
-/// the CallWs object. The remote item types are generally held in an 'itemTypeName' parameter to each function. 
+/// A bridge between the objects in DivisiBill (<see cref="Meal"/>, <see cref="VenueListViewModel.VenueList"/>,
+/// PeopleList") and the more general methods in the CallWs class.
+/// The remote item types are generally held in an 'itemTypeName' parameter to each function. 
 /// </summary>
 public static class RemoteWs
 {
@@ -341,4 +324,24 @@ public static class RemoteWs
         }
     }
     #endregion
+}
+
+/// <summary>
+/// The public representation of data from the storage web service. Each remote item is either a
+/// Person List, a Venue List or a Meal. The Name is the unique identifier for each item,
+/// </summary>
+public partial class RemoteItemInfo : ObservableObject
+{
+    public string Name { get; set; }
+    public DateTime CreatedDateTime => Utilities.DateTimeFromName(Name);
+    public long Size { get; set; }
+    public string CreatedDateTimeString => CreatedDateTime.ApproximateDateTime();
+    public string SizeText => $"{Size / 1000.0:f1} kB";
+    public string Description { get; set; } // An alias for the Summary field
+    public bool HasRemoteImage { get; set; } = false; // This will be set to true if the image exists in blob storage
+    public bool ReplaceRequested { get; set; } = false;
+    [ObservableProperty]
+    public partial bool IsEncrypted { get; set; } = false;
+    [ObservableProperty]
+    public partial bool Selected { get; set; } = false;
 }
