@@ -1275,11 +1275,13 @@ public partial class Meal : ObservableObjectPlus
             SavedToRemote = Summary.IsRemote = await RemoteWs.PutMealStreamAsync(Summary, Summary.SnapshotStream);
             if (this == CurrentMeal)
                 App.Settings.MealSavedToRemote = true;
-            if (SavedToRemote && Summary.HasImage && ( // Our Meal is remote and we have a local image
-                !Summary.HasRemoteImage // the image is not stored remotely
-                || (Summary.IsEncrypted != wasEncrypted))) // the remote image has a different encryption state to the meal (because it has changed)
+            // Decide if we need to back up the image as well
+            if (SavedToRemote && Summary.HasImage && // Our Meal is remote and we have a local image
+                (!(slowImageBackupQueue.Contains(Summary) || imageBackupQueue.Contains(Summary))) && // not already queued
+                (!Summary.HasRemoteImage // the image is not currently stored remotely
+                || (Summary.IsEncrypted != wasEncrypted))) // or the remote image has a different encryption state to the meal (because it has changed)
             {
-                Summary.HasRemoteImage = (await RemoteWs.PutImageAsync(Summary)).IsSuccessStatusCode;
+                QueueForImageBackup(Summary);
             }
         }
     }

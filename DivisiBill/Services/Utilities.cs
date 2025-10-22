@@ -1061,7 +1061,13 @@ public class AwaitableQueue<T>
             semaphore.Release();
         }
     }
-
+    public bool Contains(T item)
+    {
+        lock (queueLock)
+        {
+            return queue.Contains(item);
+        }
+    }
     public async Task<T> DequeueAsync(CancellationToken cancellationToken)
     {
         await semaphore.WaitAsync(cancellationToken);
