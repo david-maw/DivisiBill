@@ -2,16 +2,10 @@
 
 public partial class MainPage : ContentPage
 {
-    private int count = 0;
-
     public MainPage() => InitializeComponent();
-
-    private void OnCounterClicked(object sender, EventArgs e)
+    private async void OnHelpIndexClicked(object sender, EventArgs e)
     {
-        count++;
-
-        CounterBtn.Text = count == 1 ? $"Clicked {count} time" : $"Clicked {count} times";
-
-        SemanticScreenReader.Announce(CounterBtn.Text);
+        Shell.Current.FlyoutIsPresented = false;
+        await Shell.Current.GoToAsync($"{nameof(HelpPage)}?page=index");
     }
 }
