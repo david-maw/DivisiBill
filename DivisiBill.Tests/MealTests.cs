@@ -230,7 +230,7 @@ public class MealTests
         SharedMeal.FinalizeSetup();
         int i = 0;
 
-        Assert.IsTrue(SharedMeal.RoundingErrorAmount <= 0.01m * SharedMeal.Costs.Count,
+        Assert.IsLessThanOrEqualTo(0.01m * SharedMeal.Costs.Count, SharedMeal.RoundingErrorAmount,
             $"Excessive Rounding Error {SharedMeal.RoundingErrorAmount:C} when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
         Assert.AreEqual(SharedMeal.TotalAmount, SharedMeal.Costs.Sum(pc => pc.Amount),
