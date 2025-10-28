@@ -1,3 +1,9 @@
+# 6.2.42
+
+## Fix Minor Upload Bug
+
+Occasionally the same image file was being uploaded twice. Because it's the same it did no harm but it did consume bandwidth unnecessarily so it has been corrected.
+
 # 6.2.41
 
 ## Add Encryption Capability For Remote Data
