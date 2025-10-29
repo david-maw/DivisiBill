@@ -253,7 +253,7 @@ The deploy secrets are:
 | SERVICE_ACCOUNT_JSON         | The Android Play Store service account used to upload the signed AAB/APK file
 
 The KEYSTORE... secrets are used to build signed Android AAB and APK files, SERVICE_ACCOUNT_JSON is used to upload
-the file that was built to th Play Store. 
+the file that was built to the Play Store. 
 
 The build secrets are a subset of the environment variable names described above, they intentionally have the same 
 names as the environment variables they map to, they are:
@@ -300,7 +300,7 @@ The `$PWD` is to ensure the file ends up in the correct folder, which can be a p
 
 At this point the file `new.keystore` ought to contain a valid keystore which you can examine using keytool:
 
-> keytool -list -v -keystore new.keystore -storepass xxxx
+> keytool -list -v -keystore new.keystore -storepass [password]
 
 By default Visual Studio stores its keystores in
 ```
@@ -360,9 +360,11 @@ gh Get-Content keystore.b64 | secret set KEYSTORE_B64
 Using the DivisiBill Web Service
 --------------------------------
 
-The web service can be tested using the DivisiBill app by setting the DIVISIBILL_WS_URI environment variable to the URL for the
-web service, no key is needed. This setup must be done before running the app. The easiest way to do this and have the
-environment variable persist is to start a command prompt and enter:
+The web service can be tested using the DivisiBill app by setting the DIVISIBILL_WS_USE environment variable to either ALTERNATE
+or RELEASE. Alternatively set DIVISIBILL_WS_URI to the URL for the web service, no key is needed. This setup must be done before
+running the app so you can do it in the debug properties dialog for the DivisiBill project in Visual Studio.
+
+An alternative way to do this and have the environment variable persist is to start a command prompt and enter (for example):
 
 >    SETX DIVISIBILL_WS_URI http://localhost:7190/api/
 
