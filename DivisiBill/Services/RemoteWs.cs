@@ -307,6 +307,18 @@ public static class RemoteWs
             return null;
         }
     }
+    internal static async Task<string> DeleteAllImagesAsync()
+    {
+        try
+        {
+            return await CallWs.DeleteAllFilesAsync();
+        }
+        catch (Exception ex)
+        {
+            Utilities.ReportCrash(ex);
+            return string.Empty;
+        }
+    }
     internal static Task<bool> DownloadImageFileAsync(string imagePath, bool isEncrypted)
     {
         ArgumentNullException.ThrowIfNullOrWhiteSpace(imagePath);

@@ -132,6 +132,21 @@
                 </VerticalStackLayout>
             </Border>
             <!--#endregion-->
+            <!--#region Danger Area-->
+            <Border>
+                <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
+                    <Label
+                        FontSize="Medium"
+                        HorizontalOptions="Center"
+                        Text="DANGER AREA" />
+                    <Label Text="WARNING: This cannot be undone" HorizontalOptions="Center"/>
+                    <Button
+                        Command="{Binding ClearCloudCommand}"
+                        HorizontalOptions="Center"
+                        Text="Permanently Remove All My Cloud Data" />
+                </VerticalStackLayout>
+            </Border>
+            <!--#endregion-->
             <!--#region Progress Reporting-->
             <ActivityIndicator
             HeightRequest="50"

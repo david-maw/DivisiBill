@@ -569,8 +569,6 @@ internal static class CallWs
     }
     public static async Task<List<ImageItem>> EnumerateFilesAsync()
     {
-        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
-
         HttpResponseMessage httpResponse;
         try
         {
@@ -587,6 +585,21 @@ internal static class CallWs
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
         var items = await httpResponse.Content.ReadFromJsonAsync<List<ImageItem>>(options) ?? new List<ImageItem>();
         return items;
+    }
+    public static async Task<string> DeleteAllFilesAsync()
+    {
+        HttpResponseMessage httpResponse;
+        try
+        {
+            httpResponse = await client.DeleteAsync("files");
+            if (await httpResponse.IsGoodAsync())
+                return await httpResponse.Content.ReadAsStringAsync();
+        }
+        catch (Exception ex)
+        {
+            Utilities.RecordMsg($"Request failed: {ex.Message}");
+        }
+        return string.Empty;
     }
     #endregion
 }

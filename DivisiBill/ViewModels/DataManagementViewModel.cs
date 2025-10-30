@@ -525,4 +525,19 @@ internal partial class DataManagementViewModel : ObservableObject
     {
         return !string.IsNullOrWhiteSpace(KeyArchivePassword);
     }
+
+    [RelayCommand]
+    private static async Task ClearCloudAsync ()
+    {
+        // Ensure that cloud access is allowed and usable
+        if (!App.IsCloudAllowed)
+        {
+            if (!App.Settings.IsCloudAccessAllowed)
+                await Utilities.ShowAppSnackBarAsync("Cloud access is not enabled in settings");
+            else
+                await Utilities.ShowAppSnackBarAsync("Cloud is currently inaccessible");
+            return;
+        }
+        await RemoteWs.DeleteAllImagesAsync();
+    }
 }
