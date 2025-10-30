@@ -7,6 +7,8 @@ public class AppSettings : ISettings
         if (StartFresh)
         {
             Preferences.Clear(); // This will include clearing StartFresh so we won't do this again until asked to
+            SecureStorage.RemoveAll(); // Remove all secure storage items (like RSA keys for decryption - this is irreversible)
+            Directory.Delete(App.BaseFolderPath, recursive: true); // Delete the app data folder and everything in it
         }
     }
     public string StoredMeal
