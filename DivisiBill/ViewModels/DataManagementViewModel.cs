@@ -529,8 +529,14 @@ internal partial class DataManagementViewModel : ObservableObject
     [RelayCommand]
     private static async Task ClearCloudAsync ()
     {
-        // Ensure that cloud access is allowed and usable
-        if (!App.IsCloudAllowed)
+        if (App.IsCloudAllowed) // Ensure that cloud access is allowed and usable
+        {
+            await RemoteWs.DeleteAllImagesAsync();
+            await RemoteWs.DeleteAllItemsAsync(RemoteWs.MealTypeName);
+            await RemoteWs.DeleteAllItemsAsync(RemoteWs.PersonListTypeName);
+            await RemoteWs.DeleteAllItemsAsync(RemoteWs.VenueListTypeName);
+        }
+        else
         {
             if (!App.Settings.IsCloudAccessAllowed)
                 await Utilities.ShowAppSnackBarAsync("Cloud access is not enabled in settings");
@@ -538,6 +544,6 @@ internal partial class DataManagementViewModel : ObservableObject
                 await Utilities.ShowAppSnackBarAsync("Cloud is currently inaccessible");
             return;
         }
-        await RemoteWs.DeleteAllImagesAsync();
+
     }
 }

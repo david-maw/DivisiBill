@@ -154,6 +154,19 @@ public static class RemoteWs
             return false;
         }
     }
+    internal static async Task<bool> DeleteAllItemsAsync(string itemTypeName)
+    {
+        try
+        {
+            await App.CloudAllowedSource.WaitWhilePausedAsync();
+            string result = await CallWs.DeleteAllItemsAsync(itemTypeName);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
     #endregion
     #region TypeName Constants
     public const string PersonListTypeName = "personlist";

@@ -473,6 +473,13 @@ internal static class CallWs
         var temp = response.Content;
         return temp;
     }
+    public static async Task<string> DeleteAllItemsAsync(string itemTypeName)
+    {
+        HttpResponseMessage response = await client.DeleteAsync(itemTypeName + "s");
+        StoreTokenHeader(response);
+        string temp = await response.Content.ReadAsStringAsync();
+        return temp;
+    }
     #endregion
     #region Image Files
     public static async Task<HttpResponseMessage> UploadFileAsync(string filePath)
