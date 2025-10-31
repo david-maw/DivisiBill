@@ -65,3 +65,7 @@ Tap this button to select any bills stored to the cloud which are not stored loc
 ## Select All But Latest
 
 Tap this button to select all but the latest local bill for each location and then switch to the [bill list](meallistpage.html) page. This action does not affect bills stored in the cloud and can be used to select a set of obsolete local bills to remove.
+
+## Permanently Remove
+
+This button is disabled unless you check the box above it labeled "I understand this cannot be undone". Once enabled, when you tap this button all your bills, bill images, people lists and venue lists are permanently and irrevocably removed from remote storage. Data stored locally is not affected.
