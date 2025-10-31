@@ -1,3 +1,9 @@
+# 6.2.43
+
+## Cloud Data Removal
+
+This change adds a "Permanently Remove All My Cloud Data" button on the Data Management page. If enabled by checking the "I understand this cannot be undone" check box tapping it will remove any bills, bill images, lists of venues or lists of people saved to the cloud for you.
+
 # 6.2.42
 
 ## Fix Minor Upload Bug
