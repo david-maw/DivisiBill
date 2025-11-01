@@ -2,23 +2,6 @@
   "profiles": {
     "Windows": {
       "commandName": "Project",
-      "environmentVariables": {
-        "DIVISIBILL_WS_USE": ""
-      },
-      "nativeDebugging": false
-    },
-    "AlternateWS": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "DIVISIBILL_WS_USE": "ALTERNATE"
-      },
-      "nativeDebugging": false
-    },
-    "ReleaseWS": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "DIVISIBILL_WS_USE": "RELEASE"
-      },
       "nativeDebugging": false
     }
   }

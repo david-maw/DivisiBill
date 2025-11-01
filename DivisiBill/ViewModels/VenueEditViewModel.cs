@@ -138,8 +138,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
             return;
         }
         mapSettings = new(ActiveVenue.Name, ActiveVenue.Location);
-        if (!Utilities.IsWinUI || App.BingMapsAllowed)
-            await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
+        await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
     }
     #endregion
 }

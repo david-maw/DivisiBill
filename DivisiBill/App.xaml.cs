@@ -12,8 +12,6 @@ public partial class App : Application, INotifyPropertyChanged
     #region Build time feature availability checks
     // Without web services we cannot do licensing or OCR
     public static readonly bool WsUriDefined = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsUri);
-    // Bing maps is only used on the Windows test version
-    public static readonly bool BingMapsAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillBingMapsSecret);
     // Sentry us used in production to report problems
     public static readonly bool SentryAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillSentryDsn);
     #endregion

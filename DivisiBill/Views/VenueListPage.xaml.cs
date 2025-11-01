@@ -77,8 +77,7 @@ public partial class VenueListPage : ContentPage
         if (v is not null)
         {
             mapSettings = new(v.Name, v.Location);
-            if (!Utilities.IsWinUI || App.BingMapsAllowed)
-                await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
+            await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
         }
     }
     #region Collection Scrolling

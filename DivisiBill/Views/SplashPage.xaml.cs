@@ -81,9 +81,6 @@ public partial class SplashPage : ContentPage
             App.Settings.SendCrashAsk = d.Result.Ask;
         }
         App.EvaluateCloudAccessible(); // Set initial values
-        // Ask the user about using an alternate web service on a debug build that can get to the Internet
-        if (Utilities.IsDebug && Connectivity.NetworkAccess == NetworkAccess.Internet)
-            CallWs.SelectAlternateWs(); // Debug only
         App.HandleActivityChanges();
         // Licensing needs Internet access but should work even if backup would require WiFi 
         if (Connectivity.NetworkAccess == NetworkAccess.Internet && App.WsUriDefined)

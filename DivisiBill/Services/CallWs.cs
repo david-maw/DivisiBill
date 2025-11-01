@@ -71,46 +71,6 @@ internal static class CallWs
     }
     #endregion
     #endregion
-    #region Select Alternate Web Service (debug only) 
-    [Conditional("DEBUG")]
-    internal static void SelectAlternateWs()
-    {
-        string wsSuffix = Environment.GetEnvironmentVariable("DIVISIBILL_WS_USE");
-        if (string.IsNullOrWhiteSpace(wsSuffix))
-            return; // No new one requested, just leave the default alone
-        wsSuffix = wsSuffix.ToUpperInvariant();
-        string wsUriText;
-        string wsKeyText;
-        switch (wsSuffix)
-        {
-            case "ALTERNATE":
-                wsUriText = Environment.GetEnvironmentVariable("DIVISIBILL_ALTERNATE_WS_URI");
-                wsKeyText = Environment.GetEnvironmentVariable("DIVISIBILL_ALTERNATE_WS_KEY");
-                break;
-            default: // Usually "release"
-                wsUriText = Environment.GetEnvironmentVariable("DIVISIBILL_WS_URI_" + wsSuffix);
-                wsKeyText = Environment.GetEnvironmentVariable("DIVISIBILL_WS_KEY_" + wsSuffix);
-                break;
-        }
-
-        if (!string.IsNullOrWhiteSpace(wsUriText) && !string.IsNullOrWhiteSpace(wsKeyText))
-        {
-            Uri newUri = new(wsUriText);
-            try
-            {
-                client.BaseAddress = newUri;
-                KeyString = wsKeyText;
-                UpsertHttpClientHeader(KeyHeaderName, KeyString);
-                Utilities.DebugMsg("SelectAlternateWs changed the BaseAddress to DIVISIBILL_WS..." + wsSuffix + " environment variable");
-            }
-            catch (Exception ex)
-            {
-                Utilities.DebugMsg("SelectAlternateWs failed to change the BaseAddress to " + wsUriText + "exception:" + ex.Message);
-            }
-            return;
-        }
-    }
-    #endregion
     #region Scan a Bill
     /// <summary>
     /// Scan a bill image (usually a JPG file) and return the results in a ScannedBill object
