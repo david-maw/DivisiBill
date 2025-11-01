@@ -1,5 +1,6 @@
 <Solution>
   <Configurations>
+    <BuildType Name="Alternate" />
     <BuildType Name="Debug" />
     <BuildType Name="Release" />
     <BuildType Name="ReleaseTest" />
@@ -16,7 +17,9 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="DivisiBill.Tests/DivisiBill.Tests.csproj">
+    <BuildType Solution="Alternate|*" Project="Debug" />
     <BuildType Solution="ReleaseTest|Any CPU" Project="Release" />
+    <Build Solution="Alternate|Any CPU" Project="false" />
     <Build Solution="ReleaseTest|Any CPU" Project="false" />
     <Build Solution="Release|Any CPU" Project="false" />
   </Project>
@@ -26,7 +29,10 @@
     <Deploy Solution="Debug|x64" />
   </Project>
   <Project Path="web/web.csproj">
+    <BuildType Solution="Alternate|*" Project="Debug" />
     <BuildType Solution="ReleaseTest|*" Project="Release" />
+    <Build Solution="Alternate|Any CPU" Project="false" />
+    <Deploy Solution="Alternate|Any CPU" />
     <Deploy Solution="Debug|Any CPU" />
   </Project>
 </Solution>

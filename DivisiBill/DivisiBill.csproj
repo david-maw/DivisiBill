@@ -40,7 +40,7 @@
       <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
       <DefaultLanguage>en-us</DefaultLanguage>
-      <Configurations>Debug;Release;ReleaseTest</Configurations>
+      <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
    </PropertyGroup>
 
    <PropertyGroup>
@@ -135,13 +135,22 @@
 
   </PropertyGroup>
 
+  <!--Make Sure DEBUG is set on Alternate builds-->
+  <PropertyGroup Condition="$(Configuration) == alternate">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+
   <!--Generate the file holding the build secrets on every build-->
   <!--First get the secrets from environment variables-->
   <PropertyGroup>
+    <!--Set DivisiBillWsUri based on the build configuration-->
     <DivisiBillWsUri Condition="$(Configuration) == release">$(DIVISIBILL_WS_URI_RELEASE)</DivisiBillWsUri>
-    <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI)</DivisiBillWsUri>
-
     <DivisiBillWsKey Condition="$(Configuration) == release">$(DIVISIBILL_WS_KEY_RELEASE)</DivisiBillWsKey>
+
+    <DivisiBillWsUri Condition="$(Configuration) == alternate">$(DIVISIBILL_ALTERNATE_WS_URI)</DivisiBillWsUri>
+    <DivisiBillWsKey Condition="$(Configuration) == alternate">$(DIVISIBILL_ALTERNATE_WS_KEY)</DivisiBillWsKey>
+    <!--If it is not a build name we recognize just use the released configuration-->
+    <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI)</DivisiBillWsUri>
     <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_WS_KEY)</DivisiBillWsKey>
     <BuildInfoText>
 <![CDATA[
@@ -208,5 +217,7 @@ namespace DivisiBill.Generated
     <WriteLinesToFile Lines="$(BuildEnvironmentText)" File="$(BuildEnvironmentFilePath)" Overwrite="true" />
   </Target>
   <!--End file generation-->
-
+  <Target Name="DisplayCustomMessage" BeforeTargets="Build">
+    <Message Text="🔧 Starting $(Configuration) build for $(MSBuildProjectName), WS URI = $(DivisiBillWsUri)" Importance="high" />
+  </Target>
 </Project>
