@@ -165,6 +165,8 @@ namespace DivisiBill.Generated
         internal const string DivisiBillSentryDsn = "$(DIVISIBILL_SENTRY_DSN)"%3b
         internal const string DivisiBillTestProJsonB64 = "$(DIVISIBILL_TEST_PRO_JSON_B64)"%3b
         internal const string DivisiBillTestOcrJsonB64 = "$(DIVISIBILL_TEST_OCR_JSON_B64)"%3b
+        internal const string DivisiBillTestProSignatureB64 = "$(DIVISIBILL_TEST_PRO_SIGNATURE_B64)"%3b
+        internal const string DivisiBillTestOcrSignatureB64 = "$(DIVISIBILL_TEST_OCR_SIGNATURE_B64)"%3b
     }
 }
 ]]>

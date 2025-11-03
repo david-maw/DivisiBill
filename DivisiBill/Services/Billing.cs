@@ -1,6 +1,8 @@
 ﻿using Plugin.InAppBilling;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -49,6 +51,7 @@ namespace DivisiBill.Services;
 /// </summary>
 internal static class Billing
 {
+    #region Shared Code and Data
     /// <summary>
     /// The status of a billing operation, typically returned from a method that performs some billing operation.
     /// </summary>
@@ -65,8 +68,8 @@ internal static class Billing
     public const string ExpectedPackageName = "com.autoplus.divisibill";
     public const int ScansWarningLevel = 4; // If this many or fewer are left, warn the user and allow them to purchase additional scans
 
-    private static string GetJsonFieldValue(string jsonString, string fieldName) => JsonDocument.Parse(jsonString).RootElement.TryGetProperty(fieldName, out JsonElement fieldValue) ? fieldValue.GetString() : string.Empty;
-
+    private static string GetJsonFieldValue(string jsonString, string fieldName) => JsonDocument.Parse(jsonString).RootElement.TryGetProperty(fieldName, out JsonElement fieldValue) ? fieldValue.GetString() : string.Empty; 
+    #endregion
     #region Pro License
     public const string ProSubscriptionId = "pro.subscription";
     public const string OldProProductId = "pro.upgrade"; // a product, not a subscription, kept around to simplify testing because it does not expire
@@ -98,18 +101,20 @@ internal static class Billing
             }
             else
             {
-                string json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json);
+                string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
+                string signatureB64 = Generated.BuildInfo.DivisiBillTestProSignatureB64;
+                string resultString = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
                 ProPurchase = new InAppBillingPurchase()
                 {
                     ProductId = OldProProductId, // temporary
                     State = PurchaseState.Failed,
                     Id = GetJsonFieldValue(json, "orderId"),
+                    Signature = signatureB64,
                     OriginalJson = json
                 };
                 if (resultString is null)
-                    return BillingStatusType.connectionFailed;
-                else if (resultString is not null && int.TryParse(resultString, out int scans) && scans >= 0)
+                    return BillingStatusType.notVerified;
+                else if (int.TryParse(resultString, out int scans) && scans >= 0)
                 {
                     ProPurchase.State = PurchaseState.Purchased;
                     HasOldProProductId = true;
@@ -184,7 +189,6 @@ internal static class Billing
     }
     #endregion
     #region OCR License
-
     public static readonly string OcrLicenseProductId = "ocr.calls";
     internal static int ScansLeft { get; set; }
     internal static InAppBillingPurchase OcrPurchase { get; private set; } = null;
@@ -197,7 +201,7 @@ internal static class Billing
 #if DEBUG
         if (DeviceInfo.Platform == DevicePlatform.WinUI || (DeviceInfo.Platform == DevicePlatform.Android && "Subsystem for Android(TM)".Equals(DeviceInfo.Model)))
         {
-            if (string.IsNullOrWhiteSpace(DivisiBill.Generated.BuildInfo.DivisiBillTestOcrJsonB64))
+            if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestOcrJsonB64))
             {
                 Utilities.DebugMsg("In GetHasProSubscriptionAsync, DivisiBillTestProJsonB64 was empty");
                 OcrPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
@@ -205,13 +209,15 @@ internal static class Billing
             }
             else
             {
-                string json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestOcrJsonB64));
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json);
+                string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestOcrJsonB64));
+                string signatureB64 = Generated.BuildInfo.DivisiBillTestOcrSignatureB64;
+                string resultString = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
                 OcrPurchase = new InAppBillingPurchase() // Set regardless of whether verification works or fails
                 {
                     ProductId = OcrLicenseProductId,
                     State = PurchaseState.Failed,
                     Id = GetJsonFieldValue(json, "orderId"),
+                    Signature = signatureB64,
                     OriginalJson = json
                 };
                 if (resultString is not null && int.TryParse(resultString, out int scans))
@@ -321,7 +327,7 @@ internal static class Billing
         }
     }
     #endregion
-
+    #region Purchase and Consume Licenses
     /// <summary>
     /// Purchase either a product or a subscription from the app store (just the Google play Store for now).
     /// </summary>
@@ -426,7 +432,32 @@ internal static class Billing
         }
         return false;
     }
+    #endregion
+    #region Validate Existing Licenses
+    private static bool VerifyPurchaseSignature(string signedData, string signature)
+    {
+        const string divisiBillPublicKeyBase64 = @"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgfNwFZUg8fTc0Qd0PizHh+lZyjYJQDx2IH9XXZDE1X" +
+            "/aTAp9s5offgtVYkaepHn17UAAHx8d4W6IVUSbtNlAiKxudmEo2tjoSYp6nnSlWRCs7Tzi6t91aMPmgaWUyx9/MCWFj3SRJz9cWhb84JiFDX3UecKKFUyOo+7NzeCvHOCvn" +
+            "5JHe+kXMB+wxiYYKcy/vPsOuKlfxkf3GRvWsYJPRLxjB4hWm17HX+vT1AWXZxrLFI1iNiF0WFhYU72zunM7JAla6hUcHag/nFZYHfZxzjAf8YlFCMUbqPTZkINehRHDiM8lg" +
+            "brHR5Df32rw+m3cLWKqd5wWqu4yr9+iOHdXzwIDAQAB";
 
+        // string signedDataB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(signedData)); // Handy if you need t get hold of the signed data in base64 for testing
+        try
+        {
+            byte[] keyBytes = Convert.FromBase64String(divisiBillPublicKeyBase64);
+            using var rsa = RSA.Create();
+            rsa.ImportSubjectPublicKeyInfo(keyBytes, out _);
+
+            byte[] dataBytes = Encoding.UTF8.GetBytes(signedData);
+            byte[] signatureBytes = Convert.FromBase64String(signature);
+
+            return rsa.VerifyData(dataBytes, signatureBytes, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+        }
+        catch
+        {
+            return false;
+        }
+    }
 #if DEBUG
     /// <summary>
     /// A fake version of GetInAppBillingPurchaseAsync that uses a pre-formatted JSON string to simulate a purchase.
@@ -434,7 +465,7 @@ internal static class Billing
     /// </summary>
     /// <param name="androidJson">JSON representation of a license</param>
     /// <returns></returns>
-    private static async Task<string> GetInAppBillingPurchaseFakeAsync(string androidJson)
+    private static async Task<string> GetInAppBillingPurchaseFakeAsync(string androidJson, string signatureB64)
     {
         Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync");
         JsonNode androidJsonObject = JsonNode.Parse(androidJson);
@@ -449,7 +480,11 @@ internal static class Billing
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, productIdNode was not a string, returning null");
             return null;
         }
-
+        if (!VerifyPurchaseSignature(androidJson, signatureB64))
+        {
+            Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, purchase signature was invalid, returning null");
+            return null;
+        }
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, no Internet, returning null");
@@ -457,7 +492,7 @@ internal static class Billing
         }
         try
         {
-            string validationResult = await CallWs.VerifyAndroidPurchase(androidJson, productId, isSubscription: false);
+            string validationResult = await CallWs.VerifyFakeAndroidPurchase(androidJson, signatureB64, productId, isSubscription: false);
 
             if (validationResult is null)
             {
@@ -511,10 +546,13 @@ internal static class Billing
                     Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} not found, play store purchase list was empty, returning null");
                 return (BillingStatusType.notFound, null);
             }
-            else
-                Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} found in play store purchase list, verifying with web service");
 
-
+            if (!VerifyPurchaseSignature(purchase.OriginalJson, purchase.Signature))
+            {
+                Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} found in play store purchase list but purchase signature was invalid");
+                return(BillingStatusType.notFound, null);
+            }
+            Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, signed {productId} found in play store purchase list, verifying with web service");
             string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
 
             if (validationResult is null || !int.TryParse(validationResult, out int scans))
@@ -544,24 +582,7 @@ internal static class Billing
         }
         Utilities.DebugMsg("Exiting GetInAppBillingPurchaseAsync, returning null");
         return (BillingStatusType.notFound, null);
-    }
+    } 
     #endregion
-    #region  Pre-formatted android license Json for use in testing 
-#if DEBUG // omit thee secrets from production code
-    private const string fakeProJson = // Used to test the web service without connecting to Google
-        $$"""
-        {
-            "orderId": "Fake-OrderId",
-            "packageName": "com.autoplus.divisibill",
-            "productId": "pro.upgrade",
-            "purchaseTime": 1669436566877,
-            "purchaseToken": "Fake purchase token",
-            "purchaseState": 1,
-            "quantity": 1,
-            "acknowledgementState": 1,
-            "acknowledged": true
-        }
-        """;
-#endif
     #endregion
 }
