@@ -93,7 +93,7 @@ internal static class Billing
 #if DEBUG
         if (DeviceInfo.Platform == DevicePlatform.WinUI || (DeviceInfo.Platform == DevicePlatform.Android && "Subsystem for Android(TM)".Equals(DeviceInfo.Model)))
         {
-            if (string.IsNullOrWhiteSpace(DivisiBill.Generated.BuildInfo.DivisiBillTestProJsonB64))
+            if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestProJsonB64))
             {
                 Utilities.DebugMsg("In GetHasProSubscriptionAsync, DivisiBillTestProJsonB64 was empty");
                 ProPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
@@ -188,6 +188,126 @@ internal static class Billing
         return false;
     }
     #endregion
+    #region Old Pro Product Purchase (for testing only)
+    /// <summary>
+    /// Check whether the user has a Pro license, if it is valid, and if it has scans left
+    /// </summary>
+    /// <returns>Scans remaining or a negative number if the license was invalid</returns>
+    internal static async Task<BillingStatusType> GetHasProLicenseAsync()
+    {
+        ProPurchase = null; // For safety because whatever we had before is irrelevant
+#if DEBUG
+        if (DeviceInfo.Platform == DevicePlatform.WinUI)
+        {
+            if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestProJsonB64))
+            {
+                Utilities.DebugMsg("In GetHasProSubscriptionAsync, DivisiBillTestProJsonB64 was empty");
+                ProPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
+                return BillingStatusType.notLicensing; // a specific error so it can be handled silently 
+            }
+            else
+            {
+                string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
+                string signatureB64 = Generated.BuildInfo.DivisiBillTestProSignatureB64;
+                string resultString = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
+                ProPurchase = new InAppBillingPurchase()
+                {
+                    ProductId = OldProProductId, // temporary
+                    State = PurchaseState.Failed,
+                    Id = GetJsonFieldValue(json, "orderId"),
+                    Signature = signatureB64,
+                    OriginalJson = json
+                };
+                if (resultString is null)
+                    return BillingStatusType.notVerified;
+                else if (int.TryParse(resultString, out int scans) && scans >= 0)
+                {
+                    ProPurchase.State = PurchaseState.Purchased;
+                    HasOldProProductId = true;
+                    return BillingStatusType.ok; // No error
+                }
+            }
+        }
+        else
+#endif
+        if (DeviceInfo.Current.Platform == DevicePlatform.Android)
+        {
+            Billing.BillingStatusType billingResultOld = BillingStatusType.notFound;
+            try
+            {
+                #region Old Style Pro Product (used for Testing)
+                Utilities.DebugMsg("In GetHasProSubscriptionAsync, trying old style pro product");
+                (billingResultOld, ProPurchase) = await GetInAppBillingPurchaseAsync(OldProProductId, isSubscription: false);
+                if (billingResultOld == BillingStatusType.ok && ProPurchase is not null && ProPurchase.State == PurchaseState.Purchased)
+                {
+                    Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found old style pro product " + ProPurchase.Id);
+                    HasOldProProductId = true;
+                    return BillingStatusType.ok; // No error
+                }
+                else if (billingResultOld >= BillingStatusType.noInternet)
+                    return billingResultOld;
+                Utilities.DebugMsg("In GetHasProSubscriptionAsync, did not find old style pro product");
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                Utilities.DebugMsg("In GetHasProSubscriptionAsync, threw an exception:" + ex);
+            }
+            // If the old style license was not found (the normal case) return the status of the subscription
+            return billingResultOld;
+        }
+        else
+            Utilities.DebugMsg("In GetHasProSubscriptionAsync, unsupported environment, treated as NO PRO SUBSCRIPTION was found");
+
+        return BillingStatusType.notFound;
+    }
+    /// <summary>
+    /// Purchase a pro license from an app store then check it against our web service to make sure it is legitimate.
+    /// </summary>
+    /// <returns>Scans remaining or a negative number if the purchase failed</returns>
+    internal static async Task<bool> PurchaseProLicenseAsync()
+    {
+        Debug.Assert(App.Settings is not null);
+        if (await GetHasProLicenseAsync() == BillingStatusType.ok)
+            await ConsumeProLicenseAsync();
+        ProPurchase = await PurchaseItemAsync(OldProProductId, App.Settings.UserKey, isSubscription: false);
+        if (ProPurchase is null)
+            Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, PurchaseItemAsync returned null");
+        else
+        {
+            string validationResult = await CallWs.VerifyPurchase(ProPurchase, isSubscription: false);
+            if (validationResult is null)
+                Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase returned null");
+            else
+            {
+                HasOldProProductId = true;
+                return true;
+            }
+        }
+        Utilities.DebugMsg("Returning FALSE from Billing.PurchaseProLicenseAsync");
+        return false;
+    }
+    /// <summary>
+    /// Remove a Pro license from the store (but not from our list of used licenses) once it has no scans attached any more
+    /// </summary>
+    internal static async Task ConsumeProLicenseAsync()
+    {
+        if (Utilities.IsWinUI)
+            return; // Not implemented for Windows 
+        var test = await GetHasProLicenseAsync();
+        Utilities.DebugMsg("In ConsumeDepletedProLicense, license purchase test returned " + test);
+        if (ProPurchase is not null)
+        {
+            // Notify the store that it can forget about this item, and allow the user to purchase another.
+            bool consumed = await ConsumeItemAsync(ProPurchase.ProductId, ProPurchase.PurchaseToken);
+            if (consumed)
+                Utilities.DebugMsg("In ConsumeDepletedProLicense, consumed a license, Order ID = " + ProPurchase.Id);
+            else
+                Utilities.DebugMsg("In ConsumeDepletedProLicense, failed to consume a license, Order ID = " + ProPurchase.Id);
+            ProPurchase = null;
+        }
+    }
+    #endregion
     #region OCR License
     public static readonly string OcrLicenseProductId = "ocr.calls";
     internal static int ScansLeft { get; set; }
@@ -253,8 +373,8 @@ internal static class Billing
     internal static async Task<int> PurchaseOcrLicenseAsync()
     {
         Debug.Assert(App.Settings is not null);
-        if (await Billing.GetHasOcrLicenseAsync() < Billing.ScansWarningLevel)
-            await Billing.ConsumeDepletedOcrLicense();
+        if (await GetHasOcrLicenseAsync() < ScansWarningLevel)
+            await ConsumeDepletedOcrLicense();
         OcrPurchase = await PurchaseItemAsync(OcrLicenseProductId, App.Settings.UserKey);
         if (OcrPurchase is null) return -1;
         string validationResult = await CallWs.VerifyPurchase(OcrPurchase, isSubscription: false);
@@ -370,12 +490,24 @@ internal static class Billing
             }
             else if (purchase.State == PurchaseState.Purchased)
             {
+                if (!VerifyDivisiBillPurchaseSignature(purchase))
+                {
+                    Utilities.DebugMsg("In Billing.PurchaseItemAsync:  Purchase signature verification failed");
+                    return null;
+                }
                 // So the purchase record looks good, now call our web service to record it and make sure it's not being reused
                 bool recorded = await CallWs.RecordPurchaseAsync(purchase, isSubscription);
-
                 if (recorded)
                 {
-                    purchase.IsAcknowledged = true; // Because the web service acknowledges the purchase 
+                    // The web service recorded the license successfully, so we can consider the purchase complete and acknowledged
+                    Utilities.DebugMsg("In Billing.PurchaseItemAsync:  Purchase recorded successfully");
+                    // Refresh our local copy of the license with an acknowledged one from the store and send the purchase signature to the web service
+                    (BillingStatusType billingResult, purchase) = await GetInAppBillingPurchaseAsync(productId, isSubscription);
+                    if (billingResult != BillingStatusType.ok)
+                    {
+                        Utilities.DebugMsg("In Billing.PurchaseItemAsync:  Purchase refresh failed, result = " + billingResult);
+                        return null;
+                    }
                     return purchase;
                 }
                 else
@@ -398,7 +530,7 @@ internal static class Billing
     }
 
     /// <summary>
-    /// Consume a license that has been used up, so the user can buy another one, used with OCR licenses.
+    /// Consume a license that has been used up, so the user can buy another one, normally used with OCR licenses.
     /// </summary>
     /// <param name="productId">The product the license is for</param>
     /// <param name="purchaseToken">The token provided by the store when issuing the license</param>
@@ -434,14 +566,14 @@ internal static class Billing
     }
     #endregion
     #region Validate Existing Licenses
-    private static bool VerifyPurchaseSignature(string signedData, string signature)
+    private static bool VerifyDivisiBillPurchaseSignature(string signedData, string signature)
     {
         const string divisiBillPublicKeyBase64 = @"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgfNwFZUg8fTc0Qd0PizHh+lZyjYJQDx2IH9XXZDE1X" +
             "/aTAp9s5offgtVYkaepHn17UAAHx8d4W6IVUSbtNlAiKxudmEo2tjoSYp6nnSlWRCs7Tzi6t91aMPmgaWUyx9/MCWFj3SRJz9cWhb84JiFDX3UecKKFUyOo+7NzeCvHOCvn" +
             "5JHe+kXMB+wxiYYKcy/vPsOuKlfxkf3GRvWsYJPRLxjB4hWm17HX+vT1AWXZxrLFI1iNiF0WFhYU72zunM7JAla6hUcHag/nFZYHfZxzjAf8YlFCMUbqPTZkINehRHDiM8lg" +
             "brHR5Df32rw+m3cLWKqd5wWqu4yr9+iOHdXzwIDAQAB";
 
-        // string signedDataB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(signedData)); // Handy if you need t get hold of the signed data in base64 for testing
+        // string signedDataB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(signedData)); // Handy if you need to get hold of the signed data in base64 for testing
         try
         {
             byte[] keyBytes = Convert.FromBase64String(divisiBillPublicKeyBase64);
@@ -458,6 +590,8 @@ internal static class Billing
             return false;
         }
     }
+    private static bool VerifyDivisiBillPurchaseSignature(InAppBillingPurchase purchase) => VerifyDivisiBillPurchaseSignature(purchase.OriginalJson, purchase.Signature);
+
 #if DEBUG
     /// <summary>
     /// A fake version of GetInAppBillingPurchaseAsync that uses a pre-formatted JSON string to simulate a purchase.
@@ -480,7 +614,7 @@ internal static class Billing
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, productIdNode was not a string, returning null");
             return null;
         }
-        if (!VerifyPurchaseSignature(androidJson, signatureB64))
+        if (!VerifyDivisiBillPurchaseSignature(androidJson, signatureB64))
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, purchase signature was invalid, returning null");
             return null;
@@ -547,7 +681,7 @@ internal static class Billing
                 return (BillingStatusType.notFound, null);
             }
 
-            if (!VerifyPurchaseSignature(purchase.OriginalJson, purchase.Signature))
+            if (!VerifyDivisiBillPurchaseSignature(purchase))
             {
                 Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} found in play store purchase list but purchase signature was invalid");
                 return(BillingStatusType.notFound, null);

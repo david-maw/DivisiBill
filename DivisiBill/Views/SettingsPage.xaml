@@ -124,6 +124,8 @@
                     <!--#region Pro Subscription -->
                     <Button Text="Purchase Pro Subscription" Command="{Binding PurchaseUpgradeCommand}" HorizontalOptions="Center" IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}"/>
                     <Button Text="Modify Pro Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{Binding Path=HasProSubscription}"/>
+                    <!--The following button is used for testing pro licenses only and is not normally shown-->
+                    <Button Text="*Purchase Pro License*" Command="{Binding PurchaseProLicenseCommand}" HorizontalOptions="Center" IsVisible="False"/>
                     <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
                     <Label Text="{Binding ProSubscriptionId, StringFormat='Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
                     <!--#endregion-->

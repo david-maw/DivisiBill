@@ -198,11 +198,16 @@ internal static class CallWs
     {
         if (DeviceInfo.Platform == DevicePlatform.Android)
         {
-            // validate the license by calling a web service
+            // Store the license by calling a web service
             try
             {
-                HttpResponseMessage response = await client.PostAsync("recordpurchase?subscription=" + (isSubscription ? "1" : "0"),
-                            new StringContent(purchase.OriginalJson, Encoding.UTF8, "application/json"));
+                var formData = new Dictionary<string, string>
+                {
+                    { "purchase", purchase.OriginalJson },
+                    { "signature", purchase.Signature }
+                };
+                var content = new FormUrlEncodedContent(formData);
+                HttpResponseMessage response = await client.PostAsync("RecordAndroidPurchase?subscription=" + (isSubscription ? "1" : "0"), content);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

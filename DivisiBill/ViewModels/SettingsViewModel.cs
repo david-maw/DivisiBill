@@ -181,6 +181,31 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
+    
+    private async Task PurchaseProLicenseAsync()
+    {
+        if (Utilities.IsWinUI)
+        {
+            await Utilities.DisplayAlertAsync("Not Supported", "In-app purchases are not supported on Windows");
+            return;
+        }
+        App.Settings.HadProSubscription = true; // Avoid the "professional license found" warning on returning
+        IsBusy = true;
+        bool licensePurchased = await Billing.PurchaseProLicenseAsync();
+        IsBusy = false;
+        Utilities.DebugMsg("In PurchaseProLicenseAsync, PurchaseProSubscriptionAsync returned " + licensePurchased);
+        IsLimited = !licensePurchased;
+        if (IsLimited)
+            await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire a professional license");
+        else
+        {
+            await Utilities.DisplayAlertAsync("Thank You",
+                $"You have purchased a professional license. You may now set the 'Allow Cloud Backup' option.");
+            RefreshValues();
+        }
+    }
+
+    [RelayCommand]
     private void SystemSettings() => AppInfo.Current.ShowSettingsUI();
 
     [RelayCommand]

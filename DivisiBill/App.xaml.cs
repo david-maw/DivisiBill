@@ -500,18 +500,9 @@ public partial class App : Application, INotifyPropertyChanged
             if (string.IsNullOrEmpty(App.Settings.UserKey))
             {
                 // Probably a clean install, so the UserKey has not been set yet, generate a token if we must, but prefer to use an existing one
-                App.Settings.UserKey = 
-                    // There are some peculiar license keys which were allocated before we started using ObfuscatedAccountId, since they are used for testing
-                    // we handle them specifically here
-                    string.IsNullOrEmpty(Billing.ProPurchase?.ObfuscatedAccountId) &&
-                    string.IsNullOrEmpty(Billing.OcrPurchase?.ObfuscatedAccountId) &&
-                    Billing.ProPurchase?.Id == "GPA.3349-9523-9124-10936"
-                        ? "VM2UM7jbkJVSv2XDovdyEQ392jjTtrRNSVDmB7AP0dfQdy004v"
-                        : string.IsNullOrEmpty(Billing.ProPurchase?.ObfuscatedAccountId)
-                            ? string.IsNullOrEmpty(Billing.OcrPurchase?.ObfuscatedAccountId)
-                                ? Utilities.GenerateToken()
-                                : (Billing.OcrPurchase.ObfuscatedAccountId)
-                            : Billing.ProPurchase.ObfuscatedAccountId;
+                App.Settings.UserKey = string.IsNullOrEmpty(Billing.OcrPurchase?.ObfuscatedAccountId)
+                    ? Utilities.GenerateToken()
+                    : (Billing.OcrPurchase.ObfuscatedAccountId);
             }
             Utilities.DebugMsg("Exiting CheckLicenses, found Pro Subscription = " + FoundProSubscription + ", scans left = " + Billing.ScansLeft);
         }
