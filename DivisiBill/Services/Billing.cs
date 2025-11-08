@@ -178,7 +178,7 @@ internal static class Billing
             Utilities.DebugMsg("In Billing.PurchaseProSubscriptionAsync, PurchaseItemAsync returned null");
         else
         {
-            string validationResult = await CallWs.VerifyPurchase(ProPurchase, isSubscription: true);
+            string validationResult = await CallWs.VerifyPurchase(ProPurchase);
             if (validationResult is null)
                 Utilities.DebugMsg("In Billing.PurchaseProSubscriptionAsync, CallWs.VerifyPurchase returned null");
             else
@@ -270,12 +270,12 @@ internal static class Billing
         Debug.Assert(App.Settings is not null);
         if (await GetHasProLicenseAsync() == BillingStatusType.ok)
             await ConsumeProLicenseAsync();
-        ProPurchase = await PurchaseItemAsync(OldProProductId, App.Settings.UserKey, isSubscription: false);
+        ProPurchase = await PurchaseItemAsync(OldProProductId, App.Settings.UserKey);
         if (ProPurchase is null)
             Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, PurchaseItemAsync returned null");
         else
         {
-            string validationResult = await CallWs.VerifyPurchase(ProPurchase, isSubscription: false);
+            string validationResult = await CallWs.VerifyPurchase(ProPurchase);
             if (validationResult is null)
                 Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase returned null");
             else
@@ -377,7 +377,7 @@ internal static class Billing
             await ConsumeDepletedOcrLicense();
         OcrPurchase = await PurchaseItemAsync(OcrLicenseProductId, App.Settings.UserKey);
         if (OcrPurchase is null) return -1;
-        string validationResult = await CallWs.VerifyPurchase(OcrPurchase, isSubscription: false);
+        string validationResult = await CallWs.VerifyPurchase(OcrPurchase);
         if (validationResult is null || !int.TryParse(validationResult, out int ocrLicenseScans))
             return -2;
         ScansLeft = ocrLicenseScans;
@@ -452,7 +452,7 @@ internal static class Billing
     /// Purchase either a product or a subscription from the app store (just the Google play Store for now).
     /// </summary>
     /// <param name="productId">The ID of the product or subscription to be purchased</param>
-    /// <param name="isSubscription">Whether it is a subscription (true) or a product (false)</param>
+    /// <param name="isSubscription">Whether it is a subscription (true) or a one time product license (false)</param>
     /// <returns></returns>
     private static async Task<InAppBillingPurchase> PurchaseItemAsync(string productId, string obfuscatedAccountId, bool isSubscription = false)
     {
@@ -496,7 +496,7 @@ internal static class Billing
                     return null;
                 }
                 // So the purchase record looks good, now call our web service to record it and make sure it's not being reused
-                bool recorded = await CallWs.RecordPurchaseAsync(purchase, isSubscription);
+                bool recorded = await CallWs.RecordPurchaseAsync(purchase);
                 if (recorded)
                 {
                     // The web service recorded the license successfully, so we can consider the purchase complete and acknowledged
@@ -626,7 +626,7 @@ internal static class Billing
         }
         try
         {
-            string validationResult = await CallWs.VerifyFakeAndroidPurchase(androidJson, signatureB64, productId, isSubscription: false);
+            string validationResult = await CallWs.VerifyFakeAndroidPurchase(androidJson, signatureB64, productId);
 
             if (validationResult is null)
             {
@@ -650,7 +650,7 @@ internal static class Billing
     /// Get a license object for a named product by checking the store for a record of it, then verifying the returned license with the web service.
     /// </summary>
     /// <param name="productId">The product Id we need a license for</param>
-    /// <param name="isSubscription">Whether it is a subscription or a one-time product</param>
+    /// <param name="isSubscription">Whether it is a subscription or a one-time product license</param>
     /// <returns></returns>
     private static async Task<(BillingStatusType, InAppBillingPurchase)> GetInAppBillingPurchaseAsync(string productId, bool isSubscription = false)
     {
@@ -687,7 +687,7 @@ internal static class Billing
                 return(BillingStatusType.notFound, null);
             }
             Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, signed {productId} found in play store purchase list, verifying with web service");
-            string validationResult = await CallWs.VerifyPurchase(purchase, isSubscription);
+            string validationResult = await CallWs.VerifyPurchase(purchase);
 
             if (validationResult is null || !int.TryParse(validationResult, out int scans))
             {

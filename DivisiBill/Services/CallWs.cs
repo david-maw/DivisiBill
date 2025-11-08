@@ -193,8 +193,8 @@ internal static class CallWs
     /// </summary>
     /// <param name="purchase"></param>
     /// <returns>True if the purchase was recorded, false if not</returns>
-    /// <param name="isSubscription"></param>
-    internal static async Task<bool> RecordPurchaseAsync(InAppBillingPurchase purchase, bool isSubscription)
+    /// 
+    internal static async Task<bool> RecordPurchaseAsync(InAppBillingPurchase purchase)
     {
         if (DeviceInfo.Platform == DevicePlatform.Android)
         {
@@ -207,7 +207,7 @@ internal static class CallWs
                     { "signature", purchase.Signature }
                 };
                 var content = new FormUrlEncodedContent(formData);
-                HttpResponseMessage response = await client.PostAsync("RecordAndroidPurchase?subscription=" + (isSubscription ? "1" : "0"), content);
+                HttpResponseMessage response = await client.PostAsync("RecordAndroidPurchase?subscription=", content);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -228,8 +228,8 @@ internal static class CallWs
     /// <param name="androidJson">The android license to be tested</param>
     /// <param name="signatureB64"></param>
     /// <param name="productId">The productId the license is for (it's in the json but we'd need to decode it)</param>
-    /// <param name="isSubscription">True of this is a Subscription, false for a consumable license</param>
-    internal static async Task<string> VerifyFakeAndroidPurchase(string androidJson, string signatureB64, string productId, bool isSubscription)
+    /// 
+    internal static async Task<string> VerifyFakeAndroidPurchase(string androidJson, string signatureB64, string productId)
     {
         Utilities.DebugMsg("In VerifyAndroidPurchase for " + productId);
         if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug))
@@ -242,7 +242,7 @@ internal static class CallWs
                 };
             var content = new FormUrlEncodedContent(formData);
             // validate the license by calling a web service
-            HttpResponseMessage response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase?subscription=" + (isSubscription ? "1" : "0"), content));
+            HttpResponseMessage response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase", content));
             if (response.IsSuccessStatusCode)
             {
                 string s = await response.Content.ReadAsStringAsync();
@@ -269,7 +269,7 @@ internal static class CallWs
     /// </summary>
     /// <param name="purchase">The InAppBilling object to be tested</param>
     /// <returns>The contents of the returned verification message or null if verification failed</returns>
-    internal static async Task<string> VerifyPurchase(InAppBillingPurchase purchase, bool isSubscription)
+    internal static async Task<string> VerifyPurchase(InAppBillingPurchase purchase)
     {
         Utilities.DebugMsg("In VerifyPurchase for " + purchase.Id);
         if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug))
@@ -284,7 +284,7 @@ internal static class CallWs
                 var content = new FormUrlEncodedContent(formData);
                 Utilities.DebugMsg("In VerifyPurchase, awaiting verify");
                 // validate the license by calling a web service
-                var response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase?subscription=" + (isSubscription ? "1" : "0"), content));
+                var response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase", content));
                 if (response.IsSuccessStatusCode)
                 {
                     string s = await response.Content.ReadAsStringAsync();

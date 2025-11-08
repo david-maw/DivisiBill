@@ -437,36 +437,36 @@ public partial class App : Application, INotifyPropertyChanged
                 case Billing.BillingStatusType.ok:
                     FoundProSubscription = true;
                     if (!Settings.HadProSubscription && !App.Settings.FirstUse)
-                        await Utilities.ShowAppSnackBarAsync("Subscription check now returns a pro license");
+                        await Utilities.ShowAppSnackBarAsync("Pro subscription check now returns a pro subscription");
                     Settings.HadProSubscription = true;
                     break;
                 case Billing.BillingStatusType.noInternet:
-                    await Utilities.DisplayAlertAsync("No Internet", "Subscription check failed because no Internet connection was found");
+                    await Utilities.DisplayAlertAsync("No Internet", "Pro subscription check failed because no Internet connection was found");
                     LicenseChecked = false;
                     break;
                 case Billing.BillingStatusType.connectionFailed:
-                    await Utilities.DisplayAlertAsync("No Connection", "Subscription check failed because it could not connect to the service, check that the Play Store is accessible");
+                    await Utilities.DisplayAlertAsync("No Connection", "Pro subscription check failed because it could not connect to the service, check that the Play Store is accessible");
                     break;
                 case Billing.BillingStatusType.connectionFaulted:
-                    await Utilities.DisplayAlertAsync("Subscription Fault", "Subscription check failed because of a fault, licenses are not available");
+                    await Utilities.DisplayAlertAsync("Subscription Fault", "Pro subscription check failed because of a fault, licenses are not available");
                     LicenseChecked = false;
                     break;
                 case Billing.BillingStatusType.notLicensing:
-                    Utilities.DebugMsg("Subscription check failed because licensing is not configured");
+                    Utilities.DebugMsg("Pro subscription check failed because licensing is not configured");
                     LicenseChecked = false;
                     break;
                 case Billing.BillingStatusType.notVerified:
-                    await Utilities.DisplayAlertAsync("Verification Failed", "Subscription check failed because the subscription could not be verified");
+                    await Utilities.DisplayAlertAsync("Verification Failed", "Pro subscription check failed because the subscription could not be verified");
                     break;
                 case Billing.BillingStatusType.notFound:
-                    if (Settings.HadProSubscription)
+                    if (true) // Settings.HadProSubscription)
                     {
-                        await Utilities.DisplayAlertAsync("Not Found", "Subscription check failed because there was no record of the subscription, licenses are not available");
+                        await Utilities.DisplayAlertAsync("Not Found", "Pro subscription check failed because there was no record of the subscription, subscription has ended");
                         Settings.HadProSubscription = false;
                     }
                     break;
                 default:
-                    await Utilities.DisplayAlertAsync("Subscription Error", "Subscription check failed, licenses are not available");
+                    await Utilities.DisplayAlertAsync("Subscription Error", "Pro subscription check failed, licenses are not available");
                     break; // treat all other errors as subscription not found
             }
         }
