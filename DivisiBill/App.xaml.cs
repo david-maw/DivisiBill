@@ -499,10 +499,11 @@ public partial class App : Application, INotifyPropertyChanged
 
             if (string.IsNullOrEmpty(App.Settings.UserKey))
             {
+                static string NullIfEmpty(string s) => string.IsNullOrEmpty(s) ? null : s; // Helper local function to simplify expressions below
                 // Probably a clean install, so the UserKey has not been set yet, generate a token if we must, but prefer to use an existing one
-                App.Settings.UserKey = string.IsNullOrEmpty(Billing.OcrPurchase?.ObfuscatedAccountId)
-                    ? Utilities.GenerateToken()
-                    : (Billing.OcrPurchase.ObfuscatedAccountId);
+                // There are some peculiar license keys which were allocated before we started using ObfuscatedAccountId, since they are used for testing
+                // we handle that case here.
+                App.Settings.UserKey = NullIfEmpty(Billing.ProPurchase?.ObfuscatedAccountId) ?? NullIfEmpty(Billing.OcrPurchase?.ObfuscatedAccountId) ?? Utilities.GenerateToken();
             }
             Utilities.DebugMsg("Exiting CheckLicenses, found Pro Subscription = " + FoundProSubscription + ", scans left = " + Billing.ScansLeft);
         }

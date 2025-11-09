@@ -282,6 +282,7 @@ public static partial class Utilities // Partial for regex generator
     /// <returns>text describing the current app build.</returns>
     internal static string GetAppInformation()
     {
+        static string ToNullString(string s) => string.IsNullOrWhiteSpace(s) ? "null" : s; // local helper for diagnostic messages
         StringBuilder s = new("DivisiBill ", 1000);
         s.AppendLine((App.IsLimited ? "Basic" : "Professional") + " Edition");
         s.AppendLine("Version " + VersionName + " build " + Revision + " at " + BuildTime);
@@ -290,7 +291,12 @@ public static partial class Utilities // Partial for regex generator
             s.AppendLine("Professional Edition Purchase ID: " + Billing.ProPurchase.Id
                     + ", PurchaseState = " + Billing.ProPurchase.State);
             if (!string.IsNullOrEmpty(App.Settings?.UserKey))
+            {
                 s.AppendLine("Professional Edition Storage Key: " + App.Settings.UserKey);
+                // Report mismatches between the stored user key and the purchase obfuscated account id (which may be null in some old purchases) 
+                if (Billing.ProPurchase.ObfuscatedAccountId != App.Settings.UserKey)
+                    s.AppendLine("WARNING: Pro Purchase ObfuscatedAccountId = " + ToNullString(Billing.ProPurchase.ObfuscatedAccountId));
+            }
         }
         if (Billing.OcrPurchase is not null)
             s.AppendLine("OCR Purchase ID: " + Billing.OcrPurchase.Id + ", scans remaining = " + Billing.ScansLeft
