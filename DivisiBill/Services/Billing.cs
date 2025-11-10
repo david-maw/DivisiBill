@@ -112,13 +112,16 @@ internal static class Billing
                     Signature = signatureB64,
                     OriginalJson = json
                 };
-                if (resultString is null)
-                    return BillingStatusType.notVerified;
-                else if (int.TryParse(resultString, out int scans) && scans >= 0)
+                if (int.TryParse(resultString, out int scans) && scans >= 0)
                 {
                     ProPurchase.State = PurchaseState.Purchased;
                     HasOldProProductId = true;
                     return BillingStatusType.ok; // No error
+                }
+                else
+                {
+                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, failed to parse scans from web service result: " + resultString);
+                    return BillingStatusType.notVerified;
                 }
             }
         }
