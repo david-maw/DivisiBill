@@ -53,7 +53,7 @@ internal static class CallWs
         else
         { // The call did not complete successfully, so show a popup to let the user know and give them a chance to retry or abandon it}
             var popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Views.CheckWebPage(webCallTask, webCall, webStopwatch), Utilities.GetNullPopupOptions());
-            return popupResult?.Result ?? new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout); // If the user closed the popup without retrying, return a timeout result
+            return popupResult?.Result ?? new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout); // If the user closed the popup, return a timeout result
         }
     }
     #region Header Management
@@ -218,51 +218,6 @@ internal static class CallWs
         return false;
     }
 
-#if DEBUG
-    /// <summary>
-    /// A version of <see cref="VerifyPurchase"/> for testing using predefined android licenses in a debug build
-    /// Verify that an InAppBilling purchase really is what it pretends to be by calling the issuer
-    /// and also that we previously purchased it. Currently only implemented for Android.
-    /// </summary>
-    /// <returns>The contents of the returned message or null if verification failed</returns>
-    /// <param name="androidJson">The android license to be tested</param>
-    /// <param name="signatureB64"></param>
-    /// <param name="productId">The productId the license is for (it's in the json but we'd need to decode it)</param>
-    /// 
-    internal static async Task<string> VerifyFakeAndroidPurchase(string androidJson, string signatureB64, string productId)
-    {
-        Utilities.DebugMsg("In VerifyAndroidPurchase for " + productId);
-        if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug))
-        {
-            Utilities.DebugMsg("In VerifyAndroidPurchase, awaiting verify");
-            var formData = new Dictionary<string, string>
-                {
-                    { "purchase", androidJson },
-                    { "signature", signatureB64 }
-                };
-            var content = new FormUrlEncodedContent(formData);
-            // validate the license by calling a web service
-            HttpResponseMessage response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase", content));
-            if (response.IsSuccessStatusCode)
-            {
-                string s = await response.Content.ReadAsStringAsync();
-                Utilities.DebugMsg("In VerifyAndroidPurchase, verify returned ok and \"" + s + "\"");
-                // If this is a pro license, pass it to future web service calls for authorization
-                if (productId.Equals(Billing.ProSubscriptionId) || productId.Equals(Billing.OldProProductId))
-                {
-                    // The fake JSON string may be delimited by CR/LF, if it is just remove them because CR/LF are not allowed in headers
-                    string flatJson = androidJson.Replace("\r\n", string.Empty);
-                    UpsertHttpClientHeader(PurchaseHeaderName, flatJson); // This will be the license used from now on
-                    response.StoreTokenHeader();
-                }
-                return s;
-            }
-            else
-                Utilities.DebugMsg("In VerifyAndroidPurchase, verify returned status code " + response.StatusCode);
-        }
-        return null;
-    }
-#endif
     /// <summary>
     /// Verify that an InAppBilling purchase really is what it pretends to be by calling the issuer
     /// and also that we previously purchased it. Currently only implemented for Android.
@@ -282,13 +237,13 @@ internal static class CallWs
                     { "signature", purchase.Signature }
                 };
                 var content = new FormUrlEncodedContent(formData);
-                Utilities.DebugMsg("In VerifyPurchase, awaiting verify");
+                Utilities.DebugMsg("In VerifyPurchase, awaiting VerifyAndroidPurchase");
                 // validate the license by calling a web service
                 var response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase", content));
                 if (response.IsSuccessStatusCode)
                 {
                     string s = await response.Content.ReadAsStringAsync();
-                    Utilities.DebugMsg("In VerifyPurchase, verify returned ok and \"" + s + "\"");
+                    Utilities.DebugMsg("In VerifyPurchase, VerifyAndroidPurchase returned ok and \"" + s + "\"");
                     // If this is a pro license, pass it to future web service calls for authorization
                     if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.OldProProductId))
                     {
@@ -298,7 +253,7 @@ internal static class CallWs
                     return s;
                 }
                 else
-                    Utilities.DebugMsg("In VerifyPurchase, verify returned " + response.StatusCode);
+                    Utilities.DebugMsg("In VerifyPurchase, verify returned status " + (int)response.StatusCode + "-" + response.StatusCode + " and '" + await response.Content.ReadAsStringAsync() + "'");
             }
             catch (Exception ex)
             {

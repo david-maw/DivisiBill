@@ -19,7 +19,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
     /// <param name="result">True if the web service call worked, false if the user elected to abandon it</param>
     private async Task StopTrying(HttpResponseMessage result)
     {
-        Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.InvokeClose({result})");
+        Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.InvokeClose passing an HttpResponseMessage with status code {(int)result.StatusCode} - {result.StatusCode}");
         keepTrying = false;
         try
         {
@@ -49,6 +49,9 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
         }
         StatusMessageExtra = messageExtra;
     }
+
+    [ObservableProperty]
+    public partial string PopupTitle { get; set; }
 
     [ObservableProperty]
     public partial string StatusMessage { get; set; }
@@ -98,14 +101,15 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
             if (webCallTask.IsCompleted)
             {
                 webStopwatch.Stop();
-                if (webCallTask.IsCompletedSuccessfully && webCallTask.Result.IsSuccessStatusCode)
+                if (webCallTask.IsCompletedSuccessfully && (webCallTask.Result.IsSuccessStatusCode || webCallTask.Result.StatusCode > HttpStatusCode.BadRequest)) // only retry generic bad request, it probably won't help with other failures
                 {
                     Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompletedSuccessfully and successful result = " + webCallTask.Result.StatusCode + " in " + ToSecondsText(ElapsedSeconds()));
-                    await StopTrying(webCallTask.Result); // The request completed without error, we can continue on
+                    await StopTrying(webCallTask.Result); // The request completed without error, or should not be retried, we can continue on
                 }
                 else
                 {
-                    // The request failed, or completed but returned an error, so wait a bit then try again
+                    // The request failed, or completed but returned an error we can retry, so wait a bit then try again
+                    PopupTitle = "Web Error";
                     if (webCallTask.IsCompletedSuccessfully)
                     {
                         // Completed but returned a failed status code
@@ -151,6 +155,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
             else
             {
                 // The request has not completed yet, so just wait for it to complete
+                PopupTitle = "Slow Web Response";
                 SetStatusMessage("Waiting for web service call to complete");
                 elapsedTimer.Change(200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
                 try

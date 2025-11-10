@@ -91,7 +91,7 @@ internal static class Billing
     {
         ProPurchase = null; // For safety because whatever we had before is irrelevant
 #if DEBUG
-        if (DeviceInfo.Platform == DevicePlatform.WinUI || (DeviceInfo.Platform == DevicePlatform.Android && "Subsystem for Android(TM)".Equals(DeviceInfo.Model)))
+        if (DeviceInfo.Platform == DevicePlatform.WinUI)
         {
             if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestProJsonB64))
             {
@@ -319,7 +319,7 @@ internal static class Billing
     internal static async Task<int> GetHasOcrLicenseAsync()
     {
 #if DEBUG
-        if (DeviceInfo.Platform == DevicePlatform.WinUI || (DeviceInfo.Platform == DevicePlatform.Android && "Subsystem for Android(TM)".Equals(DeviceInfo.Model)))
+        if (DeviceInfo.Platform == DevicePlatform.WinUI)
         {
             if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestOcrJsonB64))
             {
@@ -626,7 +626,9 @@ internal static class Billing
         }
         try
         {
-            string validationResult = await CallWs.VerifyFakeAndroidPurchase(androidJson, signatureB64, productId);
+            InAppBillingPurchase fakePurchase = new() { OriginalJson = androidJson, Signature = signatureB64, ProductId = productId, State = PurchaseState.Purchased};
+
+            string validationResult = await CallWs.VerifyPurchase(fakePurchase);
 
             if (validationResult is null)
             {

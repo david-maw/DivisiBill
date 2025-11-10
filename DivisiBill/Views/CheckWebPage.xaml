@@ -25,7 +25,7 @@
             <Label
                 FontSize="Large"
                 HorizontalOptions="Center"
-                Text="Slow Web Response"
+                Text="{Binding PopupTitle}"
                 VerticalOptions="Center" />
             <Label
                 HorizontalOptions="Center"
@@ -43,7 +43,7 @@
             <Button
                 Command="{Binding ClosePopupWindowCommand}"
                 HorizontalOptions="Center"
-                Text="Continue without licenses" />
+                Text="Give Up" />
         </VerticalStackLayout>
     </Border>
 </toolkit:Popup>

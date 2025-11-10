@@ -445,7 +445,7 @@ public partial class App : Application, INotifyPropertyChanged
                     LicenseChecked = false;
                     break;
                 case Billing.BillingStatusType.connectionFailed:
-                    await Utilities.DisplayAlertAsync("No Connection", "Pro subscription check failed because it could not connect to the service, check that the Play Store is accessible");
+                    await Utilities.DisplayAlertAsync("No Connection", "Pro subscription check failed because it could not connect to a service, check that the Play Store is accessible");
                     break;
                 case Billing.BillingStatusType.connectionFaulted:
                     await Utilities.DisplayAlertAsync("Subscription Fault", "Pro subscription check failed because of a fault, licenses are not available");
@@ -456,12 +456,16 @@ public partial class App : Application, INotifyPropertyChanged
                     LicenseChecked = false;
                     break;
                 case Billing.BillingStatusType.notVerified:
-                    await Utilities.DisplayAlertAsync("Verification Failed", "Pro subscription check failed because the subscription could not be verified");
+                    if (Settings.HadProSubscription)
+                    {
+                        await Utilities.DisplayAlertAsync("Verification Failed", "Pro subscription ended because it could not be verified");
+                        Settings.HadProSubscription = false;
+                    }
                     break;
                 case Billing.BillingStatusType.notFound:
-                    if (true) // Settings.HadProSubscription)
+                    if (Settings.HadProSubscription)
                     {
-                        await Utilities.DisplayAlertAsync("Not Found", "Pro subscription check failed because there was no record of the subscription, subscription has ended");
+                        await Utilities.DisplayAlertAsync("Not Found", "Pro subscription ended because there was no record of the subscription");
                         Settings.HadProSubscription = false;
                     }
                     break;
