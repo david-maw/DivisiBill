@@ -18,6 +18,25 @@ internal partial class DataManagementViewModel : ObservableObject
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private readonly DateTime nextTime = DateTime.MinValue;
 
+    // Store the archive selected by SelectArchiveAsync
+    private Archive? selectedArchive = null;
+    public Archive? SelectedArchive
+    {
+        get => selectedArchive;
+        set
+        {
+            // Use SetProperty to raise PropertyChanged
+            if (SetProperty(ref selectedArchive, value))
+            {
+                // Notify the generated command that can-execute may have changed
+                RestoreArchiveCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    // Path to the zip file selected (if any). Used later to extract images selectively during restore.
+    private string? selectedArchiveZipPath = null;
+
     /// <summary>
     /// Selects all but the latest meal for each venue from local storage and navigates to the meal list page with specific query parameters.
     /// </summary>
@@ -177,14 +196,14 @@ internal partial class DataManagementViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Command to restore an archive from a selected XML file, handling various types of data such as venues, people, and meals.
+    /// Command that lets the user pick an archive file (zip or xml). This command deserializes the archive into SelectedArchive.
+    /// It does not extract images; images are restored later by RestoreArchiveAsync and only for meals actually restored.
     /// </summary>
-    /// <returns>Returns a task that completes when the restore operation is finished.</returns>
     [RelayCommand]
-    public async Task RestoreArchiveAsync()
+    public async Task SelectArchiveAsync()
     {
-        ZipArchive? zipArchive = null; // The zip archive containing the archive data, we are not loading XML directly
-        Stream? archiveStream = null; // The stream containing archived data, either from a zip file or directly from an XML file.
+        ZipArchive? zipArchive = null; // The zip archive if a zip was selected
+        Stream? archiveStream = null; // The stream containing archived data (the XML entry or the xml file stream)
         try
         {
             var result = await FilePicker.PickAsync(new PickOptions()
@@ -200,18 +219,18 @@ internal partial class DataManagementViewModel : ObservableObject
             {
                 IsBusy = true;
                 string archiveName = result.FileName;
-                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: file name {archiveName}");
+                Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: file name {archiveName}");
                 if (Path.GetExtension(archiveName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
                         zipArchive = ZipFile.OpenRead(result.FullPath);
-                        Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: opened zip archive {archiveName}");
+                        Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: opened zip archive {archiveName}");
                     }
                     catch (Exception ex)
                     {
                         ex.ReportCrash();
-                        await Utilities.ShowAppSnackBarAsync("Failed to open archive file");
+                        await Utilities.ShowAppSnackBarAsync($"In {nameof(SelectArchiveAsync)}: Failed to open archive file");
                         return;
                     }
                     if (zipArchive is not null)
@@ -225,119 +244,49 @@ internal partial class DataManagementViewModel : ObservableObject
                         }
                         else
                         {
-                            await Utilities.ShowAppSnackBarAsync("zip file does not contain a DivisiBill archive");
+                            await Utilities.ShowAppSnackBarAsync($"In {nameof(SelectArchiveAsync)}: zip file does not contain a DivisiBill archive");
                             return;
                         }
-                        // Create an image folder if it does not already exist
-                        if (!Directory.Exists(Meal.ImageFolderPath))
-                        {
-                            try
-                            {
-                                Directory.CreateDirectory(Meal.ImageFolderPath);
-                                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: created image folder {Meal.ImageFolderPath}");
-                            }
-                            catch (Exception ex)
-                            {
-                                ex.ReportCrash();
-                                await Utilities.ShowAppSnackBarAsync("Failed to create image folder");
-                                return;
-                            }
-                        }
-                        // Now extract all the images from the zip archive to the image folder
-                        foreach (var entry in zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".jpg", StringComparison.OrdinalIgnoreCase)))
-                        {
-                            string fullFilename = Path.Combine(Meal.ImageFolderPath, entry.Name);
-                            if (DeleteBeforeRestore && File.Exists(fullFilename)) // Delete the file if it exists and we are deleting before restore
-                                File.Delete(fullFilename);
-                            if (File.Exists(fullFilename)) // Only extract if the file is not already present
-                                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)} file not restored {entry.Name} already exists");
-                            else
-                            {
-                                entry.ExtractToFile(fullFilename, false); // Extract image file to the image directory
-                                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: zip archive entry {entry.Name} extracted to image folder");
-                            }
-                        }
+                        // We do not extract images here; image extraction will be performed later during restore for only the meals that were restored.
                     }
                     else
                         await Utilities.ShowAppSnackBarAsync("Archive file is not a valid zip file");
                 }
                 else if (Path.GetExtension(archiveName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
-                    archiveStream = await result.OpenReadAsync();
-                else
-                    await Utilities.ShowAppSnackBarAsync("Archive file must be a zip or xml file");
-                // By this point we have an archive name and a stream to the archive, either from a zip file or directly from an XML file
-                if (Path.GetExtension(archiveName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
                 {
-                    Archive? archive = null;
-                    // For convenience we allow individual files to be deserialized 
-                    if (archiveName.StartsWith("Venues"))
-                    {
-                        List<Venue> vl = Venue.DeserializeList(archiveStream);
-                        if (vl is not null)
-                            archive = new Archive() { Venues = vl };
-                        else
-                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} Venue.DeserializeList returned null");
-                    }
-                    else if (archiveName.StartsWith("People"))
-                    {
-                        List<Person> pl = Person.DeserializeList(archiveStream);
-                        if (pl is not null)
-                            archive = new Archive() { Persons = pl };
-                        else
-                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} Person.DeserializeList returned null");
-                    }
-                    else if (Utilities.TryDateTimeFromName(archiveName, out _)) // Serialized Meal name format
-                    {
-                        Meal m = Meal.LoadFromStream(archiveStream);
-                        if (m is not null)
-                            archive = new Archive() { Meals = new List<Meal>() { { m } } };
-                        else
-                            Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} Meal.LoadFromStream returned null");
-                    }
-                    else // Assume it is an archive
-                        archive = Archive.FromStream(archiveStream);
-                    if (archive is null)
-                        await Utilities.ShowAppSnackBarAsync("Restore Failed, Archive was unusable");
-                    else
-                    {
-                        if (archive.UserSettings is not null)
-                        {
-                            if (App.Current.Resources["MealViewModel"] is MealViewModel mvm)
-                            {
-                                mvm.DefaultTipRate = archive.UserSettings.DefaultTipRate;
-                                mvm.DefaultTaxRate = archive.UserSettings.DefaultTaxRate;
-                                mvm.DefaultTipOnTax = archive.UserSettings.DefaultTipOnTax;
-                                mvm.DefaultTaxOnCoupon = archive.UserSettings.DefaultTaxOnCoupon;
-                            }
-
-                            App.Settings.ShowLineItemsHint = archive.UserSettings.ShowLineItemsHint;
-                            App.Settings.ShowTotalsHint = archive.UserSettings.ShowTotalsHint;
-                            App.Settings.ShowVenuesHint = archive.UserSettings.ShowVenuesHint;
-                            App.Settings.ShowPeopleHint = archive.UserSettings.ShowPeopleHint;
-
-                            if (archive.UserSettings.FakeLocation is not null)
-                            {
-                                App.FakeLocation = archive.UserSettings.FakeLocation;
-                                if (App.UseFakeLocation) // The location was already fake
-                                {
-                                    await App.RefreshLocationAsync(); // Start using the new fake location
-                                    await Utilities.ShowAppSnackBarAsync("Fake location changed");
-                                }
-                            }
-                        }
-                        // Now restore all the other items (which are not part of this ViewModel)
-                        archive.DeleteBeforeRestore = DeleteBeforeRestore;
-                        archive.OverwriteDuplicates = OverwriteDuplicates;
-                        await archive.RestoreAsync(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate), OnlyRelated);
-                        IsBusy = false;
-                        await App.GoToAsync(Routes.MealListByAgePage);
-                    }
+                    archiveStream = await result.OpenReadAsync();
+                    selectedArchiveZipPath = null;
                 }
                 else
-                    Utilities.DebugMsg($"In SettingsViewModel.RestoreArchiveAsync, {archiveName} was not an xml or zip file");
+                    await Utilities.ShowAppSnackBarAsync("Archive file must be a .zip or .xml file");
+
+                // By this point we have an archive name and a stream to the archive (XML content)
+                if (archiveStream is not null)
+                {
+                    Archive? archive = DeserializeArchiveFromStream(archiveStream, archiveName);
+                    if (archive is null)
+                    {
+                        await Utilities.ShowAppSnackBarAsync("Failed to deserialize archive");
+                        return;
+                    }
+
+                    SelectedArchive = archive;
+                    if (archive.Meals is not null && archive.Meals.Count > 0)
+                    {
+                        StartDate = archive.Meals.First().CreationTime;
+                        FinishDate = archive.Meals.Last().CreationTime;
+                    }
+
+                    // If the original selection was a zip file record its path so images can be selectively extracted during restore later
+                    selectedArchiveZipPath = (zipArchive is not null) ? result.FullPath : null;
+
+                    await Utilities.ShowAppSnackBarAsync("Archive loaded");
+                }
+                else
+                    Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: no archive stream was found");
             }
             else
-                Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: returned file name was null");
+                Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: returned file name was null");
         }
         catch (Exception ex)
         {
@@ -353,6 +302,178 @@ internal partial class DataManagementViewModel : ObservableObject
             IsBusy = false;
         }
     }
+
+    /// <summary>
+    /// Deserialize the provided XML stream into an Archive (or single-item Archive) but do not perform any restore actions.
+    /// </summary>
+    private Archive? DeserializeArchiveFromStream(Stream archiveStream, string archiveName)
+    {
+        try
+        {
+            // Reset stream position if possible
+            if (archiveStream.CanSeek)
+                archiveStream.Position = 0;
+
+            Archive? archive = null;
+            // For convenience we allow individual files to be deserialized 
+            if (archiveName.StartsWith("Venues"))
+            {
+                List<Venue> vl = Venue.DeserializeList(archiveStream);
+                if (vl is not null)
+                    archive = new Archive() { Venues = vl };
+                else
+                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Venue.DeserializeList returned null");
+            }
+            else if (archiveName.StartsWith("People"))
+            {
+                List<Person> pl = Person.DeserializeList(archiveStream);
+                if (pl is not null)
+                    archive = new Archive() { Persons = pl };
+                else
+                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Person.DeserializeList returned null");
+            }
+            else if (Utilities.TryDateTimeFromName(archiveName, out _)) // Serialized Meal name format
+            {
+                Meal m = Meal.LoadFromStream(archiveStream);
+                if (m is not null)
+                    archive = new Archive() { Meals = new List<Meal>() { { m } } };
+                else
+                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Meal.LoadFromStream returned null");
+            }
+            else // Assume it is an archive
+            {
+                archive = Archive.FromStream(archiveStream);
+            }
+
+            // Some old archives are out of order so sort the list just in case
+            if (archive?.Meals is not null)
+                archive.Meals.Sort((x, y) => x.CreationTime.CompareTo(y.CreationTime));
+
+            return archive;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Command to restore the previously selected archive (SelectedArchive). This restores archive items and selectively
+    /// extracts images from the original zip only for the meals that were restored.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanRestoreArchive))]
+    public async Task RestoreArchiveAsync()
+    {
+        if (SelectedArchive is null)
+        {
+            await Utilities.ShowAppSnackBarAsync("No archive selected to restore");
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            var archive = SelectedArchive;
+
+            // Apply user settings from the archive (if present)
+            if (archive.UserSettings is not null)
+            {
+                if (App.Current.Resources["MealViewModel"] is MealViewModel mvm)
+                {
+                    mvm.DefaultTipRate = archive.UserSettings.DefaultTipRate;
+                    mvm.DefaultTaxRate = archive.UserSettings.DefaultTaxRate;
+                    mvm.DefaultTipOnTax = archive.UserSettings.DefaultTipOnTax;
+                    mvm.DefaultTaxOnCoupon = archive.UserSettings.DefaultTaxOnCoupon;
+                }
+
+                App.Settings.ShowLineItemsHint = archive.UserSettings.ShowLineItemsHint;
+                App.Settings.ShowTotalsHint = archive.UserSettings.ShowTotalsHint;
+                App.Settings.ShowVenuesHint = archive.UserSettings.ShowVenuesHint;
+                App.Settings.ShowPeopleHint = archive.UserSettings.ShowPeopleHint;
+
+                if (archive.UserSettings.FakeLocation is not null)
+                {
+                    App.FakeLocation = archive.UserSettings.FakeLocation;
+                    if (App.UseFakeLocation) // The location was already fake
+                    {
+                        await App.RefreshLocationAsync(); // Start using the new fake location
+                        await Utilities.ShowAppSnackBarAsync("Fake location changed");
+                    }
+                }
+            }
+
+            // Now perform the restore of data items
+            archive.DeleteBeforeRestore = DeleteBeforeRestore;
+            archive.OverwriteDuplicates = OverwriteDuplicates;
+            await archive.RestoreAsync(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate), OnlyRelated);
+
+            // If the archive was a zip and contains images, selectively extract only images belonging to meals that now exist locally
+            if (!string.IsNullOrWhiteSpace(selectedArchiveZipPath) && File.Exists(selectedArchiveZipPath))
+            {
+                try
+                {
+                    using var zip = ZipFile.OpenRead(selectedArchiveZipPath);
+
+                    // Ensure image folder exists
+                    if (!Directory.Exists(Meal.ImageFolderPath))
+                        Directory.CreateDirectory(Meal.ImageFolderPath);
+
+                    foreach (var meal in archive.Meals.Where(m => m.HasImage && !string.IsNullOrWhiteSpace(m.ImageName)))
+                    {
+                        // Find corresponding local meal by ImageName
+                        var localMeal = Meal.LocalMealList.FirstOrDefault(lm => !string.IsNullOrWhiteSpace(lm.ImageName) && string.Equals(lm.ImageName, meal.ImageName, StringComparison.OrdinalIgnoreCase));
+                        if (localMeal is null)
+                            continue; // meal was not present locally (it probably was not restored but it's faintly possible it was there already)
+
+                        // Find the image entry in the zip by the image name
+                        var entry = zip.Entries.FirstOrDefault(e => string.Equals(e.Name, meal.ImageName, StringComparison.OrdinalIgnoreCase));
+                        if (entry is null)
+                            continue;
+
+                        string fullFilename = Path.Combine(Meal.ImageFolderPath, entry.Name);
+                        if (DeleteBeforeRestore && File.Exists(fullFilename))
+                            File.Delete(fullFilename);
+
+                        if (File.Exists(fullFilename))
+                        {
+                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)} file not restored {entry.Name} already exists");
+                        }
+                        else
+                        {
+                            entry.ExtractToFile(fullFilename, false);
+                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: zip archive entry {entry.Name} extracted to image folder for image {meal.ImageName}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.ReportCrash();
+                    await Utilities.ShowAppSnackBarAsync("Failed to extract some images from archive");
+                }
+            }
+
+            // Navigate to meal list after restore
+            await App.GoToAsync(Routes.MealListByAgePage);
+
+            // Clear selected archive after successful restore
+            SelectedArchive = null;
+            selectedArchiveZipPath = null;
+
+            await Utilities.ShowAppSnackBarAsync("Restore completed");
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            await Utilities.ShowAppSnackBarAsync("Restore Faulted, Archive was unusable");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private bool CanRestoreArchive() => SelectedArchive is not null;
 
     /// <summary>
     /// Indicates whether an archive is shared (the other alternative is to store it to disk). The default value is true.
@@ -544,6 +665,5 @@ internal partial class DataManagementViewModel : ObservableObject
                 await Utilities.ShowAppSnackBarAsync("Cloud is currently inaccessible");
             return;
         }
-
     }
 }

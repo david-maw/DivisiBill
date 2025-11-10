@@ -20,7 +20,7 @@
                     Margin="0,0,0,-10"
                     FontSize="Medium"
                     HorizontalOptions="Center"
-                    Text="Archive and Restore" />
+                    Text="Data Archive and Restore" />
                     <Grid
                     ColumnDefinitions="auto, auto"
                     ColumnSpacing="10"
@@ -58,10 +58,21 @@
                     RowDefinitions="auto, auto, auto, auto">
                         <Button
                         Grid.Row="2"
-                        Grid.RowSpan="2"
+                        Margin="5"
+                        Command="{Binding SelectArchiveCommand}"
+                        Text="Select">
+                        </Button>
+                        <Button
+                        Grid.Row="3"
                         Margin="5"
                         Command="{Binding RestoreArchiveCommand}"
-                        Text="Restore" />
+                        Text="Restore">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding SelectedArchive}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
                         <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
                             <CheckBox IsChecked="{Binding DeleteBeforeRestore}" />
                             <Label Text="Delete Everything First" VerticalOptions="Center" />
@@ -71,10 +82,10 @@
                         Grid.Column="1"
                         IsEnabled="{Binding DeleteBeforeRestore, Converter={StaticResource Not}}">
                             <CheckBox IsChecked="{Binding OverwriteDuplicates}" />
-                            <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" WidthRequest="150" />
+                            <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" />
                         </HorizontalStackLayout>
                     </Grid>
-                    <Label Text="Use Bills Between" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="{Binding SelectedArchive.Meals.Count,StringFormat='{0} Bills Between', FallbackValue='No Bills Selected'}" FontAttributes="Bold" HorizontalOptions="Center"/>
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
                         <DatePicker
                         Date="{Binding StartDate}"
