@@ -290,7 +290,13 @@ internal partial class DataManagementViewModel : ObservableObject
                     Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: no archive stream was found");
             }
             else
+            {
+                SelectedArchive = null;
+                selectedArchiveZipPath = null;
+                StartDate = new DateTime(2010, 1, 1);
+                FinishDate = DateTime.Now;
                 Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: returned file name was null");
+            }
         }
         catch (Exception ex)
         {
