@@ -1,8 +1,20 @@
+# 6.2.44
+
+## Improved Archive restoration
+
+The "Restore" button on the data management page has been split into two buttons. A "Select" button to allow an archive to be selected and a "Restore" button to actually perform the restore of the most recently selected archive. Once an archive is selected the display shows the range of dates it contains and the number of bills in that range. If you change the dates the count of bills will be adjusted accordingly and if you tap restore only the bills within that date range will be restored.
+
+## Minor Improvements and bug fixes
+
+A number of improvements have been made that would not normally be visible, including:
+- Tighter security of licenses and subscriptions by checking their digital signature
+- Improved messages in the "Slow Web Response" pop up
+
 # 6.2.43
 
 ## Cloud Data Removal
 
-This change adds a "Permanently Remove All My Cloud Data" button on the Data Management page. If enabled by checking the "I understand this cannot be undone" check box tapping it will remove any bills, bill images, lists of venues or lists of people saved to the cloud for you.
+This change adds a "Permanently Remove All My Cloud Data" button on the Data Management page. It is enabled by checking the "I understand this cannot be undone" check box. Once enabled, tapping it will remove any bills, bill images, lists of venues, or lists of people that have been saved to the cloud for you.
 
 # 6.2.42
 
