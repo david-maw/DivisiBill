@@ -22,6 +22,10 @@ Changes the behavior of the Archive button so it only operates on selected bills
 
 Select this option to include images in the archive file. If you do not select this option, images will not be included in the archive file, which will make it smaller and faster to create and restore.
 
+## Select Button
+
+Tap this button to select an archive to restore. When you do the page will update with the number of bills in the archive and their creation date range. Change the date range to see how many bills in that date range the archive holds.
+
 ## Restore Button
 
 Tap this to locate an archive file previously created by the "Archive" action and restore its contents. After the restore completes it will switch to the list of bills page.
@@ -69,3 +73,7 @@ Tap this button to select all but the latest local bill for each location and th
 ## Permanently Remove
 
 This button is disabled unless you check the box above it labeled "I understand this cannot be undone". Once enabled, when you tap this button all your bills, bill images, people lists and venue lists are permanently and irrevocably removed from remote storage. Data stored locally is not affected.
+
+## Danger Area
+
+You will need to scroll to the bottom of the page to see all of this area. It contains actions that are potentially destructive and irreversible. Please read all instructions carefully before proceeding.
