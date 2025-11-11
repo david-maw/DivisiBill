@@ -85,7 +85,7 @@
                             <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" />
                         </HorizontalStackLayout>
                     </Grid>
-                    <Label Text="{Binding SelectedArchive.Meals.Count,StringFormat='{0} Bills Between', FallbackValue='No Bills Selected'}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="{Binding SelectedArchive.SelectedMeals.Count,StringFormat='{0} Bills Between', FallbackValue='No Bills Selected'}" FontAttributes="Bold" HorizontalOptions="Center"/>
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
                         <DatePicker
                         Date="{Binding StartDate}"

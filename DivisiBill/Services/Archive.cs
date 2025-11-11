@@ -1,5 +1,4 @@
 ﻿using DivisiBill.Models;
-using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Services;
@@ -69,7 +68,7 @@ public class Archive
             Persons = [];
             AliasGuids = [];
             // figure out what is used by the meals in the list and just include that
-            foreach (var meal in Meals)
+            foreach (var meal in SelectedMeals)
             {
                 Venue v = Venue.FindVenueByName(meal.VenueName);
                 if (v is not null)
@@ -101,14 +100,13 @@ public class Archive
         set => _ = DateTimeOffset.TryParse(value, out creationTime);
     }
     public string TimeName => Utilities.NameFromDateTime(creationTime.LocalDateTime);
-    [JsonIgnore]
-    public bool DeleteBeforeRestore { get; set; } = false;
-    [JsonIgnore]
-    public bool OverwriteDuplicates { get; set; } = false;
     public UserSettingsClass UserSettings { get; set; } = null;
     public List<Venue> Venues { get; set; } = null;
     public List<Person> Persons { get; set; } = null;
     public List<GuidMappingEntry> AliasGuids { get; set; } = null;
+    [XmlIgnore]
+    public List<Meal> SelectedMeals { get; set; } = null;
+
     public List<Meal> Meals { get; set; } = null;
 
     public Stream AsXmlStream(Stream stream = null)
@@ -150,9 +148,16 @@ public class Archive
     }
 
     private static readonly XmlSerializer xmlSerializer = new(typeof(Archive));
+    public int SetDateRange(DateOnly startDate, DateOnly finishDate)
+    {
+        if (Meals is null)
+            return 0;
+        SelectedMeals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderBy(m => m.CreationTime)];
+        return SelectedMeals.Count;
+    }  
 
 
-    public async Task<bool> RestoreAsync(DateOnly startDate, DateOnly finishDate, bool onlyRelatedParam)
+    public async Task<bool> RestoreAsync(bool OverwriteDuplicates, bool DeleteBeforeRestore, bool onlyRelatedParam)
     {
         // Restore each object type except user specifiable defaults because
         // those are restored through a ViewModel and we want to stay ignorant of those.
@@ -161,8 +166,6 @@ public class Archive
         try
         {
             App.IsCloudAllowed = false; // No backups while this is going on
-            // Filter the meal list by date and sort the result, just in case the archive used a weird order.
-            Meals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderByDescending(m => m.CreationTime)];
             if (!onlyRelatedParam)
             {
                 // filter other lists to limit them to required items
@@ -170,7 +173,7 @@ public class Archive
                 List<Person> FilteredPersons = [];
                 List<GuidMappingEntry> FilteredAliasGuids = [];
                 // figure out what is used by the meals in the list and just include that
-                foreach (var meal in Meals)
+                foreach (var meal in SelectedMeals)
                 {
                     Venue v = string.IsNullOrWhiteSpace(meal.VenueName) ? null : Venues.FirstOrDefault(venue => meal.VenueName.Equals(venue.Name));
                     if (v is not null)
@@ -199,7 +202,7 @@ public class Archive
             // If we're going to clear the current meal do it first so any side effects will be erased later
             if (DeleteBeforeRestore)
             {
-                if (Meals is null || Meals.Count == 0)
+                if (SelectedMeals is null || SelectedMeals.Count == 0)
                     Meal.LoadFake(new MealSummary()).OverwriteCurrent();
             }
             if (Venues is not null)
@@ -218,15 +221,15 @@ public class Archive
                     Person.AliasGuidList = AliasGuids;
                 await Person.SaveSettingsAsync();
             }
-            if (Meals is not null)
+            if (SelectedMeals is not null)
             {
                 if (DeleteBeforeRestore)
                 {
-                    MealSummary.PermanentlyDeleteLocalMeals(startDate, finishDate);
+                    MealSummary.PermanentlyDeleteLocalMeals(DateOnly.FromDateTime(SelectedMeals.First().CreationTime), DateOnly.FromDateTime(SelectedMeals.Last().CreationTime));
                     Meal.LocalMealList.Clear(); // Clear any fake meals
                 }
                 // Go looking for the first meal that is not a fake meal (Size >= 0) to be the new current meal
-                Meal m = Meals.Where(m => m.Size >= 0).FirstOrDefault();
+                Meal m = SelectedMeals.Where(m => m.Size >= 0).FirstOrDefault();
                 if (m is not null)
                 {
                     if (m.OldEnoughToBeNewFile)
@@ -237,10 +240,10 @@ public class Archive
                     m.OverwriteCurrent();
                 }
                 // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files already
-                foreach (Meal meal in Meals)
+                foreach (Meal meal in SelectedMeals)
                     meal.Summary.CheckImageFiles();
                 App.HandleActivityChanges(); // So we can check for remote meals if necessary
-                await Meal.AddLocalMeals(Meals, OverwriteDuplicates);
+                await Meal.AddLocalMeals(SelectedMeals, OverwriteDuplicates);
             }
             return true;
         }

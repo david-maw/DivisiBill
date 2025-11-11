@@ -270,11 +270,15 @@ internal partial class DataManagementViewModel : ObservableObject
                         return;
                     }
 
+                    // Set date range based on all the meals in the archive (initially all are selected)
+                    DateTime NewStartDate = archive.SelectedMeals.First().CreationTime.Date;
+                    DateTime NewFinishDate = archive.SelectedMeals.Last().CreationTime.Date;
+
                     SelectedArchive = archive;
-                    if (archive.Meals is not null && archive.Meals.Count > 0)
+                    if (archive.SelectedMeals is not null && archive.SelectedMeals.Count > 0)
                     {
-                        StartDate = archive.Meals.First().CreationTime;
-                        FinishDate = archive.Meals.Last().CreationTime;
+                        StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
+                        FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
                     }
 
                     // If the original selection was a zip file record its path so images can be selectively extracted during restore later
@@ -347,7 +351,7 @@ internal partial class DataManagementViewModel : ObservableObject
 
             // Some old archives are out of order so sort the list just in case
             if (archive?.Meals is not null)
-                archive.Meals.Sort((x, y) => x.CreationTime.CompareTo(y.CreationTime));
+                archive.SelectedMeals = archive.Meals.OrderBy(m => m.CreationTime).ToList();
 
             return archive;
         }
@@ -403,46 +407,53 @@ internal partial class DataManagementViewModel : ObservableObject
                 }
             }
 
-            // Now perform the restore of data items
-            archive.DeleteBeforeRestore = DeleteBeforeRestore;
-            archive.OverwriteDuplicates = OverwriteDuplicates;
-            await archive.RestoreAsync(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate), OnlyRelated);
+            // Restore the data items
+            await archive.RestoreAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated);
 
-            // If the archive was a zip and contains images, selectively extract only images belonging to meals that now exist locally
+            // If the archive was a zip and contains images, selectively extract images belonging to meals being restored
             if (!string.IsNullOrWhiteSpace(selectedArchiveZipPath) && File.Exists(selectedArchiveZipPath))
             {
                 try
                 {
+                    // Open the archive and put the entries in a dictionary indexed by name
                     using var zip = ZipFile.OpenRead(selectedArchiveZipPath);
+                    Dictionary<string, ZipArchiveEntry> zippedImages = new();
+                    foreach (var entry in zip.Entries) // mostly image files though the archive XML will be in there too
+                        zippedImages[entry.Name] = entry;
 
                     // Ensure image folder exists
                     if (!Directory.Exists(Meal.ImageFolderPath))
                         Directory.CreateDirectory(Meal.ImageFolderPath);
 
-                    foreach (var meal in archive.Meals.Where(m => m.HasImage && !string.IsNullOrWhiteSpace(m.ImageName)))
+                    // Iterate through the meals being restored that also have images present in the zip
+                    foreach (var meal in archive.SelectedMeals.Where(m => zippedImages.ContainsKey(m.ImageName)))
                     {
-                        // Find corresponding local meal by ImageName
-                        var localMeal = Meal.LocalMealList.FirstOrDefault(lm => !string.IsNullOrWhiteSpace(lm.ImageName) && string.Equals(lm.ImageName, meal.ImageName, StringComparison.OrdinalIgnoreCase));
-                        if (localMeal is null)
-                            continue; // meal was not present locally (it probably was not restored but it's faintly possible it was there already)
-
-                        // Find the image entry in the zip by the image name
-                        var entry = zip.Entries.FirstOrDefault(e => string.Equals(e.Name, meal.ImageName, StringComparison.OrdinalIgnoreCase));
-                        if (entry is null)
-                            continue;
-
-                        string fullFilename = Path.Combine(Meal.ImageFolderPath, entry.Name);
-                        if (DeleteBeforeRestore && File.Exists(fullFilename))
-                            File.Delete(fullFilename);
-
-                        if (File.Exists(fullFilename))
+                        // Find corresponding local meal by ImageName so we can update it later
+                        var localMealSummary = Meal.LocalMealList.FirstOrDefault(lm => lm.CreationTime == meal.CreationTime);
+                        if (localMealSummary is null)
                         {
-                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)} file not restored {entry.Name} already exists");
+                            Utilities.DebugMsg($"Restored Meal corresponding to {meal.ImageName} is missing");
+                            continue; // meal was not present locally, which is weird, it should have just been restored
                         }
+
+                        // Find the image entry in the zip by looking up the image name
+                        ZipArchiveEntry? zippedImageEntry = zippedImages[meal.ImageName];
+                        if (zippedImageEntry is null)
+                        {
+                            Utilities.DebugMsg($"Zip entry for {meal.ImageName} is missing");
+                            continue; // we just checked this above, it really shouldn't be missing
+                        }
+
+                        // Extract the image to the image folder, possibly removing an existing one first
+                        string fullFilename = Path.Combine(Meal.ImageFolderPath, zippedImageEntry.Name);
+
+                        if (File.Exists(fullFilename) && !DeleteBeforeRestore)
+                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)} file not restored {zippedImageEntry.Name} already exists");
                         else
                         {
-                            entry.ExtractToFile(fullFilename, false);
-                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: zip archive entry {entry.Name} extracted to image folder for image {meal.ImageName}");
+                            zippedImageEntry.ExtractToFile(fullFilename, DeleteBeforeRestore);
+                            localMealSummary.CheckImageFiles();
+                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: zip archive entry {zippedImageEntry.Name} extracted to image folder for image {meal.ImageName}");
                         }
                     }
                 }
@@ -456,7 +467,7 @@ internal partial class DataManagementViewModel : ObservableObject
             // Navigate to meal list after restore
             await App.GoToAsync(Routes.MealListByAgePage);
 
-            // Clear selected archive after successful restore
+            // Clear selected archive after restore
             SelectedArchive = null;
             selectedArchiveZipPath = null;
 
@@ -523,10 +534,28 @@ internal partial class DataManagementViewModel : ObservableObject
     /// Get or set the earliest date in the range of bills which should be archived or restored
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedArchive))]
+
     public partial DateTime StartDate { get; set; } = Archive.EarliestDateAllowed;
 
+    partial void OnStartDateChanged(DateTime value)
+    {
+        if (StartDate > FinishDate)
+            FinishDate = StartDate;
+        if (SelectedArchive is not null)
+            SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
+    }
+
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedArchive))]
     public partial DateTime FinishDate { get; set; } = DateTime.Now.Date;
+    partial void OnFinishDateChanged(DateTime value)
+    {
+        if (FinishDate < StartDate)
+            StartDate = FinishDate;
+        if (SelectedArchive is not null)
+            SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
+    }
 
     /// <summary>
     /// Password used for archiving/restoring keys.
