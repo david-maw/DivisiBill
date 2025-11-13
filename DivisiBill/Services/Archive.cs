@@ -55,14 +55,7 @@ public class Archive
             foreach (Meal m in Meals)
                 m.CompareCostDistribution();
         }
-        if (!onlyRelatedParam)
-        {
-            // No filtering, just include everything
-            Venues = [.. Venue.AllVenues];
-            Persons = [.. Person.AllPeople];
-            AliasGuids = Person.AliasGuidList;
-        }
-        else
+        if (onlyRelatedParam)
         {
             Venues = [];
             Persons = [];
@@ -90,6 +83,13 @@ public class Archive
             AliasGuids = [.. AliasGuids.DistinctBy(a => a.Key)];
             AliasGuids.Sort();
         }
+        else
+        {
+            // No filtering, just include everything
+            Venues = [.. Venue.AllVenues];
+            Persons = [.. Person.AllPeople];
+            AliasGuids = Person.AliasGuidList;
+        }
     }
     // The data to archive
     public string Version { get; set; } = "1.3";
@@ -104,6 +104,11 @@ public class Archive
     public List<Venue> Venues { get; set; } = null;
     public List<Person> Persons { get; set; } = null;
     public List<GuidMappingEntry> AliasGuids { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the collection of meals currently selected by the user, ordered by CreationTime, oldest first.
+    /// This is the list of meals to be archived or restored, depending on the operation the user selects.
+    /// </summary>
     [XmlIgnore]
     public List<Meal> SelectedMeals { get; set; } = null;
 
@@ -152,12 +157,12 @@ public class Archive
     {
         if (Meals is null)
             return 0;
-        SelectedMeals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderBy(m => m.CreationTime)];
+        SelectedMeals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderByDescending(m => m.CreationTime)];
         return SelectedMeals.Count;
     }  
 
 
-    public async Task<bool> RestoreAsync(bool OverwriteDuplicates, bool DeleteBeforeRestore, bool onlyRelatedParam)
+    public async Task<bool> RestoreAsync(bool DeleteBeforeRestore, bool OverwriteDuplicates, bool onlyRelatedParam)
     {
         // Restore each object type except user specifiable defaults because
         // those are restored through a ViewModel and we want to stay ignorant of those.
@@ -199,12 +204,6 @@ public class Archive
                 AliasGuids = [.. FilteredAliasGuids.DistinctBy(a => a.Key)];
                 AliasGuids.Sort();
             }
-            // If we're going to clear the current meal do it first so any side effects will be erased later
-            if (DeleteBeforeRestore)
-            {
-                if (SelectedMeals is null || SelectedMeals.Count == 0)
-                    Meal.LoadFake(new MealSummary()).OverwriteCurrent();
-            }
             if (Venues is not null)
             {
                 if (DeleteBeforeRestore)
@@ -225,23 +224,28 @@ public class Archive
             {
                 if (DeleteBeforeRestore)
                 {
-                    MealSummary.PermanentlyDeleteLocalMeals(DateOnly.FromDateTime(SelectedMeals.First().CreationTime), DateOnly.FromDateTime(SelectedMeals.Last().CreationTime));
-                    Meal.LocalMealList.Clear(); // Clear any fake meals
-                }
-                // Go looking for the first meal that is not a fake meal (Size >= 0) to be the new current meal
-                Meal m = SelectedMeals.Where(m => m.Size >= 0).FirstOrDefault();
-                if (m is not null)
-                {
-                    if (m.OldEnoughToBeNewFile)
-                        m.Frozen = true;  // Meaning it has been saved and now you have a new copy which must be saved if changed
+                    MealSummary.PermanentlyDeleteAllLocalMeals(); // Clear any fake meals
+                    
+                    // The old current meal is deleted so look for the first meal that is not a fake meal (Size >= 0) to be the new one
+                    Meal m = SelectedMeals.Where(m => m.Size >= 0).FirstOrDefault();
+                    if (m is null)
+                    {
+                        // No real meals so just make a fake one current
+                        Meal.LoadFake(new MealSummary()).OverwriteCurrent();
+                    }
+                    else
+                    {
+                        if (m.OldEnoughToBeNewFile)
+                            m.Frozen = true;  // Meaning it has been saved and now you have a new copy which must be saved if changed
 
-                    // Restore the first meal in the list (should be the one that was current at the time of the archive) 
-                    m.FinalizeSetup();
-                    m.OverwriteCurrent();
+                        // Restore the first meal in the list (should be the one that was current at the time of the archive) 
+                        m.FinalizeSetup();
+                        m.OverwriteCurrent();
+                    }
                 }
                 // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files already
                 foreach (Meal meal in SelectedMeals)
-                    meal.Summary.CheckImageFiles();
+                        meal.Summary.CheckImageFiles();
                 App.HandleActivityChanges(); // So we can check for remote meals if necessary
                 await Meal.AddLocalMeals(SelectedMeals, OverwriteDuplicates);
             }

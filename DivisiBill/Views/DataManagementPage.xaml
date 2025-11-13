@@ -85,16 +85,16 @@
                             <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" />
                         </HorizontalStackLayout>
                     </Grid>
-                    <Label Text="{Binding SelectedArchive.SelectedMeals.Count,StringFormat='{0} Bills Between', FallbackValue='No Bills Selected'}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="{Binding SelectedArchive.SelectedMeals.Count,StringFormat='{0} Bills Between', FallbackValue='Local Bills Between'}" FontAttributes="Bold" HorizontalOptions="Center"/>
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
                         <DatePicker
                         Date="{Binding StartDate}"
                         MaximumDate="{Binding FinishDate}"
-                        MinimumDate="{Static services:Archive.EarliestDateAllowed}" />
+                        MinimumDate="{Binding EarliestStartDate}" />
                         <Label Text="and" VerticalOptions="Center" />
                         <DatePicker
                         Date="{Binding FinishDate}"
-                        MaximumDate="1/1/2100"
+                        MaximumDate="{Binding LatestFinishDate}"
                         MinimumDate="{Binding StartDate}" />
                     </HorizontalStackLayout>
                     <HorizontalStackLayout HorizontalOptions="Center" Margin="0,-20,0,0">
@@ -154,6 +154,7 @@
                         <Label Text="I understand this cannot be undone" VerticalOptions="Center"/>
                         <CheckBox x:Name="understood"/>
                     </HorizontalStackLayout>
+                    <!--TODO: Generates a spurious warning, see https://developercommunity.visualstudio.com/t/False-positive-error-in-XAML-code-editor/10965570--> 
                     <Button
                         Command="{Binding ClearCloudCommand}"
                         IsEnabled="{Binding IsChecked, Source={x:Reference understood}, x:DataType=CheckBox}"

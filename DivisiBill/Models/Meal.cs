@@ -474,6 +474,7 @@ public partial class Meal : ObservableObjectPlus
     /// <param name="newMeals">An enumerable list of Meal items</param>
     public static async Task AddLocalMeals(IEnumerable<Meal> newMeals, bool replace)
     {
+        bool wasEmpty = LocalMealList.Count == 0;
         HashSet<string> localMealNames = [.. LocalMealList.Where(ms => !ms.IsDefault).Select(ms => ms.Id)];
         foreach (var meal in newMeals)
         {
@@ -492,7 +493,12 @@ public partial class Meal : ObservableObjectPlus
                     meal.SaveToFile();
                     meal.Summary.IsLocal = true;
                 }
-                LocalMealList.Add(meal.Summary);
+                // If the original list was empty, new items may be added, otherwise they must be inserted in the correct place
+                if (wasEmpty)
+                    LocalMealList.Add(meal.Summary);
+                else
+                    LocalMealList.Upsert(meal.Summary); 
+                // remove all meals, not just one, only change current if old was removed.
                 localMealNames.Add(meal.Summary.Id); // to ensure we do not add duplicates
             }
         }
@@ -1352,6 +1358,28 @@ public partial class Meal : ObservableObjectPlus
     public void DeleteImage() => Summary.DeleteImage();
     public void TryUndeleteImage() => Summary.TryUndeleteImage();
     public bool ReplaceImage(string s) => Summary.ReplaceImage(s);
+
+    /// <summary>
+    /// Permanently deletes all local image files from storage, removing them without the possibility of recovery.
+    /// </summary>
+    /// <remarks>This method does not delete any associated meals. Use this method when a complete removal of local
+    /// image data is required, such as during an archive restore operation.</remarks>
+    public static void PermanentlyDeleteAllLocalImages()
+    {
+        var imageFiles = Directory.EnumerateFiles(ImageFolderPath, "??????????????.jpg").ToList();
+
+        foreach (string imageFilePath in imageFiles)
+        {
+            try
+            {
+                File.Delete(imageFilePath);
+            }
+            catch (Exception ex)
+            {
+                ex.ReportCrash();
+            }
+        }
+    }
 
     /// <summary>
     /// Called whenever a user tells us it's time to persist a file. This is a special action - it persists a snapshot of the

@@ -310,25 +310,42 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         HasDeletedImage = File.Exists(DeletedImagePath);
     }
 
-    // Deletes all local copies of meals with no option for recovery (used with archive restore)
-    // Does NOT delete any corresponding image so that restoring a meal will restore access to the corresponding image 
-    public static void PermanentlyDeleteLocalMeals(DateOnly startDate, DateOnly finishDate)
+    /// <summary>
+    /// Permanently deletes all local meal records from storage, removing them without the possibility of recovery.
+    /// </summary>
+    /// <remarks>This method does not delete any associated images, allowing restored meals to retain access
+    /// to their original images. Use this method when a complete removal of local meal data is required, such as during
+    /// an archive restore operation. All in-memory sample meals are also cleared.</remarks>
+    public static void PermanentlyDeleteAllLocalMeals()
     {
-        var summaries = Meal.LocalMealList.ToList(); // The ToList is needed so we can mess with the list during the loop below
-        summaries.Add(Meal.CurrentMeal.Summary); // We're deleting this too, it might not be in the list
-        foreach (MealSummary ms in summaries.Where(ms => DateOnly.FromDateTime(ms.CreationTime) >= startDate && DateOnly.FromDateTime(ms.CreationTime) <= finishDate && ms.IsLocal))
+        var mealFiles = Directory.EnumerateFiles(Meal.MealFolderPath, "*.xml").ToList();
+        
+        foreach (string mealFilePath in mealFiles)
         {
-            ms.LocationChanged(isLocal: false);
             try
             {
-                File.Delete(ms.FilePath);
+                File.Delete(mealFilePath);
             }
             catch (Exception ex)
             {
                 ex.ReportCrash();
             }
         }
+        Meal.LocalMealList.Clear(); // Will also delete any in-memory only sample meals
     }
+
+    /// <summary>
+    /// Deletes data for a meal from local and/or remote storage asynchronously, based on the specified options.
+    /// </summary>
+    /// <remarks>If both <paramref name="doLocal"/> and <paramref name="doRemote"/> are <see
+    /// langword="false"/>, the method will only remove the item from memory if it is not persisted locally or remotely.
+    /// The method will overwrite any previously deleted local file with the same name when performing local
+    /// deletion.</remarks>
+    /// <param name="doLocal">Specifies whether to delete the item from local storage. Set to <see langword="true"/> to perform local
+    /// deletion; otherwise, <see langword="false"/>.</param>
+    /// <param name="doRemote">Specifies whether to delete the item from remote storage. Set to <see langword="true"/> to perform remote
+    /// deletion; otherwise, <see langword="false"/>.</param>
+    /// <returns>A task that represents the asynchronous delete operation.</returns>
     public async Task DeleteAsync(bool doLocal = true, bool doRemote = true)
     {
         if (doLocal && IsLocal)
@@ -350,6 +367,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     }
 
     public static MealSummary PopMostRecentDeletion() => DeletedStack.Count > 0 ? DeletedStack.Pop() : null;
+    
     /// <summary>
     /// Undelete a local Meal and its associated image, if by some weird mischance the corresponding file already exists, just discard it
     /// </summary>
@@ -366,6 +384,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         }
         return unexpected;
     }
+    
     /// <summary>
     /// Undelete a Meal image, if meal currently has an image, swap them
     /// </summary>

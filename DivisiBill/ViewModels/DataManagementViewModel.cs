@@ -12,6 +12,16 @@ namespace DivisiBill.ViewModels;
 internal partial class DataManagementViewModel : ObservableObject
 {
 
+    public void OnNavigatedTo()
+    {
+        if (SelectedArchive is null)
+        {
+            // Set dates based on the current list of local meals, which may have changed while we were away
+            StartDate = EarliestStartDate = Meal.LocalMealList?.LastOrDefault()?.CreationTime ?? DateTime.Now;
+            FinishDate = LatestFinishDate = Meal.LocalMealList?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
+        }
+    }
+
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
 
@@ -270,9 +280,9 @@ internal partial class DataManagementViewModel : ObservableObject
                         return;
                     }
 
-                    // Set date range based on all the meals in the archive (initially all are selected)
-                    DateTime NewStartDate = archive.SelectedMeals.First().CreationTime.Date;
-                    DateTime NewFinishDate = archive.SelectedMeals.Last().CreationTime.Date;
+                    // Set dates based on all the meals in the archive (initially all are selected)
+                    DateTime NewStartDate = EarliestStartDate = archive.SelectedMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
+                    DateTime NewFinishDate = LatestFinishDate = archive.SelectedMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
 
                     SelectedArchive = archive;
                     if (archive.SelectedMeals is not null && archive.SelectedMeals.Count > 0)
@@ -283,8 +293,6 @@ internal partial class DataManagementViewModel : ObservableObject
 
                     // If the original selection was a zip file record its path so images can be selectively extracted during restore later
                     selectedArchiveZipPath = (zipArchive is not null) ? result.FullPath : null;
-
-                    await Utilities.ShowAppSnackBarAsync("Archive loaded");
                 }
                 else
                     Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: no archive stream was found");
@@ -293,8 +301,9 @@ internal partial class DataManagementViewModel : ObservableObject
             {
                 SelectedArchive = null;
                 selectedArchiveZipPath = null;
-                StartDate = new DateTime(2010, 1, 1);
-                FinishDate = DateTime.Now;
+                // Set dates based on all the local meals (initially all are selected)
+                StartDate = EarliestStartDate = Meal.LocalMealList?.LastOrDefault()?.CreationTime ?? DateTime.Now;
+                FinishDate = LatestFinishDate = Meal.LocalMealList?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
                 Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: returned file name was null");
             }
         }
@@ -357,7 +366,7 @@ internal partial class DataManagementViewModel : ObservableObject
 
             // Some old archives are out of order so sort the list just in case
             if (archive?.Meals is not null)
-                archive.SelectedMeals = archive.Meals.OrderBy(m => m.CreationTime).ToList();
+                archive.SelectedMeals = archive.Meals.OrderByDescending(m => m.CreationTime).ToList();
 
             return archive;
         }
@@ -427,9 +436,11 @@ internal partial class DataManagementViewModel : ObservableObject
                     foreach (var entry in zip.Entries) // mostly image files though the archive XML will be in there too
                         zippedImages[entry.Name] = entry;
 
-                    // Ensure image folder exists
+                    // Ensure image folder exists and clear it if necessary
                     if (!Directory.Exists(Meal.ImageFolderPath))
                         Directory.CreateDirectory(Meal.ImageFolderPath);
+                    else if (DeleteBeforeRestore)
+                        Meal.PermanentlyDeleteAllLocalImages();
 
                     // Iterate through the meals being restored that also have images present in the zip
                     foreach (var meal in archive.SelectedMeals.Where(m => zippedImages.ContainsKey(m.ImageName)))
@@ -476,8 +487,6 @@ internal partial class DataManagementViewModel : ObservableObject
             // Clear selected archive after restore
             SelectedArchive = null;
             selectedArchiveZipPath = null;
-
-            await Utilities.ShowAppSnackBarAsync("Restore completed");
         }
         catch (Exception ex)
         {
@@ -535,6 +544,15 @@ internal partial class DataManagementViewModel : ObservableObject
     /// There's some strangeness below of DateOnly vs. DateTime, FinishDate and StartDate ought to be type DateOnly but 
     /// DatePicker controls do not work with the DateOnly type. See https://github.com/dotnet/maui/issues/20438 and
     /// https://github.com/dotnet/maui/issues/1100 for more information. To summarize, that's how it works until #1100 is implemented.
+
+    [ObservableProperty]
+
+    public partial DateTime EarliestStartDate { get; set; }
+
+    [ObservableProperty]
+
+    public partial DateTime LatestFinishDate { get; set; }
+
 
     /// <summary>
     /// Get or set the earliest date in the range of bills which should be archived or restored
