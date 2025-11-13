@@ -1,3 +1,14 @@
+# 6.2.45
+
+Improvements to Archive and Restore
+
+Various minor improvements and corrections have been made to the archive and restore experience and to the user interface on the Manage Data page:
+
+- To cancel the current archive selection without using it, simply tap the Select button and cancel out of the resulting dialog.
+- The dates are prefilled with, and limited to, either the range for local bills or the range for the currently selected archive file.
+- The current bill is only changed if that bill is removed by a restore operation using "Delete Everything First".
+- The meaning of "Delete Everything First" and "Overwrite Duplicate Items" was swapped, this has been corrected.
+
 # 6.2.44
 
 ## Improved Archive restoration
