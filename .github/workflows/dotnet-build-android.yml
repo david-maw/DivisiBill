@@ -43,7 +43,7 @@ jobs:
         
     # Test the release
     - name: Test
-      run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net9.0-windows10.0.19041.0
+      run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net10.0-windows10.0.19041.0
       
     # Build to apk and aab
     - name: Build
@@ -54,13 +54,13 @@ jobs:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_UPLOAD: 'true'
         DIVISIBILL_VERSION_INCREMENT: ${{ github.run_number }}
-      run: dotnet build DivisiBill/DivisiBill.csproj -c Release -f net9.0-android --no-restore /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=keystore /p:AndroidSigningkeyAlias="DivisiBill Upload" /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}"
+      run: dotnet build DivisiBill/DivisiBill.csproj -c Release -f net10.0-android --no-restore /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=keystore /p:AndroidSigningkeyAlias="DivisiBill Upload" /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}"
 
     # Upload Just the Signed Artifacts (apk and aab) to github storage
     - name: Upload Android Artifact
       uses: actions/upload-artifact@v4
       with:
-          path: DivisiBill/bin/Release/net9.0-android/*Signed.a*
+          path: DivisiBill/bin/Release/net10.0-android/*Signed.a*
 
     # Deploy to the Play Store
     - name: Deploy Android Artifact
@@ -68,6 +68,6 @@ jobs:
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.autoplus.divisibill
-        releaseFiles: DivisiBill/bin/Release/net9.0-android/*Signed.aab
+        releaseFiles: DivisiBill/bin/Release/net10.0-android/*Signed.aab
         track: alpha
         changesNotSentForReview: false
