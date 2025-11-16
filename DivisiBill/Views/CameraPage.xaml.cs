@@ -41,19 +41,4 @@ public partial class CameraPage : ContentPage
         else
             DoIt();
     }
-    private async void OnTakePicture(object sender, EventArgs e)
-    {
-        if (cameraProvider?.AvailableCameras is not null)
-        {
-            var resolutions = cameraProvider.AvailableCameras[0].SupportedResolutions.OrderByDescending(res => res.Width).ThenByDescending(res => res.Height).ToArray();
-            if (resolutions.Length > 0)
-            {
-                var resolution = resolutions.FirstOrDefault(size => size.Width <= 1500 || size.Height <= 480);
-                if (resolution.IsZero)
-                    resolution = resolutions.First();
-                MyCamera.ImageCaptureResolution = resolution;
-            }
-        }
-        await MyCamera.CaptureImage(CancellationToken.None);
-    }
 }

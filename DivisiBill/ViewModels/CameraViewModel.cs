@@ -15,6 +15,25 @@ public partial class CameraViewModel : ObservableObject
     public partial bool IsBusy { get; set; }
     [ObservableProperty]
     public partial bool IsCameraAvailable { get; set; }
+    [ObservableProperty]
+    public partial CameraInfo SelectedCamera { get; set; }
+    partial void OnSelectedCameraChanged(CameraInfo value)
+    {
+        if (value is not null)
+        {
+            var resolutions = value.SupportedResolutions.OrderByDescending(res => res.Width).ThenByDescending(res => res.Height).ToArray();
+            if (resolutions.Length > 0)
+            {
+                Size resolution = resolutions.FirstOrDefault(size => size.Width <= 1500 || size.Height <= 480);
+                if (resolution.IsZero)
+                    resolution = resolutions.First();
+                ImageCaptureResolution = resolution;
+            }
+        }
+    }
+    [ObservableProperty]
+    public partial Size ImageCaptureResolution { get; set; }
+    public CancellationToken Token => IsCameraAvailable ? CancellationToken.None : CancellationToken.None;
     #endregion
     internal async Task SetCameraAvailabilityAsync()
     {
@@ -85,7 +104,7 @@ public partial class CameraViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            var photo = await MediaPicker.PickPhotoAsync();
+            var photo = (await MediaPicker.PickPhotosAsync()).FirstOrDefault();
             // We have identified an  image, now copy it to the private storage area, so we have it later, if it is needed
             if (photo is not null)
             {

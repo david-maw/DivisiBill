@@ -572,7 +572,7 @@ public static partial class Utilities // Partial for regex generator
     public static Task<string> ActualDisplayActionSheetAsync(string title, string cancel, params string[] buttons)
     {
         DebugMsg("Action Sheet to user: " + title);
-        return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayActionSheet(title, cancel, null, FlowDirection.MatchParent, buttons));
+        return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayActionSheetAsync(title, cancel, null, FlowDirection.MatchParent, buttons));
     }
     internal static DisplayActionSheetAsyncType DisplayActionSheetAsync = ActualDisplayActionSheetAsync;
 
@@ -599,11 +599,11 @@ public static partial class Utilities // Partial for regex generator
         RecordMsg("Question to user: " + message);
 #if ANDROID
         // The captions appear in reverse order in Android, so swap them round
-        bool androidAnswer = await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, noCaption, yesCaption));
+        bool androidAnswer = await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlertAsync(title, message, noCaption, yesCaption));
         return !androidAnswer;
 #else
         // The captions appear in reverse order in Android, so swap them round
-        return await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, yesCaption, noCaption));
+        return await MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlertAsync(title, message, yesCaption, noCaption));
 #endif
     }
 
@@ -619,7 +619,7 @@ public static partial class Utilities // Partial for regex generator
     private static Task ActualDisplayAlertAsync(string title, string message, string accept = null)
     {
         RecordMsg("Alert to user: " + message);
-        return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlert(title, message, "OK"));
+        return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlertAsync(title, message, "OK"));
     }
 
     /// <summary>

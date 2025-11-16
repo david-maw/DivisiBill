@@ -115,7 +115,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         {
             IsBusy = true;
             browsedPictureName = null;
-            var photo = await MediaPicker.PickPhotoAsync();
+            var photo = (await MediaPicker.PickPhotosAsync()).FirstOrDefault();
             // We have identified an  image, now copy it to the private storage area, so we have it later, if it is needed
             if (photo is not null)
             {

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
    <PropertyGroup>
-      <TargetFrameworks>net9.0-android</TargetFrameworks>
-      <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+      <TargetFrameworks>net10.0-android</TargetFrameworks>
+      <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
       <OutputType>Exe</OutputType>
       <!--See https://github.com/dotnet/runtime/issues/109724-->
       <_DefaultValueAttributeSupport>true</_DefaultValueAttributeSupport>
@@ -26,7 +26,7 @@
       <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
  
       <!-- Versions -->
-      <ApplicationDisplayVersion>6.2.45</ApplicationDisplayVersion>
+      <ApplicationDisplayVersion>6.3.01</ApplicationDisplayVersion>
       <ApplicationVersion>300</ApplicationVersion>
 
       <ApplicationVersion Condition="'$(DIVISIBILL_VERSION_INCREMENT)' != ''">$([MSBuild]::Add($(ApplicationVersion), $(DIVISIBILL_VERSION_INCREMENT)))</ApplicationVersion>
@@ -94,16 +94,16 @@
    <ItemGroup>
       <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
       <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
-      <PackageReference Include="CommunityToolkit.Maui.Camera" Version="3.0.2" />
-      <PackageReference Include="CommunityToolkit.Maui.Maps" Version="3.0.3" />
+      <PackageReference Include="CommunityToolkit.Maui.Camera" Version="5.0.0" />
+      <PackageReference Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
       <PackageReference Include="epj.RouteGenerator" Version="1.0.5" />
-      <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
-      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.120" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.10" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.10" />
+      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.10" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
       <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
-     <PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
+     <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-      <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="9.0.120" />
+      <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.10" />
       <PackageReference Include="Plugin.InAppBilling" Version="9.1.0" />
       <PackageReference Include="Sentry.Maui" Version="5.16.2" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->

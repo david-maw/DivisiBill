@@ -19,7 +19,9 @@
             IsVisible="{Binding IsCameraAvailable}"
             CameraFlashMode="{Binding FlashMode}"
             IsTorchOn="{Binding IsLightOn}"
-            MediaCaptured="OnPictureTaken"/>
+            MediaCaptured="OnPictureTaken"
+            SelectedCamera="{Binding SelectedCamera}"
+            ImageCaptureResolution="{Binding ImageCaptureResolution}"/>
         <!--Have to specify x:DataType until issue https://github.com/dotnet/maui/issues/21834 is implemented -->
         <Ellipse Stroke="Red"
                  Fill="White"
@@ -31,7 +33,8 @@
                  VerticalOptions="End"
                  Margin="20">
             <Ellipse.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnTakePicture"/>
+                <TapGestureRecognizer Command="{Binding CaptureImageCommand, Source={x:Reference MyCamera}, x:DataType=toolkit:CameraView}" 
+                        CommandParameter="{Binding Token}"/>
             </Ellipse.GestureRecognizers>
         </Ellipse>
         <Label Text="No camera available"

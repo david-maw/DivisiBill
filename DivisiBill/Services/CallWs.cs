@@ -486,7 +486,7 @@ internal static class CallWs
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Download failed", ex.Message, "OK");
+            await Shell.Current.DisplayAlertAsync("Download failed", ex.Message, "OK");
         }
         return false;
     }

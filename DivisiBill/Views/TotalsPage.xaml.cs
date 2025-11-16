@@ -44,7 +44,7 @@ public partial class TotalsPage : ContentPage
         {
             pc = viewModel.CostListAdd(selectedPerson);
             if (pc is null)
-                DisplayAlert("Error", "This person cannot be added (probably because they are already in use)", "OK");
+                DisplayAlertAsync("Error", "This person cannot be added (probably because they are already in use)", "OK");
         }
         else
             pc.Diner = selectedPerson;

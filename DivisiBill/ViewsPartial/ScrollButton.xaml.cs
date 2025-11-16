@@ -6,7 +6,7 @@ namespace DivisiBill.ViewsPartial;
 /// <summary>
 /// A custom control that provides list navigation functionality with visual feedback.
 /// Supports both quick press for incremental scrolling and long press for jumping to list extremities.
-/// The button appearance automatically adjusts based on its position (up/down arrow).
+/// The button appearance (an up or down arrow) automatically adjusts based on its position.
 /// </summary>
 public partial class ScrollButton : ContentView
 {
@@ -28,8 +28,8 @@ public partial class ScrollButton : ContentView
     [RelayCommand(CanExecute = nameof(CanPress))]
     public async Task Press(string parameter)
     {
-        await this.ScaleTo(0.5, 100);
-        await this.ScaleTo(1.0, 100);
+        await this.ScaleToAsync(0.5, 100);
+        await this.ScaleToAsync(1.0, 100);
         Command.Execute(parameter);
         StateTimer.Change(200, Timeout.Infinite);
     }
@@ -42,8 +42,8 @@ public partial class ScrollButton : ContentView
     [RelayCommand(CanExecute = nameof(CanLongPress))]
     public async Task LongPress(string parameter)
     {
-        await this.ScaleTo(1.5, 100);
-        await this.ScaleTo(1.0, 100);
+        await this.ScaleToAsync(1.5, 100);
+        await this.ScaleToAsync(1.0, 100);
         Command.Execute(parameter);
         StateTimer.Change(200, Timeout.Infinite);
     }
