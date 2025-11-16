@@ -82,7 +82,6 @@
    </ItemGroup>
 
    <ItemGroup>
-     <None Remove="Release Notes.html" />
      <None Remove="Resources\Images\dotnet.svg" />
      <None Remove="Resources\Splash\appiconfg.svg" />
    </ItemGroup>

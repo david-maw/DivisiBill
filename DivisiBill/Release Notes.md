@@ -1,3 +1,9 @@
+# 6.3.1
+
+## Upgrade to .NET 10
+
+The application infrastructure has been upgraded to .NET 10. This should make no functional difference except that a few actions will be slightly faster.
+
 # 6.2.45
 
 Improvements to Archive and Restore
