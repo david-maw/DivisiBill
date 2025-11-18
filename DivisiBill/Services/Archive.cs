@@ -224,7 +224,7 @@ public class Archive
             {
                 if (DeleteBeforeRestore)
                 {
-                    MealSummary.PermanentlyDeleteAllLocalMeals(); // Clear any fake meals
+                    MealSummary.PermanentlyDeleteAllLocalMeals();
                     
                     // The old current meal is deleted so look for the first meal that is not a fake meal (Size >= 0) to be the new one
                     Meal m = SelectedMeals.Where(m => m.Size >= 0).FirstOrDefault();

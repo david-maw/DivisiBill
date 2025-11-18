@@ -318,17 +318,20 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// an archive restore operation. All in-memory sample meals are also cleared.</remarks>
     public static void PermanentlyDeleteAllLocalMeals()
     {
-        var mealFiles = Directory.EnumerateFiles(Meal.MealFolderPath, "*.xml").ToList();
-        
-        foreach (string mealFilePath in mealFiles)
+        if (Directory.Exists(Meal.MealFolderPath)) // It may not exist if this is a new install
         {
-            try
+            var mealFiles = Directory.EnumerateFiles(Meal.MealFolderPath, "*.xml").ToList();
+
+            foreach (string mealFilePath in mealFiles)
             {
-                File.Delete(mealFilePath);
-            }
-            catch (Exception ex)
-            {
-                ex.ReportCrash();
+                try
+                {
+                    File.Delete(mealFilePath);
+                }
+                catch (Exception ex)
+                {
+                    ex.ReportCrash();
+                }
             }
         }
         Meal.LocalMealList.Clear(); // Will also delete any in-memory only sample meals
