@@ -103,6 +103,7 @@
      <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.10" />
+      <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.0" />
       <PackageReference Include="Plugin.InAppBilling" Version="9.1.0" />
       <PackageReference Include="Sentry.Maui" Version="5.16.2" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
@@ -110,6 +111,11 @@
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
       <PackageReference Include="SkiaSharp" Version="3.119.1" />
    </ItemGroup>
+
+  <!--Add Tool For XML Serialization Compile-->
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.0" />
+  </ItemGroup>
 
   <!-- Build Properties must be defined within these property groups to ensure successful publishing
        to the Mac App Store. See: https://aka.ms/maui-publish-app-store#define-build-properties-in-your-project-file -->

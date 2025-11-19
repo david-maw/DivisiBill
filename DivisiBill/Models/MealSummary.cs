@@ -21,7 +21,6 @@ namespace DivisiBill.Models;
 /// </summary>
 [DebuggerDisplay("{DebugDisplay}")]
 [DataContract]
-[XmlRoot(ElementName = "Meal")]
 public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 {
     #region Global
@@ -476,7 +475,8 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     #endregion
     #region Persistence
     private static readonly DataContractJsonSerializer mealSummarySerializer = new(typeof(MealSummary));
-    private static readonly XmlSerializer mealSummaryXmlSerializer = new(typeof(MealSummary));
+    private static XmlRootAttribute root = new ("Meal");
+    private static readonly XmlSerializer mealSummaryXmlSerializer = new(typeof(MealSummary), root);
     public static MealSummary LoadJsonFrom(Stream sourceStream)
     {
         MealSummary ms = null;

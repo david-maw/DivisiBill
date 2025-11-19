@@ -101,7 +101,7 @@
                             <FormattedString>
                                 <Span Text="{Binding VenueCount}"/>
                                 <Span Text=" Venues by "/>
-                                <Span Text="{Binding SortOrderName}"/>
+                                <Span Text="{Binding VenueSortOrderName}"/>
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>

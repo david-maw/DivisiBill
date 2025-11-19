@@ -2822,7 +2822,7 @@ public partial class Meal : ObservableObjectPlus
         // We use HashSet types to store the data, but the performance difference pales compared to the network time above        
         HashSet<string> remoteMealNames = remoteFileInfoList is null ? [] : [.. remoteFileInfoList.Select(x => x.Name)];
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
-        var remoteFileInfoDict = remoteFileInfoList.ToDictionary(m => m.Name);
+        var remoteFileInfoDict = remoteFileInfoList is null ? [] : remoteFileInfoList.ToDictionary(m => m.Name);
         HashSet<string> localMealNames = [];
         // Mark meals in the remote meal set as being remote and populate the set of local meals  
         foreach (var ms in LocalMealList)

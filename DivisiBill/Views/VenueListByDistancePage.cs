@@ -5,6 +5,6 @@ public class VenueListByDistancePage : VenueListPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        context.SortOrder = ViewModels.VenueListViewModel.SortOrderType.byDistance;
+        context.VenueSortOrder = ViewModels.VenueListViewModel.VenueSortOrderType.byDistance;
     }
 }

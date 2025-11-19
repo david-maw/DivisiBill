@@ -210,21 +210,21 @@ public partial class VenueListViewModel : ObservableObjectPlus
     #endregion
     public int VenueCount => Venue.AllVenues.Count;
     private async void App_MyLocationChanged(object? sender, EventArgs e) => await Venue.UpdateAllDistances();
-    public ObservableCollection<Venue> VenueList => (SortOrder == SortOrderType.byName) ? Venue.AllVenues : Venue.AllVenuesByDistance;
+    public ObservableCollection<Venue> VenueList => (VenueSortOrder == VenueSortOrderType.byName) ? Venue.AllVenues : Venue.AllVenuesByDistance;
     #endregion
     #region Sorting
-    public string SortOrderName => SortOrder == SortOrderType.byName ? "Name" : SortOrder == SortOrderType.byDistance ? "Distance" : "Unknown";
+    public string VenueSortOrderName => VenueSortOrder == VenueSortOrderType.byName ? "Name" : VenueSortOrder == VenueSortOrderType.byDistance ? "Distance" : "Unknown";
 
-    public enum SortOrderType { byDistance, byName };
+    public enum VenueSortOrderType { byDistance, byName };
     private void NextSortOrder()
     {
-        if (SortOrder == Enum.GetValues<SortOrderType>().Max())
-            SortOrder = Enum.GetValues<SortOrderType>().Min();
+        if (VenueSortOrder == Enum.GetValues<VenueSortOrderType>().Max())
+            VenueSortOrder = Enum.GetValues<VenueSortOrderType>().Min();
         else
-            SortOrder++;
+            VenueSortOrder++;
     }
 
-    public SortOrderType SortOrder
+    public VenueSortOrderType VenueSortOrder
     {
         get;
         set
@@ -232,11 +232,11 @@ public partial class VenueListViewModel : ObservableObjectPlus
             if (field != value)
             {
                 field = value;
-                OnPropertyChanged(nameof(SortOrderName));
+                OnPropertyChanged(nameof(VenueSortOrderName));
                 OnPropertyChanged(nameof(VenueList));
             }
         }
-    } = SortOrderType.byName;
+    } = VenueSortOrderType.byName;
     #endregion
     #region Scrolling Item list
     [ObservableProperty]
