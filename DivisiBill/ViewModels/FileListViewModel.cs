@@ -43,9 +43,9 @@ public partial class FileListViewModel : ObservableObjectPlus
     public void Terminate() => SelectionCompleted.TrySetResult(null);
     public ObservableCollection<RemoteItemInfo> FileList { get; set; }
 
-    public bool ItemsFound => FileList.Count > 0;
+    public bool ItemsFound => FileListCount > 0;
 
-    public int FileListCount => FileList.Count;
+    public int FileListCount => FileList is null ? 0 : FileList.Count;
 
     public TaskCompletionSource<RemoteItemInfo> SelectionCompleted = new();
 

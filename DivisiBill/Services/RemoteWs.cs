@@ -125,7 +125,7 @@ public static class RemoteWs
             {
                 var itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, 1);
                 List<WsDataItem> items = await JsonSerializer.DeserializeAsync<List<WsDataItem>>(itemListJson);
-                name = items.FirstOrDefault().Name;
+                name = items.FirstOrDefault()?.Name;
                 if (string.IsNullOrWhiteSpace(name))
                     return null;
             }
