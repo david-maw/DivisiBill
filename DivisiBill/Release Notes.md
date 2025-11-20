@@ -1,3 +1,18 @@
+# 6.3.2
+
+## Make Status Bar Visible
+
+Since the status bar (the purple area at the top of each page) is always visible,
+this change shows the status bar icons in it all the time rather than requiring a swipe down to show them.
+
+## Handle Empty Item lists Cleanly
+
+A new install with cloud access enabled could fault if there were no stored person or venue lists, this has been corrected.
+
+## Correct Restore on a New Install
+
+Restoring an archive and requesting existing items be deleted first could crash on a new install because it would attempt to use a bills folder that did not exist yet. This has been corrected.
+
 # 6.3.1
 
 ## Upgrade to .NET 10
