@@ -15,6 +15,10 @@ The activity indicator was typically scrolled off the end of the page and thus n
 
 Restoring an archive and requesting existing items be deleted first could crash on a new install because it would attempt to use a bills folder that did not exist yet. This has been corrected.
 
+## Bill List Remote Images
+
+The bill list no longer shows the status of remote images if remote access is not allowed.
+
 # 6.3.1
 
 ## Upgrade to .NET 10

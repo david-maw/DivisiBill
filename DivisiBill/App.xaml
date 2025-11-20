@@ -32,9 +32,9 @@
             <toolkit:IsStringNullOrWhiteSpaceConverter x:Key="IsStringNullOrWhiteSpace" />
             <toolkit:IsNullConverter x:Key="IsNull" />
             <toolkit:IsNotNullConverter x:Key="IsNotNull" />
-
-            <!--<viewModels:MealViewModel x:Key="MealViewModel"/>--> 
-            <!--  This is defined in code  -->
+            <toolkit:VariableMultiValueConverter x:Key="And" ConditionType="All"/>
+            <toolkit:VariableMultiValueConverter x:Key="Or" ConditionType="Any"/>
+            <!--<viewModels:MealViewModel x:Key="MealViewModel"/>  is defined in code  --> 
 
             <Color x:Key="PrimaryColor">#512bdf</Color>
             <Color x:Key="SecondaryColor">White</Color>

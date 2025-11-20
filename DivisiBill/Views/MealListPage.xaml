@@ -144,8 +144,14 @@
                             <Image
                             Grid.Row="0"
                             Grid.Column="1"
-                            IsVisible="{Binding HasRemoteImage}"
-                            Source="{StaticResource FileGlyphImage}" />
+                            Source="{StaticResource FileGlyphImage}">
+                            <Image.IsVisible>
+                                <MultiBinding Converter="{StaticResource And}">
+                                    <Binding Path="HasRemoteImage" />
+                                    <Binding Path="IsCloudAllowed" Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" x:DataType="vm:MealListViewModel" />
+                                </MultiBinding>
+                            </Image.IsVisible>
+                            </Image>
                             <Image
                             Grid.Row="1"
                             Grid.Column="1"
