@@ -243,7 +243,7 @@ internal static class CallWs
                 if (response.IsSuccessStatusCode)
                 {
                     string s = await response.Content.ReadAsStringAsync();
-                    Utilities.DebugMsg("In VerifyPurchase, VerifyAndroidPurchase returned ok and \"" + s + "\"");
+                    Utilities.RecordMsg("In VerifyPurchase, VerifyAndroidPurchase returned ok and \"" + s + "\"");
                     // If this is a pro license, pass it to future web service calls for authorization
                     if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.OldProProductId))
                     {
@@ -253,11 +253,11 @@ internal static class CallWs
                     return s;
                 }
                 else
-                    Utilities.DebugMsg("In VerifyPurchase, verify returned status " + (int)response.StatusCode + "-" + response.StatusCode + " and '" + await response.Content.ReadAsStringAsync() + "'");
+                    Utilities.RecordMsg("In VerifyPurchase, verify returned status " + (int)response.StatusCode + "-" + response.StatusCode + " and '" + await response.Content.ReadAsStringAsync() + "'");
             }
             catch (Exception ex)
             {
-                Utilities.DebugMsg("Exception in VerifyPurchase for " + purchase.Id + ": " + ex.Message);
+                Utilities.RecordMsg("Exception in VerifyPurchase for " + purchase.Id + ": " + ex.Message);
             }
         }
         else

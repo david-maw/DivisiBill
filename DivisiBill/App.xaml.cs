@@ -108,6 +108,43 @@ public partial class App : Application, INotifyPropertyChanged
         });
     #endregion
     #region Lifecycle and window management
+    #region Persist Changes
+    // TODO: remove workaround for https://github.com/dotnet/maui/issues/27167
+    static async void PersistAsNeeded() => await MainThread.InvokeOnMainThreadAsync(ActualPersistAsNeeded);
+
+    /// <summary>
+    /// Persists application state and settings if necessary. This method can be called multiple times safely and will
+    /// only perform persistence operations when initialization is complete.
+    /// </summary>
+    /// <remarks>This method updates the last use timestamp and saves venue and meal settings if changes are
+    /// detected. Exceptions during persistence are ignored to ensure the application can continue shutting down or
+    /// performing other operations without interruption.</remarks>
+    static async void ActualPersistAsNeeded()
+    {
+        Utilities.DebugMsg($"In App.PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
+        if (!InitializationComplete.Task.IsCompleted)
+            return; // There's no knowing what state we're in, so don't do anything
+        Settings?.LastUse = DateTime.Now; // Note when we last did anything
+        try
+        {
+            if (!Venue.IsSaved)
+                await Venue.SaveSettingsAsync();
+        }
+        catch (Exception)
+        {
+            // Just ignore it and go on to the next operation as we are stopping anyway
+        }
+        // person data is already updated; it is saved whenever it changes since that is relatively rare, so nothing to do there
+        try
+        {
+            await Meal.CurrentMeal.SaveIfChangedAsync(SaveRemote: false); // save a snapshot if needed, but quickly, so no remote save
+        }
+        catch (Exception)
+        {
+            // Just ignore it and go on to the next operation as we are stopping anyway
+        }
+    } 
+    #endregion
     private static string priorWhat = "unknown";
     protected override Window CreateWindow(IActivationState activationState)
     {
@@ -119,36 +156,6 @@ public partial class App : Application, INotifyPropertyChanged
             Utilities.DebugMsg("Main Window state = " + what + (result ? " (repeated)" : ", previously " + priorWhat));
             priorWhat = what;
             return result;
-        }
-
-        // TODO: remove workaround for https://github.com/dotnet/maui/issues/27167
-        async void PersistAsNeeded() => await MainThread.InvokeOnMainThreadAsync(ActualPersistAsNeeded);
-
-        // Save off any persistent state - this can be called multiple times without any problem
-        async void ActualPersistAsNeeded()
-        {
-            Utilities.DebugMsg($"In CreateWindow.PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
-            if (!InitializationComplete.Task.IsCompleted)
-                return; // There's no knowing what state we're in, so don't do anything
-            Settings?.LastUse = DateTime.Now; // Note when we last did anything
-            try
-            {
-                if (!Venue.IsSaved)
-                    await Venue.SaveSettingsAsync();
-            }
-            catch (Exception)
-            {
-                // Just ignore it and go on to the next operation as we are stopping anyway
-            }
-            // person data is already updated; it is saved whenever it changes since that is relatively rare, so nothing to do there
-            try
-            {
-                await Meal.CurrentMeal.SaveIfChangedAsync(SaveRemote: false); // save a snapshot if needed, but quickly, so no remote save
-            }
-            catch (Exception)
-            {
-                // Just ignore it and go on to the next operation as we are stopping anyway
-            }
         }
 
         void StoreWindowLocation(double x, double y, double w, double h)
