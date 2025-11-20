@@ -391,6 +391,7 @@ internal partial class DataManagementViewModel : ObservableObject
         }
 
         IsBusy = true;
+        await Task.Yield(); // Give the UI a chance to update - this seems to sometimes be necessary on Android
         try
         {
             var archive = SelectedArchive;

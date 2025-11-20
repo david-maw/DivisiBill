@@ -9,7 +9,9 @@ this change shows the status bar icons in it all the time rather than requiring 
 
 A new install with cloud access enabled could fault if there were no stored person or venue lists, this has been corrected.
 
-## Correct Restore on a New Install
+## Restore Improvements
+
+The activity indicator was typically scrolled off the end of the page and thus not visible - it is now larger and overlaid on the center of the page regardless of scrolling. 
 
 Restoring an archive and requesting existing items be deleted first could crash on a new install because it would attempt to use a bills folder that did not exist yet. This has been corrected.
 
