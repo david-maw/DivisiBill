@@ -57,4 +57,21 @@ public partial class TotalsPage : ContentPage
         v.OnPersonSelected += HandlePersonSelected;
         await Navigation.PushAsync(v);
     }
+
+    // TODO: Remove when https://github.com/dotnet/maui/issues/32332 is fixed
+    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is PersonCost pc)
+        {
+            viewModel.DeleteCostCommand.Execute(pc);
+        }
+    }
+
+    private void OnFilterSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is PersonCost pc)
+        {
+            viewModel.FilterItemsCommand.Execute(pc);
+        }
+    }
 }

@@ -27,14 +27,16 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
                                                 CommandParameter="{Binding x:DataType=model:Person}"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"/>
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"
+                                                Invoked="OnUseSwipeItemInvoked"/>
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                                 CommandParameter="{Binding x:DataType=model:Person}"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"/>
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"
+                                                Invoked="OnDeleteSwipeItemInvoked"/>
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <VerticalStackLayout Grid.ColumnSpan="3" x:DataType="model:Person">

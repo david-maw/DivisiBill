@@ -93,4 +93,21 @@ public partial class MealListPage : ContentPage
         viewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;
     }
     #endregion
+
+    // TODO: Remove when https://github.com/dotnet/maui/issues/32332 is fixed
+    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is MealSummary ms)
+        {
+            viewModel.DeleteMealCommand.Execute(ms);
+        }
+    }
+
+    private void OnUseSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is MealSummary ms)
+        {
+            viewModel.InvokeUseMealCommand.Execute(ms);
+        }
+    }
 }

@@ -42,14 +42,16 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphFilterOn}"
                                    CommandParameter="{Binding}"
-                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"/>
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"
+                                   Invoked="OnFilterSwipeItemInvoked"/>
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                    CommandParameter="{Binding}"
-                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"
+                                   Invoked="OnDeleteSwipeItemInvoked"/>
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <!--#region PersonCost display -->
@@ -97,7 +99,7 @@
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2" 
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}" />
                     </Grid.GestureRecognizers>
                 </Grid>
                 <!--#endregion-->

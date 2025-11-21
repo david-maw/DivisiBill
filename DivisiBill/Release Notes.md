@@ -1,9 +1,12 @@
 # 6.3.2
 
+## Correct Swipe Behavior
+
+Swipe on Lists of Bills, People, Venues, Venue Lists, People lists  and Totals were not working,due to a bug in .NET 10,  this has been corrected.
+
 ## Make Status Bar Visible
 
-Since the status bar (the purple area at the top of each page) is always visible,
-this change shows the status bar icons in it all the time rather than requiring a swipe down to show them.
+The status bar (the purple area at the top of each page) is currently always visible in .NET 10. Since it is there, this change shows the status bar icons in it all the time rather than requiring a swipe down to show them.
 
 ## Handle Empty Item lists Cleanly
 

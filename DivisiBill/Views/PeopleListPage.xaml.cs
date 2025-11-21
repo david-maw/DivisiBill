@@ -76,4 +76,21 @@ public partial class PeopleListPage : ContentPage
         context.LastVisibleItemIndex = e.LastVisibleItemIndex;
     }
     #endregion
+
+    //TODO: Remove when https://github.com/dotnet/maui/issues/32332 is fixed
+    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is Person p)
+        {
+            context.DeleteCommand.Execute(p);
+        }
+    }
+
+    private void OnUseSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is Person p)
+        {
+            context.UseCommand.Execute(p);
+        }
+    }
 }

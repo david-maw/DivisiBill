@@ -20,6 +20,7 @@
 
     <ContentPage.Resources>
         <!--  TODO MAUI DETOUR SwipeView bug means Add and scroll will fail on Windows until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed  -->
+        <!--  TODO: MAUI DETOUR because the commands don't bind correctly use Invoked property until https://github.com/dotnet/maui/issues/32332 is fixed-->
         <!--  UI for non-Windows  -->
         <DataTemplate x:Key="WithSwipe" x:DataType="services:RemoteItemInfo">
             <Grid ColumnDefinitions="*,*,*">
@@ -28,6 +29,7 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem
                                 BackgroundColor="PaleGreen"
+                                Invoked="OnUseSwipeItemInvoked"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=UseCommand, x:DataType=vm:FileListViewModel}"
                                 CommandParameter="{Binding}"
                                 IconImageSource="{StaticResource GlyphLoad}" />
@@ -37,6 +39,7 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem
                                 BackgroundColor="Red"
+                                Invoked="OnDeleteSwipeItemInvoked"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=vm:FileListViewModel}"
                                 CommandParameter="{Binding}"
                                 IconImageSource="{StaticResource GlyphDel}" />

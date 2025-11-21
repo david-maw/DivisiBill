@@ -33,7 +33,8 @@
                             BackgroundColor="PaleGreen"
                             Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                             CommandParameter="{Binding}"
-                            IconImageSource="{StaticResource GlyphLoad}" />
+                            IconImageSource="{StaticResource GlyphLoad}"
+                            Invoked="OnUseSwipeItemInvoked" />
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
@@ -42,7 +43,8 @@
                             BackgroundColor="Red"
                             Command="{Binding DeleteMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                             CommandParameter="{Binding}"
-                            IconImageSource="{StaticResource GlyphDel}" />
+                            IconImageSource="{StaticResource GlyphDel}"
+                            Invoked="OnDeleteSwipeItemInvoked" />
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <!--#endregion-->
@@ -171,8 +173,6 @@
                             IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                             Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}"/>
                         </Grid>
-                        <!--#endregion-->
-                        <!--#endregion-->
                         <!--#endregion-->
                         <!--#region Overlaid Buttons-->
                         <!--  This button is used if we're doing multiple selection  -->

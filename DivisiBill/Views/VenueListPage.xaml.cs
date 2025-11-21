@@ -89,4 +89,21 @@ public partial class VenueListPage : ContentPage
         context.LastVisibleItemIndex = e.LastVisibleItemIndex;
     }
     #endregion
+
+    // TODO: Remove when https://github.com/dotnet/maui/issues/32332 is fixed
+    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is Venue v)
+        {
+            context.DeleteCommand.Execute(v);
+        }
+    }
+
+    private void OnAssignSwipeItemInvoked(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem si && si.BindingContext is Venue v)
+        {
+            context.AssignCommand.Execute(v);
+        }
+    }
 }
