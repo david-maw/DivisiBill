@@ -320,6 +320,11 @@ public partial class MealViewModel : ObservableObjectPlus
     public PersonCost CostListAdd(Person p) => Meal.CurrentMeal.CostListAdd(p);
     public void CostListDelete(PersonCost pc)
     {
+        if (pc.DinerID == AmountForSharerID)
+        {
+            // We are about to delete the filtered sharer so turn off filtering first
+            ClearFiltering();
+        }
         SavedCost sc = new() { PersonCost = pc };
         foreach (var li in LineItems.Where((li) => li.SharedBy[pc.DinerIndex]))
         {
@@ -744,6 +749,11 @@ public partial class MealViewModel : ObservableObjectPlus
         SetFilteredCouponAmountAfterTax();
         OnPropertyChanged(nameof(CouponAmountAfterTax)); // because this may need to be changed
     }
+    /// <summary>
+    /// Gets or sets the identifier of the diner for whom the amount is being calculated or displayed.
+    /// </summary>
+    /// <remarks>Changing this property updates the associated line items and may trigger recalculation of
+    /// costs if filters are applied.</remarks>
     public LineItem.DinerID AmountForSharerID
     {
         get => Meal.CurrentMeal.AmountForSharerID;
