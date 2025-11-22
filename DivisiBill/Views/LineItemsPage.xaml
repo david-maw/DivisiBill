@@ -34,7 +34,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="labelStyle" TargetType="Label">
-                <Setter Property="FontSize" Value="Large" />
+                <Setter Property="FontSize" Value="24" />
                 <Setter Property="HorizontalTextAlignment" Value="End" />
                 <Setter Property="VerticalTextAlignment" Value="Center" />
                 <Setter Property="Padding" Value="0" />
@@ -53,111 +53,6 @@
             </Style>
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All" />
         </ResourceDictionary>
-        <!--  TODO MAUI DETOUR SwipeView bug means Add and scroll will fail on Windows until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed  -->
-        <DataTemplate x:Key="WithSwipe" x:DataType="model:LineItem">
-            <Grid ColumnDefinitions="35,*,80,*,30">
-                <!--#region Item information-->
-                <!--#region Swipe Items-->
-                <SwipeView Grid.ColumnSpan="5">
-                    <SwipeView.RightItems>
-                        <SwipeItems Mode="Execute">
-                            <SwipeItem
-                                BackgroundColor="Red"
-                                Command="{Binding ChangeSharingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                                CommandParameter="{Binding}"
-                                IconImageSource="{StaticResource GlyphDel}" />
-                        </SwipeItems>
-                    </SwipeView.RightItems>
-                    <!--#endregion-->
-                    <Grid
-                        Margin="10,0,10,0"
-                        ColumnDefinitions="20,*,Auto,20"
-                        IsVisible="{Binding IsSharedByFilter}"
-                        RowDefinitions="Auto">
-                        <Grid.Resources>
-                            <Style x:Key="SignedLabelStyle" TargetType="Label">
-                                <Setter Property="VisualStateManager.VisualStateGroups">
-                                    <VisualStateGroupList>
-                                        <VisualStateGroup>
-                                            <VisualState x:Name="Negative">
-                                                <VisualState.StateTriggers>
-                                                    <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="True" />
-                                                </VisualState.StateTriggers>
-                                                <VisualState.Setters>
-                                                    <Setter Property="TextColor" Value="{StaticResource NegativeNumber}" />
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                            <VisualState x:Name="Default">
-                                                <VisualState.StateTriggers>
-                                                    <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="False" />
-                                                </VisualState.StateTriggers>
-                                                <VisualState.Setters>
-                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateGroupList>
-                                </Setter>
-                            </Style>
-                        </Grid.Resources>
-                        <Label
-                            Grid.Column="0"
-                            FontSize="15"
-                            HorizontalOptions="Center"
-                            Text="{Binding Sharers}"
-                            VerticalOptions="Center" />
-
-                        <Label
-                            Grid.Column="1"
-                            FontSize="Large"
-                            LineBreakMode="TailTruncation"
-                            Text="{Binding ItemName}" />
-
-                        <Label
-                            x:Name="amountLabel"
-                            Grid.Column="2"
-                            FontSize="Large"
-                            HorizontalTextAlignment="End"
-                            IsEnabled="True"
-                            LineBreakMode="NoWrap"
-                            Style="{StaticResource SignedLabelStyle}"
-                            Text="{Binding Path=AmountText}" />
-
-                        <Label
-                            Grid.Column="3"
-                            FontSize="15"
-                            IsVisible="{Binding Comped}"
-                            Text="☺"
-                            VerticalOptions="Center" />
-                    </Grid>
-                </SwipeView>
-                <!--#endregion-->
-                <!--#region overlay buttons-->
-                <!--  Tap to toggle sharing, spans the margin and does not cause an item to be selected  -->
-                <Rectangle Grid.Column="0">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ChangeSharingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
-                <!--  Tap to toggle select or double tap to display payments  -->
-                <Rectangle Grid.Column="1" Grid.ColumnSpan="3">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
-                        <TapGestureRecognizer
-                            Command="{Binding DisplayPaymentsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            CommandParameter="{Binding SelectedCost, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            NumberOfTapsRequired="2" />
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
-                <!--  Tap to toggle Comped value, spans the margin and does not cause an item to be selected  -->
-                <Rectangle Grid.Column="4">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ChangeCompCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
-                <!--#endregion-->
-            </Grid>
-        </DataTemplate>
         <DataTemplate x:Key="NoSwipe" x:DataType="model:LineItem">
             <Grid ColumnDefinitions="35,*,80,*,30">
                 <Grid.Resources>
@@ -199,23 +94,20 @@
                         HorizontalOptions="Center"
                         Text="{Binding Sharers}"
                         VerticalOptions="Center" />
-
                     <Label
                         Grid.Column="1"
-                        FontSize="Large"
+                        FontSize="24"
                         LineBreakMode="TailTruncation"
                         Text="{Binding ItemName}" />
-
                     <Label
                         x:Name="amountLabel"
                         Grid.Column="2"
-                        FontSize="Large"
+                        FontSize="24"
                         HorizontalTextAlignment="End"
                         IsEnabled="True"
                         LineBreakMode="NoWrap"
                         Style="{StaticResource SignedLabelStyle}"
                         Text="{Binding Path=AmountText}" />
-
                     <Label
                         Grid.Column="3"
                         FontSize="15"
@@ -232,10 +124,11 @@
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--  Tap to toggle select or double tap to display payments  -->
-                <!--  Strangely, if this button is replaced with a Rectangle it doesn't work correctly because the event order changes, at least through .NET 9  -->
+                <!--  This button takes up too much vertical space on Android, but is required on Windows because the Rectangle below does not work)  -->
                 <Button
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
+                    IsVisible="{OnPlatform WinUI=True, Default=False}"
                     BackgroundColor="Transparent">
                     <Button.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
@@ -245,22 +138,22 @@
                             NumberOfTapsRequired="2" />
                     </Button.GestureRecognizers>
                 </Button>
+                <!--This rectangle is the equivalent of the Button above for non-Windows platforms. On Windows it doesn't work correctly because the event order changes, at least through .NET 10-->
+                <Rectangle Grid.Column="1" Grid.ColumnSpan="3" IsVisible="{OnPlatform WinUI=False, Default=True}">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
+                        <TapGestureRecognizer
+                            Command="{Binding DisplayPaymentsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            CommandParameter="{Binding SelectedCost, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            NumberOfTapsRequired="2" />
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
                 <!--  Tap to toggle Comped value, spans the margin and does not cause an item to be selected  -->
                 <Rectangle Grid.Column="4">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ChangeCompCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
-                <!--#endregion-->
-                <!--#region Context Menu to Replace Swipe-->
-                <FlyoutBase.ContextFlyout>
-                    <MenuFlyout>
-                        <MenuFlyoutItem
-                            Command="{Binding DeleteLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            CommandParameter="{Binding}"
-                            Text="Delete" />
-                    </MenuFlyout>
-                </FlyoutBase.ContextFlyout>
                 <!--#endregion-->
             </Grid>
         </DataTemplate>
@@ -313,8 +206,7 @@
             x:Name="LineItemsListView"
             EmptyView="No items defined"
             ItemSizingStrategy="MeasureAllItems"
-            ItemTemplate="{OnPlatform Default={StaticResource WithSwipe},
-                                      WinUI={StaticResource NoSwipe}}"
+            ItemTemplate="{StaticResource NoSwipe}"
             ItemsSource="{Binding LineItems}"
             Scrolled="OnCollectionViewScrolled"
             SelectedItem="{Binding SelectedLineItem, Mode=TwoWay}"
@@ -357,15 +249,15 @@
         <Border IsVisible="{Binding ShowLineItemsHint}" Style="{StaticResource HintStyle}">
             <VerticalStackLayout Padding="5">
                 <Label
-                    FontSize="Large"
+                    FontSize="24"
                     HorizontalOptions="Center"
                     Text="Swipe items or page" />
                 <Label
-                    FontSize="Large"
+                    FontSize="24"
                     HorizontalOptions="Center"
                     Text="Double tap changes Title" />
                 <Label
-                    FontSize="Large"
+                    FontSize="24"
                     HorizontalOptions="Center"
                     Text="See Help for more info" />
                 <HorizontalStackLayout HorizontalOptions="Center">
@@ -390,8 +282,8 @@
                 Text="UnDelete All" />
         </HorizontalStackLayout>
         <!--#endregion-->
-        <!--#region Subtotal Block-->
-        <!--  This is the block of numbers at the bottom of the page containing a SubTotal and any nonzero taxable coupon amount  -->
+        <!--#region Subtotal Block (no item selected)-->
+        <!--  This is a block of numbers at the bottom of the page containing a SubTotal and any nonzero taxable coupon amount  -->
         <Border
             x:Name="totalsContainer"
             Margin="5"
@@ -411,14 +303,14 @@
                 <!--#region Subtotal (Overall or Individual)-->
                 <Label
                     Grid.Row="0"
-                    FontSize="Large"
+                    FontSize="24"
                     IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
                     LineBreakMode="TailTruncation"
                     Text="Bill Subtotal" />
                 <Label
                     Grid.Row="0"
                     Grid.Column="1"
-                    FontSize="Large"
+                    FontSize="24"
                     HorizontalOptions="End"
                     IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
                     Text="{Binding SubTotal, StringFormat='{0:C}'}">
@@ -432,14 +324,14 @@
                 </Label>
                 <Label
                     Grid.Row="0"
-                    FontSize="Large"
+                    FontSize="24"
                     IsVisible="{Binding IsFiltered}"
                     LineBreakMode="TailTruncation"
                     Text="Person Subtotal" />
                 <Label
                     Grid.Row="0"
                     Grid.Column="1"
-                    FontSize="Large"
+                    FontSize="24"
                     HorizontalOptions="End"
                     IsVisible="{Binding IsFiltered}"
                     Text="{Binding FilteredSubTotal, StringFormat='{0:C}'}" />
@@ -447,7 +339,7 @@
                 <!--#region Post Tax Coupon (overall or individual)-->
                 <Label
                     Grid.Row="1"
-                    FontSize="Large"
+                    FontSize="24"
                     LineBreakMode="TailTruncation"
                     Text="Discount After Tax">
                     <Label.IsVisible>
@@ -460,7 +352,7 @@
                 <Label
                     Grid.Row="1"
                     Grid.Column="1"
-                    FontSize="Large"
+                    FontSize="24"
                     HorizontalOptions="End"
                     Style="{StaticResource RedLabelTextStyle}"
                     Text="{Binding CouponAmountAfterTax, StringFormat='{0:C}'}">
@@ -473,7 +365,7 @@
                 </Label>
                 <Label
                     Grid.Row="1"
-                    FontSize="Large"
+                    FontSize="24"
                     LineBreakMode="TailTruncation"
                     Text="Discount After Tax">
                     <Label.IsVisible>
@@ -486,7 +378,7 @@
                 <Label
                     Grid.Row="1"
                     Grid.Column="1"
-                    FontSize="Large"
+                    FontSize="24"
                     HorizontalOptions="End"
                     Style="{StaticResource RedLabelTextStyle}"
                     Text="{Binding FilteredCouponAmountAfterTax, StringFormat='{0:C}'}">
@@ -501,6 +393,7 @@
             </Grid>
         </Border>
         <!--#endregion-->
+        <!--#region Selected Item Details and Data Entry -->
         <!--#region Shares Count Buttons-->
         <!--  The number of shares held by the selected person  -->
         <VerticalStackLayout
@@ -509,7 +402,7 @@
             IsVisible="False">
             <Label
                 x:Name="SharesCountHeader"
-                FontSize="Large"
+                FontSize="24"
                 HorizontalOptions="Center" />
             <HorizontalStackLayout HorizontalOptions="Center">
                 <HorizontalStackLayout.Resources>
@@ -588,7 +481,7 @@
             <Entry
                 x:Name="SelectedAmountEntry"
                 Grid.Column="1"
-                FontSize="Large"
+                FontSize="24"
                 HorizontalTextAlignment="End"
                 Keyboard="Numeric"
                 Placeholder="Value"
@@ -606,6 +499,7 @@
                 </Entry.Behaviors>
             </Entry>
         </Grid>
+        <!--#endregion-->
         <!--#endregion-->
     </services:ColumnLayout>
 </ContentPage>
