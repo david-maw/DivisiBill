@@ -271,6 +271,14 @@ public partial class MealViewModel : ObservableObjectPlus
             pc = FilteredSharer;
         await Utilities.ShowPayments(new PaymentsViewModel(SubTotal + Tax - CouponAmountAfterTax, RoundedAmount, pc?.Nickname, pc is null ? 0 : RoundedAmount - Math.Round(pc.Amount), UnallocatedAmount));
     }
+    [RelayCommand]
+    private async Task DisplayPaymentsForLineItem(LineItem li)
+    {
+        PersonCost pc = null;
+        if (li is not null && !IsFiltered)
+            pc = Meal.CurrentMeal.Costs.FirstOrDefault(personCost => personCost.DinerID == li.FirstSharer);
+        await DisplayPayments(pc);
+    }
 
     [RelayCommand]
     public async Task FilterItems(PersonCost pc)

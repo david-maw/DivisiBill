@@ -133,8 +133,8 @@
                     <Button.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
                         <TapGestureRecognizer
-                            Command="{Binding DisplayPaymentsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            CommandParameter="{Binding SelectedCost, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            Command="{Binding DisplayPaymentsForLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            CommandParameter="{Binding SelectedLineItem, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
                             NumberOfTapsRequired="2" />
                     </Button.GestureRecognizers>
                 </Button>
