@@ -124,30 +124,19 @@
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--  Tap to toggle select or double tap to display payments  -->
-                <!--  This button takes up too much vertical space on Android, but is required on Windows because the Rectangle below does not work)  -->
-                <Button
+                <ImageButton
                     Grid.Column="1"
                     Grid.ColumnSpan="3"
-                    IsVisible="{OnPlatform WinUI=True, Default=False}"
+                    MinimumHeightRequest="10"
                     BackgroundColor="Transparent">
-                    <Button.GestureRecognizers>
+                    <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
                         <TapGestureRecognizer
                             Command="{Binding DisplayPaymentsForLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
                             CommandParameter="{Binding SelectedLineItem, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
                             NumberOfTapsRequired="2" />
-                    </Button.GestureRecognizers>
-                </Button>
-                <!--This rectangle is the equivalent of the Button above for non-Windows platforms. On Windows it doesn't work correctly because the event order changes, at least through .NET 10-->
-                <Rectangle Grid.Column="1" Grid.ColumnSpan="3" IsVisible="{OnPlatform WinUI=False, Default=True}">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
-                        <TapGestureRecognizer
-                            Command="{Binding DisplayPaymentsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            CommandParameter="{Binding SelectedCost, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            NumberOfTapsRequired="2" />
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
+                    </ImageButton.GestureRecognizers>
+                </ImageButton>
                 <!--  Tap to toggle Comped value, spans the margin and does not cause an item to be selected  -->
                 <Rectangle Grid.Column="4">
                     <Rectangle.GestureRecognizers>

@@ -22,7 +22,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="labelStyle" TargetType="Label">
-                <Setter Property="FontSize" Value="Large"/>
+                <Setter Property="FontSize" Value="24"/>
                 <Setter Property="HorizontalTextAlignment" Value="End"/>
                 <Setter Property="VerticalTextAlignment" Value="Center"/>
                 <Setter Property="Padding" Value="0"/>
@@ -56,10 +56,10 @@
                     </SwipeView.RightItems>
                     <!--#region PersonCost display -->
                     <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions= "*,Auto">
-                        <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="Large" />
+                        <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="24" />
                         <Label Grid.Column="1" Text="{Binding AmountText}"
                                 LineBreakMode="NoWrap"
-                                FontSize="Large" IsEnabled="True" HorizontalTextAlignment="End"  />
+                                FontSize="24" IsEnabled="True" HorizontalTextAlignment="End"  />
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer 
                                 CommandParameter="{Binding}" 
@@ -72,50 +72,18 @@
                     <!--#endregion-->
                 </SwipeView>
                 <!--#region Select Button -->
-                <Rectangle Grid.Column="1">
-                    <Rectangle.GestureRecognizers>
+                <ImageButton Grid.Column="1" MinimumHeightRequest="10">
+                    <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2" 
                             CommandParameter="{Binding}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
+                    </ImageButton.GestureRecognizers>
+                </ImageButton>
                 <!--#endregion-->
-            </Grid>
-        </DataTemplate>
-        <DataTemplate x:Key="NoSwipe" x:DataType="models:PersonCost">
-            <Grid ColumnDefinitions="*,80,*">
-                <!--#region PersonCost display -->
-                <Grid Grid.ColumnSpan="3" Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions= "*,Auto">
-                    <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="Large" />
-                    <Label Grid.Column="1" Text="{Binding AmountText}"
-                                    LineBreakMode="NoWrap"
-                                    FontSize="Large" IsEnabled="True" HorizontalTextAlignment="End"  />
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer 
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}"/>
-                        <TapGestureRecognizer NumberOfTapsRequired="2" 
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}" />
-                    </Grid.GestureRecognizers>
-                </Grid>
-                <!--#endregion-->
-                <!--#region Select Button -->
-                <Rectangle Grid.Column="1">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
-                        <TapGestureRecognizer NumberOfTapsRequired="2" 
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
-                <!--#endregion-->
-                <!--#region Context Menu to Replace Swipe -->
+                <!--#region Context Menu to Replace Swipe on Windows -->
                 <FlyoutBase.ContextFlyout>
                     <MenuFlyout>
                         <MenuFlyoutItem
@@ -172,7 +140,7 @@
         <!--#region Cost List (the list of people and amounts) -->
         <CollectionView x:Name="CostsListView"
             ItemsSource="{Binding Costs}"
-            ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
+            ItemTemplate="{StaticResource WithSwipe}"
             SelectionMode="Single"
             SelectedItem="{Binding SelectedCost}"
             ItemSizingStrategy="MeasureAllItems"
@@ -191,9 +159,9 @@
         <!--#region Hint -->
         <Border IsVisible="{Binding ShowTotalsHint}" Style="{StaticResource HintStyle}">
             <VerticalStackLayout>
-                <Label Text="Swipe person or page" FontSize="Large" HorizontalOptions="Center"/>
-                <Label Text="Double tap changes Title" FontSize="Large" HorizontalOptions="Center"/>
-                <Label Text="See Help for more info" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="Swipe person or page" FontSize="24" HorizontalOptions="Center"/>
+                <Label Text="Double tap changes Title" FontSize="24" HorizontalOptions="Center"/>
+                <Label Text="See Help for more info" FontSize="24" HorizontalOptions="Center"/>
                 <HorizontalStackLayout HorizontalOptions="Center">
                     <CheckBox IsChecked="{Binding ShowTotalsHint, Converter={StaticResource Not}}"/>
                     <Label Text="Hide this hint" VerticalOptions="Center"/>
@@ -211,13 +179,13 @@
         <!--#region Unshared amount (if suspiciously large) -->
         <Label IsVisible="{Binding IsUnsharedAmountSignificant}"
                 Text="{Binding RoundingErrorAmount, StringFormat='Bug, rounding error {0:C}'}"
-                FontSize="Large" HorizontalTextAlignment="Center">
+                FontSize="24" HorizontalTextAlignment="Center">
         </Label>
         <!--#endregion-->
         <!--#region Unallocated amount (if any nonzero item has not been allocated) -->
         <Label IsVisible="{Binding Path=IsAnyUnallocated}"
                 Text="{Binding Path=UnallocatedAmount, StringFormat='Unallocated Amount {0:C}'}"
-                FontSize="Large" HorizontalTextAlignment="Center">
+                FontSize="24" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowUnallocatedCommand}"/>
             </Label.GestureRecognizers>
@@ -248,7 +216,7 @@
                     Third column is blank, it's just used for spacing
                     Fourth column has all the amounts in it-->
                 <!--#region Subtotal -->
-                <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="Large" LineBreakMode="TailTruncation" Text="Bill Subtotal"/>
+                <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="24" LineBreakMode="TailTruncation" Text="Bill Subtotal"/>
                 <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubTotal, StringFormat='{0:C}'}" Style="{StaticResource labelStyle}">
                     <Label.Behaviors>
                         <services:CurrencyLabelBehavior
@@ -260,11 +228,11 @@
                 </Label>
                 <!--#endregion-->
                 <!--#region Tax -->
-                <Label Grid.Row="1" FontSize="Large" LineBreakMode="TailTruncation">
+                <Label Grid.Row="1" FontSize="24" LineBreakMode="TailTruncation">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="Tax"/>
-                            <Span Text="{Binding IsDefaultTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}"/>
+                            <Span Text="Tax" FontSize="24"/>
+                            <Span Text="{Binding IsDefaultTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}" FontSize="24"/>
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
@@ -284,17 +252,17 @@
                 </Label>
                 <!--#endregion-->
                 <!--#region Coupon after Tax-->
-                <Label Grid.Row="2" Grid.ColumnSpan="2" FontSize="Large" LineBreakMode="TailTruncation" Text="Discount After Tax"
+                <Label Grid.Row="2" Grid.ColumnSpan="2" FontSize="24" LineBreakMode="TailTruncation" Text="Discount After Tax"
                         IsVisible="{Binding CouponAmountAfterTax, Converter={StaticResource IsNonZero}}"/>
-                <Label Grid.Row="2" Grid.Column="3" FontSize="Large" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}"
+                <Label Grid.Row="2" Grid.Column="3" FontSize="24" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}"
                     Text="{Binding Path = CouponAmountAfterTax, StringFormat='{0:C}'}" IsVisible="{Binding CouponAmountAfterTax, Converter={StaticResource IsNonZero}}"/>
                 <!--#endregion-->
                 <!--#region Tip -->
-                <Label Grid.Row="3" FontSize="Large" LineBreakMode="TailTruncation">
+                <Label Grid.Row="3" LineBreakMode="TailTruncation">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="Tip"/>
-                            <Span Text="{Binding IsDefaultTip, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}"/>
+                            <Span Text="Tip" FontSize="24"/>
+                            <Span Text="{Binding IsDefaultTip, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}" FontSize="24"/>
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
@@ -306,7 +274,7 @@
                     Text="{Binding Path = Tip, StringFormat='{0:C}'}"/>
                 <!--#endregion-->
                 <!--#region Total -->
-                <Label Grid.Row="4" FontSize="Large" LineBreakMode="TailTruncation">Total</Label>
+                <Label Grid.Row="4" FontSize="24" LineBreakMode="TailTruncation">Total</Label>
                 <Label Grid.Row="4" Grid.Column="3" Style="{StaticResource labelStyle}"
                     Text="{Binding Path = TotalAmount, StringFormat='{0:C}'}"/>
                 <!--#endregion-->

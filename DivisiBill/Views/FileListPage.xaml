@@ -19,9 +19,8 @@
     </ContentPage.ToolbarItems>
 
     <ContentPage.Resources>
-        <!--  TODO MAUI DETOUR SwipeView bug means Add and scroll will fail on Windows until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed  -->
-        <!--  TODO: MAUI DETOUR because the commands don't bind correctly use Invoked property until https://github.com/dotnet/maui/issues/32332 is fixed-->
-        <!--  UI for non-Windows  -->
+        <!-- #region UI for Single Select -->
+        <!-- TODO: MAUI DETOUR because the commands don't bind correctly use "Invoked" property until https://github.com/dotnet/maui/issues/32332 is fixed-->
         <DataTemplate x:Key="WithSwipe" x:DataType="services:RemoteItemInfo">
             <Grid ColumnDefinitions="*,*,*">
                 <SwipeView Grid.Column="0" Grid.ColumnSpan="3">
@@ -50,87 +49,58 @@
                             <Label
                                 Grid.Row="0"
                                 Grid.Column="1"
-                                Grid.ColumnSpan="2"
-                                FontSize="Medium"
+                                FontSize="18"
+                                LineBreakMode="TailTruncation"
+                                FontAttributes="Bold"
                                 Text="{Binding CreatedDateTimeString}" />
                             <Label
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                FontSize="Medium"
+                                FontSize="16"
                                 LineBreakMode="TailTruncation"
                                 Text="{Binding Name}" />
                             <Label
-                                Grid.Row="1"
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
                                 Grid.Column="2"
-                                FontSize="Medium"
-                                Text="{Binding SizeText}" />
+                                FontSize="24"
+                                Text="{Binding SizeText}" VerticalOptions="Center"/>
                         </Grid>
                         <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
                     </VerticalStackLayout>
                 </SwipeView>
-                <!--  Click to toggle item select without triggering swipe action  -->
-                <Rectangle Grid.Column="1">
-                    <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}" CommandParameter="{Binding}" />
-                    </Rectangle.GestureRecognizers>
-                </Rectangle>
-            </Grid>
-        </DataTemplate>
-
-        <!--  Alternate UI for Windows  -->
-        <DataTemplate x:Key="NoSwipe" x:DataType="services:RemoteItemInfo">
-            <Grid ColumnDefinitions="2*,*,2*">
-                <VerticalStackLayout
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    Padding="10,0">
-                    <Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto, auto">
-                        <Label
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Grid.ColumnSpan="2"
-                            FontSize="Medium"
-                            Text="{Binding CreatedDateTimeString}" />
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            FontSize="Medium"
-                            LineBreakMode="TailTruncation"
-                            Text="{Binding Name}" />
-                        <Label
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            FontSize="Medium"
-                            Text="{Binding SizeText}" />
-                    </Grid>
-                    <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
-                </VerticalStackLayout>
-                <!--  Click to Use (Windows only)  -->
+                <!--  Click to Use (Windows only because swipe requires a touch screen) -->
                 <ImageButton
                     Grid.Column="0"
                     BackgroundColor="{StaticResource TransparentGreen}"
                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=UseCommand, x:DataType=vm:FileListViewModel}"
                     CommandParameter="{Binding}"
-                    IsVisible="{OnPlatform false,
-                                           WinUI=true}" />
-                <!--  Click to toggle item select  -->
+                    IsVisible="{OnPlatform false, WinUI=true}" />
+                <!--  Click to toggle item select without triggering swipe action  -->
+                <!--We use a rectangle on Android because a button takes up too much space-->
+                <Rectangle Grid.Column="1" IsVisible="{OnPlatform true, WinUI=false}">
+                    <Rectangle.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}" CommandParameter="{Binding}" />
+                    </Rectangle.GestureRecognizers>
+                </Rectangle>
+                <!--We use a button on windows because a rectangle does not work, see https://github.com/dotnet/maui/issues/5446-->
                 <ImageButton
+                    IsVisible="{OnPlatform false, WinUI=true}"
                     Grid.Column="1"
                     BackgroundColor="Transparent"
                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}"
                     CommandParameter="{Binding}" />
-                <!--  Click to Use (Windows only)  -->
+                <!--  Click to Use (Windows only because swipe requires a touch screen) -->
                 <ImageButton
                     Grid.Column="2"
                     BackgroundColor="{StaticResource TransparentRed}"
                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=vm:FileListViewModel}"
                     CommandParameter="{Binding}"
-                    IsVisible="{OnPlatform false,
-                                           WinUI=true}" />
+                    IsVisible="{OnPlatform false, WinUI=true}" />
             </Grid>
         </DataTemplate>
-
-        <!--  UI for multi-select case  -->
+        <!--#endregion-->
+        <!--#region UI for multi-select -->
         <DataTemplate x:Key="SelectableListView" x:DataType="services:RemoteItemInfo">
             <VerticalStackLayout Padding="10,0">
                 <Grid ColumnDefinitions="40, *, auto" RowDefinitions="auto, auto">
@@ -174,15 +144,15 @@
                 <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
             </VerticalStackLayout>
         </DataTemplate>
-
-        <!--  UI Selector for CollectionView  -->
+        <!--#endregion-->
+        <!--#region UI Selector for CollectionView -->
         <Style TargetType="CollectionView">
             <Style.Triggers>
                 <DataTrigger
                     Binding="{Binding ShowAsSelectableList, x:DataType=vm:FileListViewModel}"
                     TargetType="CollectionView"
                     Value="false">
-                    <Setter Property="ItemTemplate" Value="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}" />
+                    <Setter Property="ItemTemplate" Value="{StaticResource WithSwipe}" />
                     <Setter Property="SelectionMode" Value="Single" />
                 </DataTrigger>
                 <DataTrigger
@@ -194,6 +164,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <!--#endregion-->
     </ContentPage.Resources>
 
     <services:ColumnLayout>

@@ -40,48 +40,34 @@
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <VerticalStackLayout Grid.ColumnSpan="3" x:DataType="model:Person">
-                        <Label Text="{Binding Path=DisplayName}" FontSize="Large" LineBreakMode="TailTruncation"/>
+                        <Label Text="{Binding Path=DisplayName}" FontSize="24" LineBreakMode="TailTruncation"/>
                         <Label Text="{Binding Path=Email}" Padding="20,0,0,0"/>
                         <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
                     </VerticalStackLayout>
                 </SwipeView>
-                <!--A transparent label covering the middle of each item mainly to avoid accidentally triggering a swipe-->
-                <Label Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="Transparent">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer NumberOfTapsRequired="1" 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=SelectPersonCommand}"
-                                    CommandParameter="{Binding x:DataType=model:Person}" />
-                        <TapGestureRecognizer NumberOfTapsRequired="2" 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=ShowDetailsCommand}"
-                                    CommandParameter="{Binding x:DataType=model:Person}" />
-                    </Label.GestureRecognizers>
-                </Label>
-            </Grid>
-        </DataTemplate>
-        <DataTemplate x:Key="NoSwipe" x:DataType="vm:PeopleListViewModel">
-            <Grid ColumnDefinitions="2*,*,2*">
-                <VerticalStackLayout Grid.ColumnSpan="3" x:DataType="model:Person">
-                    <Label Text="{Binding Path=DisplayName}" FontSize="Large" LineBreakMode="TailTruncation"/>
-                    <Label Text="{Binding Path=Email}" Padding="20,0,0,0"/>
-                    <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-                </VerticalStackLayout>
+                <!--A semi-transparent button covering the left of each item on Windows so there's no need to swipe-->
                 <ImageButton Grid.Column="0" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="{StaticResource TransparentGreen}"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"
-                                    CommandParameter="{Binding x:DataType=model:Person}"/>
-                <!--A transparent label covering the middle of each item mainly to avoid accidentally triggering a swipe-->
-                <Label Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="Transparent">
-                    <Label.GestureRecognizers>
+                    MinimumHeightRequest="10"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"
+                    CommandParameter="{Binding x:DataType=model:Person}"
+                    IsVisible="{OnPlatform false,WinUI=true}"/>
+                <!--A transparent button covering the middle of each item mainly to avoid accidentally triggering a swipe-->
+                <ImageButton Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="Transparent" MinimumHeightRequest="10">
+                    <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer NumberOfTapsRequired="1" 
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=SelectPersonCommand}"
                                     CommandParameter="{Binding x:DataType=model:Person}" />
                         <TapGestureRecognizer NumberOfTapsRequired="2" 
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=ShowDetailsCommand}"
                                     CommandParameter="{Binding x:DataType=model:Person}" />
-                    </Label.GestureRecognizers>
-                </Label>
-                <ImageButton Grid.Column="2" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="{StaticResource TransparentRed}" 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"
-                                    CommandParameter="{Binding x:DataType=model:Person}"/>
+                    </ImageButton.GestureRecognizers>
+                </ImageButton>
+                <!--A semi-transparent button covering the right of the item on Windows so there's no need to swipe-->
+                <ImageButton Grid.Column="2" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="{StaticResource TransparentRed}"
+                    MinimumHeightRequest="10"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"
+                    CommandParameter="{Binding x:DataType=model:Person}"
+                    IsVisible="{OnPlatform false,WinUI=true}"/>
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>
@@ -93,7 +79,7 @@
             Scrolled="OnCollectionViewScrolled"
             SelectionMode="Single"
             SelectedItem="{Binding SelectedPerson}"
-            ItemTemplate="{OnPlatform Default={StaticResource WithSwipe}, WinUI={StaticResource NoSwipe}}"
+            ItemTemplate="{StaticResource WithSwipe}"
             ItemSizingStrategy="MeasureFirstItem"
             ItemsSource="{Binding AllPeople}"/>
         <!--#region Scroll Up/Down-->
