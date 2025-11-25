@@ -1,10 +1,9 @@
 ﻿using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Runtime;
 using Android.Widget;
 using AndroidX.Activity;
+using Android.Views;
 
 namespace DivisiBill.Platforms.Android;
 
@@ -19,8 +18,8 @@ public class MainActivity : MauiAppCompatActivity
         OnBackPressedDispatcher.AddCallback(this, new BackPress(this));
         // As long as we're forced to show an inset area in .NET10 as of 11/19/25, use it to display status
         // Window.AddFlags(WindowManagerFlags.Fullscreen); 
+        Window.SetSoftInputMode(SoftInput.AdjustPan);
     }
-    protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data) => base.OnActivityResult(requestCode, resultCode, data);
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
     {
         Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
