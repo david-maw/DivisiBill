@@ -1,3 +1,17 @@
+# 6.3.3
+
+## Pan the Screen When Performing Data Entry
+
+Sometime, the on screen keyboard would cover the data input fields, this change corrects that.
+
+## Speed Up Page Loading
+
+Several pages (Totals, People, Items, People Lists and venue Lists) have been optimized to speed them up a little. The only functional changes are minor  formatting enhancements.
+
+## Handle Requests to Display Payments on an Item
+
+Requesting a payment summary from a specific item now presumes you intend it for the first sharer of that item unless you are filtering for a particular participant in which case they are assumed to be the target.
+
 # 6.3.2
 
 ## Correct Swipe Behavior
