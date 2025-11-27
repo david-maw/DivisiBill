@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:services="clr-namespace:DivisiBill.Services"
@@ -14,11 +14,11 @@
              x:Class="DivisiBill.Views.SplashPage">
     <Shell.TitleView>
         <Label FontSize="Title" HorizontalTextAlignment="Center"
-               Text="{Binding Title, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}" 
+               Text="{Binding Title, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"
                BackgroundColor="{Binding BackgroundColor, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"/>
     </Shell.TitleView>
     <ContentPage.Content>
-         <!--This layout is intentionally identical to the GettingStartedPage, so that the transition from one to the other is invisible to the user-->
+        <!--This layout is intentionally identical to the GettingStartedPage, so that the transition from one to the other is invisible to the user-->
         <Grid RowDefinitions="1*,2.5*,auto,auto,3*" >
             <!--#region Busy/Paused Indicator -->
             <ActivityIndicator Color="Black"
@@ -27,7 +27,7 @@
             <Label Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="22" HorizontalOptions="Center" VerticalOptions="End"/>
             <!--#endregion-->
             <!--#region DivisiBill Icon -->
-            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10" 
+            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10"
                    WidthRequest="250" HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=Image}" >
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnStatusTapped"/>
@@ -61,7 +61,7 @@
             </Label>
             <!--#endregion-->
             <!--#region Scrolling initialization progress -->
-            <ScrollView Grid.Row="4" x:Name="statusScrollView"  VerticalOptions="Start" Margin="10">
+            <ScrollView Grid.Row="4" x:Name="statusScrollView" VerticalOptions="Start" Margin="10">
                 <Label x:Name="statusLabel" Text="Starting DivisiBill" HorizontalOptions="Start" VerticalOptions="Start" VerticalTextAlignment="Start"/>
             </ScrollView>
             <!--#endregion-->

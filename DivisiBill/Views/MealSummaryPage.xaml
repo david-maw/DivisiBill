@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:DivisiBill.Models"
@@ -44,13 +44,13 @@
         <!--#region Amounts -->
         <Label FontSize="Large" Text="{Binding RoundedAmount, StringFormat='Rounded total {0:C0}'}" IsVisible="{Binding HasMealInfo}"
                HorizontalTextAlignment="Center"/>
-        <Label FontSize="Large" Text="{Binding UnallocatedAmount, StringFormat='Unallocated {0:C0}'}" 
+        <Label FontSize="Large" Text="{Binding UnallocatedAmount, StringFormat='Unallocated {0:C0}'}"
                HorizontalTextAlignment="Center" IsVisible="{Binding Path=IsAnyUnallocated}"/>
         <!--#endregion-->
         <!--#region Stored Image Status -->
-        <Label Text="This bill has a corresponding stored image" IsVisible="{Binding Path=HasImage}"  HorizontalTextAlignment="Center"/>
-        <Label Text="This bill has a deleted image" IsVisible="{Binding Path=HasDeletedImage}"  HorizontalTextAlignment="Center"/>
-        <Label Text="This bill has a remote image" IsVisible="{Binding Path=HasRemoteImage}"  HorizontalTextAlignment="Center"/>
+        <Label Text="This bill has a corresponding stored image" IsVisible="{Binding Path=HasImage}" HorizontalTextAlignment="Center"/>
+        <Label Text="This bill has a deleted image" IsVisible="{Binding Path=HasDeletedImage}" HorizontalTextAlignment="Center"/>
+        <Label Text="This bill has a remote image" IsVisible="{Binding Path=HasRemoteImage}" HorizontalTextAlignment="Center"/>
         <!--#endregion-->
         <!--#region Storage Location -->
         <VerticalStackLayout IsVisible="{Binding ShowStorage}">
@@ -79,18 +79,18 @@
         <!--#region Costs (Participant List) -->
         <Label Text="Participants" FontSize="Large" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
         <CollectionView
-                ItemsSource="{Binding Costs}"
-                VerticalOptions="Start">
+            ItemsSource="{Binding Costs}"
+            VerticalOptions="Start">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:PersonCost">
                     <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions="*,Auto">
                         <Label x:Name="NicknameLabel" Text="{Binding Nickname} " Grid.Column="0"
-                                LineBreakMode="NoWrap" 
-                                FontSize="Large" />
+                               LineBreakMode="NoWrap"
+                               FontSize="Large" />
 
                         <Label Grid.Column="1" Text="{Binding AmountText}" Margin="0,0,10,0"
-                                LineBreakMode="NoWrap"
-                                FontSize="Large" IsEnabled="True" HorizontalTextAlignment="End"  />
+                               LineBreakMode="NoWrap"
+                               FontSize="Large" IsEnabled="True" HorizontalTextAlignment="End" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

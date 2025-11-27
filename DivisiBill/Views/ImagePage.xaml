@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
@@ -16,7 +16,7 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphCamera}" Command="{Binding TakePictureCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphOCR}" Command="{Binding OcrCommand}"/>
         <ToolbarItem Text = "Delete"   Command="{Binding DeleteCommand}" Order="Secondary"/>
-        <ToolbarItem Text=  "Undelete" Command="{Binding UndeleteCommand}" Order="Secondary"/>
+        <ToolbarItem Text = "Undelete" Command="{Binding UndeleteCommand}" Order="Secondary"/>
         <ToolbarItem Text = "Camera"   Command="{Binding TakePictureCommand}" Order="Secondary"/>
         <ToolbarItem Text = "Browse"   Command="{Binding BrowseCommand}" Order="Secondary"/>
     </ContentPage.ToolbarItems>
@@ -38,7 +38,7 @@
         <!--#region Image Container -->
         <services:PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasPreviewImage}">
             <services:PinchToZoomContainer.Content>
-                <Image x:Name="previewImage" 
+                <Image x:Name="previewImage"
                        Source="{Binding PreviewImageSource,Mode=OneWay}"
                        Scale="{Binding ImageScale}"
                        TranslationX="{Binding ImageTranslationX}"

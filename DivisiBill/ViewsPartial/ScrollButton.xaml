@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:DivisiBill.Models"
@@ -13,29 +13,29 @@
     <ContentView.Resources>
         <ResourceDictionary>
             <toolkit:BoolToObjectConverter
-            x:Key="ScrollDownIconConverter"
-            FalseObject="{StaticResource TextArrowUp}"
-            TrueObject="{StaticResource TextArrowDown}" />
+                x:Key="ScrollDownIconConverter"
+                FalseObject="{StaticResource TextArrowUp}"
+                TrueObject="{StaticResource TextArrowDown}" />
             <toolkit:BoolToObjectConverter
-            x:Key="UpDownTextConverter"
-            FalseObject="Down"
-            TrueObject="Up"/>
+                x:Key="UpDownTextConverter"
+                FalseObject="Down"
+                TrueObject="Up"/>
             <toolkit:BoolToObjectConverter
-            x:Key="StartEndTextConverter"
-            FalseObject="Start"
-            TrueObject="End"/>
+                x:Key="StartEndTextConverter"
+                FalseObject="Start"
+                TrueObject="End"/>
         </ResourceDictionary>
     </ContentView.Resources>
     <Border
-            x:Name="border"
-            HorizontalOptions="Center"
-            VerticalOptions="Start"
-            StrokeShape="Ellipse"
-            StrokeThickness="0"
-            Padding="20">
+        x:Name="border"
+        HorizontalOptions="Center"
+        VerticalOptions="Start"
+        StrokeShape="Ellipse"
+        StrokeThickness="0"
+        Padding="20">
         <Border.Background>
             <RadialGradientBrush>
-                <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"  Offset="0.4" />
+                <GradientStop Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Offset="0.4" />
                 <GradientStop Color="{AppThemeBinding Light={StaticResource TransparentWhite}, Dark=Transparent}" Offset="1.0" />
             </RadialGradientBrush>
         </Border.Background>
@@ -48,10 +48,10 @@
                TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
         <Border.Behaviors>
             <toolkit:TouchBehavior
-                    Command="{Binding PressCommand, Source={x:Reference scrollButton}}"
-                    CommandParameter="{Binding Down, Converter={StaticResource UpDownTextConverter}, Source={x:Reference scrollButton}}"
-                    LongPressCommand="{Binding LongPressCommand, Source={x:Reference scrollButton}}"
-                    LongPressCommandParameter="{Binding Down, Converter={StaticResource StartEndTextConverter}, Source={x:Reference scrollButton}}"/>
+                Command="{Binding PressCommand, Source={x:Reference scrollButton}}"
+                CommandParameter="{Binding Down, Converter={StaticResource UpDownTextConverter}, Source={x:Reference scrollButton}}"
+                LongPressCommand="{Binding LongPressCommand, Source={x:Reference scrollButton}}"
+                LongPressCommandParameter="{Binding Down, Converter={StaticResource StartEndTextConverter}, Source={x:Reference scrollButton}}"/>
         </Border.Behaviors>
     </Border>
 </ContentView>

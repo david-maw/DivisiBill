@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="DivisiBill.Views.MealListPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -16,11 +16,11 @@
 
     <ContentPage.Resources>
         <toolkit:BoolToObjectConverter x:Key="RemoteIconConverter"
-            FalseObject="{StaticResource FileGlyphRemoteOutline}"
-            TrueObject="{StaticResource FileGlyphRemote}" />
+                                       FalseObject="{StaticResource FileGlyphRemoteOutline}"
+                                       TrueObject="{StaticResource FileGlyphRemote}" />
         <toolkit:BoolToObjectConverter x:Key="LocalIconConverter"
-            FalseObject="{StaticResource FileGlyphLocalOutline}"
-            TrueObject="{StaticResource FileGlyphLocal}" />
+                                       FalseObject="{StaticResource FileGlyphLocalOutline}"
+                                       TrueObject="{StaticResource FileGlyphLocal}" />
         <DataTemplate x:Key="WithSwipe" x:DataType="models:MealSummary">
             <!--#region Bill Summary Info Surrounded by SwipeView which is surrounded by a Grid -->
             <Grid>
@@ -30,21 +30,21 @@
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem
-                            BackgroundColor="PaleGreen"
-                            Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                            CommandParameter="{Binding}"
-                            IconImageSource="{StaticResource GlyphLoad}"
-                            Invoked="OnUseSwipeItemInvoked" />
+                                BackgroundColor="PaleGreen"
+                                Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                CommandParameter="{Binding}"
+                                IconImageSource="{StaticResource GlyphLoad}"
+                                Invoked="OnUseSwipeItemInvoked" />
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem
-                            BackgroundColor="Red"
-                            Command="{Binding DeleteMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                            CommandParameter="{Binding}"
-                            IconImageSource="{StaticResource GlyphDel}"
-                            Invoked="OnDeleteSwipeItemInvoked" />
+                                BackgroundColor="Red"
+                                Command="{Binding DeleteMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                CommandParameter="{Binding}"
+                                IconImageSource="{StaticResource GlyphDel}"
+                                Invoked="OnDeleteSwipeItemInvoked" />
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <!--#endregion-->
@@ -53,178 +53,178 @@
                         <!--#region MealSummary Display-->
                         <!--#region Item Selection Area-->
                         <Grid
-                        Grid.RowSpan="2"
-                        Margin="0,0,5,0"
-                        IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}">
+                            Grid.RowSpan="2"
+                            Margin="0,0,5,0"
+                            IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}">
                             <Image
-                            Grid.Row="0"
-                            IsVisible="{Binding FileSelected}"
-                            Source="{StaticResource ListGlyphSelected}"
-                            VerticalOptions="Center" />
+                                Grid.Row="0"
+                                IsVisible="{Binding FileSelected}"
+                                Source="{StaticResource ListGlyphSelected}"
+                                VerticalOptions="Center" />
                             <Image
-                            Grid.Row="0"
-                            IsVisible="{Binding FileSelected, Converter={StaticResource Not}}"
-                            Source="{StaticResource ListGlyphUnselected}"
-                            VerticalOptions="Center" />
+                                Grid.Row="0"
+                                IsVisible="{Binding FileSelected, Converter={StaticResource Not}}"
+                                Source="{StaticResource ListGlyphUnselected}"
+                                VerticalOptions="Center" />
                         </Grid>
                         <!--#endregion-->
                         <!--#region Bill Summary Info, 2 lines, first one optional-->
                         <!--  First Line, the venue name  -->
                         <Label
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Grid.ColumnSpan="3"
-                        Margin="0,-2,0,-5"
-                        FontSize="Large"
-                        LineBreakMode="TailTruncation"
-                        Text="{Binding VenueName}">
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="3"
+                            Margin="0,-2,0,-5"
+                            FontSize="Large"
+                            LineBreakMode="TailTruncation"
+                            Text="{Binding VenueName}">
                             <Label.IsVisible>
                                 <MultiBinding Converter="{StaticResource All}">
                                     <Binding
-                                    x:DataType="vm:MealListViewModel"
-                                    Converter="{StaticResource Not}"
-                                    Path="IsGrouped"
-                                    Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" />
+                                        x:DataType="vm:MealListViewModel"
+                                        Converter="{StaticResource Not}"
+                                        Path="IsGrouped"
+                                        Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" />
                                     <Binding
-                                    x:DataType="vm:MealListViewModel"
-                                    Converter="{StaticResource IsStringNullOrWhiteSpace}"
-                                    Path="FilteredVenueName"
-                                    Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" />
+                                        x:DataType="vm:MealListViewModel"
+                                        Converter="{StaticResource IsStringNullOrWhiteSpace}"
+                                        Path="FilteredVenueName"
+                                        Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" />
                                 </MultiBinding>
                             </Label.IsVisible>
                         </Label>
                         <!--  Second Line - Creation and Location Information  -->
                         <!--  First Item: Creation Time information (date, time, elapsed time)  -->
                         <Label
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Grid.ColumnSpan="3"
-                        FontSize="Small"
-                        Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"
-                        VerticalOptions="Start" />
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="3"
+                            FontSize="Small"
+                            Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"
+                            VerticalOptions="Start" />
                         <!--  Second item: Distance Information (May be null)  -->
                         <Label
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Grid.ColumnSpan="3"
-                        Margin="0,0,10,0"
-                        FontSize="Small"
-                        HorizontalOptions="End"
-                        Text="{Binding Path=Distance, Converter={StaticResource Distance}}"
-                        VerticalOptions="Start" />
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="3"
+                            Margin="0,0,10,0"
+                            FontSize="Small"
+                            HorizontalOptions="End"
+                            Text="{Binding Path=Distance, Converter={StaticResource Distance}}"
+                            VerticalOptions="Start" />
                         <!--#endregion-->
                         <!--#region activity indicator-->
                         <ActivityIndicator
-                        Grid.RowSpan="2"
-                        Grid.Column="3"
-                        Margin="0,0,20,0"
-                        HorizontalOptions="Center"
-                        IsRunning="{Binding IsBusy}"
-                        VerticalOptions="Fill" />
+                            Grid.RowSpan="2"
+                            Grid.Column="3"
+                            Margin="0,0,20,0"
+                            HorizontalOptions="Center"
+                            IsRunning="{Binding IsBusy}"
+                            VerticalOptions="Fill" />
                         <!--#endregion-->
                         <!--#region Current Meal, Image, Local and Remote Indicators-->
                         <!--  The fixed height row definitions in this grid guarantee the whole grid always occupies a minimum height  -->
                         <Grid
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
-                        Grid.Column="4"
-                        ColumnDefinitions="Auto, 25,25"
-                        RowDefinitions="25,25"
-                        HorizontalOptions="Start"
-                        VerticalOptions="Center">
-                            <!--#region Icon indicating current Meal-->
-                            <Image
                             Grid.Row="0"
                             Grid.RowSpan="2"
-                            Grid.Column="0"
-                            IsVisible="{Binding IsForCurrentMeal}"
-                            HorizontalOptions="End"
-                            WidthRequest="25"
-                            Source="{StaticResource ListGlyphCurrentMeal}"/>
+                            Grid.Column="4"
+                            ColumnDefinitions="Auto, 25,25"
+                            RowDefinitions="25,25"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Center">
+                            <!--#region Icon indicating current Meal-->
+                            <Image
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
+                                Grid.Column="0"
+                                IsVisible="{Binding IsForCurrentMeal}"
+                                HorizontalOptions="End"
+                                WidthRequest="25"
+                                Source="{StaticResource ListGlyphCurrentMeal}"/>
                             <!--#endregion-->
                             <!--#region Icons Indicating local or remote image -->
                             <Image
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Source="{StaticResource FileGlyphImage}">
-                            <Image.IsVisible>
-                                <MultiBinding Converter="{StaticResource And}">
-                                    <Binding Path="HasRemoteImage" />
-                                    <Binding Path="IsCloudAllowed" Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" x:DataType="vm:MealListViewModel" />
-                                </MultiBinding>
-                            </Image.IsVisible>
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Source="{StaticResource FileGlyphImage}">
+                                <Image.IsVisible>
+                                    <MultiBinding Converter="{StaticResource And}">
+                                        <Binding Path="HasRemoteImage" />
+                                        <Binding Path="IsCloudAllowed" Source="{RelativeSource AncestorType={x:Type vm:MealListViewModel}}" x:DataType="vm:MealListViewModel" />
+                                    </MultiBinding>
+                                </Image.IsVisible>
                             </Image>
                             <Image
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            IsVisible="{Binding HasImage}"
-                            Source="{StaticResource FileGlyphImage}" />
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                IsVisible="{Binding HasImage}"
+                                Source="{StaticResource FileGlyphImage}" />
                             <!--#endregion-->
                             <!--#region Icons showing whether files are resident locally, remotely, or both -->
                             <!--  Only show these if cloud access is allowed, otherwise they do not tell the user anything  -->
                             <Image
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                            Source="{Binding IsRemote, Converter={StaticResource RemoteIconConverter}}"/>
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                Source="{Binding IsRemote, Converter={StaticResource RemoteIconConverter}}"/>
                             <Image
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                            Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}"/>
+                                Grid.Row="1"
+                                Grid.Column="2"
+                                IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}"/>
                         </Grid>
                         <!--#endregion-->
                         <!--#region Overlaid Buttons-->
                         <!--  This button is used if we're doing multiple selection  -->
                         <ImageButton
-                        Grid.RowSpan="2"
-                        Grid.Column="0"
-                        BackgroundColor="Transparent"
-                        Command="{Binding SelectMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                        CommandParameter="{Binding x:DataType=models:MealSummary}"
-                        IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}" />
+                            Grid.RowSpan="2"
+                            Grid.Column="0"
+                            BackgroundColor="Transparent"
+                            Command="{Binding SelectMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            CommandParameter="{Binding x:DataType=models:MealSummary}"
+                            IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}" />
                         <!--  This button simulates swipe right (Use)  -->
                         <ImageButton
-                        Grid.RowSpan="2"
-                        Grid.Column="1"
-                        BackgroundColor="{StaticResource TransparentGreen}"
-                        Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                        CommandParameter="{Binding x:DataType=models:MealSummary}"
-                        IsVisible="{OnPlatform Default=false,
-                                               WinUI=true}" />
+                            Grid.RowSpan="2"
+                            Grid.Column="1"
+                            BackgroundColor="{StaticResource TransparentGreen}"
+                            Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            CommandParameter="{Binding x:DataType=models:MealSummary}"
+                            IsVisible="{OnPlatform Default=false,
+                            WinUI=true}" />
                         <!--  This button simulates swipe left (Delete)  -->
                         <ImageButton
-                        Grid.RowSpan="2"
-                        Grid.Column="3"
-                        BackgroundColor="{StaticResource TransparentRed}"
-                        Command="{Binding DeleteMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                        CommandParameter="{Binding}"
-                        IsVisible="{OnPlatform Default=false,
-                                               WinUI=true}" />
+                            Grid.RowSpan="2"
+                            Grid.Column="3"
+                            BackgroundColor="{StaticResource TransparentRed}"
+                            Command="{Binding DeleteMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            CommandParameter="{Binding}"
+                            IsVisible="{OnPlatform Default=false,
+                            WinUI=true}" />
                         <!--  This button triggers a download  -->
                         <ImageButton
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
-                        Grid.Column="4"
-                        BackgroundColor="Transparent"
-                        BorderWidth="0"
-                        Command="{Binding DownloadCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                        CommandParameter="{Binding}"
-                        HorizontalOptions="End"
-                        IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}" />
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="4"
+                            BackgroundColor="Transparent"
+                            BorderWidth="0"
+                            Command="{Binding DownloadCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            CommandParameter="{Binding}"
+                            HorizontalOptions="End"
+                            IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}" />
                         <!--#endregion-->
                         <!--#region Ruled Line-->
                         <BoxView
-                        Grid.RowSpan="2"
-                        Grid.ColumnSpan="6"
-                        HeightRequest="1"
-                        VerticalOptions="End"
-                        Color="{AppThemeBinding Light={StaticResource Gray900},
-                                                Dark={StaticResource White}}" />
+                            Grid.RowSpan="2"
+                            Grid.ColumnSpan="6"
+                            HeightRequest="1"
+                            VerticalOptions="End"
+                            Color="{AppThemeBinding Light={StaticResource Gray900},
+                            Dark={StaticResource White}}" />
                         <!--#endregion-->
                     </Grid>
                     <!--#endregion-->
-                <!--#region SwipeView End-->
+                    <!--#region SwipeView End-->
                 </SwipeView>
                 <!--#endregion-->
                 <!--#endregion-->
@@ -236,13 +236,13 @@
                     BackgroundColor="Transparent">
                     <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer
-                                Command="{Binding SelectMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                                CommandParameter="{Binding}"
-                                NumberOfTapsRequired="1" />
+                            Command="{Binding SelectMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            CommandParameter="{Binding}"
+                            NumberOfTapsRequired="1" />
                         <TapGestureRecognizer
-                                Command="{Binding InvokeShowDetailsCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                                CommandParameter="{Binding}"
-                                NumberOfTapsRequired="2" />
+                            Command="{Binding InvokeShowDetailsCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            CommandParameter="{Binding}"
+                            NumberOfTapsRequired="2" />
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--#endregion-->
@@ -250,57 +250,57 @@
             <!--#endregion-->
         </DataTemplate>
         <toolkit:BoolToObjectConverter x:Key="IsGroupedConverter"
-            FalseObject=" bills"
-            TrueObject=" bills in groups" />
+                                       FalseObject=" bills"
+                                       TrueObject=" bills in groups" />
         <toolkit:BoolToObjectConverter x:Key="ShowBillsText"
-            FalseObject="Show Venues"
-            TrueObject="Show Bills" />
+                                       FalseObject="Show Venues"
+                                       TrueObject="Show Bills" />
         <toolkit:BoolToObjectConverter x:Key="ShowLocalText"
-            FalseObject="Show Local"
-            TrueObject="Hide Local" />
+                                       FalseObject="Show Local"
+                                       TrueObject="Hide Local" />
         <toolkit:BoolToObjectConverter x:Key="ShowRemoteText"
-            FalseObject="Show Remote"
-            TrueObject="Hide Remote" />
+                                       FalseObject="Show Remote"
+                                       TrueObject="Hide Remote" />
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding ChangeListCommand}" IconImageSource="{StaticResource GlyphList}" />
         <ToolbarItem Command="{Binding DeleteMealCommand}" IconImageSource="{StaticResource GlyphDel}" />
         <ToolbarItem Text="Use"
-            Command="{Binding InvokeUseMealCommand}"
-            Order="Secondary" />
+                     Command="{Binding InvokeUseMealCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Show Details"
-            Command="{Binding InvokeShowDetailsCommand}"
-            Order="Secondary" />
+                     Command="{Binding InvokeShowDetailsCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Download"
-            Command="{Binding DownloadCommand}"
-            Order="Secondary" />
+                     Command="{Binding DownloadCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Delete Local"
-            Command="{Binding DeleteLocalMealsCommand}"
-            Order="Secondary" />
+                     Command="{Binding DeleteLocalMealsCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Delete Remote"
-            Command="{Binding DeleteRemoteMealsCommand}"
-            Order="Secondary" />
+                     Command="{Binding DeleteRemoteMealsCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Select None"
-            Command="{Binding SelectNoneCommand}"
-            Order="Secondary" />
+                     Command="{Binding SelectNoneCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Select All"
-            Command="{Binding SelectAllCommand}"
-            Order="Secondary" />
+                     Command="{Binding SelectAllCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Invert Selection"
-            Command="{Binding InvertSelectionCommand}"
-            Order="Secondary" />
+                     Command="{Binding InvertSelectionCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="{Binding IsGrouped, Converter={StaticResource ShowBillsText}}"
-            Command="{Binding ChangeFilterCommand}"
-            Order="Secondary" />
+                     Command="{Binding ChangeFilterCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="{Binding ShowLocalMeals, Converter={StaticResource ShowLocalText}}"
-            Command="{Binding ChangeShowLocalMealsCommand}"
-            Order="Secondary" />
+                     Command="{Binding ChangeShowLocalMealsCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}"
-            Command="{Binding ChangeShowRemoteMealsCommand}"
-            Order="Secondary" />
+                     Command="{Binding ChangeShowRemoteMealsCommand}"
+                     Order="Secondary" />
         <ToolbarItem Text="Scroll To Current"
-            Command="{Binding ShowCurrentCommand}"
-            Order="Secondary" />
+                     Command="{Binding ShowCurrentCommand}"
+                     Order="Secondary" />
     </ContentPage.ToolbarItems>
     <services:ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading-->
@@ -327,7 +327,7 @@
             HeightRequest="1"
             VerticalOptions="End"
             Color="{AppThemeBinding Light={StaticResource Gray900},
-                                    Dark={StaticResource White}}" />
+            Dark={StaticResource White}}" />
         <!--#endregion-->
         <!--#region Progress Reporting and Cancel-->
         <Border
@@ -427,26 +427,26 @@
                                     HeightRequest="1"
                                     VerticalOptions="End"
                                     Color="{AppThemeBinding Light={StaticResource Gray900},
-                                                            Dark={StaticResource White}}" />
-                            <!--#region Select/Deselect/Details Button -->
-                            <!--This button is in the center on top of the SwipeView to allow simple tap/double tap without unintentional swipe-->
-                            <ImageButton
+                                    Dark={StaticResource White}}" />
+                                <!--#region Select/Deselect/Details Button -->
+                                <!--This button is in the center on top of the SwipeView to allow simple tap/double tap without unintentional swipe-->
+                                <ImageButton
                                     Grid.RowSpan="2"
                                     HorizontalOptions="Center"
                                     WidthRequest="80"
                                     BackgroundColor="Transparent">
-                                <ImageButton.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding SelectGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                                        CommandParameter="{Binding}"
-                                        NumberOfTapsRequired="1" />
-                                    <TapGestureRecognizer
-                                        Command="{Binding ShowVenueDetailsCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                                        CommandParameter="{Binding}"
-                                        NumberOfTapsRequired="2" />
-                                </ImageButton.GestureRecognizers>
-                            </ImageButton>
-                            <!--#endregion-->
+                                    <ImageButton.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding SelectGroupCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                            CommandParameter="{Binding}"
+                                            NumberOfTapsRequired="1" />
+                                        <TapGestureRecognizer
+                                            Command="{Binding ShowVenueDetailsCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                            CommandParameter="{Binding}"
+                                            NumberOfTapsRequired="2" />
+                                    </ImageButton.GestureRecognizers>
+                                </ImageButton>
+                                <!--#endregion-->
                             </Grid>
                         </toolkit:Expander.Header>
                         <toolkit:Expander.Content>

@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:DivisiBill="clr-namespace:DivisiBill"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             BindingContext="{vm:SettingsViewModel}" 
+             BindingContext="{vm:SettingsViewModel}"
              x:DataType="vm:SettingsViewModel"
              Title="Program Settings"
              x:Class="DivisiBill.Views.SettingsPage">
@@ -28,13 +28,13 @@
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <!--Everything in this Grid is in the current meal data context although they are defaults that apply to all new meals-->
             <Grid ColumnDefinitions ="*, auto, *, auto, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto" ColumnSpacing="{OnPlatform 10, Android=0}" x:Name="MealSection"
-                   x:DataType="vm:MealViewModel" BindingContext="{StaticResource MealViewModel}">
+                  x:DataType="vm:MealViewModel" BindingContext="{StaticResource MealViewModel}">
                 <Label Grid.Row="1" Grid.Column="0" Text="Tip on Tax" VerticalOptions="Center" HorizontalOptions="End"/>
                 <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding DefaultTipOnTax}" HorizontalOptions="End"/>
                 <Label Grid.Row="1" Grid.Column="2" Text="Tip Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
                 <Entry Grid.Row="1" Grid.Column="3" Text="{Binding DefaultTipRate}" MaxLength="2" Keyboard="Numeric" HorizontalTextAlignment="End">
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
+                        <services:CurrencyValidationBehavior
                             InvalidStyle="{StaticResource InvalidEntryStyle}"
                             ValidStyle="{StaticResource ValidEntryStyle}"
                             MinimumValue="0"
@@ -48,7 +48,7 @@
                 <Entry Grid.Row="2" Grid.Column="3" Text="{Binding DefaultTaxRateString}" ReturnCommand="{Binding UnloadDefaultTaxRateStringCommand}"
                        Keyboard="Numeric" HorizontalTextAlignment="End" WidthRequest="80">
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
+                        <services:CurrencyValidationBehavior
                             InvalidStyle="{StaticResource InvalidEntryStyle}"
                             ValidStyle="{StaticResource ValidEntryStyle}"
                             IsValid="{Binding IsDefaultTaxRateStringValid}"
@@ -132,14 +132,14 @@
                     <!--#region OCR Scan License -->
                     <BoxView HeightRequest="2" HorizontalOptions="Fill" Margin="0, 5, 0, 0" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
                     <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" Margin="0, 5, 0, 5" HorizontalOptions="Center"/>
-                    <Button Text="Purchase additional OCR Scans" Command="{Binding PurchaseOcrScansCommand}" 
+                    <Button Text="Purchase additional OCR Scans" Command="{Binding PurchaseOcrScansCommand}"
                             HorizontalOptions="Center" IsVisible="{Binding Path=IsOcrPurchaseAllowed}"/>
                     <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
                     <Label Text="{Binding OcrLicenseId, StringFormat='Latest Order# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
                     <!--#endregion-->
                 </VerticalStackLayout>
                 <Label Text="No license information is available" IsVisible="{Binding LicenseChecked, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
-                <ActivityIndicator  HorizontalOptions="Center" VerticalOptions="Fill" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
+                <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Fill" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
             </Grid>
             <!--#endregion-->
             <!--#region Telemetry -->

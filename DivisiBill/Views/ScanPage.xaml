@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:DivisiBill.Views"
@@ -17,25 +17,25 @@
             <VerticalStackLayout x:Name="loading" IsVisible="False">
                 <ActivityIndicator IsRunning="True" HeightRequest="50"/>
                 <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="Large"/>
-                <Button x:Name="cancelButton"  Text="Cancel" HorizontalOptions="Center" Clicked="OnCancel" IsEnabled="False"/>
+                <Button x:Name="cancelButton" Text="Cancel" HorizontalOptions="Center" Clicked="OnCancel" IsEnabled="False"/>
             </VerticalStackLayout>
             <Label Text="{Binding ErrorMessage}" HorizontalOptions="Center"/>
             <CollectionView x:Name="LineItemsListView"
-                ItemsSource="{Binding Path = LineItems}"
-                VerticalOptions="Fill"
-                SelectionMode="None"
-                ItemSizingStrategy="MeasureAllItems"
-                EmptyView="No items defined">
+                            ItemsSource="{Binding Path = LineItems}"
+                            VerticalOptions="Fill"
+                            SelectionMode="None"
+                            ItemSizingStrategy="MeasureAllItems"
+                            EmptyView="No items defined">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid  x:DataType="models:LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
+                        <Grid x:DataType="models:LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
                             <Label Text="{Binding Path = ItemName }" Grid.Column="0"
-                            LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"
-                            FontFamily="monospace" FontSize="Medium" />
+                                   LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"
+                                   FontFamily="monospace" FontSize="Medium" />
 
                             <Label Text="{Binding Path = Amount, StringFormat='{0:C}'}" Grid.Column="1"
-                                LineBreakMode="NoWrap"
-                                FontFamily="monospace" FontSize="Medium" HorizontalTextAlignment="End"  />
+                                   LineBreakMode="NoWrap"
+                                   FontFamily="monospace" FontSize="Medium" HorizontalTextAlignment="End" />
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

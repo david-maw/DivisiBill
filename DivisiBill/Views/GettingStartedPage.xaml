@@ -18,7 +18,7 @@
                                Margin="10"/>
             <!--#endregion-->
             <!--#region DivisiBill Icon -->
-            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10" 
+            <Image Grid.Row="1" Source="divisibillfg.png" Margin="10"
                    WidthRequest="250" HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=Image}" >
             </Image>
             <!--#endregion-->
@@ -48,7 +48,7 @@
             </Label>
             <!--#endregion-->
             <!--#region Scrolling initialization progress -->
-            <ScrollView Grid.Row="4" x:Name="statusScrollView"  VerticalOptions="Start" Margin="10">
+            <ScrollView Grid.Row="4" x:Name="statusScrollView" VerticalOptions="Start" Margin="10">
                 <Label Text="Starting DivisiBill" HorizontalOptions="Start" VerticalOptions="Start" VerticalTextAlignment="Start"/>
             </ScrollView>
             <!--#endregion-->

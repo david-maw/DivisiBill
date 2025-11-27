@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<toolkit:Popup 
-             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:local="clr-namespace:DivisiBill"
-             xmlns:views="clr-namespace:DivisiBill.Views"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             x:DataType="vm:PaymentsViewModel"
-             BackgroundColor="Transparent"
-             Padding="0"
-             Margin="0"
-             x:Class="DivisiBill.Views.PaymentsPage">
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:local="clr-namespace:DivisiBill"
+    xmlns:views="clr-namespace:DivisiBill.Views"
+    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+    x:DataType="vm:PaymentsViewModel"
+    BackgroundColor="Transparent"
+    Padding="0"
+    Margin="0"
+    x:Class="DivisiBill.Views.PaymentsPage">
     <toolkit:Popup.Resources>
         <ResourceDictionary>
             <Style TargetType="Label">
@@ -22,7 +22,7 @@
             </Style>
         </ResourceDictionary>
     </toolkit:Popup.Resources>
-    <Border StrokeThickness="2" StrokeShape="RoundRectangle 10" 
+    <Border StrokeThickness="2" StrokeShape="RoundRectangle 10"
             HorizontalOptions="Center"
             Padding="5"
             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">

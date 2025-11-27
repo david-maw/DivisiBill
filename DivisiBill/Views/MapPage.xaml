@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:services = "clr-namespace:DivisiBill.Services"
@@ -21,10 +21,10 @@
     <services:ColumnLayout>
         <Label
             Text="{Binding VenueName,Mode=OneWay}"
-            VerticalOptions="Center" 
+            VerticalOptions="Center"
             HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
         <Label VerticalOptions="Center" HorizontalOptions="Center">
-        <Label.FormattedText>
+            <Label.FormattedText>
                 <FormattedString>
                     <FormattedString.Spans>
                         <Span Text="{Binding VenueLocation, StringFormat='Location={0}',Converter={StaticResource Location}, TargetNullValue='Location Unknown'}"/>
@@ -33,8 +33,8 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <maps:Map x:Name="map" services:ColumnLayout.Fill="True" 
-            MapClicked="OnMapClicked" 
-            IsShowingUser="{Binding MapIsShowingUser, Mode=OneTime}"/>
+        <maps:Map x:Name="map" services:ColumnLayout.Fill="True"
+                  MapClicked="OnMapClicked"
+                  IsShowingUser="{Binding MapIsShowingUser, Mode=OneTime}"/>
     </services:ColumnLayout>
 </ContentPage>

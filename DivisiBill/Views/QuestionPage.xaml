@@ -15,7 +15,7 @@
     <Border
         Padding="10"
         BackgroundColor="{AppThemeBinding Light={StaticResource White},
-                                          Dark={StaticResource Gray900}}"
+        Dark={StaticResource Gray900}}"
         HorizontalOptions="Center"
         StrokeShape="RoundRectangle 10"
         StrokeThickness="2">
@@ -29,7 +29,7 @@
                 Margin="7,10,0,0"
                 Content="Yes"
                 IsChecked="{Binding Yes}" />
-            <RadioButton 
+            <RadioButton
                 Margin="7,-10,0,0"
                 Content="No"
                 IsChecked="{Binding Yes, Converter={StaticResource Not}}" />

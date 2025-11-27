@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
@@ -8,7 +8,7 @@
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:viewsPartial="clr-namespace:DivisiBill.ViewsPartial"
-             x:Name="Page"            
+             x:Name="Page"
              x:DataType="vm:VenueListViewModel"
              x:Class="DivisiBill.Views.VenueListPage"
              Title="Venue List">
@@ -19,17 +19,17 @@
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
-                                            CommandParameter="{Binding}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"
-                                            Invoked="OnAssignSwipeItemInvoked" />
+                                       CommandParameter="{Binding}"
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"
+                                       Invoked="OnAssignSwipeItemInvoked" />
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
-                                            CommandParameter="{Binding}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"
-                                            Invoked="OnDeleteSwipeItemInvoked" />
+                                       CommandParameter="{Binding}"
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"
+                                       Invoked="OnDeleteSwipeItemInvoked" />
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <VerticalStackLayout x:DataType="model:Venue">
@@ -38,23 +38,23 @@
                             <FlyoutBase.ContextFlyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem
-                                            Text="Use"
-                                            CommandParameter="{Binding}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
+                                        Text="Use"
+                                        CommandParameter="{Binding}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
                                     <MenuFlyoutItem
-                                            Text="Delete"
-                                            CommandParameter="{Binding}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
+                                        Text="Delete"
+                                        CommandParameter="{Binding}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
                                 </MenuFlyout>
                             </FlyoutBase.ContextFlyout>
                             <Label Text="{Binding Path=Name}" FontSize="Large" LineBreakMode="TailTruncation"/>
                             <!--#region Icon indicating current Meal-->
                             <Image
-                            Grid.Column="1"
-                            IsVisible="{Binding IsForCurrentMeal}"
-                            HorizontalOptions="End"
-                            WidthRequest="20"
-                            Source="{StaticResource ListGlyphCurrentMeal}"/>
+                                Grid.Column="1"
+                                IsVisible="{Binding IsForCurrentMeal}"
+                                HorizontalOptions="End"
+                                WidthRequest="20"
+                                Source="{StaticResource ListGlyphCurrentMeal}"/>
                             <!--#endregion-->
                             <Label Grid.Column="2" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="Small" VerticalOptions="Center" HorizontalOptions="End"/>
                         </Grid>
@@ -69,8 +69,8 @@
                             CommandParameter="{Binding}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=SelectVenueCommand, x:DataType=vm:VenueListViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2"
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
+                                              CommandParameter="{Binding}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--#endregion-->
@@ -88,14 +88,14 @@
     <services:ColumnLayout>
         <!--#region List of Venues -->
         <CollectionView x:Name="CurrentCollectionView"
-            x:DataType="vm:VenueListViewModel"
-            Scrolled="OnCollectionViewScrolled"
-            ItemTemplate="{StaticResource WithSwipe}"
-            SelectionMode="Single"
-            SelectedItem="{Binding CurrentItem}"
-            Margin="10,0"                
-            ItemSizingStrategy="MeasureAllItems"
-            ItemsSource="{Binding VenueList}">
+                        x:DataType="vm:VenueListViewModel"
+                        Scrolled="OnCollectionViewScrolled"
+                        ItemTemplate="{StaticResource WithSwipe}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding CurrentItem}"
+                        Margin="10,0"
+                        ItemSizingStrategy="MeasureAllItems"
+                        ItemsSource="{Binding VenueList}">
             <CollectionView.Header>
                 <VerticalStackLayout>
                     <Label HorizontalOptions="Center" FontSize="Large" FontAttributes="Bold">

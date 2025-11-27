@@ -12,10 +12,10 @@
             <Grid ColumnDefinitions="auto, *, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto, auto, auto, auto" >
                 <Label Grid.Row="0" Grid.ColumnSpan="3">
                     <Label.Text xml:space="preserve">
-This page will lead you through the creation of a bill step by step.
+                            This page will lead you through the creation of a bill step by step.
 
-Some steps, like creating a person, are optional, or might only be done once.
-                </Label.Text>
+                            Some steps, like creating a person, are optional, or might only be done once.
+                    </Label.Text>
                 </Label>
                 <CheckBox Grid.Row="1" Grid.Column="0" CheckedChanged="OnAddPeopleChanged"/>
                 <Label Grid.Row="1" Grid.Column="1" Text="Add people for later use in bills (optional)" VerticalOptions="Center"/>

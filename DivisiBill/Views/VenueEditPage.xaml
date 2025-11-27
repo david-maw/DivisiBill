@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:DivisiBill.ViewModels"
@@ -17,8 +17,8 @@
             1 - it allows the Notes field to occupy all the available space
             2 - it simplifies the layout of the name input line-->
     <Grid Margin="10,0,10,10" ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *">
-        <Label Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Path=Name}" 
-                   HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
+        <Label Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Path=Name}"
+               HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
         <Label Grid.Row="1" Grid.ColumnSpan="2" Text="(in use)" IsVisible="{Binding IsForCurrentMeal}" HorizontalOptions="Center"/>
         <Label Grid.Row="2" Grid.ColumnSpan="2" HorizontalOptions="Center">
             <Label.FormattedText>
@@ -31,13 +31,13 @@
             </Label.FormattedText>
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding ShowMapCommand}"/>
-                <TapGestureRecognizer Command="{Binding ClearLocationCommand}" NumberOfTapsRequired="1"  Buttons="Secondary"/>
+                <TapGestureRecognizer Command="{Binding ClearLocationCommand}" NumberOfTapsRequired="1" Buttons="Secondary"/>
                 <TapGestureRecognizer Command="{Binding ClearLocationCommand}" NumberOfTapsRequired="2" />
             </Label.GestureRecognizers>
         </Label>
         <Label Grid.Row="3" Text="New Name:" VerticalOptions="Center"/>
         <Entry Grid.Row="3" Grid.Column="1" x:Name="nameEntry" ClearButtonVisibility="WhileEditing" Placeholder="Enter Venue Name"
-                   ReturnType="Next" Keyboard="Text" Text="{Binding Name}"/>
+               ReturnType="Next" Keyboard="Text" Text="{Binding Name}"/>
         <Label Grid.Row="4" Grid.ColumnSpan="2" Text="New name is invalid, will remain unchanged" HorizontalOptions="Center" IsVisible="{Binding IsNewNameInvalid}"/>
         <Label Grid.Row="5" Grid.ColumnSpan="2" Text="Notes" TextDecorations="Underline" HorizontalOptions="Center"/>
         <Border Grid.Row="6" Grid.ColumnSpan="2">

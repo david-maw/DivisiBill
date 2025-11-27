@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="DivisiBill.Views.LineItemsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -56,18 +56,18 @@
         <DataTemplate x:Key="NoSwipe" x:DataType="model:LineItem">
             <Grid ColumnDefinitions="35,*,80,*,30">
                 <Grid.Resources>
-                <Style x:Key="SignedLabelStyle" TargetType="Label">
-                    <Setter Property="VisualStateManager.VisualStateGroups">
-                        <VisualStateGroupList>
-                            <VisualStateGroup>
-                                <VisualState x:Name="Negative">
-                                    <VisualState.StateTriggers>
+                    <Style x:Key="SignedLabelStyle" TargetType="Label">
+                        <Setter Property="VisualStateManager.VisualStateGroups">
+                            <VisualStateGroupList>
+                                <VisualStateGroup>
+                                    <VisualState x:Name="Negative">
+                                        <VisualState.StateTriggers>
                                             <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="True" />
-                                    </VisualState.StateTriggers>
-                                    <VisualState.Setters>
-                                        <Setter Property="TextColor" Value="{StaticResource NegativeNumber}" />
-                                    </VisualState.Setters>
-                                </VisualState>
+                                        </VisualState.StateTriggers>
+                                        <VisualState.Setters>
+                                            <Setter Property="TextColor" Value="{StaticResource NegativeNumber}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
                                     <VisualState x:Name="Default">
                                         <VisualState.StateTriggers>
                                             <CompareStateTrigger Property="{Binding Amount,Converter={StaticResource IsNegative}}" Value="False" />
@@ -77,9 +77,9 @@
                                         </VisualState.Setters>
                                     </VisualState>
                                 </VisualStateGroup>
-                        </VisualStateGroupList>
-                    </Setter>
-                </Style>
+                            </VisualStateGroupList>
+                        </Setter>
+                    </Style>
                 </Grid.Resources>
                 <!--#region Item information-->
                 <Grid
@@ -159,7 +159,7 @@
             Margin="5"
             Padding="5"
             Stroke="{AppThemeBinding Light={StaticResource Gray900},
-                                     Dark={StaticResource White}}">
+            Dark={StaticResource White}}">
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding PushPropertiesCommand}" />
                 <TapGestureRecognizer
@@ -278,7 +278,7 @@
             Margin="5"
             Padding="5"
             Stroke="{AppThemeBinding Light={StaticResource Gray900},
-                                     Dark={StaticResource White}}">
+            Dark={StaticResource White}}">
             <Grid
                 x:DataType="vm:MealViewModel"
                 ColumnDefinitions="*,Auto"

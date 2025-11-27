@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
@@ -13,15 +13,15 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphImages}" Command="{Binding BrowseCommand}"/>
         <ToolbarItem IconImageSource="{Binding FlashGlyph}" Command="{Binding ChangeFlashModeCommand}"/>
     </ContentPage.ToolbarItems>
-     <!--It's a grid but everything is in the same row and column-->
+    <!--It's a grid but everything is in the same row and column-->
     <Grid>
         <toolkit:CameraView x:Name="MyCamera"
-            IsVisible="{Binding IsCameraAvailable}"
-            CameraFlashMode="{Binding FlashMode}"
-            IsTorchOn="{Binding IsLightOn}"
-            MediaCaptured="OnPictureTaken"
-            SelectedCamera="{Binding SelectedCamera}"
-            ImageCaptureResolution="{Binding ImageCaptureResolution}"/>
+                            IsVisible="{Binding IsCameraAvailable}"
+                            CameraFlashMode="{Binding FlashMode}"
+                            IsTorchOn="{Binding IsLightOn}"
+                            MediaCaptured="OnPictureTaken"
+                            SelectedCamera="{Binding SelectedCamera}"
+                            ImageCaptureResolution="{Binding ImageCaptureResolution}"/>
         <!--Have to specify x:DataType until issue https://github.com/dotnet/maui/issues/21834 is implemented -->
         <Ellipse Stroke="Red"
                  Fill="White"
@@ -33,8 +33,8 @@
                  VerticalOptions="End"
                  Margin="20">
             <Ellipse.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding CaptureImageCommand, Source={x:Reference MyCamera}, x:DataType=toolkit:CameraView}" 
-                        CommandParameter="{Binding Token}"/>
+                <TapGestureRecognizer Command="{Binding CaptureImageCommand, Source={x:Reference MyCamera}, x:DataType=toolkit:CameraView}"
+                                      CommandParameter="{Binding Token}"/>
             </Ellipse.GestureRecognizers>
         </Ellipse>
         <Label Text="No camera available"

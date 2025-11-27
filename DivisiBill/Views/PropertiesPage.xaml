@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -40,8 +40,8 @@
             <!--#region Page heading - Venue Name, bill creation and last use times, encryption status -->
             <Label Text="{Binding VenueName}" HorizontalOptions="Center" FontSize="Title">
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1"  Buttons="Primary"/>
-                    <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1"  Buttons="Secondary"/>
+                    <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1" Buttons="Primary"/>
+                    <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1" Buttons="Secondary"/>
                     <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="2" />
                 </Label.GestureRecognizers>
             </Label>
@@ -49,7 +49,7 @@
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDefault, Converter={StaticResource Not}}"
                    Text="{Binding CreationTime, StringFormat='Created {}',  Converter={StaticResource ApproximateDateTime}}"/>
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsLastChangeTimeDifferent}"
-               Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
+                   Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
             <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsEncrypted}" Text="Remote Data is Encrypted"/>
             <!--#endregion-->
             <!--#region Bill Diagnostics (file name etc.) -->
@@ -60,7 +60,7 @@
             <Grid Margin="10,0" RowSpacing="-7" ColumnDefinitions="*,auto,auto" RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto">
                 <!--#region Tip-->
                 <!--#region Tip on Tax -->
-                <Label Grid.Row="0" VerticalOptions="Center"  
+                <Label Grid.Row="0" VerticalOptions="Center"
                        Text="{Binding IsDefaultTipOnTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)', StringFormat='Tip on Tax{0}'}"/>
                 <CheckBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding TipOnTax}" HorizontalOptions="End" BackgroundColor="Transparent"/>
                 <!--#endregion-->
@@ -83,15 +83,15 @@
                             Command="{Binding UnloadTipRateStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
-                <Label Text="%" Grid.Row="1" Grid.Column="2" FontSize="{Binding Source={x:Reference entryTipRate}, Path=FontSize, x:DataType=Entry}" 
+                <Label Text="%" Grid.Row="1" Grid.Column="2" FontSize="{Binding Source={x:Reference entryTipRate}, Path=FontSize, x:DataType=Entry}"
                        TextColor="{Binding Source={x:Reference entryTipRate}, Path=TextColor, x:DataType=Entry}" VerticalOptions="Center"/>
                 <!--#endregion-->
-                <Label Grid.Row="2" Text="Tip Amount including delta" VerticalOptions="Center"  FontSize="{Binding Source={x:Reference entryTipAmount}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
+                <Label Grid.Row="2" Text="Tip Amount including delta" VerticalOptions="Center" FontSize="{Binding Source={x:Reference entryTipAmount}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
                 <!--#region Tip Amount Value -->
                 <Entry x:Name="entryTipAmount" Grid.Row="2" Grid.Column="1" Text="{Binding TipString}"
                        Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadTipStringCommand}">
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
+                        <services:CurrencyValidationBehavior
                             InvalidStyle="{StaticResource InvalidEntryStyle}"
                             ValidStyle="{StaticResource ValidEntryStyle}"
                             IsValid="{Binding TipStringIsValid}"
@@ -102,7 +102,7 @@
                             Command="{Binding UnloadTipStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
-                <Label Grid.Row="2" Grid.Column="2" Text="{x:Static services:Utilities.CurrencySymbol}" VerticalOptions="Center"  FontSize="{Binding Source={x:Reference entryTipAmount}, Path=FontSize, x:DataType=Entry}"/>
+                <Label Grid.Row="2" Grid.Column="2" Text="{x:Static services:Utilities.CurrencySymbol}" VerticalOptions="Center" FontSize="{Binding Source={x:Reference entryTipAmount}, Path=FontSize, x:DataType=Entry}"/>
                 <!--#endregion-->
                 <!--#region Tip Delta -->
                 <Label Grid.Row="3" Grid.Column="0" Text="{Binding IsTipDeltaStringValid, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)',StringFormat='Tip Delta{0}'}"
@@ -131,7 +131,7 @@
                 <Entry x:Name="entryTaxRate" Grid.Row="5" Grid.Column="1" Text="{Binding TaxRateString}" MaxLength="5"
                        Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadTaxRateStringCommand}">
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
+                        <services:CurrencyValidationBehavior
                             InvalidStyle="{StaticResource InvalidEntryStyle}"
                             ValidStyle="{StaticResource ValidEntryStyle}"
                             IsValid="{Binding TaxRateStringIsValid}"
@@ -142,7 +142,7 @@
                             Command="{Binding UnloadTaxRateStringCommand}"/>
                     </Entry.Behaviors>
                 </Entry>
-                <Label Text="%" Grid.Row="5" Grid.Column="2" FontSize="{Binding Source={x:Reference entryTaxRate}, Path=FontSize, x:DataType=Entry}" 
+                <Label Text="%" Grid.Row="5" Grid.Column="2" FontSize="{Binding Source={x:Reference entryTaxRate}, Path=FontSize, x:DataType=Entry}"
                        TextColor="{Binding Source={x:Reference entryTaxRate}, Path=TextColor, x:DataType=Entry}" VerticalOptions="Center"/>
                 <!--#endregion-->
                 <Label Grid.Row="6" Text="Tax Amount including Delta" VerticalOptions="Center" FontSize="{Binding Source={x:Reference entryTaxAmount}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
@@ -150,7 +150,7 @@
                 <Entry x:Name="entryTaxAmount" Grid.Row="6" Grid.Column="1" Text="{Binding TaxString}" MaxLength="8"
                        Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadTaxStringCommand}">
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
+                        <services:CurrencyValidationBehavior
                             InvalidStyle="{StaticResource InvalidEntryStyle}"
                             ValidStyle="{StaticResource ValidEntryStyle}"
                             IsValid="{Binding TaxStringIsValid}"
@@ -171,8 +171,8 @@
                     <Label Text="Tax Delta" Margin="0,10,50,10" VerticalOptions="Center" LineBreakMode="WordWrap"/>
                     <Stepper Minimum="-1" Maximum="1" Increment="0.01" Value="{Binding TaxDelta}" Scale="0.6"/>
                 </HorizontalStackLayout>
-                <Label Grid.Row="7" Grid.Column="1" Text="{Binding TaxDeltaString, Mode=OneWay}" Margin="0,0,5,0" 
-                   VerticalOptions="Center" HorizontalTextAlignment="End"/>
+                <Label Grid.Row="7" Grid.Column="1" Text="{Binding TaxDeltaString, Mode=OneWay}" Margin="0,0,5,0"
+                       VerticalOptions="Center" HorizontalTextAlignment="End"/>
                 <Label Grid.Row="7" Grid.Column="2" Text="{x:Static services:Utilities.CurrencySymbol}" VerticalOptions="Center"/>
                 <!--#endregion-->
                 <!--#endregion-->
@@ -201,17 +201,17 @@
                 <!--#endregion-->
                 <!--#region Calculated Subtotal -->
                 <Label Grid.Row="9" Text="Calculated SubTotal Amount" VerticalOptions="Center" Margin="0,10,0,0"/>
-                <Label Grid.Row="9" Grid.Column="1" Text="{Binding SubTotal, StringFormat='{0:0.00}'}" Margin="0,0,5,0" 
-                   VerticalOptions="Center" HorizontalTextAlignment="End"/>
+                <Label Grid.Row="9" Grid.Column="1" Text="{Binding SubTotal, StringFormat='{0:0.00}'}" Margin="0,0,5,0"
+                       VerticalOptions="Center" HorizontalTextAlignment="End"/>
                 <Label Grid.Row="9" Grid.Column="2" Text="{x:Static services:Utilities.CurrencySymbol}" VerticalOptions="Center"/>
                 <!--#endregion-->
                 <!--#region Scanned Subtotal -->
-                <Label Grid.Row="10" Text="Scanned Subtotal Amount" VerticalOptions="Center" Margin="0,20,0,0" 
+                <Label Grid.Row="10" Text="Scanned Subtotal Amount" VerticalOptions="Center" Margin="0,20,0,0"
                        FontSize="{Binding Source={x:Reference entryScannedSubtotal}, Path=FontSize, x:DataType=Entry}" LineBreakMode="TailTruncation"/>
                 <Entry x:Name="entryScannedSubtotal" Grid.Row="10" Grid.Column="1" Text="{Binding ScannedSubTotalString}" MaxLength="8"
                        Focused="OnEntryFocused" Completed="OnEntryCompleted" ReturnCommand="{Binding UnloadScannedSubTotalCommand}" >
                     <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior 
+                        <services:CurrencyValidationBehavior
                             InvalidStyle="{StaticResource InvalidEntryStyle}"
                             ValidStyle="{StaticResource ValidEntryStyle}"
                             UnequalStyle="{StaticResource UnequalEntryStyle}"
