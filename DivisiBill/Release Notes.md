@@ -1,3 +1,9 @@
+# 6.3.4
+
+## Correct Error Browsing to Image
+
+The Image browse command was not working, this has been corrected.
+
 # 6.3.3
 
 ## Pan the Screen When Performing Data Entry
