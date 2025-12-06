@@ -410,13 +410,15 @@ public partial class MealViewModel : ObservableObjectPlus
     private void DeselectAllLineItems(LineItem li) => SelectedLineItem = null;
     private LineItem AddItem(LineItem li)
     {
-        li ??= new();
-        LineItems.InsertBefore(SelectedLineItem, li);
+        li ??= new(); // Should never happen, but just in case
+        // Insert after the selected item or at the end if none selected
+        li.EnsureItemName(); // Give the item a default name if it doesn't have a name
+        LineItems.InsertAfter(SelectedLineItem, li);
         if (IsFiltered)
         {
             if (li.GetShares(AmountForSharerID) < 1)
                 li.SetShares(AmountForSharerID, 1);
-            Meal.CurrentMeal.LineItems.InsertBefore(SelectedLineItem, li); // because the one in LineItems is temporary.
+            Meal.CurrentMeal.LineItems.InsertAfter(SelectedLineItem, li); // because the one in LineItems is temporary.
             DistributeCostsIfNeeded();
             SetFilteredBlockTotals();
         }

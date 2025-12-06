@@ -223,6 +223,32 @@ public static partial class Utilities // Partial for regex generator
                 list.Insert(i, itemToInsert);
         }
     }
+    
+    /// <summary>
+    /// Inserts an item into the list immediately after the specified existing item, or at the end of the list if the
+    /// existing item is not found or is null.
+    /// </summary>
+    /// <remarks>If the specified existing item is not present in the list or is null, the new item is
+    /// added at the end of the list. This method does not check for duplicate items.</remarks>
+    /// <typeparam name="T">The type of elements in the list. Must be a reference type.</typeparam>
+    /// <param name="list">The list into which the item will be inserted. Cannot be null.</param>
+    /// <param name="existingItem">The item in the list after which the new item will be inserted.
+    /// If null or not found in the list, the new item is inserted at the start.</param>
+    /// <param name="itemToInsert">The item to insert into the list. Cannot be null.</param>
+    public static void InsertAfter<T>(this IList<T> list, T existingItem, T itemToInsert) where T : class
+    {
+        ArgumentNullException.ThrowIfNull(itemToInsert);
+        if (existingItem is null)
+            list.Add(itemToInsert); // no item currently selected, add at start
+        else
+        {
+            int i = list.IndexOf(existingItem);
+            if (i < 0)
+                list.Add(itemToInsert); // existingItem was not in the list, so just add the new one at the start
+            else
+                list.Insert(i+1, itemToInsert);
+        }
+    }
 
     /// <summary>
     /// Return the next item after the selected one is deleted (either the next or, if the last one is deleted, the previous one)

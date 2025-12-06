@@ -984,6 +984,7 @@ public partial class Meal : ObservableObjectPlus
         {
             Trace.Assert(sourceStream.Position == 0, "Source stream expected to be positioned at 0");
             DebugExamineStream(sourceStream);
+            LineItem.NextItemNumber = 1;
             m = (Meal)MealSerializer.Deserialize(sourceStream);
             if (ms is not null)
                 m.Summary = ms; // Discard the one that was created as part of the deserialize operation in favor of the passed one 
@@ -1037,7 +1038,6 @@ public partial class Meal : ObservableObjectPlus
     }
     private static Meal LoadFromSavedStream(MealSummary ms, bool setup = false)
     {
-        LineItem.NextItemNumber = 1;
         ms.SnapshotStream.Position = 0;
         Meal m = LoadFromStream(ms.SnapshotStream, ms, setup);
         if (m is null)
@@ -1060,7 +1060,6 @@ public partial class Meal : ObservableObjectPlus
         try
         {
             using var sourceStream = File.OpenRead(Path.Combine(MealFolderPath, TargetFileName));
-            LineItem.NextItemNumber = 1;
             m = LoadFromStream(sourceStream, ms, setup);
             if (m is null)
             {
@@ -1102,7 +1101,6 @@ public partial class Meal : ObservableObjectPlus
         Meal m = null;
         using (Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, ms.Id))
         {
-            LineItem.NextItemNumber = 1;
             m = LoadFromStream(sourceStream, ms, setup);
             if (m is null || m.Size <= 0)
             {
@@ -2910,7 +2908,6 @@ public partial class Meal : ObservableObjectPlus
         {
             using Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name);
             cancellationToken.ThrowIfCancellationRequested();
-            LineItem.NextItemNumber = 1;
             try // if one file fails, just report it and go on to the next 
             {
                 Meal m = LoadFromStream(sourceStream);

@@ -545,7 +545,6 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         MealSummary ms = null;
         using (var sourceStream = File.OpenRead(Path.Combine(Meal.MealFolderPath, TargetFileName)))
         {
-            LineItem.NextItemNumber = 1;
             if (sourceStream.Length > 0) // Empty files are clearly bad
                 ms = LoadFromMealStream(sourceStream, TargetFileName);
             if (ms is null)
