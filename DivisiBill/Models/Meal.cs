@@ -1758,7 +1758,14 @@ public partial class Meal : ObservableObjectPlus
         return d;
     }
 
-    // Sum of the each person's rounded amounts (or rounded total if not all assigned)
+    /// <summary>
+    /// Calculates the total amount by adding each individual amount rounded if all costs have been allocated.
+    /// </summary>
+    /// <remarks>If any costs remain unallocated, the method rounds the overall total amount. If all costs are
+    /// allocated, it sums the individually rounded amounts for each person. Rounding is performed to the nearest whole
+    /// number using midpoint rounding away from zero.</remarks>
+    /// <returns>A decimal value representing the sum of rounded amounts for each person if all costs are allocated; otherwise,
+    /// the rounded total amount.</returns>
     private decimal GetRoundedAmount()
     {
         decimal accumulatedTotal = 0;
@@ -1771,7 +1778,8 @@ public partial class Meal : ObservableObjectPlus
         return accumulatedTotal;
     }
     /// <summary>
-    /// Subtotal is the sum of all the individual items except those that are comped
+    /// The bill SubTotal - this should be the same number as is shown on the bill in ScannedSubtotal.
+    /// It is the sum of the item amounts ignoring any comped items and perhaps discounts, see <see cref="GetSubTotal"/>.
     /// </summary>
     [XmlIgnore]
     public decimal SubTotal
@@ -1796,7 +1804,10 @@ public partial class Meal : ObservableObjectPlus
 
     /// <summary>
     /// The actual coupon amount applied to the bill, the sum of all the individual coupons 
-    /// but no more than the sum of item costs less any comped items (so it is never negative)
+    /// but no more than the sum of item costs less any comped items (so it is never negative).
+    /// Note that this is different from <see cref="GetRawCouponAmount"/> which simply sums the coupons
+    /// and does not take note of the amount. Also, the individual coupons may be taxable or not depending
+    /// on the value of <see cref="IsCouponAfterTax"/>.
     /// </summary>
     private decimal GetModifiedCouponAmount()
     {
@@ -1809,7 +1820,7 @@ public partial class Meal : ObservableObjectPlus
             else if (!item.Comped)
                 subTotal += item.Amount;
         }
-        return Math.Min(subTotal, couponAmount);
+        return Math.Min(subTotal, couponAmount / (IsCouponAfterTax ? 1 + (decimal)TaxRate : 1));
     }
 
     /// <summary>
@@ -1842,8 +1853,8 @@ public partial class Meal : ObservableObjectPlus
     /// <summary>
     /// The bill SubTotal - this should be the same number as is shown on the bill in ScannedSubtotal
     /// It is the sum of the item amounts ignoring any comped items.
-    /// If discounts are taxable they do not affect the subtotal, refer to the <see cref="IsCouponAfterTax"/> property
-    /// If discounts are NOT taxable (the normal case) they reduce the subtotal.
+    /// If discounts are applied after tax they do not affect the subtotal, refer to the <see cref="IsCouponAfterTax"/> property
+    /// If discounts are applied before tax (meaning they are taxable, the normal case) they reduce the subtotal but do not affect <see cref="GetTipBasis"/>.
     /// Negative values are not allowed and return zero.
     /// </summary>
     /// <returns>Subtotal of items</returns>
@@ -1853,9 +1864,9 @@ public partial class Meal : ObservableObjectPlus
             .Sum(item => item.Amount));
 
     /// <summary>
-    /// The portion of the cost of a meal which is taxable, used to be complex, now it's just the subtotal
+    /// The portion of the cost of a meal which is taxable
     /// </summary>
-    private decimal TaxedAmount => SubTotal;
+    private decimal TaxedAmount => GetOrderAmount() - GetCompedAmount() - GetModifiedCouponAmount();
 
     // Set this to constrain amounts to a particular sharer
     [XmlIgnore]
@@ -1877,6 +1888,9 @@ public partial class Meal : ObservableObjectPlus
         }
     }
 
+    /// <summary>
+    /// Gets or sets the sum of each amount rounded to the nearest integer (which is not necessarily the same as the Total rounded) .
+    /// </summary>
     [XmlIgnore]
     [ObservableProperty]
     public partial decimal RoundedAmount { get; set; }
@@ -1887,10 +1901,19 @@ public partial class Meal : ObservableObjectPlus
         private set => SetProperty(ref field, value, () => { IsDistributed = false; });  // The grand total has changed, so the distribution must
     }
 
+    /// <summary>
+    /// Calculates the total amount due, including subtotal, tax, and tip, minus any coupon applied after tax.
+    /// </summary>
+    /// <returns>The total amount to be paid after applying tax, tip, and post-tax coupon deductions.</returns>
     public decimal GetTotalAmount() => SubTotal + Tax + Tip - CouponAmountAfterTax;
 
-    // The basis on which the tip is calculated - the server does the work for comped items, and discounted ones,
-    // so they are folded back in to the amount on which the tip is based
+    /// <summary>
+    /// Calculates the total amount used as the basis for tip calculation, including applicable tax if 
+    /// <see cref="TipOnTax"/> specified.
+    /// </summary>
+    /// <remarks>Comped items are included in the calculation and coupons are ignored when determining the tip basis as
+    /// neither affect the work of the server.</remarks>
+    /// <returns>The monetary amount on which the tip is calculated.</returns>
     private decimal GetTipBasis() => (GetOrderAmount() + (TipOnTax ? Tax : 0));
 
     [XmlIgnore]
@@ -2020,12 +2043,12 @@ public partial class Meal : ObservableObjectPlus
     ///    <item><description>Coupons amount exceeds overall amount spent.</description></item>
     ///    <item><description>One or more participant coupon amounts exceed participant spend.</description></item>
     ///    <item><description>No participant spent anything.</description></item>
-    ///    <item><description>Unallocated amount equals unallocated coupons.</description></item>
+    ///    <item><description>Unallocated amount includes unallocated coupons.</description></item>
     /// </list>
     /// <para>Taxable discounts (which are rare) are handled by calculating what the discount before tax would have been and using 
-    /// that in the calculations so we don't have to distribute it separately.</para> 
-    /// <para>For any unused discount or error dues to rounding we share it between participants but try and keep participants with identical 
-    /// costs the same amount so they'll end up with identical payments.</para>
+    /// that in the calculations so we don't have to distribute it separately.</para>
+    /// <para>Tip amounts are not affected by discounts (comped items or coupons)</para>
+    /// <para>For any unused discount or error due to rounding we share it between participants but try and keep identical payments identical.</para>
     /// </summary>
     public void DistributeCosts(bool report = true)
     {
@@ -2036,13 +2059,6 @@ public partial class Meal : ObservableObjectPlus
         #region Initialization
         PersonCost[] sharers = new PersonCost[LineItem.maxSharers];
 
-        // Store a reference to each participants cost at their diner index 
-        // in the sharers array to simplify the next step
-        foreach (var personCost in Costs)
-        {   // Note DinerIndex starts at 1
-            sharers[personCost.DinerIndex] = personCost;
-            personCost.ClearAllAmounts(); // Take this opportunity to clear out old data (even for irrelevant fields it simplifies debugging)
-        }
         if (LineItems.Count == 0)
         {
             // As there are no people to share amongst we've done all that is necessary, just zero out a few things and exit
@@ -2053,6 +2069,13 @@ public partial class Meal : ObservableObjectPlus
         #endregion
         #region Share out Items
         decimal unallocatedRunningTotal = 0;
+        // Store a reference to each participants cost at their diner index 
+        // in the sharers array to simplify the next step
+        foreach (var personCost in Costs)
+        {   // Note DinerIndex starts at 1
+            sharers[personCost.DinerIndex] = personCost;
+            personCost.ClearAllAmounts(); // Take this opportunity to clear out old data (even for irrelevant fields it simplifies debugging)
+        }
         // Now step through all the line items, sharing out their cost
         foreach (var item in lineItems)
         {
@@ -2096,41 +2119,51 @@ public partial class Meal : ObservableObjectPlus
 
         UnallocatedAmount = unallocatedRunningTotal;
 
-        // Calculate the discount, if coupons are to be applied after tax, scale the coupon amount to a corresponding discount before tax
-        decimal amountSum = 0, totalCouponAmount = 0;
+        // At this point all the basic values derived from the list of items are accumulated in each PersonCost entry
+        // this includes each participant's OrderAmount, CompedAmount and CouponAmount but not yet any tax, tip or final amounts.
+        // It is possible that the discounts (CompedAmount + CouponAmount) exceed the total spent for some or all participants.
+
+        // Calculate the discount for each participant, if coupons are to be applied after tax, scale the coupon amount to a corresponding discount before tax
+        decimal totalChargedAmount = 0, totalCouponAmount = 0;
         foreach (var costItem in Costs)
         {
             costItem.PreTaxCouponAmount = costItem.CouponAmount / (1M + (IsCouponAfterTax ? (decimal)TaxRate : 0));
             costItem.Discount = costItem.CompedAmount + costItem.PreTaxCouponAmount;
             costItem.UnusedCouponAmount = costItem.Discount;
             totalCouponAmount += costItem.PreTaxCouponAmount;
-            amountSum += costItem.ChargedAmount; // CouponAmount not included
+            totalChargedAmount += costItem.ChargedAmount; // CouponAmount not included
         }
+
+        // Basic derived items (PreTaxCouponAmount, Discount and UnusedCouponAmount) are now defined for each participant but again
+        // no tax, tip or final amounts have been calculated yet and the discount may exceed the amount.
 
         // Create a handy list of participants who spent something
         var costsWithOrderAmount = Costs.Where(pc => pc.OrderAmount > 0).ToList();
         if (costsWithOrderAmount.Count == 0)
         {
-            // Trivial case, nobody bought anything so there's nothing much to calculate, just guess at the rounded amount, mark as completed and return
+            // Trivial case, nobody spent anything so there's nothing much to calculate, just guess at the rounded amount, mark as completed, and return
             RoundedAmount = GetRoundedAmount();
             IsDistributed = true;
             return;
         }
         #endregion
         #region Ensure the Coupon Amount Does not Exceed the Overall Cost
-        // This is a rare case (it means a large coupon in comparison to the bill, but nevertheless, if it
-        // does happen, most venues will not give you money back (if they would, you effectively have money, 
-        // not a coupon). If it does happen, prorate the individual coupons so the overall total ends up at zero
-        decimal ExcessDiscount = Math.Max(0, totalCouponAmount - amountSum);
+        // This is a rare case (it means a large coupon in comparison to the bill), but nevertheless, if it
+        // does happen, most venues will not give you money back (if they did, you effectively have money, 
+        // not a coupon). If excess does happen, prorate the individual coupons so the overall total amount ends up at zero
+        decimal ExcessDiscount = Math.Max(0, totalCouponAmount - totalChargedAmount);
         if (ExcessDiscount > 0)
         {
             Tax = 0; // Because there will be no costs there can be no tax
-            decimal ratio = amountSum / totalCouponAmount;
+            // Calculate the ratio by which to multiply each participant's coupon amount so the total equals the total cost
+            decimal ratio = totalChargedAmount / totalCouponAmount;
             foreach (var costItem in Costs.Where(pc => pc.PreTaxCouponAmount > 0))
             {
+                // Scale this participant's coupon share appropriately
                 costItem.PreTaxCouponAmount *= ratio;
+                // No coupon amount has been used yet, assign the initial amount
                 costItem.UnusedCouponAmount = costItem.PreTaxCouponAmount;
-                // prorate the coupon amount, but not the comped amount
+                // figure out the maximum discount for this participant using the comped amount and prorated coupon amount 
                 costItem.Discount = costItem.CompedAmount + costItem.PreTaxCouponAmount;
             }
         }
@@ -2138,48 +2171,51 @@ public partial class Meal : ObservableObjectPlus
         #region Calculate Amount by Applying Discount (Coupon + Comp) Amounts to OrderAmount
         // In most bills the discount would have been completely consumed but...
         // There is an edge case where some people may have discounts which exceed their costs. However,
-        // they are still on the hook for a tip, which may yet consume their remaining discount.
-        // We'll reallocate any unused discount left after paying for a tip to other people, remember, the
+        // they are still on the hook for a tip, which may yet consume their remaining discount. Discounts
+        // do not reduce the total tip amount but other participants will be putting cash in to cover the tip
+        // so we'll reallocate any unused discount left after paying for a tip to other people, remember, the
         // discount has already been prorated so as not to exceed the sum of the paid (not comped) items.
         // We could be more methodical about this so as to distribute the extra discount according to
-        // the shares specified by the user but this is such an unlikely case it hardly seems worthwhile.
+        // the shares specified by the user, but this is such an unlikely case it hardly seems worthwhile.
 
         // First, work through all the costs that are in use consuming as much of the unused coupons
-        // as possible noting what remains so it can be consumed by tip amounts later if possible.
+        // as possible noting what cash remains so it can be consumed by tip amounts later if possible.
 
-        decimal remainingUnusedDiscount = 0;
-        amountSum = 0;
+        // The amount of discount we have not yet used across all the participants
+        decimal remainingUnusedCouponAmount = 0;
+        // Sum of all the amounts so far calculated
+        totalChargedAmount = 0;
         foreach (var costItem in Costs)
         {
             if (costItem.Discount <= costItem.OrderAmount)
             {
                 // The normal case, where the discount is smaller than the participant's total cost
                 costItem.Amount = costItem.OrderAmount - costItem.Discount;
-                amountSum += costItem.Amount;
-                costItem.UnusedCouponAmount = 0;
+                totalChargedAmount += costItem.Amount;
+                costItem.UnusedCouponAmount = 0; // We have used up all of this participant's coupon share
             }
             else
             {
                 // The unusual case where the discount exceeds the cost 
                 costItem.Amount = 0;
-                // amountSum is unchanged
+                // amountSum is unchanged because we would have added zero to it
                 costItem.UnusedCouponAmount -= costItem.ChargedAmount;
-                remainingUnusedDiscount += costItem.UnusedCouponAmount;
+                remainingUnusedCouponAmount += costItem.UnusedCouponAmount;
             }
         }
         // In the normal case when we get to here Amount contains the taxable amount for each participant
         // However, in the odd case where some participants had more discount than cost, there may be
         // some unused discount left over to be applied against other participants cost
-        if (remainingUnusedDiscount > 0)
+        if (remainingUnusedCouponAmount > 0)
         {
-            decimal discountPerUnit = remainingUnusedDiscount / costs.Sum(pc => pc.Amount);
+            decimal discountPerUnit = remainingUnusedCouponAmount / costs.Sum(pc => pc.Amount);
             foreach (var costItem in Costs)
             {
                 if (costItem.Amount > 0)
                     costItem.Amount -=  costItem.Amount * discountPerUnit;
                 costItem.UnusedCouponAmount = 0; // We used all we can so record that
             }
-            remainingUnusedDiscount = 0; // Because we just consumed it all
+            remainingUnusedCouponAmount = 0; // Because we just consumed it all
         }
         #endregion
         #region Apply Proportional Tax, Tip, and Discount To Each Cost 
@@ -2196,10 +2232,8 @@ public partial class Meal : ObservableObjectPlus
         foreach (var costItem in costsWithOrderAmount) // So, just the people who bought things
         {
             decimal shareOfTax = costItem.Amount * modifiedTaxRate;
-            // A little extra may be needed to restore the extra value of a post-tax coupon
-            decimal shareOfTaxForCoupon = IsCouponAfterTax ? costItem.PreTaxCouponAmount * (decimal)TaxRate : 0; // Add a little extra if the coupon is taxed
             // The tip is shared according to what each person spent
-            decimal shareOfTip = (costItem.OrderAmount + (TipOnTax ? shareOfTax + shareOfTaxForCoupon : 0)) * modifiedTipRate;
+            decimal shareOfTip = (costItem.OrderAmount + (TipOnTax ? shareOfTax : 0)) * modifiedTipRate;
 
             // At this point we can make a first estimate of what this participant owes ignoring unused discounts and rounding
             costItem.Amount += shareOfTax + shareOfTip;
@@ -2212,7 +2246,7 @@ public partial class Meal : ObservableObjectPlus
             {
                 // There's some unused discount, but it is less than the Amount for the participant
                 costItem.Amount -= costItem.UnusedCouponAmount;
-                remainingUnusedDiscount -= costItem.UnusedCouponAmount;
+                remainingUnusedCouponAmount -= costItem.UnusedCouponAmount;
                 costItem.UnusedCouponAmount = 0;
             }
             else
@@ -2220,7 +2254,7 @@ public partial class Meal : ObservableObjectPlus
                 // The really rare case where the unused discount exceeds the remaining amount, this means
                 // a different participant will pay part of this participant's share using their unused discount 
                 costItem.UnusedCouponAmount -= costItem.Amount;
-                remainingUnusedDiscount -= costItem.Amount;
+                remainingUnusedCouponAmount -= costItem.Amount;
                 costItem.Amount = 0;
             }
         }
@@ -2234,22 +2268,25 @@ public partial class Meal : ObservableObjectPlus
         // Get a list of just the people who still owe money because they can consume discount
         var costsWithAmount = Costs.Where(pc => pc.Amount > 0).ToList();
 
-        if (UnallocatedAmount == 0)
-            Utilities.DebugAssert(remainingUnusedDiscount == 0, $"Excess discount {remainingUnusedDiscount:C} is unusual in {DebugDisplay}");
+        // The following check isn't necessarily reporting something wrong, but it is weird enough to be worth noting
+        if (UnallocatedAmount == 0 && remainingUnusedCouponAmount != 0)
+            Utilities.RecordMsg( $"Excess discount {remainingUnusedCouponAmount:C} is unusual in {DebugDisplay}");
         #endregion
         #region Round all values
         // Until now we've been doing full accuracy calculations so as to minimize rounding errors
         // From this point onward, all the amounts are in exact dollars and cents so we have to handle them explicitly.
         foreach (var pc in costsWithOrderAmount)
             pc.RoundAllAmounts();
-        amountSum = Math.Round(amountSum, 2);
+        SubTotal = totalChargedAmount = Math.Round(totalChargedAmount, 2);
+        CouponAmountAfterTax = Math.Round(GetCouponAmountAfterTax(), 2);
+        remainingUnusedCouponAmount = Math.Round(remainingUnusedCouponAmount, 2);
         totalCouponAmount = Math.Round(totalCouponAmount, 2);
         decimal roundingErrorLeft = Math.Round(GetTotalAmount() - costsWithAmount.Sum(pc => pc.Amount), 2); // The difference between the bill total and sum of individual amounts
         #endregion
         #region Verify That Any Rounding Error is Small
         // Make the original rounding error visible so the UI can present it as a dire warning if it is large
         if (UnallocatedAmount == 0)
-            RoundingErrorAmount = roundingErrorLeft + remainingUnusedDiscount; // This produces the actual rounding error regardless of unused discount 
+            RoundingErrorAmount = roundingErrorLeft + remainingUnusedCouponAmount; // This produces the actual rounding error regardless of unused discount 
         else
             roundingErrorLeft = 0;
         /* At this point, there may be a few cents left over, caused by the difference between rounding individual totals 
@@ -2265,6 +2302,7 @@ public partial class Meal : ObservableObjectPlus
         #region Share Out Any Rounding Error and, Rarely, Remaining Discount
         // Now ensure that if multiple participants had the same cost they pay the same amount because when what was purchased was the same but
         // the amounts owed are different, it tends to be noticeable so we try not to do that.
+        // At this point roundingErrorLeft includes remainingUnusedCouponAmount
         if (Math.Abs(roundingErrorLeft) >= 0.01M)
         {
             // Group participants into lists with the same amount
@@ -2283,6 +2321,8 @@ public partial class Meal : ObservableObjectPlus
                     roundingErrorLeft = totalForCluster - amountPerParticipant * cluster.SameOrderAmountCount;
                     foreach (var costItem in cluster.CostsWithSameOrderAmount)
                         costItem.Amount = amountPerParticipant;
+                    if (roundingErrorLeft == 0)
+                        break; // All done
                 }
             }
             if (Math.Abs(roundingErrorLeft) >= 0.005m) // sharing among clusters of identical orders didn't do it, try giving it to any solo participant 
@@ -2306,9 +2346,11 @@ public partial class Meal : ObservableObjectPlus
             else // We could not find any way to allocate remainingTotal should always be zero
                 Utilities.DebugMsg($"In Meal.{nameof(DistributeCosts)}: unable to eliminate rounding error {roundingErrorLeft:C} in {DebugDisplay}");
         }
+        RoundingErrorAmount = roundingErrorLeft; // Should be zero now, so make sure we tell the user
         #endregion
         #region Final Calculations and Cleanup
-        // Now that all the costs have been distributed to individuals, recalculate the rounded amount
+        // Now that all the costs have been distributed to individuals, recalculate the total amounts
+        TotalAmount = Math.Round(GetTotalAmount(),2);
         RoundedAmount = GetRoundedAmount();
         if (UnallocatedAmount == 0 && ExcessDiscount != 0)
             UnallocatedAmount = -ExcessDiscount; // To make it obvious to the user
