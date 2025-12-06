@@ -1,5 +1,4 @@
 ﻿using DivisiBill.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text;
 
 namespace DivisiBill.Tests;
@@ -104,7 +103,7 @@ public class MealSerialization
         Assert.AreEqual(0.0775, meal.TaxRate);
         Assert.AreEqual(0.20, meal.TipRate);
         // Verify individual item amounts 
-        Assert.AreEqual(7, meal.LineItems.Count);
+        Assert.HasCount(7, meal.LineItems);
         Assert.AreEqual(20, meal.LineItems[0].Amount);
         Assert.AreEqual(-10, meal.LineItems[1].Amount);
         Assert.AreEqual(30, meal.LineItems[2].Amount);
@@ -113,7 +112,7 @@ public class MealSerialization
         Assert.AreEqual(20, meal.LineItems[5].Amount);
         Assert.AreEqual(5, meal.LineItems[6].Amount);
         // Verify costs
-        Assert.AreEqual(3, meal.Costs.Count);
+        Assert.HasCount(3, meal.Costs);
         Assert.AreEqual("Bill", meal.Costs[0].Nickname);
         Assert.AreEqual("Chris", meal.Costs[1].Nickname);
         Assert.AreEqual("Craig", meal.Costs[2].Nickname);

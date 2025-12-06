@@ -1,5 +1,4 @@
 using DivisiBill.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static DivisiBill.Models.Meal;
 
 namespace DivisiBill.Tests;
@@ -207,10 +206,10 @@ public class MealTests
     /// <param name="taxOnCoupon">Whether the coupon is after tax (rare)</param>
     /// <param name="expectedCosts">List of resultant costs to validate</param>
     [TestMethod]
-    [DataRow(false, false, 8.50, 12.75, 12.75, 0)]
-    [DataRow(false, true, 9.50, 14.25, 14.25, 0)]
-    [DataRow(true, false, 8.60, 12.90, 12.90, 0)]
-    [DataRow(true, true, 9.80, 14.70, 14.70, 0)]
+    [DataRow(false, false, 7.40, 12.80, 12.80, 1.00)]
+    [DataRow(false, true, 8.54, 14.23, 14.23, 1.00)]
+    [DataRow(true, false, 7.48, 12.96, 12.96, 1.00)]
+    [DataRow(true, true, 8.64, 14.42, 14.42, 1.00)]
     public void SharingEdgeCase2(bool tipOnTax, bool taxOnCoupon, params double[] expectedCosts)
     {
         Meal SharedMeal = GetEdgeCaseMeal();
@@ -254,7 +253,7 @@ public class MealTests
     [DataRow(false, false, 3.00, 4.50, 4.50, 0)]
     [DataRow(false, true, 3.00, 4.50, 4.50, 0)]
     [DataRow(true, false, 3.00, 4.50, 4.50, 0)]
-    [DataRow(true, true, 3.30, 4.35, 4.35, 0)]
+    [DataRow(true, true, 3.00, 4.00, 4.00, 1.00)]
     public void SharingEdgeCase3(bool tipOnTax, bool taxOnCoupon, params double[] expectedCosts)
     {
         Meal SharedMeal = GetEdgeCaseMeal();
@@ -274,7 +273,8 @@ public class MealTests
         SharedMeal.FinalizeSetup();
         int i = 0;
 
-        Assert.IsTrue(SharedMeal.RoundingErrorAmount <= 0.01m * SharedMeal.Costs.Count,
+        
+        Assert.IsLessThanOrEqualTo(0.01m * SharedMeal.Costs.Count,Math.Abs(SharedMeal.RoundingErrorAmount), 
             $"Excessive Rounding Error {SharedMeal.RoundingErrorAmount:C} when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
         Assert.AreNotEqual(0, SharedMeal.UnallocatedAmount,

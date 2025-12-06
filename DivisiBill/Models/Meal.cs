@@ -1037,7 +1037,7 @@ public partial class Meal : ObservableObjectPlus
     }
     private static Meal LoadFromSavedStream(MealSummary ms, bool setup = false)
     {
-        LineItem.nextItemNumber = 1;
+        LineItem.NextItemNumber = 1;
         ms.SnapshotStream.Position = 0;
         Meal m = LoadFromStream(ms.SnapshotStream, ms, setup);
         if (m is null)
@@ -1060,7 +1060,7 @@ public partial class Meal : ObservableObjectPlus
         try
         {
             using var sourceStream = File.OpenRead(Path.Combine(MealFolderPath, TargetFileName));
-            LineItem.nextItemNumber = 1;
+            LineItem.NextItemNumber = 1;
             m = LoadFromStream(sourceStream, ms, setup);
             if (m is null)
             {
@@ -1102,7 +1102,7 @@ public partial class Meal : ObservableObjectPlus
         Meal m = null;
         using (Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, ms.Id))
         {
-            LineItem.nextItemNumber = 1;
+            LineItem.NextItemNumber = 1;
             m = LoadFromStream(sourceStream, ms, setup);
             if (m is null || m.Size <= 0)
             {
@@ -1457,7 +1457,7 @@ public partial class Meal : ObservableObjectPlus
             foreach (var item in e.OldItems)
                 ((LineItem)item).PropertyChanged -= OnLineItemChange;
             if (LineItems.Count == 0)
-                LineItem.nextItemNumber = 1;
+                LineItem.NextItemNumber = 1;
         }
         MarkAsChanged();
         UpdateAmounts();
@@ -1871,7 +1871,7 @@ public partial class Meal : ObservableObjectPlus
                 field = value;
                 foreach (var li in lineItems)
                 {
-                    li.AmountForSharerID = field;
+                    li.FilterForSharerID = field;
                 }
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(LineItems));
@@ -2170,6 +2170,19 @@ public partial class Meal : ObservableObjectPlus
             }
         }
         // In the normal case when we get to here Amount contains the taxable amount for each participant
+        // However, in the odd case where some participants had more discount than cost, there may be
+        // some unused discount left over to be applied against other participants cost
+        if (remainingUnusedDiscount > 0)
+        {
+            decimal discountPerUnit = remainingUnusedDiscount / costs.Sum(pc => pc.Amount);
+            foreach (var costItem in Costs)
+            {
+                if (costItem.Amount > 0)
+                    costItem.Amount -=  costItem.Amount * discountPerUnit;
+                costItem.UnusedCouponAmount = 0; // We used all we can so record that
+            }
+            remainingUnusedDiscount = 0; // Because we just consumed it all
+        }
         #endregion
         #region Apply Proportional Tax, Tip, and Discount To Each Cost 
         // Now step through the totals for each person that spent something and add in tax and tip.
@@ -2184,7 +2197,7 @@ public partial class Meal : ObservableObjectPlus
 
         foreach (var costItem in costsWithOrderAmount) // So, just the people who bought things
         {
-            decimal shareOfTax = (costItem.ChargedAmount - costItem.PreTaxCouponAmount) * modifiedTaxRate;
+            decimal shareOfTax = costItem.Amount * modifiedTaxRate;
             // A little extra may be needed to restore the extra value of a post-tax coupon
             decimal shareOfTaxForCoupon = IsCouponAfterTax ? costItem.PreTaxCouponAmount * (decimal)TaxRate : 0; // Add a little extra if the coupon is taxed
             // The tip is shared according to what each person spent
@@ -2221,7 +2234,7 @@ public partial class Meal : ObservableObjectPlus
         // to use up the remainder. We'll just add it to the rounding error down below and distribute them together.
 
         // Get a list of just the people who still owe money because they can consume discount
-        var costsWithAmount = Costs.Where(pc => pc.Amount > 0).ToArray();
+        var costsWithAmount = Costs.Where(pc => pc.Amount > 0).ToList();
 
         if (UnallocatedAmount == 0)
             Utilities.DebugAssert(remainingUnusedDiscount == 0, $"Excess discount {remainingUnusedDiscount:C} is unusual in {DebugDisplay}");
@@ -2248,7 +2261,7 @@ public partial class Meal : ObservableObjectPlus
          * In the unusual case of large discount there may be more left but either way, we just share it out.
         */
         if (report && UnallocatedAmount == 0)
-            Utilities.DebugAssert(Math.Abs(RoundingErrorAmount) <= (0.01m * Math.Max(1, costsWithAmount.Length)),
+            Utilities.DebugAssert(Math.Abs(RoundingErrorAmount) <= (0.01m * Math.Max(1, costsWithAmount.Count)),
                $"in Meal.{nameof(DistributeCosts)}: {RoundingErrorAmount:C} unallocated after sharing costs in {DebugDisplay}");
         #endregion
         #region Share Out Any Rounding Error and, Rarely, Remaining Discount
@@ -2485,7 +2498,7 @@ public partial class Meal : ObservableObjectPlus
     #endregion
     #region Clearing and restoring the list of items
     private readonly List<LineItem> savedLineItems;
-    private uint savedNextItemNumber;
+    private int savedNextItemNumber;
 
     public bool CanClearLineItems => (LineItems.Count > 1) || ((LineItems.Count > 0) && (LineItems[0].Amount > 0));
 
@@ -2499,7 +2512,7 @@ public partial class Meal : ObservableObjectPlus
             foreach (var item in savedLineItems)
                 LineItems.Add(item);
             savedLineItems.Clear();
-            LineItem.nextItemNumber = savedNextItemNumber;
+            LineItem.NextItemNumber = savedNextItemNumber;
             // Now make sure all the diners still exist
             var dinerIndexValid = new bool[LineItem.maxSharers];
             foreach (var item in Costs)
@@ -2523,8 +2536,8 @@ public partial class Meal : ObservableObjectPlus
             foreach (var item in lineItems)
                 savedLineItems.Add(item);
             LineItems.Clear();
-            savedNextItemNumber = LineItem.nextItemNumber;
-            LineItem.nextItemNumber = 1;
+            savedNextItemNumber = LineItem.NextItemNumber;
+            LineItem.NextItemNumber = 1;
             return true;
         }
         return false;
@@ -2897,7 +2910,7 @@ public partial class Meal : ObservableObjectPlus
         {
             using Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name);
             cancellationToken.ThrowIfCancellationRequested();
-            LineItem.nextItemNumber = 1;
+            LineItem.NextItemNumber = 1;
             try // if one file fails, just report it and go on to the next 
             {
                 Meal m = LoadFromStream(sourceStream);
