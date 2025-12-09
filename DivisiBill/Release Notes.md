@@ -1,3 +1,18 @@
+# 6.3.5
+
+## Item Insert User Interface Changes
+
+When inserting an item on the items page it will now be inserted after the selected item (it was previously inserted before the selected item). If no item is currently selected the new item will be added at the end of the list. The new item will be selected once it has been added.
+
+If you want to insert an item before the first one, select the first one, insert the new item, then delete the first one. The selection will switch to the new item and tapping "Undelete" will restore the former first item after the new one.
+
+
+## Handle Obscure Coupon Scenario
+
+The process of calculating fair shares of a bill was failing when the total amount of an after-tax coupon exceeded the bill amount (which has never been seen in practice) and the user was tipping on tax.
+
+In general, the idea is to distribute costs based on the amount a participant purchased and to tip on the amount that was ordered, regardless of any coupon which might be used to reduce the final total. However, there's an exception to that rule when tipping on tax. Because a coupon causes the taxable amount to go down it causes the tax, and thus the tip, to go down.
+
 # 6.3.4
 
 ## Correct Error Browsing to Image
