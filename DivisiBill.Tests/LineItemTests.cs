@@ -1,5 +1,4 @@
 ﻿using DivisiBill.Models;
-using System.Collections.ObjectModel;
 
 namespace DivisiBill.Tests
 {
@@ -138,10 +137,10 @@ namespace DivisiBill.Tests
         public void ShareEvenly_SetsOneSharePerCost()
         {
             var li = new LineItem();
-            var costs = new ObservableCollection<PersonCost>
+            var costs = new List<PersonCost>
             {
-                new PersonCost(){ DinerID = LineItem.DinerID.first },
-                new PersonCost(){ DinerID = (LineItem.DinerID)2 }
+                new(){ DinerID = LineItem.DinerID.first },
+                new(){ DinerID = (LineItem.DinerID)2 }
             };
             li.ShareEvenly(costs);
             Assert.AreEqual(1, li.GetShares(LineItem.DinerID.first));
