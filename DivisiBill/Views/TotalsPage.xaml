@@ -57,7 +57,7 @@
                     <!--#region PersonCost display -->
                     <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions= "*,Auto">
                         <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="24" />
-                        <Label Grid.Column="1" Text="{Binding AmountText}"
+                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}"
                                LineBreakMode="NoWrap"
                                FontSize="24" IsEnabled="True" HorizontalTextAlignment="End" />
                         <Grid.GestureRecognizers>

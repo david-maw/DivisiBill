@@ -200,13 +200,10 @@ public class PersonCost : INotifyPropertyChanged
             {
                 field = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(AmountText));
             }
         }
         get;
     }
-    [XmlIgnore]
-    public string AmountText => Math.Abs(Amount).ToString("C");
 
     [XmlIgnore]
     public LineItem.DinerID DinerID

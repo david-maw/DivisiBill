@@ -565,12 +565,6 @@ public partial class LineItem : ObservableObject
     } = 0;
 
     /// <summary>
-    /// Handy utility property used to show negative amounts in red.
-    /// </summary>
-    [XmlIgnore]
-    public string AmountText => Math.Abs(FilteredAmount).ToString("C");
-
-    /// <summary>
     /// Gets or sets the identifier of the diner to use as a filter for shared items.
     /// <remarks>Changing this property raises property change notifications for the FilteredAmount and
     /// IsSharedByFilter properties. Use this property to restrict calculations or views to items associated with a
