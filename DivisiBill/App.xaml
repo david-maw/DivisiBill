@@ -25,6 +25,7 @@
             <services:LocationConverter x:Key="Location" />
             <services:IsNonZeroConverter x:Key="IsNonZero" />
             <services:IsNegativeConverter x:Key="IsNegative" />
+            <services:AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" /> 
 
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All"/>
             <toolkit:VariableMultiValueConverter x:Key="Any" ConditionType="Any" />
@@ -111,26 +112,26 @@
             <FontImageSource x:Key="GlyphToc"                   Color="White" Glyph="&#xF0836;" FontFamily="mdicons"/> <!--table-of-contents-->
             <FontImageSource x:Key="GlyphUndo"                  Color="White" Glyph="&#xF054C;" FontFamily="mdicons"/> <!--undo-->
 
-                                                                                                                                                                                                                            <Style x:Key="HintStyle" TargetType="Border">
-                                                                                                                                                                                                                                <Setter Property="Padding" Value="5" />
-                                                                                                                                                                                                                                <Setter Property="Margin" Value="5" />
-                                                                                                                                                                                                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Blue100Accent}}" />
-                                                                                                                                                                                                                                <Setter Property="StrokeShape" Value="RoundRectangle 10" />
-                                                                                                                                                                                                                            </Style>
+            <Style x:Key="HintStyle" TargetType="Border">
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Blue100Accent}}" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+            </Style>
 
-                                                                                                                                                                                                                            <Style x:Key="RedLabelTextStyle" TargetType="Label">
-                                                                                                                                                                                                                                <Setter Property="TextColor" Value="Red" />
-                                                                                                                                                                                                                            </Style>
+            <Style x:Key="RedLabelTextStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="Red" />
+            </Style>
 
-                                                                                                                                                                                                                            <Style x:Key="UnequalEntryStyle" TargetType="Entry">
-                                                                                                                                                                                                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Yellow100Accent}}" />
-                                                                                                                                                                                                                            </Style>
-                                                                                                                                                                                                                            <Style x:Key="InvalidEntryStyle" TargetType="Entry">
-                                                                                                                                                                                                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightRed}, Dark={StaticResource DarkRed}}" />
-                                                                                                                                                                                                                            </Style>
-                                                                                                                                                                                                                            <Style x:Key="ValidEntryStyle" TargetType="Entry">
-                                                                                                                                                                                                                                <Setter Property="BackgroundColor" Value="Transparent" />
-                                                                                                                                                                                                                            </Style>
-                                                                                                                                                                                                                        </ResourceDictionary>
-                                                                                                                                                                                                                    </Application.Resources>
-                                                                                                                                                                                                                </Application>
+            <Style x:Key="UnequalEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Yellow300Accent}, Dark={StaticResource Yellow100Accent}}" />
+            </Style>
+            <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightRed}, Dark={StaticResource DarkRed}}" />
+            </Style>
+            <Style x:Key="ValidEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

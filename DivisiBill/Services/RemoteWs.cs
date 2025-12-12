@@ -60,6 +60,7 @@ public static class RemoteWs
                             catch
                             {
                                 // If decryption fails, ignore this entry
+                                Utilities.RecordMsg($"Unable to decrypt {itemTypeName}:{wsDataItem.Name}");
                                 continue;
                             }
                         }

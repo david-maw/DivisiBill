@@ -107,7 +107,7 @@
                         IsEnabled="True"
                         LineBreakMode="NoWrap"
                         Style="{StaticResource SignedLabelStyle}"
-                        Text="{Binding Path=FilteredAmount, StringFormat='{0:C}'}" />
+                        Text="{Binding Path=FilteredAmount, Converter={StaticResource AbsoluteCurrency}}" />
                     <Label
                         Grid.Column="3"
                         FontSize="15"
