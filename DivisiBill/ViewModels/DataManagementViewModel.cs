@@ -437,10 +437,7 @@ internal partial class DataManagementViewModel : ObservableObject
                     foreach (var entry in zip.Entries) // mostly image files though the archive XML will be in there too
                         zippedImages[entry.Name] = entry;
 
-                    // Ensure image folder exists and clear it if necessary
-                    if (!Directory.Exists(Meal.ImageFolderPath))
-                        Directory.CreateDirectory(Meal.ImageFolderPath);
-                    else if (DeleteBeforeRestore)
+                    if (DeleteBeforeRestore)
                         Meal.PermanentlyDeleteAllLocalImages();
 
                     // Iterate through the meals being restored that also have images present in the zip

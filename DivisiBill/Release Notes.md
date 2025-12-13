@@ -1,3 +1,9 @@
+# 6.3.6
+
+## Attach a Bill Archive to Mail Messages
+
+Instead of a bill explanation and a bill image (if there was one) being attached to an email message, we now attach an explanation as before and a bill archive. The archive is a zip file holding any bill image and also an xml representation of the bill. The attached archive can be used with the restore function on the data management page to load the bill and any image to another instance of DivisiBill.
+
 # 6.3.5
 
 ## Item Insert User Interface Changes

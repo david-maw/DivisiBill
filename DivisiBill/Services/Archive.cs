@@ -30,6 +30,7 @@ public class Archive
     {
         UserSettings = new UserSettingsClass();
         Meals = mealsToArchive;
+        SelectedMeals = mealsToArchive;
         SetupArchive(onlyRelatedParam);
     }
     private void SetupArchive(bool onlyRelatedParam)

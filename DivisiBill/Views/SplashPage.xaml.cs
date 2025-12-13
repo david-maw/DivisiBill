@@ -70,6 +70,7 @@ public partial class SplashPage : ContentPage
         await StatusMsgAsync("Commencing initialization, tap the icon above to pause");
         Shell.Current.Navigating += PreventPrematureNavigation;
         App.Settings ??= new AppSettings(); // allowed to be null for testing
+        Meal.InitializeFolders();
         await InitializeUtilitiesAsync();
         if (App.SentryAllowed && App.Settings.SendCrashAsk)
         {

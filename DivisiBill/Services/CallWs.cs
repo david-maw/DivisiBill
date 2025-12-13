@@ -470,7 +470,6 @@ internal static class CallWs
             var response = await client.GetAsync($"file/{Uri.EscapeDataString(blobNameValue)}", HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            Directory.CreateDirectory(Path.GetDirectoryName(savePath));
             using var responseStream = await response.Content.ReadAsStreamAsync();
             using var fileStream = File.Create(savePath);
             if (isEncrypted)

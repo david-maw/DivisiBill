@@ -25,8 +25,10 @@ public partial class Meal : ObservableObjectPlus
     public const string DeletedItemFolderName = "Deleted";
     public const string ImageFolderName = "Images";
     public static readonly string MealFolderPath = Path.Combine(App.BaseFolderPath, MealFolderName);
+    public static readonly string SuspectFolderPath = Path.Combine(App.BaseFolderPath, SuspectFolderName);
     internal static readonly string DeletedItemFolderPath = Path.Combine(App.BaseFolderPath, DeletedItemFolderName);
     public static readonly string ImageFolderPath = Path.Combine(App.BaseFolderPath, ImageFolderName);
+    public static readonly string TempFolderPath = Path.Combine(App.BaseFolderPath, "Temp");
     public static readonly string TempImageFilePath = Path.Combine(App.BaseFolderPath, ImageFolderName, "NewImage.jpg");
 
     private static XmlSerializer MealSerializer { get => field ??= new XmlSerializer(typeof(Meal)); set; } = null;
@@ -372,6 +374,13 @@ public partial class Meal : ObservableObjectPlus
     #region Shared
     public override string ToString() => ToString(null);
 
+    /// <summary>
+    /// Returns a string representation of the cost information for the specified person or everyone
+    /// by calling <see cref="TextToStream"/> and reading the result back into a string.
+    /// </summary>
+    /// <param name="whoFor">The person for whom the cost information is to be formatted, null if it 
+    /// is not for a specific participant.</param>
+    /// <returns>A string containing the formatted cost details.</returns>
     public string ToString(PersonCost whoFor)
     {
         MemoryStream ms = new();
@@ -383,6 +392,17 @@ public partial class Meal : ObservableObjectPlus
         return text;
     }
 
+    /// <summary>
+    /// Writes a formatted textual representation of the bill, including participants, items, and totals, to the
+    /// specified stream.
+    /// </summary>
+    /// <remarks>The output includes bill metadata, participant amounts, itemized charges, and totals. If an
+    /// exception occurs during writing, the exception message is appended to the output. The method does not close the
+    /// provided stream.</remarks>
+    /// <param name="stream">The stream to which the bill text will be written. Must be writable and remain open for the duration of the
+    /// operation.</param>
+    /// <param name="whoFor">An optional person for whom to calculate and display individual share information. If null, the output includes
+    /// only overall bill details.</param>
     private void TextToStream(Stream stream, PersonCost whoFor = null)
     {
         StreamWriter sw = new(stream);
@@ -466,20 +486,29 @@ public partial class Meal : ObservableObjectPlus
             sw.Flush();
         }
     }
-    public async Task CreateEmailMessageAsync(PersonCost personCost = null)
+
+    /// <summary>
+    /// Creates and sends an email message containing the bill details to one or more recipients asynchronously.
+    /// </summary>
+    /// <remarks>The email includes the bill details in the message body and attaches both an archive and a
+    /// text file copy of the bill. If email functionality is not supported on the device, the operation will fail
+    /// silently after reporting the error.</remarks>
+    /// <param name="whoFor">The person for whom the bill should be sent. If null, the bill is sent to all diners with a valid email address.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    public async Task CreateEmailMessageAsync(PersonCost whoFor = null)
     {
         List<string> recipients = [];
-        if (personCost is null) // send it to everyone
+        if (whoFor is null) // send it to everyone
         {
             foreach (var pc in Costs.Where(pc => !string.IsNullOrWhiteSpace(pc.Diner?.Email)))
                 recipients.Add(pc.Diner.Email);
         }
         else // send it to just the one person
         {
-            if (!string.IsNullOrWhiteSpace(personCost.Diner?.Email))
-                recipients.Add(personCost.Diner.Email);
+            if (!string.IsNullOrWhiteSpace(whoFor.Diner?.Email))
+                recipients.Add(whoFor.Diner.Email);
         }
-        string body = ToString(personCost);
+        string body = ToString(whoFor);
         var message = new EmailMessage
         {
             Subject = "DivisiBill sent you a bill",
@@ -489,15 +518,15 @@ public partial class Meal : ObservableObjectPlus
         if (!string.IsNullOrEmpty(VenueName))
             message.Subject += " from " + VenueName;
 
-        string tempFilePath = null;
-        // Attach image file
-        if (HasImage)
-            message.Attachments.Add(new EmailAttachment(ImagePath));
+        // Make an archive and attach it
+        var archiveFullName = await ArchiveAsync();
+        // Attach archive file
+         message.Attachments.Add(new EmailAttachment(archiveFullName));
         // Attach a copy of the message in a text file to make it easier to read.
         var fn = "Bill-" + CreationTime.ToString("yyyyMMddHHmmss") + ".txt";
-        tempFilePath = Path.Combine(FileSystem.AppDataDirectory, fn);
-        File.WriteAllText(tempFilePath, body);
-        message.Attachments.Add(new EmailAttachment(tempFilePath));
+        string tempFileFullName = Path.Combine(TempFolderPath, fn);
+        File.WriteAllText(tempFileFullName, body);
+        message.Attachments.Add(new EmailAttachment(tempFileFullName));
         // Send the message
         try
         {
@@ -511,9 +540,22 @@ public partial class Meal : ObservableObjectPlus
         {
             ReportCrash("ClassName", "Meal", null, ex, FileName, "Email faulted");
         }
-        // Now delete the temporary file used for attachment
-        if (!string.IsNullOrWhiteSpace(tempFilePath))
-            File.Delete(tempFilePath);
+        // Delete the temporary files used for attachments but give the email system time to read them first (Android fails without this)
+        await Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(60000);
+                File.Delete(tempFileFullName);
+                if (!string.IsNullOrWhiteSpace(archiveFullName))
+                    File.Delete(archiveFullName);
+            }
+            catch (Exception)
+            {
+                // Simply ignore it
+                Utilities.DebugMsg("Exception deleting temporary files for mail ignored");
+            }
+        });
     }
     private void SetupChangedEvents()
     {

@@ -46,9 +46,6 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     }
     public async Task Load()
     {
-        // Ensure the storage folder exists before attempting to use it, this is a no-op if the folder already exists
-        Directory.CreateDirectory(Meal.ImageFolderPath);
-
         // Evaluate whether we've been called to show a new image or the existing one (or incorrectly called twice)
         if (replacementImageStream is not null && replacementImageStream.Position < replacementImageStream.Length)
         {

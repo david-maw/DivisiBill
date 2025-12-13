@@ -284,7 +284,6 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     {
         if (HasImage)
         {
-            Directory.CreateDirectory(Meal.DeletedItemFolderPath);
             File.Move(ImagePath, DeletedImagePath, true);
             HasDeletedImage = true;
             HasImage = false;
@@ -352,7 +351,6 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     {
         if (doLocal && IsLocal)
         {
-            Directory.CreateDirectory(Meal.DeletedItemFolderPath);
             DeleteImage();
             File.Move(FilePath, DeletedFilePath, true); // Overwrite any formerly deleted file of the same name
             DeletedStack.Push(this);
