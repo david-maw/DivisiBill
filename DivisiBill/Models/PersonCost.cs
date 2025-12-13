@@ -108,16 +108,16 @@ public class PersonCost : INotifyPropertyChanged
     /// The coupon amount actually subtracted from the participant's total. In a 'normal' bill this starts out exactly the same
     /// as the <see cref="CouponAmount"/> but it can be less if it is a post-tax/taxable coupon in which case it is reduced to allow
     /// tax (<see cref="PreTaxCouponAmount"/>). Additionally, all coupons are subject to reduction in order not to exceed the bill
-    /// they are applied to (<see cref="Meal.DistributeCosts"/> with the remainder reported as an unallocated amount.
+    /// they are applied to (<see cref="Meal.DistributeCosts"/>.
     /// </summary>
     [XmlIgnore]
     public decimal PreTaxCouponAmount { get; set; }
     /// <summary>
     /// <para>The total value of any coupons assigned to this participant.</para>
-    /// Coupons may be before or after tax (<see cref="Meal.IsCouponAfterTax"/>) and for calculation purposes taxable coupons
+    /// Coupons may be before or after tax (see <see cref="Meal.IsCouponAfterTax"/>) and for calculation purposes taxable coupons
     /// (those in bills with <see cref="Meal.IsCouponAfterTax"/> set) make a reduced contribution to Amount so that once tax is added to them
-    /// the original amount is restored. This field contains the user specified coupon vale not the pre-tax calculated 
-    /// one <see cref="PreTaxCouponAmount"/>.
+    /// the original amount is restored. <see cref="CouponAmount"/> contains the user specified coupon vale not the pre-tax calculated 
+    /// one in <see cref="PreTaxCouponAmount"/>.
     /// </summary>
     [XmlIgnore]
     public decimal CouponAmount

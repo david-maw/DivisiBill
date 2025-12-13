@@ -14,7 +14,6 @@ public partial class ObservableObjectPlus
 {
     [ObservableProperty]
     [XmlIgnore]
-    [field: XmlIgnore] // Marks System.Xml.Serialization as used, does nothing at run time 
     public partial bool IsBusy { get; set; }
 
     #region Used to ease migration from earlier implementations that use Action parameter
