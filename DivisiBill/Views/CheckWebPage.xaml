@@ -20,8 +20,7 @@
         HorizontalOptions="Center"
         StrokeShape="RoundRectangle 10"
         StrokeThickness="2">
-        <VerticalStackLayout Spacing="10"
-                             VerticalOptions="Center">
+        <VerticalStackLayout Spacing="10" MinimumWidthRequest="280" VerticalOptions="Center">
             <Label
                 FontSize="Large"
                 HorizontalOptions="Center"
@@ -40,10 +39,15 @@
                 Progress="{Binding Progress}"
                 ScaleY="2"
                 WidthRequest="200" />
-            <Button
-                Command="{Binding ClosePopupWindowCommand}"
-                HorizontalOptions="Center"
-                Text="Give Up" />
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                <Button
+                    Command="{Binding RequestRetryCommand}"
+                    IsVisible="{Binding IsCountingDown}"
+                    Text="Retry" />
+                <Button
+                    Command="{Binding ClosePopupWindowCommand}"
+                    Text="Give Up" />
+            </HorizontalStackLayout>
         </VerticalStackLayout>
     </Border>
 </toolkit:Popup>

@@ -1,3 +1,9 @@
+# 6.3.7
+
+## Allow "Retry" Option When Waiting for Web Response
+
+The initial web request waits for 30s between failed calls, it is now possible to proceed with the next call without waiting by tapping the "Retry" button. The existing "Give Up" button is unchanged.
+
 # 6.3.6
 
 ## Attach a Bill Archive to Mail Messages

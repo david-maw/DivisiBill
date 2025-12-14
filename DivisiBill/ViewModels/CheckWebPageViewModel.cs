@@ -13,13 +13,15 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
     /// </summary>
     private bool keepTrying = true;
 
+    private bool retryImmediately = false;
+
     /// <summary>
     /// Close the popup window and return the result
     /// </summary>
     /// <param name="result">True if the web service call worked, false if the user elected to abandon it</param>
     private async Task StopTrying(HttpResponseMessage result)
     {
-        Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.InvokeClose passing an HttpResponseMessage with status code {(int)result.StatusCode} - {result.StatusCode}");
+        Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.StopTrying passing an HttpResponseMessage with status code {(int)result.StatusCode} - {result.StatusCode}");
         keepTrying = false;
         try
         {
@@ -44,7 +46,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
 
         if (message is not null)
         { // Only update the message if it is not null
-            Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.SetStatusMessage({Quoted(message)}, {Quoted(messageExtra)})");
+            Utilities.DebugMsg($"In CheckWebPageViewModel.SetStatusMessage({Quoted(message)}, {Quoted(messageExtra)})");
             StatusMessage = message;
         }
         StatusMessageExtra = messageExtra;
@@ -62,9 +64,14 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
     [ObservableProperty]
     public partial float Progress { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsCountingDown { get; set; }
 
     [RelayCommand]
     private async Task ClosePopupWindow() => await StopTrying(new HttpResponseMessage(HttpStatusCode.RequestTimeout)); // User elected to abandon the web service call
+
+    [RelayCommand]
+    private void RequestRetry() => retryImmediately = true; // User elected not to wait for automatic retry but to do it immediately
 
     /// <summary>
     /// Wait for a successful call to the version web service or until the user commands us to quit
@@ -101,7 +108,8 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
             if (webCallTask.IsCompleted)
             {
                 webStopwatch.Stop();
-                if (webCallTask.IsCompletedSuccessfully && (webCallTask.Result.IsSuccessStatusCode || webCallTask.Result.StatusCode > HttpStatusCode.BadRequest)) // only retry generic bad request, it probably won't help with other failures
+                IsCountingDown = false;
+                if (webCallTask.IsCompletedSuccessfully && webCallTask.Result.IsSuccessStatusCode)
                 {
                     Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask.IsCompletedSuccessfully and successful result = " + webCallTask.Result.StatusCode + " in " + ToSecondsText(ElapsedSeconds()));
                     await StopTrying(webCallTask.Result); // The request completed without error, or should not be retried, we can continue on
@@ -123,15 +131,22 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
                     }
                     // restart the stopwatch and wait a bit before trying again
                     webStopwatch.Restart();
+                    IsCountingDown = true;
                     Progress = 1;
                     do
-                    {
+                    {                      
                         if (runningStatus.IsPaused)
                         {
                             SetStatusMessage(null, "Paused");
                             await runningStatus.WaitWhilePausedAsync(); // Do not do this stuff if the app is paused
                         }
                         int i = waitSeconds - ElapsedSeconds();
+                        if (retryImmediately)
+                        {
+                            Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, user requested immediate retry");
+                            retryImmediately = false;
+                            i = 0;
+                        }
                         if (i > 0 && keepTrying)
                         {
                             SetStatusMessage(null, "Will retry in " + ToSecondsText(i));
@@ -150,13 +165,16 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
                         webStopwatch.Restart();
                         webCallTask = webCall(); // Initiate the call but do not wait on it
                     }
+                    else
+                        IsCountingDown = false;
                 }
             }
             else
             {
                 // The request has not completed yet, so just wait for it to complete
-                PopupTitle = "Slow Web Response";
+                PopupTitle = "Slow Response";
                 SetStatusMessage("Waiting for web service call to complete");
+                IsCountingDown = false;
                 elapsedTimer.Change(200, 1000); // Start firing the timer but make sure the rounded seconds are correct (hence the extra 200mS)
                 try
                 {
