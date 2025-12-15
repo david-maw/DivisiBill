@@ -1,39 +1,73 @@
 ﻿using DivisiBill.Models;
+using System.IO.Compression;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Services;
 
+/// <summary>
+/// Represents an archive of meals, venues, persons, and related settings for backup or restore operations.
+/// </summary>
+/// <remarks>The Archive class encapsulates all data necessary to serialize and restore a set of meals and their
+/// associated metadata, such as venues and persons. It provides methods for exporting the archive to XML and restoring
+/// data from an archive. Use this class to create backups of user data or to restore data from a previous backup. The
+/// class supports filtering to include only related or selected items, and handles versioning and date range selection.
+/// Thread safety is not guaranteed; synchronize access if used concurrently.</remarks>
 public class Archive
 {
-    public static readonly DateTime EarliestDateAllowed = new(2010, 1, 1);
-    public Archive() { }
-    public Archive(DateOnly startDate, DateOnly finishDate, bool onlyRelatedParam, bool onlySelectedMealsParam)
+    #region Shared Declarations
+    /// <summary>
+    /// Represents a collection of user-specific settings for application preferences and default calculation options.
+    /// </summary>
+    /// <remarks>This class encapsulates various user preferences, such as default rates for tips and taxes,
+    /// display hints, and filtering options. It is used to persist and retrieve user settings to or from an Archive.</remarks>
+    public class UserSettingsClass
     {
-        UserSettings = new UserSettingsClass()
-        {
-            // Arrange to back dates up only if they are non-default 
-            BillsFromDate = startDate > DateOnly.FromDateTime(EarliestDateAllowed) ? startDate.ToString() : null,
-            BillsToDate = finishDate < DateOnly.FromDateTime(DateTime.Now) ? finishDate.ToString() : null,
-        };
-        // Make a list of meals one by looping through list of local mealSummaries and creating a meal from each
-        Meals = [.. Meal.LocalMealList
-            .Where(ms => // A meal that is already selected (if we are selecting) and within date range if there is one
-                (!onlySelectedMealsParam || ms.FileSelected) &&
-                DateOnly.FromDateTime(ms.CreationTime) >= startDate &&
-                DateOnly.FromDateTime(ms.CreationTime) <= finishDate
-            )
-            .OrderByDescending(ms => ms.CreationTime)
-            .Select(ms => Meal.LoadFromFile(ms))];
-        SetupArchive(onlyRelatedParam);
+        public int DefaultTipRate { get; set; }
+        public double DefaultTaxRate { get; set; }
+        public bool DefaultTipOnTax { get; set; }
+        public bool DefaultTaxOnCoupon { get; set; }
+        public bool ShowLineItemsHint { get; set; }
+        public bool ShowTotalsHint { get; set; }
+        public bool ShowVenuesHint { get; set; }
+        public bool ShowPeopleHint { get; set; }
+        public SimpleLocation FakeLocation { get; set; }
+        public string BillsFromDate { get; set; } = null;
+        public string BillsToDate { get; set; } = null;
+        public bool OnlyRelated { get; set; }
     }
+    public static readonly DateTime EarliestDateAllowed = new(2010, 1, 1); 
+    #endregion
+    #region Constructors
+    /// <summary>
+    /// Initializes a new instance of the Archive class. Used when an empty class is needed as a basis for a restore operation
+    /// from a Meal or list of people or Venues. Also used by the XML serializer.
+    /// </summary>
+    public Archive() { }
+
+    /// <summary>
+    /// Initializes a new instance of the Archive class with the specified meals and archive mode.
+    /// </summary>
+    /// <param name="mealsToArchive">The list of Meal objects to be included in the archive. Cannot be null.</param>
+    /// <param name="onlyRelatedParam">true to archive only related items; otherwise, false to archive all provided meals.</param>
     public Archive(List<Meal> mealsToArchive, bool onlyRelatedParam)
     {
-        UserSettings = new UserSettingsClass();
-        Meals = mealsToArchive;
+        AllMeals = mealsToArchive;
         SelectedMeals = mealsToArchive;
-        SetupArchive(onlyRelatedParam);
+        PopulateArchive(onlyRelatedParam);
     }
-    private void SetupArchive(bool onlyRelatedParam)
+    #endregion
+    #region Constructor Helper
+    /// <summary>
+    /// Initializes the user settings and filters related data collections for the archive based on the specified
+    /// parameter.
+    /// </summary>
+    /// <remarks>When onlyRelatedParam is set to true, the method restricts the Venues, Persons, and
+    /// AliasGuids collections to only those referenced by the currently selected meals. Otherwise, all available data
+    /// is included. This method also updates the UserSettings property with current application settings and preserves
+    /// any previously set date filters.</remarks>
+    /// <param name="onlyRelatedParam">true to include only venues, persons, and aliases related to the selected meals; false to include all available
+    /// venues, persons, and aliases.</param>
+    private void PopulateArchive(bool onlyRelatedParam)
     {
         UserSettings = new UserSettingsClass()
         {
@@ -46,14 +80,12 @@ public class Archive
             ShowVenuesHint = App.Settings.ShowVenuesHint,
             ShowPeopleHint = App.Settings.ShowPeopleHint,
             FakeLocation = App.FakeLocation is not null ? new SimpleLocation(App.FakeLocation) : null,
-            BillsFromDate = UserSettings.BillsFromDate, // Use any value that was passed in
-            BillsToDate = UserSettings.BillsToDate, // Use any value that was passed in
             OnlyRelated = onlyRelatedParam,
         };
         if (Utilities.IsDebug)
         {
             // this is a handy place to check for differences between the old and new DistributeCosts algorithms
-            foreach (Meal m in Meals)
+            foreach (Meal m in AllMeals)
                 m.CompareCostDistribution();
         }
         if (onlyRelatedParam)
@@ -91,8 +123,9 @@ public class Archive
             Persons = [.. Person.AllPeople];
             AliasGuids = Person.AliasGuidList;
         }
-    }
-    // The data to archive
+    } 
+    #endregion
+    #region Data to Archive or Restore
     public string Version { get; set; } = "1.3";
     private DateTimeOffset creationTime = DateTimeOffset.Now;
     public string CreationTimeString
@@ -113,8 +146,20 @@ public class Archive
     [XmlIgnore]
     public List<Meal> SelectedMeals { get; set; } = null;
 
-    public List<Meal> Meals { get; set; } = null;
-
+    /// <summary>
+    /// Gets or sets the collection of all the meals associated with this instance, some, or all of them may be selected for restore
+    /// (see <see cref="SelectedMeals"/>).
+    /// </summary>
+    public List<Meal> AllMeals { get; set; } = null; 
+    #endregion
+    #region Serialization
+	/// <summary>
+    /// Serializes the current object to XML and writes the result to the specified stream.
+    /// </summary>
+    /// <remarks>The returned stream's position is reset to its original value before serialization. The
+    /// caller is responsible for disposing the stream when it is no longer needed.</remarks>
+    /// <param name="stream">The stream to which the XML data will be written. If null, a new memory stream is created and used.</param>
+    /// <returns>A stream containing the XML representation of the current object, or null if serialization fails.</returns>
     public Stream AsXmlStream(Stream stream = null)
     {
         stream ??= new MemoryStream();
@@ -130,6 +175,12 @@ public class Archive
             return null;
         }
     }
+
+    /// <summary>
+    /// Returns the XML representation of the current object as a string.
+    /// </summary>
+    /// <returns>A string containing the XML representation of the object. Returns an empty string if the object cannot be
+    /// represented as XML.</returns>
     public string AsXmlString()
     {
         if (AsXmlStream() is Stream stream)
@@ -154,15 +205,40 @@ public class Archive
     }
 
     private static readonly XmlSerializer xmlSerializer = new(typeof(Archive));
+    #endregion
+    #region Restore Archive
+    /// <summary>
+    /// Filters the available meals (presumably the all those available in an archive) to those created within the specified
+    /// date range and updates the selected meals
+    /// collection.
+    /// </summary>
+    /// <remarks>The selected meals are ordered in descending order by creation time. If the collection of
+    /// available meals is null, no filtering is performed and 0 is returned.</remarks>
+    /// <param name="startDate">The start date of the range. Only meals created on or after this date are included.</param>
+    /// <param name="finishDate">The end date of the range. Only meals created on or before this date are included.</param>
+    /// <returns>The number of meals selected within the specified date range. Returns 0 if there are no available meals.</returns>
     public int SetDateRange(DateOnly startDate, DateOnly finishDate)
     {
-        if (Meals is null)
+        if (AllMeals is null)
             return 0;
-        SelectedMeals = [.. Meals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderByDescending(m => m.CreationTime)];
+        SelectedMeals = [.. AllMeals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderByDescending(m => m.CreationTime)];
         return SelectedMeals.Count;
-    }  
+    }
 
-
+    /// <summary>
+    /// Restores application data from the current in-memory state in an Archive object, optionally deleting existing data and handling
+    /// duplicates according to the specified parameters.
+    /// </summary>
+    /// <remarks>This method disables cloud backup during the restore process to prevent conflicts. If
+    /// DeleteBeforeRestore is true, all existing venues, persons, and meals are removed before restoring. When
+    /// onlyRelatedParam is true, only data related to the currently selected items is restored, which can be useful for
+    /// partial or selective restores. The method also checks for image files associated with restored meals.</remarks>
+    /// <param name="DeleteBeforeRestore">true to delete all existing data before restoring data of that class; otherwise, false to merge restored data with existing data.</param>
+    /// <param name="OverwriteDuplicates">true to overwrite existing items with the same identifiers during restore; otherwise, false to preserve existing
+    /// items and skip duplicates.</param>
+    /// <param name="onlyRelatedParam">true to restore only people and venues related to the Meals being restored; otherwise, false to restore all available
+    /// data.</param>
+    /// <returns>true if the restore operation completes successfully; otherwise, false.</returns>
     public async Task<bool> RestoreAsync(bool DeleteBeforeRestore, bool OverwriteDuplicates, bool onlyRelatedParam)
     {
         // Restore each object type except user specifiable defaults because
@@ -226,7 +302,7 @@ public class Archive
                 if (DeleteBeforeRestore)
                 {
                     MealSummary.PermanentlyDeleteAllLocalMeals();
-                    
+
                     // The old current meal is deleted so look for the first meal that is not a fake meal (Size >= 0) to be the new one
                     Meal m = SelectedMeals.Where(m => m.Size >= 0).FirstOrDefault();
                     if (m is null)
@@ -246,7 +322,7 @@ public class Archive
                 }
                 // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files already
                 foreach (Meal meal in SelectedMeals)
-                        meal.Summary.CheckImageFiles();
+                    meal.Summary.CheckImageFiles();
                 App.HandleActivityChanges(); // So we can check for remote meals if necessary
                 await Meal.AddLocalMeals(SelectedMeals, OverwriteDuplicates);
             }
@@ -262,20 +338,46 @@ public class Archive
             App.HandleActivityChanges();
         }
     }
-}
-
-public class UserSettingsClass
-{
-    public int DefaultTipRate { get; set; }
-    public double DefaultTaxRate { get; set; }
-    public bool DefaultTipOnTax { get; set; }
-    public bool DefaultTaxOnCoupon { get; set; }
-    public bool ShowLineItemsHint { get; set; }
-    public bool ShowTotalsHint { get; set; }
-    public bool ShowVenuesHint { get; set; }
-    public bool ShowPeopleHint { get; set; }
-    public SimpleLocation FakeLocation { get; set; }
-    public string BillsFromDate { get; set; } = null;
-    public string BillsToDate { get; set; } = null;
-    public bool OnlyRelated { get; set; }
+    #endregion
+    public string Zip(bool saveImages = true)
+    {
+        if (AllMeals is null || AllMeals.Count == 0)
+        {
+            Utilities.RecordMsg("No bills to archive");
+            return null;
+        }
+        try
+        {
+            string xmlFileName = "DivisiBill" + TimeName + ".xml";
+            string xmlFilePath = Path.Combine(FileSystem.CacheDirectory, xmlFileName);
+            string zipFilePath = Path.ChangeExtension(xmlFilePath, ".zip");
+            using (Stream s = new FileStream(xmlFilePath, FileMode.OpenOrCreate))
+            {
+                s.SetLength(0); // Clear the file if it exists
+                AsXmlStream(s);
+                s.Flush(); // Ensure the stream is written to disk before zipping
+            }
+            using (ZipArchive archiveZip = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
+            {
+                archiveZip.CreateEntryFromFile(xmlFilePath, xmlFileName);
+                File.Delete(xmlFilePath); // Delete the XML file after zipping
+                Utilities.DebugMsg($"In {nameof(Zip)}: created zip archive {zipFilePath} containing {xmlFileName}");
+                if (saveImages)
+                {
+                    // Save bill images if requested
+                    foreach (var meal in AllMeals.Where(m => m.HasImage && File.Exists(m.ImagePath)))
+                    {
+                        archiveZip.CreateEntryFromFile(meal.ImagePath, meal.ImageName);
+                        Utilities.DebugMsg($"In {nameof(Zip)}: added image {meal.ImageName} to zip archive");
+                    }
+                }
+            }
+            return zipFilePath;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash("Exception creating Zip Archive");
+            return null;
+        }
+    }
 }

@@ -127,50 +127,39 @@ internal partial class DataManagementViewModel : ObservableObject
             await Utilities.DisplayAlertAsync("Archiving Error", "No bills are selected");
             return;
         }
-        Archive archive = new(
-            DateOnly.FromDateTime(StartDate),
-            DateOnly.FromDateTime(FinishDate),
-            OnlyRelated, OnlySelectedMeals);
-        if (archive.Meals.Count == 0)
+        // Make a list of meals by looping through list of local mealSummaries and creating a meal from selected ones
+        List<Meal> toArchive = [.. Meal.LocalMealList
+            .Where(ms => // A meal that is already selected (if we are selecting) and within date range if there is one
+                (!OnlySelectedMeals || ms.FileSelected) &&
+                DateOnly.FromDateTime(ms.CreationTime) >= DateOnly.FromDateTime(StartDate) &&
+                DateOnly.FromDateTime(ms.CreationTime) <= DateOnly.FromDateTime(FinishDate)
+            )
+            .OrderByDescending(ms => ms.CreationTime)
+            .Select(ms => Meal.LoadFromFile(ms))];
+        Archive archive = new(toArchive, OnlyRelated);
+        archive.UserSettings.BillsFromDate = StartDate.ToShortDateString();
+        archive.UserSettings.BillsToDate = FinishDate.ToShortDateString();
+        if (archive.AllMeals.Count == 0)
         {
             await Utilities.DisplayAlertAsync("Archiving Error", "No bills meet the archive criteria");
             return;
         }
-
-        string xmlFileName = "DivisiBill" + archive.TimeName + ".xml";
-        string xmlFilePath = Path.Combine(FileSystem.CacheDirectory, xmlFileName);
-        string zipFilePath = Path.ChangeExtension(xmlFilePath, ".zip");
-        try
+        string zipFullName = archive.Zip(SaveImages);
+        if (string.IsNullOrWhiteSpace(zipFullName) || !File.Exists(zipFullName))
         {
-            using (Stream s = new FileStream(xmlFilePath, FileMode.OpenOrCreate))
-            {
-                s.SetLength(0); // Clear the file if it exists
-                archive.AsXmlStream(s);
-                s.Flush(); // Ensure the stream is written to disk before zipping
-            }
-            using (ZipArchive archiveZip = ZipFile.Open(zipFilePath, ZipArchiveMode.Create))
-            {
-                archiveZip.CreateEntryFromFile(xmlFilePath, xmlFileName);
-                File.Delete(xmlFilePath); // Delete the XML file after zipping
-                Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: created zip archive {zipFilePath} containing {xmlFileName}");
-                if (SaveImages)
-                {
-                    // Save bill images if requested
-                    foreach (var meal in archive.Meals.Where(m => m.HasImage && File.Exists(m.ImagePath)))
-                    {
-                        archiveZip.CreateEntryFromFile(meal.ImagePath, meal.ImageName);
-                        Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: added image {meal.ImageName} to zip archive");
-                    }
-                }
-            }
-            // At this point we have a zip archive file on disk containing a single XML file containing the archive data
+            await Utilities.ShowAppSnackBarAsync("Archive Zip File Creation Failed");
+            return;
+        }
+        // At this point we have a zip archive file on disk containing a single XML file containing the archive data
+        try 
+        { 
             if (ArchiveShare)
             {
 
                 Task sharing = Share.RequestAsync(new ShareFileRequest
                 {
-                    Title = "Archive " + xmlFileName,
-                    File = new ShareFile(zipFilePath)
+                    Title = "DivisiBill Archive",
+                    File = new ShareFile(zipFullName)
                 });
                 await sharing;
                 if (sharing.IsCompletedSuccessfully)
@@ -186,11 +175,11 @@ internal partial class DataManagementViewModel : ObservableObject
             else if (ArchiveToDisk)
             {
                 FileSaverResult? fileSaverResult = null;
-                using (Stream s = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read))
-                { fileSaverResult = await FileSaver.Default.SaveAsync(Path.ChangeExtension(xmlFileName, ".zip"), s); }
+                using (Stream s = new FileStream(zipFullName, FileMode.Open, FileAccess.Read))
+                { fileSaverResult = await FileSaver.Default.SaveAsync(zipFullName, s); }
                 if (fileSaverResult.IsSuccessful)
                 {
-                    File.Delete(zipFilePath); 
+                    File.Delete(zipFullName); 
                     await Utilities.ShowAppSnackBarAsync("Archive to disk completed successfully");
                 }
                 else
@@ -355,7 +344,7 @@ internal partial class DataManagementViewModel : ObservableObject
             {
                 Meal m = Meal.LoadFromStream(archiveStream);
                 if (m is not null)
-                    archive = new Archive() { Meals = new List<Meal>() { { m } } };
+                    archive = new Archive() { AllMeals = [m] };
                 else
                     Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Meal.LoadFromStream returned null");
             }
@@ -365,8 +354,8 @@ internal partial class DataManagementViewModel : ObservableObject
             }
 
             // Some old archives are out of order so sort the list just in case
-            if (archive?.Meals is not null)
-                archive.SelectedMeals = archive.Meals.OrderByDescending(m => m.CreationTime).ToList();
+            if (archive?.AllMeals is not null)
+                archive.SelectedMeals = archive.AllMeals.OrderByDescending(m => m.CreationTime).ToList();
 
             return archive;
         }

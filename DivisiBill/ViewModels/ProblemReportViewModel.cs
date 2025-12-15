@@ -51,26 +51,19 @@ internal partial class ProblemReportViewModel : ObservableObject
                     : "*** Start of Message (verify end is also present) ***\n" + body + "\n*** End of Message***\n",
         };
         message.To!.Add("support@autopl.us");
-        // get a temporary file path
-        string tempFilePath = Path.GetTempPath() + "archive-" + Meal.CurrentMeal.FileName;
+        string? tempFilePath = null;
         try
         {
-            // Attach an archive of just the current bill
+            // Attach an archive of just the current bill and its image if there is one
             var archive = new Archive([Meal.CurrentMeal], true);
-            MemoryStream stream = new();
-            if (archive.AsXmlStream(stream) is not null)
-            {
-                await File.WriteAllBytesAsync(tempFilePath, stream.ToArray());
+            tempFilePath = archive.Zip(true);
+            if (tempFilePath is not null)
                 message.Attachments!.Add(new EmailAttachment(tempFilePath));
-            }
         }
         catch (Exception ex)
         {
             ex.ReportCrash();
         }
-        // Attach a copy of the bill image if there is one
-        if (Meal.CurrentMeal.HasImage && File.Exists(Meal.CurrentMeal.ImagePath))
-            message.Attachments!.Add(new EmailAttachment(Meal.CurrentMeal.ImagePath));
         // Send the message
         try
         {
@@ -88,7 +81,7 @@ internal partial class ProblemReportViewModel : ObservableObject
         finally
         {
             // Now delete the temporary file used for the archive attachment
-            if (File.Exists(tempFilePath))
+            if (!string.IsNullOrWhiteSpace(tempFilePath) && File.Exists(tempFilePath))
                 File.Delete(tempFilePath);
         }
         await Utilities.DisplayAlertAsync("Issue Reported", "Your mail has been sent", "ok");

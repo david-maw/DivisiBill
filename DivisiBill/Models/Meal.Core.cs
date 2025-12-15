@@ -419,12 +419,14 @@ public partial class Meal : ObservableObjectPlus
             sw.WriteLine("Tax Rate {0:P2}    Tip Rate {1:P0}\r\n", TaxRate, TipRate);
             #endregion
             #region Participant List and Amounts
+            int maxDinerIndex = 0;
             foreach (var pc in Costs)
             {
                 if (pc.Amount != 0)
                     sw.WriteLine("{0} {1, -40} {2,10:C}", (byte)(pc.DinerID) % 10,
                        pc.Diner is null ? pc.Nickname : pc.Diner.DisplayName,
                        pc.Amount);
+                maxDinerIndex = Math.Max(maxDinerIndex, pc.DinerIndex % 10);
             }
             if (IsAnyUnallocated)
                 sw.WriteLine("{0, -42} {1,10:C}", "Unallocated", UnallocatedAmount);
@@ -437,14 +439,16 @@ public partial class Meal : ObservableObjectPlus
             else
                 sw.WriteLine();
             decimal dinerSubTotal = 0;
+            string spaces = new(' ', LineItem.maxSharers - 1 - maxDinerIndex);
             foreach (var lineItem in LineItems)
             {
-                for (int i = lineItem.SharedBy.Count - 1; i >= 0; i--)
+                sw.Write(spaces);
+                for (int i = maxDinerIndex; i >= 0; i--)
                 {
                     if (lineItem.SharedBy[i])
                         sw.Write((i + 1) % 10);
                     else
-                        sw.Write(" ");
+                        sw.Write(".");
                 }
                 string lineItemText = lineItem.ItemName + (lineItem.Comped ? " (comped)" : "");
                 sw.Write($"  {lineItemText,-30} {lineItem.Amount,10:C}"); // add an extra space to make negative numbers line up 
@@ -519,9 +523,9 @@ public partial class Meal : ObservableObjectPlus
             message.Subject += " from " + VenueName;
 
         // Make an archive and attach it
-        var archiveFullName = await ArchiveAsync();
+        var zipFullName = CreateZipArchive();
         // Attach archive file
-         message.Attachments.Add(new EmailAttachment(archiveFullName));
+        message.Attachments.Add(new EmailAttachment(zipFullName));
         // Attach a copy of the message in a text file to make it easier to read.
         var fn = "Bill-" + CreationTime.ToString("yyyyMMddHHmmss") + ".txt";
         string tempFileFullName = Path.Combine(TempFolderPath, fn);
@@ -547,8 +551,8 @@ public partial class Meal : ObservableObjectPlus
             {
                 await Task.Delay(60000);
                 File.Delete(tempFileFullName);
-                if (!string.IsNullOrWhiteSpace(archiveFullName))
-                    File.Delete(archiveFullName);
+                if (!string.IsNullOrWhiteSpace(zipFullName))
+                    File.Delete(zipFullName);
             }
             catch (Exception)
             {

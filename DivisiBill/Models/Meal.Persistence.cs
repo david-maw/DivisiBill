@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DivisiBill.Services;
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
@@ -494,46 +493,26 @@ public partial class Meal : ObservableObjectPlus
     /// Creates a ZIP archive containing the current object's data as an XML file, and optionally includes an associated
     /// image if available.
     /// </summary>
-    /// <remarks>The ZIP archive is saved in the application's cache directory and includes an XML file
+    /// <remarks>The ZIP archive is saved in the application's temp directory (see <see cref="Archive.Zip"/>) and includes an XML file
     /// representing the object's data. If an image is associated with the object and exists on disk, it is also
     /// included in the archive. The method handles any exceptions internally and reports them, returning an empty
     /// string if an error occurs.</remarks>
     /// <returns>A string containing the full file path to the created ZIP archive. Returns an empty string if the archive could
     /// not be created due to an error.</returns>
-    public async Task<string> ArchiveAsync()
+    public string CreateZipArchive()
     {
-        Archive archive = new([this], true);
-        // Create the XML file in the cache directory
-        string xmlFileName = "DivisiBill" + archive.TimeName + ".xml";
-        string xmlFileFullname = Path.Combine(TempFolderPath, xmlFileName);
-        string zipFileFullname = Path.ChangeExtension(xmlFileFullname, ".zip");
         try
-        {
-            using (Stream s = new FileStream(xmlFileFullname, FileMode.OpenOrCreate))
-            {
-                s.SetLength(0); // Clear the file if it exists
-                archive.AsXmlStream(s);
-                s.Flush(); // Ensure the stream is written to disk before zipping
-            }
-            using (ZipArchive archiveZip = ZipFile.Open(zipFileFullname, ZipArchiveMode.Create))
-            {
-                archiveZip.CreateEntryFromFile(xmlFileFullname, xmlFileName);
-                File.Delete(xmlFileFullname); // Delete the XML file after zipping
-                Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: created zip archive {zipFileFullname} containing {xmlFileName}");
-                // Save bill image if there is one
-                if (HasImage && File.Exists(ImagePath))
-                {
-                    archiveZip.CreateEntryFromFile(ImagePath, ImageName);
-                    Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: added image {ImageName} to zip archive");
-                }
-            }
+        { 
+            Archive archive = new([this], true);
+            // Create the XML file in the cache directory
+            string zipFileFullname = archive.Zip();
             // At this point we have a zip archive file on disk containing a single XML file containing the archive data and possibly an image file too
             return zipFileFullname;
         }
         catch (Exception ex)
         {
             ex.ReportCrash();
-            Utilities.DebugMsg($"In {nameof(ArchiveAsync)}: exception creating zip archive {zipFileFullname}: {ex.Message}");
+            Utilities.DebugMsg($"In {nameof(CreateZipArchive)}: exception creating zip archive: {ex.Message}");
             return string.Empty;
         }
     }
