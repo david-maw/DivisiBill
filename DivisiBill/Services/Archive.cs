@@ -150,6 +150,7 @@ public class Archive
     /// Gets or sets the collection of all the meals associated with this instance, some, or all of them may be selected for restore
     /// (see <see cref="SelectedMeals"/>).
     /// </summary>
+    [XmlArray("Meals")]
     public List<Meal> AllMeals { get; set; } = null; 
     #endregion
     #region Serialization

@@ -1,3 +1,9 @@
+# 6.3.8
+
+## Archive Restore of Old Archives
+
+Restoring an archive created before 6.3.7 would fail to restore bills (people and venues were fine). This has been corrected.
+
 # 6.3.7
 
 ## Allow "Retry" Option When Waiting for Web Response
