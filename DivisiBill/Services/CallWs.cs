@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Models;
-using Plugin.InAppBilling;
+using DivisiBill.InAppBilling;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;

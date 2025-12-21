@@ -826,7 +826,7 @@ public static partial class Utilities // Partial for regex generator
     /// Parse a Json time serialized by a DataContractJsonSerializer returning a DateTimeOffset 
     /// </summary>
     /// <param name="myJson">the JSON derived string, what's expected is in the form /Date(1389480362030-0800)/
-    /// Note that the slashes are part of the string the big number is milliseconds since unix epoch and the 
+    /// Note that the slashes are part of the string the big number is milliseconds since Unix epoch and the 
     /// small one is the time zone offset in HHMM form</param>
     /// <param name="dateTimeOffset"></param>
     /// <returns></returns>

@@ -325,11 +325,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public bool WsUriDefined => App.WsUriDefined;
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;
-    public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase.State != Plugin.InAppBilling.PurchaseState.Purchased;
+    public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? ProSubscriptionId => Billing.ProPurchase?.Id;
     public int ScansLeft => Billing.ScansLeft;
     public bool HasOcrLicense => Billing.OcrPurchase is not null;
-    public bool InvalidOcrLicense => Billing.OcrPurchase is not null && Billing.OcrPurchase.State != Plugin.InAppBilling.PurchaseState.Purchased;
+    public bool InvalidOcrLicense => Billing.OcrPurchase is not null && Billing.OcrPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? OcrLicenseId => Billing.OcrPurchase?.Id;
     public string BaseAddress => App.WsUriDefined ? CallWs.BaseAddress.ToString() : "";
     public string LastUse => App.Settings.LastUse.ToString();

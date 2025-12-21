@@ -15,7 +15,7 @@
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
      <NoWarn>NU1608;MVVMTK0045</NoWarn>
-     <!--NU1608 Because Plugin.InAppBilling 8.x triggers it-->
+     <!--NU1608 Because DivisiBill.InAppBilling 8.x triggers it-->
      <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
 
      <!-- Display name -->
@@ -104,7 +104,6 @@
      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.10" />
       <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.0" />
-      <PackageReference Include="Plugin.InAppBilling" Version="9.1.0" />
       <PackageReference Include="Sentry.Maui" Version="5.16.2" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
       <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="5.16.2" />
@@ -115,6 +114,11 @@
   <!--Add Tool For XML Serialization Compile-->
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+    <PackageReference Include="Xamarin.Android.Google.BillingClient">
+      <Version>8.1.0</Version>
+    </PackageReference>
   </ItemGroup>
 
   <!-- Build Properties must be defined within these property groups to ensure successful publishing

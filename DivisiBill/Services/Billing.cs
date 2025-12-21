@@ -1,4 +1,4 @@
-﻿using Plugin.InAppBilling;
+﻿using DivisiBill.InAppBilling;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -9,8 +9,8 @@ using System.Text.Json.Nodes;
 namespace DivisiBill.Services;
 
 /// <summary>
-/// <para>The billing class handles matters related to in-app billing. It relies on the InAppBilling plug-in
-/// (the Plugin.InAppBilling nuget package) and the DivisiBill web service. For the purposes of this
+/// <para>The billing class handles matters related to in-app billing. It relies on the former InAppBilling plug-in
+/// (now the DivisiBill.InAppBilling folder) and the DivisiBill web service. For the purposes of this
 /// discussion the license may be for a product or a subscription.</para>
 /// 
 /// <para>Professional licenses (usually subscriptions) enable cloud features, OCR licenses enable scans, 
