@@ -205,6 +205,130 @@ public class Archive
         }
     }
 
+    /// <summary>
+    /// Deserialize the provided XML stream into an Archive (or single-item Archive) but do not perform any restore actions.
+    /// </summary>
+    public static Archive DeserializeFromStream(Stream archiveStream, string archiveName)
+    {
+        try
+        {
+            // Reset stream position if possible
+            if (archiveStream.CanSeek)
+                archiveStream.Position = 0;
+
+            Archive archive = null;
+            // For convenience we allow individual files to be deserialized 
+            if (archiveName.StartsWith("Venues"))
+            {
+                List<Venue> vl = Venue.DeserializeList(archiveStream);
+                if (vl is not null)
+                    archive = new Archive() { Venues = vl };
+                else
+                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Venue.DeserializeList returned null");
+            }
+            else if (archiveName.StartsWith("People"))
+            {
+                List<Person> pl = Person.DeserializeList(archiveStream);
+                if (pl is not null)
+                    archive = new Archive() { Persons = pl };
+                else
+                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Person.DeserializeList returned null");
+            }
+            else if (Utilities.TryDateTimeFromName(archiveName, out _)) // Serialized Meal name format
+            {
+                Meal m = Meal.LoadFromStream(archiveStream);
+                if (m is not null)
+                    archive = new Archive() { AllMeals = [m] };
+                else
+                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Meal.LoadFromStream returned null");
+            }
+            else // Assume it is an archive
+            {
+                archive = Archive.FromStream(archiveStream);
+            }
+
+            // Some old archives are out of order so sort the list just in case
+            if (archive?.AllMeals is not null)
+                archive.SelectedMeals = archive.AllMeals.OrderByDescending(m => m.CreationTime).ToList();
+
+            return archive;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return null;
+        }
+    }
+
+    public static async Task<(Archive, string)> DeserializeAny(string archiveFullName)
+    {
+        ZipArchive zipArchive = null; // The zip archive if a zip was selected
+        Stream archiveStream = null; // The stream containing archived data (the XML entry or the xml file stream)
+        try
+        {
+            Utilities.DebugMsg($"In DeserializeAny: file name {archiveFullName}");
+            if (Path.GetExtension(archiveFullName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    zipArchive = ZipFile.OpenRead(archiveFullName);
+                    Utilities.DebugMsg($"In DeserializeAny: opened zip archive {archiveFullName}");
+                }
+                catch (Exception ex)
+                {
+                    ex.ReportCrash();
+                    return (null, "In DeserializeAny: Failed to open archive file");
+                }
+                if (zipArchive is not null)
+                {
+                    // Find the first XML file in the zip archive and assume it is an archive file
+                    ZipArchiveEntry zipArchiveEntry = zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".xml", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                    if (zipArchiveEntry is not null)
+                    {
+                        archiveFullName = zipArchiveEntry.Name;
+                        archiveStream = zipArchiveEntry.Open();
+                    }
+                    else
+                    {
+                        await Utilities.ShowAppSnackBarAsync($"In DeserializeAny: zip file does not contain a DivisiBill archive");
+                        return (null, "In DeserializeAny: zip file does not contain a DivisiBill archive");
+                    }
+                    // We do not extract images here; image extraction will be performed later during restore for only the meals that were restored.
+                }
+                else
+                    return (null, "Archive file is not a valid zip file");
+            }
+            else if (Path.GetExtension(archiveFullName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
+                archiveStream = File.OpenRead(archiveFullName);
+            else
+                return (null, "Archive file must be a .zip or .xml file");
+
+            // By this point we have an archive name and a stream to the archive (XML content)
+            if (archiveStream is not null)
+            {
+                Archive archive = Archive.DeserializeFromStream(archiveStream, archiveFullName);
+                return archive switch
+                {
+                    null => (null, "Failed to deserialize archive"),
+                    _ => (archive, "")
+                };
+            }
+            else
+                return (null, "In DeserializeAny: no archive stream was found");
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            // The user canceled or something went wrong
+            return (null, "Restore Faulted, Archive was unusable");
+        }
+        finally
+        {
+            archiveStream?.Dispose();
+            zipArchive?.Dispose();
+        }
+    }
+
     private static readonly XmlSerializer xmlSerializer = new(typeof(Archive));
     #endregion
     #region Restore Archive
@@ -339,7 +463,103 @@ public class Archive
             App.HandleActivityChanges();
         }
     }
+    /// <summary>
+    /// Restores bills, venues, people and bill images from an archive, optionally deleting existing data and handling
+    /// duplicate or related items as specified. It does not modify user settings.
+    /// </summary>
+    /// <remarks>User settings from the archive are ignored. If the archive contains images, only
+    /// images associated with restored items are extracted. If an error occurs during restore or image extraction, a notification is
+    /// returned and the operation may be incomplete.</remarks>
+    /// <param name="deleteBeforeRestore">Indicates whether existing data and images should be deleted before restoring from the archive. Set to <see
+    /// langword="true"/> to remove all current items prior to restore; otherwise, restored items will be merged.</param>
+    /// <param name="overwriteDuplicates">Indicates whether items in the archive that duplicate existing items should overwrite those items. Set to <see
+    /// langword="true"/> to replace duplicates; otherwise, duplicates are skipped.</param>
+    /// <param name="onlyRelated">Indicates whether only items related to the selected meals should be restored. Set to <see langword="true"/> to
+    /// restore only related items; otherwise, all items in the archive are restored.</param>
+    /// <param name="zipPath">The file path to the archive (ZIP file) containing the data and images to restore. If empty or null, image
+    /// extraction is skipped.</param>
+    ///<returns>A tuple containing a boolean indicating success or failure, and a string message with details about any failure.</returns>
+    public async Task<(bool, string)> RestoreFilesAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated, string zipPath)
+    {
+        try
+        {
+            // Restore the data items
+            await RestoreAsync(deleteBeforeRestore, overwriteDuplicates, onlyRelated);
+
+            // If the archive was a zip and contains images, selectively extract images belonging to meals being restored
+            if (!string.IsNullOrWhiteSpace(zipPath) && File.Exists(zipPath))
+            {
+                try
+                {
+                    // Open the archive and put the entries in a dictionary indexed by name
+                    using var zip = ZipFile.OpenRead(zipPath);
+                    Dictionary<string, ZipArchiveEntry> zippedImages = [];
+                    foreach (var entry in zip.Entries) // mostly image files though the archive XML will be in there too
+                        zippedImages[entry.Name] = entry;
+
+                    if (deleteBeforeRestore)
+                        Meal.PermanentlyDeleteAllLocalImages();
+
+                    // Iterate through the meals being restored that also have images present in the zip
+                    foreach (var meal in SelectedMeals.Where(m => zippedImages.ContainsKey(m.ImageName)))
+                    {
+                        // Find corresponding local meal by ImageName so we can update it later
+                        var localMealSummary = Meal.LocalMealList.FirstOrDefault(lm => lm.CreationTime == meal.CreationTime);
+                        if (localMealSummary is null)
+                        {
+                            Utilities.DebugMsg($"Restored Meal corresponding to {meal.ImageName} is missing");
+                            continue; // meal was not present locally, which is weird, it should have just been restored
+                        }
+
+                        // Find the image entry in the zip by looking up the image name
+                        ZipArchiveEntry zippedImageEntry = zippedImages[meal.ImageName];
+                        if (zippedImageEntry is null)
+                        {
+                            Utilities.DebugMsg($"Zip entry for {meal.ImageName} is missing");
+                            continue; // we just checked this above, it really shouldn't be missing
+                        }
+
+                        // Extract the image to the image folder, possibly removing an existing one first
+                        string fullFilename = Path.Combine(Meal.ImageFolderPath, zippedImageEntry.Name);
+
+                        if (File.Exists(fullFilename) && !deleteBeforeRestore)
+                            Utilities.DebugMsg($"In RestoreFilesAsync file not restored {zippedImageEntry.Name} already exists");
+                        else
+                        {
+                            zippedImageEntry.ExtractToFile(fullFilename, deleteBeforeRestore);
+                            localMealSummary.CheckImageFiles();
+                            Utilities.DebugMsg($"In RestoreFilesAsync: zip archive entry {zippedImageEntry.Name} extracted to image folder for image {meal.ImageName}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.ReportCrash();
+                    return (false, "Failed to extract some images from archive");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return (false, "Restore Faulted, Archive was unusable");
+        }
+        return (true, string.Empty);
+    }
     #endregion
+    #region Creating a Zip Archive
+    /// <summary>
+    /// Creates a ZIP archive containing the current bill data in XML format, and optionally includes associated meal
+    /// images.
+    /// </summary>
+    /// <remarks>The ZIP archive will contain an XML file representing the bill data. If <paramref
+    /// name="saveImages"/> is <see langword="true"/>, image files for meals with available images are also included.
+    /// The XML file is deleted after being added to the archive. If no bills are present, or if an exception occurs
+    /// during the process, the method returns <see langword="null"/>.</remarks>
+    /// <param name="saveImages">Indicates whether to include images for meals that have associated image files in the ZIP archive. Set to <see
+    /// langword="true"/> to add images; otherwise, only the XML data is archived.</param>
+    /// <returns>The full file path of the created ZIP archive if successful; otherwise, <see langword="null"/> if there are no
+    /// bills to archive or an error occurs.</returns>
     public string Zip(bool saveImages = true)
     {
         if (AllMeals is null || AllMeals.Count == 0)
@@ -380,5 +600,6 @@ public class Archive
             ex.ReportCrash("Exception creating Zip Archive");
             return null;
         }
-    }
+    } 
+    #endregion
 }

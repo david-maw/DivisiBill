@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
-using System.IO.Compression;
 
 namespace DivisiBill.ViewModels;
 
@@ -201,8 +200,8 @@ internal partial class DataManagementViewModel : ObservableObject
     [RelayCommand]
     public async Task SelectArchiveAsync()
     {
-        ZipArchive? zipArchive = null; // The zip archive if a zip was selected
         Stream? archiveStream = null; // The stream containing archived data (the XML entry or the xml file stream)
+        selectedArchiveZipPath = null;
         try
         {
             var result = await FilePicker.PickAsync(new PickOptions()
@@ -218,73 +217,36 @@ internal partial class DataManagementViewModel : ObservableObject
             {
                 IsBusy = true;
                 string archiveName = result.FileName;
-                Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: file name {archiveName}");
-                if (Path.GetExtension(archiveName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
+                Utilities.DebugMsg($"In SelectArchiveAsync: file name {archiveName}");
+                string ext = Path.GetExtension(archiveName);
+                if (ext.Equals(".zip", StringComparison.OrdinalIgnoreCase))
                 {
-                    try
-                    {
-                        zipArchive = ZipFile.OpenRead(result.FullPath);
-                        Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: opened zip archive {archiveName}");
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.ReportCrash();
-                        await Utilities.ShowAppSnackBarAsync($"In {nameof(SelectArchiveAsync)}: Failed to open archive file");
-                        return;
-                    }
-                    if (zipArchive is not null)
-                    {
-                        // Find the first XML file in the zip archive and assume it is an archive file
-                        ZipArchiveEntry? zipArchiveEntry = zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".xml", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                        if (zipArchiveEntry is not null)
-                        {
-                            archiveName = zipArchiveEntry.Name;
-                            archiveStream = zipArchiveEntry.Open();
-                        }
-                        else
-                        {
-                            await Utilities.ShowAppSnackBarAsync($"In {nameof(SelectArchiveAsync)}: zip file does not contain a DivisiBill archive");
-                            return;
-                        }
-                        // We do not extract images here; image extraction will be performed later during restore for only the meals that were restored.
-                    }
-                    else
-                        await Utilities.ShowAppSnackBarAsync("Archive file is not a valid zip file");
+                    // If the original selection was a zip file record its path so images can be selectively extracted during restore later
+                    selectedArchiveZipPath = result.FullPath;
                 }
-                else if (Path.GetExtension(archiveName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
-                {
-                    archiveStream = await result.OpenReadAsync();
-                    selectedArchiveZipPath = null;
-                }
-                else
+                else if (!ext.Equals(".xml", StringComparison.OrdinalIgnoreCase))
                     await Utilities.ShowAppSnackBarAsync("Archive file must be a .zip or .xml file");
 
-                // By this point we have an archive name and a stream to the archive (XML content)
-                if (archiveStream is not null)
+                // By this point we have an archive file name
+                (Archive? archive, string message) = await Archive.DeserializeAny(result.FullPath);
+                if (archive is null)
                 {
-                    Archive? archive = DeserializeArchiveFromStream(archiveStream, archiveName);
-                    if (archive is null)
-                    {
-                        await Utilities.ShowAppSnackBarAsync("Failed to deserialize archive");
-                        return;
-                    }
-
-                    // Set dates based on all the meals in the archive (initially all are selected)
-                    DateTime NewStartDate = EarliestStartDate = archive.SelectedMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
-                    DateTime NewFinishDate = LatestFinishDate = archive.SelectedMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
-
-                    SelectedArchive = archive;
-                    if (archive.SelectedMeals is not null && archive.SelectedMeals.Count > 0)
-                    {
-                        StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
-                        FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
-                    }
-
-                    // If the original selection was a zip file record its path so images can be selectively extracted during restore later
-                    selectedArchiveZipPath = (zipArchive is not null) ? result.FullPath : null;
+                    if (string.IsNullOrWhiteSpace(message))
+                        message = "Archive deserialization failed: Unknown error";
+                    await Utilities.ShowAppSnackBarAsync(message);
+                    return;
                 }
-                else
-                    Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: no archive stream was found");
+
+                // Set dates based on all the meals in the archive
+                DateTime NewStartDate = EarliestStartDate = archive.AllMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
+                DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
+
+                SelectedArchive = archive;
+                if (archive.AllMeals is not null && archive.AllMeals.Count > 0)
+                {
+                    StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
+                    FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
+                }
             }
             else
             {
@@ -293,7 +255,7 @@ internal partial class DataManagementViewModel : ObservableObject
                 // Set dates based on all the local meals (initially all are selected)
                 StartDate = EarliestStartDate = Meal.LocalMealList?.LastOrDefault()?.CreationTime ?? DateTime.Now;
                 FinishDate = LatestFinishDate = Meal.LocalMealList?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
-                Utilities.DebugMsg($"In {nameof(SelectArchiveAsync)}: returned file name was null");
+                Utilities.DebugMsg($"In SelectArchiveAsync: returned file name was null");
             }
         }
         catch (Exception ex)
@@ -306,63 +268,7 @@ internal partial class DataManagementViewModel : ObservableObject
         finally
         {
             archiveStream?.Dispose();
-            zipArchive?.Dispose();
             IsBusy = false;
-        }
-    }
-
-    /// <summary>
-    /// Deserialize the provided XML stream into an Archive (or single-item Archive) but do not perform any restore actions.
-    /// </summary>
-    private Archive? DeserializeArchiveFromStream(Stream archiveStream, string archiveName)
-    {
-        try
-        {
-            // Reset stream position if possible
-            if (archiveStream.CanSeek)
-                archiveStream.Position = 0;
-
-            Archive? archive = null;
-            // For convenience we allow individual files to be deserialized 
-            if (archiveName.StartsWith("Venues"))
-            {
-                List<Venue> vl = Venue.DeserializeList(archiveStream);
-                if (vl is not null)
-                    archive = new Archive() { Venues = vl };
-                else
-                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Venue.DeserializeList returned null");
-            }
-            else if (archiveName.StartsWith("People"))
-            {
-                List<Person> pl = Person.DeserializeList(archiveStream);
-                if (pl is not null)
-                    archive = new Archive() { Persons = pl };
-                else
-                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Person.DeserializeList returned null");
-            }
-            else if (Utilities.TryDateTimeFromName(archiveName, out _)) // Serialized Meal name format
-            {
-                Meal m = Meal.LoadFromStream(archiveStream);
-                if (m is not null)
-                    archive = new Archive() { AllMeals = [m] };
-                else
-                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Meal.LoadFromStream returned null");
-            }
-            else // Assume it is an archive
-            {
-                archive = Archive.FromStream(archiveStream);
-            }
-
-            // Some old archives are out of order so sort the list just in case
-            if (archive?.AllMeals is not null)
-                archive.SelectedMeals = archive.AllMeals.OrderByDescending(m => m.CreationTime).ToList();
-
-            return archive;
-        }
-        catch (Exception ex)
-        {
-            ex.ReportCrash();
-            return null;
         }
     }
 
@@ -413,67 +319,21 @@ internal partial class DataManagementViewModel : ObservableObject
             }
 
             // Restore the data items
-            await archive.RestoreAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated);
+            (bool restoreWorked, string  restoreFailureText) = await archive.RestoreFilesAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, selectedArchiveZipPath);
 
-            // If the archive was a zip and contains images, selectively extract images belonging to meals being restored
-            if (!string.IsNullOrWhiteSpace(selectedArchiveZipPath) && File.Exists(selectedArchiveZipPath))
+            if (restoreWorked)
             {
-                try
-                {
-                    // Open the archive and put the entries in a dictionary indexed by name
-                    using var zip = ZipFile.OpenRead(selectedArchiveZipPath);
-                    Dictionary<string, ZipArchiveEntry> zippedImages = new();
-                    foreach (var entry in zip.Entries) // mostly image files though the archive XML will be in there too
-                        zippedImages[entry.Name] = entry;
+                // Navigate to meal list after restore
+                await App.GoToAsync(Routes.MealListByAgePage); 
 
-                    if (DeleteBeforeRestore)
-                        Meal.PermanentlyDeleteAllLocalImages();
-
-                    // Iterate through the meals being restored that also have images present in the zip
-                    foreach (var meal in archive.SelectedMeals.Where(m => zippedImages.ContainsKey(m.ImageName)))
-                    {
-                        // Find corresponding local meal by ImageName so we can update it later
-                        var localMealSummary = Meal.LocalMealList.FirstOrDefault(lm => lm.CreationTime == meal.CreationTime);
-                        if (localMealSummary is null)
-                        {
-                            Utilities.DebugMsg($"Restored Meal corresponding to {meal.ImageName} is missing");
-                            continue; // meal was not present locally, which is weird, it should have just been restored
-                        }
-
-                        // Find the image entry in the zip by looking up the image name
-                        ZipArchiveEntry? zippedImageEntry = zippedImages[meal.ImageName];
-                        if (zippedImageEntry is null)
-                        {
-                            Utilities.DebugMsg($"Zip entry for {meal.ImageName} is missing");
-                            continue; // we just checked this above, it really shouldn't be missing
-                        }
-
-                        // Extract the image to the image folder, possibly removing an existing one first
-                        string fullFilename = Path.Combine(Meal.ImageFolderPath, zippedImageEntry.Name);
-
-                        if (File.Exists(fullFilename) && !DeleteBeforeRestore)
-                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)} file not restored {zippedImageEntry.Name} already exists");
-                        else
-                        {
-                            zippedImageEntry.ExtractToFile(fullFilename, DeleteBeforeRestore);
-                            localMealSummary.CheckImageFiles();
-                            Utilities.DebugMsg($"In {nameof(RestoreArchiveAsync)}: zip archive entry {zippedImageEntry.Name} extracted to image folder for image {meal.ImageName}");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ex.ReportCrash();
-                    await Utilities.ShowAppSnackBarAsync("Failed to extract some images from archive");
-                }
+                // Clear selected archive after restore
+                SelectedArchive = null;
+                selectedArchiveZipPath = null;
             }
-
-            // Navigate to meal list after restore
-            await App.GoToAsync(Routes.MealListByAgePage);
-
-            // Clear selected archive after restore
-            SelectedArchive = null;
-            selectedArchiveZipPath = null;
+            else if (restoreFailureText != null)
+                await Utilities.ShowAppSnackBarAsync($"Restore completed with issues: {restoreFailureText}");
+            else
+                await Utilities.ShowAppSnackBarAsync("Restore failed");
         }
         catch (Exception ex)
         {
