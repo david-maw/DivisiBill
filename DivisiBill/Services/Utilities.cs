@@ -952,6 +952,19 @@ public static partial class Utilities // Partial for regex generator
         return new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
     public static HtmlWebViewSource ReleaseNotes { get; private set; }
+    public static async Task<string> CopyStreamToTempFileAsync(Stream input)
+    {
+        // Create a unique temp file path
+        var tempPath = Path.Combine(FileSystem.CacheDirectory, Path.GetRandomFileName());
+
+        // Copy the stream to the file
+        using (var output = File.OpenWrite(tempPath))
+        {
+            await input.CopyToAsync(output);
+        }
+
+        return tempPath;
+    }
     #region Geo
     public const int close = 5; // Anything within this distance is just 'close' because GPS is usually less certain then this 
 
