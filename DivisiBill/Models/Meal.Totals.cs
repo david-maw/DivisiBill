@@ -124,7 +124,7 @@ public partial class Meal
     /// The nominal coupon amount applied to the bill, the sum of all the individual coupons
     /// ignoring the fact that coupons may not exceed the amount spent.
     /// </summary>
-    private decimal GetRawCouponAmount()
+    public decimal GetRawCouponAmount()
     {
         decimal couponAmount = 0;
         foreach (var item in LineItems)

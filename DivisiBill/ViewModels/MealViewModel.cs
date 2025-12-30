@@ -269,7 +269,8 @@ public partial class MealViewModel : ObservableObjectPlus
     {
         if (pc is null && IsFiltered)
             pc = FilteredSharer;
-        await Utilities.ShowPayments(new PaymentsViewModel(SubTotal + Tax - CouponAmountAfterTax, RoundedAmount, pc?.Nickname, pc is null ? 0 : RoundedAmount - Math.Round(pc.Amount), UnallocatedAmount));
+        await Utilities.ShowPayments(new PaymentsViewModel(SubTotal + Tax - (IsCouponAfterTax ? RawCouponAmount : 0),
+            RoundedAmount, pc?.Nickname, pc is null ? 0 : RoundedAmount - Math.Round(pc.Amount), UnallocatedAmount));
     }
     [RelayCommand]
     private async Task DisplayPaymentsForLineItem(LineItem li)
@@ -746,6 +747,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public bool IsCouponAfterTax => Meal.CurrentMeal.IsCouponAfterTax;
     // Zeroing these out when unused makes the XAML simpler
     public decimal CouponAmountAfterTax => Meal.CurrentMeal.CouponAmountAfterTax;
+    public decimal RawCouponAmount => Meal.CurrentMeal.GetRawCouponAmount();
     private void SetFilteredCouponAmountAfterTax() => FilteredCouponAmountAfterTax = IsFiltered && IsCouponAfterTax ? VisibleNegative : 0;
     [ObservableProperty]
     public partial decimal FilteredCouponAmountAfterTax { get; private set; }

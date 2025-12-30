@@ -255,7 +255,7 @@
                 <Label Grid.Row="2" Grid.ColumnSpan="2" FontSize="24" LineBreakMode="TailTruncation" Text="Discount After Tax"
                        IsVisible="{Binding CouponAmountAfterTax, Converter={StaticResource IsNonZero}}"/>
                 <Label Grid.Row="2" Grid.Column="3" FontSize="24" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}"
-                       Text="{Binding Path = CouponAmountAfterTax, StringFormat='{0:C}'}" IsVisible="{Binding CouponAmountAfterTax, Converter={StaticResource IsNonZero}}"/>
+                       Text="{Binding Path = RawCouponAmount, StringFormat='{0:C}'}" IsVisible="{Binding CouponAmountAfterTax, Converter={StaticResource IsNonZero}}"/>
                 <!--#endregion-->
                 <!--#region Tip -->
                 <Label Grid.Row="3" LineBreakMode="TailTruncation">
