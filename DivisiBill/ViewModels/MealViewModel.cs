@@ -746,11 +746,11 @@ public partial class MealViewModel : ObservableObjectPlus
     public decimal TipDelta => Meal.CurrentMeal.TipDelta;
     public bool IsCouponAfterTax => Meal.CurrentMeal.IsCouponAfterTax;
     // Zeroing these out when unused makes the XAML simpler
-    public decimal CouponAmountAfterTax => Meal.CurrentMeal.CouponAmountAfterTax;
+    public decimal CouponAmountIfAfterTax => Meal.CurrentMeal.CouponAmountIfAfterTax;
     public decimal RawCouponAmount => Meal.CurrentMeal.GetRawCouponAmount();
-    private void SetFilteredCouponAmountAfterTax() => FilteredCouponAmountAfterTax = IsFiltered && IsCouponAfterTax ? VisibleNegative : 0;
+    private void SetFilteredCouponAmountIfAfterTax() => FilteredCouponAmountIfAfterTax = IsFiltered && IsCouponAfterTax ? VisibleNegative : 0;
     [ObservableProperty]
-    public partial decimal FilteredCouponAmountAfterTax { get; private set; }
+    public partial decimal FilteredCouponAmountIfAfterTax { get; private set; }
     public decimal ScannedSubTotal => Meal.CurrentMeal.ScannedSubTotal;
     public decimal ScannedTax => Meal.CurrentMeal.ScannedTax;
     #endregion    
@@ -758,8 +758,7 @@ public partial class MealViewModel : ObservableObjectPlus
     private void SetFilteredBlockTotals()
     {
         SetFilteredSubtotal();
-        SetFilteredCouponAmountAfterTax();
-        OnPropertyChanged(nameof(CouponAmountAfterTax)); // because this may need to be changed
+        SetFilteredCouponAmountIfAfterTax();
     }
     /// <summary>
     /// Gets or sets the identifier of the diner for whom the amount is being calculated or displayed.

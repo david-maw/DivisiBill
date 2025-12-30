@@ -82,7 +82,7 @@ public class MealTests
         TestMeal.IsCouponAfterTax = taxOnDiscount;
         TestMeal.FinalizeSetup();
         Assert.AreEqual((decimal)subTotal, TestMeal.SubTotal, $"Unexpected value for {nameof(Meal.SubTotal)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
-        Assert.AreEqual((decimal)taxableDiscount, TestMeal.CouponAmountAfterTax, $"Unexpected value for {nameof(Meal.CouponAmountAfterTax)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
+        Assert.AreEqual((decimal)taxableDiscount, TestMeal.CouponAmountIfAfterTax, $"Unexpected value for {nameof(Meal.CouponAmountIfAfterTax)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
         Assert.AreEqual((decimal)tax, TestMeal.Tax, $"Unexpected value for {nameof(Meal.Tax)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
         Assert.AreEqual((decimal)tip, TestMeal.Tip, $"Unexpected value for {nameof(Meal.Tip)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
         Assert.AreEqual(0, TestMeal.RoundingErrorAmount, $"Unexpected value for {nameof(Meal.RoundingErrorAmount)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");

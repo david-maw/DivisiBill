@@ -333,7 +333,7 @@
                     Text="Discount After Tax">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Converter="{StaticResource IsNonZero}" Path="CouponAmountAfterTax" />
+                            <Binding Converter="{StaticResource IsNonZero}" Path="CouponAmountIfAfterTax" />
                             <Binding Converter="{StaticResource Not}" Path="IsFiltered" />
                         </MultiBinding>
                     </Label.IsVisible>
@@ -347,7 +347,7 @@
                     Text="{Binding RawCouponAmount, StringFormat='{0:C}'}">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Converter="{StaticResource IsNonZero}" Path="CouponAmountAfterTax" />
+                            <Binding Converter="{StaticResource IsNonZero}" Path="CouponAmountIfAfterTax" />
                             <Binding Converter="{StaticResource Not}" Path="IsFiltered" />
                         </MultiBinding>
                     </Label.IsVisible>
@@ -359,7 +359,7 @@
                     Text="Discount After Tax">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Converter="{StaticResource IsNonZero}" Path="FilteredCouponAmountAfterTax" />
+                            <Binding Converter="{StaticResource IsNonZero}" Path="FilteredCouponAmountIfAfterTax" />
                             <Binding Path="IsFiltered" />
                         </MultiBinding>
                     </Label.IsVisible>
@@ -370,10 +370,10 @@
                     FontSize="24"
                     HorizontalOptions="End"
                     Style="{StaticResource RedLabelTextStyle}"
-                    Text="{Binding FilteredCouponAmountAfterTax, StringFormat='{0:C}'}">
+                    Text="{Binding FilteredCouponAmountIfAfterTax, StringFormat='{0:C}'}">
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource All}">
-                            <Binding Converter="{StaticResource IsNonZero}" Path="FilteredCouponAmountAfterTax" />
+                            <Binding Converter="{StaticResource IsNonZero}" Path="FilteredCouponAmountIfAfterTax" />
                             <Binding Path="IsFiltered" />
                         </MultiBinding>
                     </Label.IsVisible>

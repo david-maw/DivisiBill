@@ -336,7 +336,7 @@ public partial class Meal
         foreach (var pc in costsWithOrderAmount)
             pc.RoundAllAmounts();
         SubTotal = totalChargedAmount = Math.Round(totalChargedAmount, 2);
-        CouponAmountAfterTax = Math.Round(GetCouponAmountAfterTax(), 2);
+        CouponAmountIfAfterTax = Math.Round(GetCouponAmountIfAfterTax(), 2);
         remainingUnusedCouponAmount = Math.Round(remainingUnusedCouponAmount, 2);
         totalCouponAmount = Math.Round(totalCouponAmount, 2);
         decimal roundingErrorLeft = Math.Round(GetTotalAmount() - costsWithAmount.Sum(pc => pc.Amount), 2); // The difference between the bill total and sum of individual amounts

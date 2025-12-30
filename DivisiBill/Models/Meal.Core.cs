@@ -465,16 +465,16 @@ public partial class Meal : ObservableObjectPlus
             sw.WriteLine();
             if (GetCompedAmount() != 0)
                 sw.WriteLine("            {0, -30} {1,10:C}", "Comped", GetCompedAmount());
-            if (GetCouponAmountBeforeTax() != 0)
-                sw.WriteLine("            {0, -30} {1,10:C}", "Coupons", GetCouponAmountBeforeTax());
+            if (GetCouponAmountIfBeforeTax() != 0)
+                sw.WriteLine("            {0, -30} {1,10:C}", "Coupons", GetCouponAmountIfBeforeTax());
             sw.Write("            {0, -30} {1,10:C}", "Subtotal", SubTotal);
             if (dinerSubTotal != 0)
                 sw.Write(" {0,10:C}", dinerSubTotal);
             sw.WriteLine();
             sw.WriteLine();
             sw.WriteLine("            {0, -30} {1,10:C}", "Tax", Tax);
-            if (CouponAmountAfterTax != 0)
-                sw.WriteLine("            {0, -30} {1,10:C}", "Discount After Tax", -CouponAmountAfterTax);
+            if (CouponAmountIfAfterTax != 0)
+                sw.WriteLine("            {0, -30} {1,10:C}", "Discount After Tax", -CouponAmountIfAfterTax);
             sw.WriteLine("            {0, -30} {1,10:C}", "Tip", Tip);
             sw.WriteLine("            {0, -30} {1,10:C}", "Total", TotalAmount);
             #endregion

@@ -1,7 +1,7 @@
-using System.ComponentModel;
-using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
@@ -137,9 +137,10 @@ public partial class Meal
 
     /// <summary>
     /// The actual coupon amount applied to the bill, the sum of all the individual coupons
-    /// but no more than the sum of item costs less any comped items (so it is never negative).
+    /// prorated to allow for tax if necessary.
+    /// It may be no more than the sum of item costs less any comped items (so it is never negative).
     /// Note that this is different from <see cref="GetRawCouponAmount"/> which simply sums the coupons
-    /// and does not take note of the amount. Also, the individual coupons may be taxable or not depending
+    /// and does not take note of the amount or whether coupons may be taxable depending
     /// on the value of <see cref="IsCouponAfterTax"/>.
     /// </summary>
     private decimal GetModifiedCouponAmount()
@@ -159,19 +160,20 @@ public partial class Meal
     /// <summary>
     /// The sum of all the individual coupons for the bill if they are applied before tax.
     /// </summary>
-    public decimal GetCouponAmountBeforeTax() => IsCouponAfterTax ? 0 : GetModifiedCouponAmount();
+    public decimal GetCouponAmountIfBeforeTax() => IsCouponAfterTax ? 0 : GetModifiedCouponAmount();
 
     /// <summary>
     /// The sum of all the individual coupons for the bill if they are applied after tax.
+    /// This will be reduced by an amount sufficient to compensate for the tax.
     /// </summary>
     [XmlIgnore]
     [ObservableProperty]
-    public partial decimal CouponAmountAfterTax { get; set; }
+    public partial decimal CouponAmountIfAfterTax { get; set; }
 
     /// <summary>
     /// Get the sum of all the individual coupons for the bill if they are applied after tax.
     /// </summary>
-    private decimal GetCouponAmountAfterTax() => IsCouponAfterTax ? GetModifiedCouponAmount() : 0;
+    private decimal GetCouponAmountIfAfterTax() => IsCouponAfterTax ? GetModifiedCouponAmount() : 0;
 
     /// <summary>
     /// The total amount of all comped (complimentary) items on the bill.
@@ -232,7 +234,7 @@ public partial class Meal
     /// Calculates the total amount due, including subtotal, tax, and tip, minus any coupon applied after tax.
     /// </summary>
     /// <returns>The total amount to be paid after applying tax, tip, and post-tax coupon deductions.</returns>
-    public decimal GetTotalAmount() => SubTotal + Tax + Tip - CouponAmountAfterTax;
+    public decimal GetTotalAmount() => SubTotal + Tax + Tip - CouponAmountIfAfterTax;
 
     /// <summary>
     /// Calculates the total amount used as the basis for tip calculation, including applicable tax if
@@ -367,7 +369,7 @@ public partial class Meal
         SubTotal = GetSubTotal();
         Tax = GetTax();
         Tip = GetTip();
-        CouponAmountAfterTax = GetCouponAmountAfterTax();
+        CouponAmountIfAfterTax = GetCouponAmountIfAfterTax();
         UnallocatedAmount = GetUnallocatedAmount();
         TotalAmount = GetTotalAmount();
     }
