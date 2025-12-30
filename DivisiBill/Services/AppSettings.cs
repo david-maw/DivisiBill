@@ -11,6 +11,23 @@ public class AppSettings : ISettings
             Directory.Delete(App.BaseFolderPath, recursive: true); // Delete the app data folder and everything in it
         }
     }
+    // TODO: Remove workaround for https://github.com/dotnet/maui/issues/27167 Intermittent Problem with Preferences on Windows
+    private bool TrySetPreference(string key, DateTime value)
+    {
+        try
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Preferences.Set(key, value);
+            });
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return false;
+        }
+    }
     public string StoredMeal
     {
         get => Preferences.Get("Meal", string.Empty);
@@ -102,7 +119,7 @@ public class AppSettings : ISettings
     public DateTime LastUse
     {
         get => Preferences.Get(nameof(LastUse), DateTime.MinValue);
-        set => Preferences.Set(nameof(LastUse), value);
+        set => TrySetPreference(nameof(LastUse), value);
     }
     public string UserKey
     {
