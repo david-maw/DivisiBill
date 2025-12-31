@@ -13,6 +13,8 @@ public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle savedInstanceState)
     {
+        System.Diagnostics.Trace.Listeners.Add(new AndroidLogTraceListener("DivisiBill"));
+        Log.Debug("OnCreate", $"MainActivity created: Intent = {Intent?.Action}");
         base.OnCreate(savedInstanceState);
         Platform.Init(this, savedInstanceState);
         OnBackPressedDispatcher.AddCallback(this, new BackPress(this));
