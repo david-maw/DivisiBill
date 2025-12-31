@@ -1,8 +1,18 @@
+# 6.3.9
+
+## Show Simple Coupon Amount in UI Instead of Modified value
+
+A bill with coupons applied after tax would show an incorrect value for the sum of the coupons (it was actually showing what the coupon would be worth before tax). The sum of any coupons is once again shown.
+
+## Support Android 'Send To' and 'Open With' Actions
+
+You can now send or open zip or xml files to DivisiBill, if they are archived DivisiBill data it will open them and permit them to be restored much as the restore from the Data Management page does.
+
 # 6.3.8
 
 ## Archive Restore of Old Archives
 
-Restoring an archive created before 6.3.7 would fail to restore bills (people and venues were fine). This has been corrected.
+Restoring an archive created before 6.3.7 would fail to restore bills (people and venues were fine). This has been corrected but any archives created with 6.3.7 will need to be re-created using 6.3.8 or later in order to restore bills correctly.
 
 # 6.3.7
 
