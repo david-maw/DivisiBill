@@ -43,7 +43,11 @@
       <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
    </PropertyGroup>
 
-   <PropertyGroup>
+	<Target Name="DisplayCustomMessage" BeforeTargets="Build">
+		<Message Text="🔧 $(Configuration) build for $(MSBuildProjectName), WS URI = $(DivisiBillWsUri)" Importance="high" />
+	</Target>
+
+	<PropertyGroup>
      <!--Enables 'dotnet run' (along with "commandName": "Project" in launchsettings.json)-->
      <WindowsPackageType>None</WindowsPackageType>
    </PropertyGroup>
@@ -225,7 +229,4 @@ namespace DivisiBill.Generated
     <WriteLinesToFile Lines="$(BuildEnvironmentText)" File="$(BuildEnvironmentFilePath)" Overwrite="true" />
   </Target>
   <!--End file generation-->
-  <Target Name="DisplayCustomMessage" BeforeTargets="Build">
-    <Message Text="🔧 Starting $(Configuration) build for $(MSBuildProjectName), WS URI = $(DivisiBillWsUri)" Importance="high" />
-  </Target>
 </Project>
