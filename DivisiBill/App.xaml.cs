@@ -79,7 +79,9 @@ public partial class App : Application, INotifyPropertyChanged
         ModifyEntry();
         // Enable connectivity monitoring
         Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
+        StreamDispatcher.Activated += StreamDispatcher_Activated;
     }
+
     ~App()
     {
         Connectivity.ConnectivityChanged -= Connectivity_ConnectivityChanged;
@@ -143,10 +145,71 @@ public partial class App : Application, INotifyPropertyChanged
         {
             // Just ignore it and go on to the next operation as we are stopping anyway
         }
-    } 
+    }
     #endregion
+    #region Application Launch
     private static string priorWhat = "unknown";
+#pragma warning disable IDE0044 // Add readonly modifier - IDE is confused by isIntentLaunch being set in Android only code
+    /// <summary>
+    /// Gets or sets a value indicating whether the App was initiated by an Android intent other than Intent.ActionMain (the
+    /// regular application start intent).
+    /// </summary>
+    /// <remarks>This property is set to <see langword="true"/> only on Android platforms when the
+    /// application is started via an intent. On other platforms, this property remains <see langword="false"/>.</remarks>
+    public bool IsIntentLaunch { get; set; } = false; // Only set true on Android
+#pragma warning restore IDE0044
+
+    /// <summary>
+    /// Handles the event when a stream is to be read, triggered by an Android Intent.
+    /// This method initiates modal navigates to the appropriate page if DivisiBill is already running.
+    /// </summary>
+    /// <param name="stream">The stream containing the file data to be processed. Must not be null.</param>
+    /// <param name="mimeType">The MIME type of the file represented by the stream. Used to identify the file format.</param>
+    private async void StreamDispatcher_Activated(Stream stream, string mimeType)
+    {
+        try
+        {
+            Utilities.DebugMsg("In StreamDispatcher_Activated: Notification for a stream of type: " + mimeType);
+            if (!IsIntentLaunch)
+            {   // The app is already running so we have infrastructure enough to just push a modal page here
+                Utilities.DebugMsg("App is already running, pushing IntentPage modally");
+                await Shell.Current.Navigation.PushModalAsync(new Views.RestorePage());
+            }
+        }
+        catch (Exception ex)
+        {
+            Utilities.DebugMsg("Notification handling failed: " + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Provides a thread-safe queue of pending intents that can be awaited asynchronously. 
+    /// </summary>
+    /// <remarks>This queue allows consumers to enqueue and dequeue <see cref="StreamRequest"/> items in an
+    /// asynchronous manner, enabling coordination between producers and consumers without blocking threads. The queue
+    /// is read-only and should not be reassigned.</remarks>
+    public readonly AwaitableQueue<StreamRequest> IntentQueue = new();
+    
+    /// <summary>
+    /// Creates and returns the application's main window based on the current activation state.
+    /// </summary>
+    /// <remarks>On Android, if the application is launched via an intent, the returned window displays the
+    /// intent-specific page. Otherwise, the standard main window is created. This method is called by the
+    /// application framework during startup.</remarks>
+    /// <param name="activationState">The activation state that provides context for window creation, including information about how the application
+    /// was launched.</param>
+    /// <returns>A Window instance representing the application's main user interface. The specific window returned depends on
+    /// the activation state and platform launch context.</returns>
     protected override Window CreateWindow(IActivationState activationState)
+    {
+#if ANDROID
+        IsIntentLaunch = Platforms.ShouldBeAndroid.MainActivity.IsIntentLaunch;
+#endif
+        return IsIntentLaunch
+            ? new Window(new Views.RestorePage())
+            : CreateMainWindow();
+    }
+    private static Window CreateMainWindow()
     {
         Window window = new(new AppShell());
 
@@ -243,6 +306,7 @@ public partial class App : Application, INotifyPropertyChanged
 
         return window;
     }
+    #endregion
     #endregion
     #region Cloud Accessibility / Connectivity
     public static void EvaluateCloudAccessible()

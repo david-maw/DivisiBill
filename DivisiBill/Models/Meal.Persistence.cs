@@ -493,7 +493,7 @@ public partial class Meal : ObservableObjectPlus
     /// Creates a ZIP archive containing the current object's data as an XML file, and optionally includes an associated
     /// image if available.
     /// </summary>
-    /// <remarks>The ZIP archive is saved in the application's temp directory (see <see cref="Archive.Zip"/>) and includes an XML file
+    /// <remarks>The ZIP archive is saved in the application's temp directory (see <see cref="Archive.ZipAsync"/>) and includes an XML file
     /// representing the object's data. If an image is associated with the object and exists on disk, it is also
     /// included in the archive. The method handles any exceptions internally and reports them, returning an empty
     /// string if an error occurs.</remarks>
@@ -505,7 +505,7 @@ public partial class Meal : ObservableObjectPlus
         { 
             Archive archive = new([this], true);
             // Create the XML file in the cache directory
-            string zipFileFullname = archive.Zip();
+            string zipFileFullname = archive.ZipAsync();
             // At this point we have a zip archive file on disk containing a single XML file containing the archive data and possibly an image file too
             return zipFileFullname;
         }

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Android.Util;
 
-namespace DivisiBill.Platforms.Android;
+namespace DivisiBill.Platforms.ShouldBeAndroid;
 
 public class AndroidLogTraceListener : TraceListener
 {

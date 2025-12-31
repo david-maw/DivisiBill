@@ -1,5 +1,6 @@
 ﻿using DivisiBill.Models;
 using System.IO.Compression;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Services;
@@ -191,8 +192,9 @@ public class Archive
         }
         return string.Empty;
     }
-
-    public static Archive FromStream(Stream stream)
+    #endregion
+    #region Deserialization
+    public static Archive FromXmlStream(Stream stream)
     {
         try
         {
@@ -206,9 +208,26 @@ public class Archive
     }
 
     /// <summary>
+    /// Specifies the type of data in a stream to be deserialized.   
+    /// </summary>
+    /// <remarks>Indicates the format of a data stream to APIs that support multiple stream types.
+    /// The values include options for meal data, people data, venue data, XML
+    /// archives, and ZIP archives. The Unknown value can be used when the stream type is not specified
+    /// or cannot be determined.</remarks>
+    public enum StreamType
+    {
+        Unknown,
+        Meal,
+        People,
+        Venues,
+        XmlArchive,
+        ZipArchive
+    }
+
+    /// <summary>
     /// Deserialize the provided XML stream into an Archive (or single-item Archive) but do not perform any restore actions.
     /// </summary>
-    public static Archive DeserializeFromStream(Stream archiveStream, string archiveName)
+    public static Archive DeserializeFromXmlStream(Stream archiveStream, StreamType streamContent)
     {
         try
         {
@@ -217,38 +236,39 @@ public class Archive
                 archiveStream.Position = 0;
 
             Archive archive = null;
-            // For convenience we allow individual files to be deserialized 
-            if (archiveName.StartsWith("Venues"))
+            // For convenience we allow individual files to be deserialized
+            switch (streamContent)
             {
-                List<Venue> vl = Venue.DeserializeList(archiveStream);
-                if (vl is not null)
-                    archive = new Archive() { Venues = vl };
-                else
-                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Venue.DeserializeList returned null");
-            }
-            else if (archiveName.StartsWith("People"))
-            {
-                List<Person> pl = Person.DeserializeList(archiveStream);
-                if (pl is not null)
-                    archive = new Archive() { Persons = pl };
-                else
-                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Person.DeserializeList returned null");
-            }
-            else if (Utilities.TryDateTimeFromName(archiveName, out _)) // Serialized Meal name format
-            {
-                Meal m = Meal.LoadFromStream(archiveStream);
-                if (m is not null)
-                    archive = new Archive() { AllMeals = [m] };
-                else
-                    Utilities.DebugMsg($"In DeserializeArchiveFromStream, {archiveName} Meal.LoadFromStream returned null");
-            }
-            else // Assume it is an archive
-            {
-                archive = Archive.FromStream(archiveStream);
+                case StreamType.Venues:
+                    List<Venue> vl = Venue.DeserializeList(archiveStream);
+                    if (vl is not null)
+                        archive = new Archive() { Venues = vl };
+                    else
+                        Utilities.DebugMsg($"In DeserializeArchiveFromStream, Venue.DeserializeList returned null");
+                    break;
+                case StreamType.People:
+                    List<Person> pl = Person.DeserializeList(archiveStream);
+                    if (pl is not null)
+                        archive = new Archive() { Persons = pl };
+                    else
+                        Utilities.DebugMsg($"In DeserializeArchiveFromStream, Person.DeserializeList returned null");
+                    break;
+                case StreamType.Meal:
+                    Meal m = Meal.LoadFromStream(archiveStream);
+                    if (m is not null)
+                        archive = new Archive() { AllMeals = [m] };
+                    else
+                        Utilities.DebugMsg($"In DeserializeArchiveFromStream, Meal.LoadFromStream returned null");
+                    break;
+                case StreamType.XmlArchive:
+                    archive = Archive.FromXmlStream(archiveStream);
+                    break;
+                default:
+                    break;
             }
 
             // Some old archives are out of order so sort the list just in case
-            if (archive?.AllMeals is not null)
+            if (archive?.AllMeals is not null && archive.AllMeals.Count > 1)
                 archive.SelectedMeals = archive.AllMeals.OrderByDescending(m => m.CreationTime).ToList();
 
             return archive;
@@ -260,53 +280,156 @@ public class Archive
         }
     }
 
-    public static async Task<(Archive, string)> DeserializeAny(string archiveFullName)
+    /// <summary>
+    /// Asynchronously deserializes an archive from the specified stream based on the provided MIME type.
+    /// </summary>
+    /// <remarks>The method determines the archive type based on the MIME type and, for XML, the root element
+    /// of the document. Only certain XML root elements are supported. If the MIME type or XML root is not recognized,
+    /// the method returns a null archive and an error message.</remarks>
+    /// <param name="stream">The input stream containing the archive data to deserialize. The stream must be readable. If the MIME type is
+    /// XML and the stream is not seekable, the method will copy it to a seekable stream internally.</param>
+    /// <param name="mimeType">The MIME type of the archive data in the stream. Supported values include "application/zip",
+    /// "application/x-zip-compressed", "multipart/x-zip", and "application/xml". The comparison is case-insensitive.</param>
+    /// <returns>A tuple containing the deserialized <see cref="Archive"/> object or a string describing any error that
+    /// occurred. If deserialization is successful, the error string is empty. If the archive type is unsupported or an
+    /// error occurs, the <see cref="Archive"/> is <see langword="null"/> and the error string provides details.</returns>
+    public static async Task<(Archive, string)> DeserializeAnyAsync(Stream stream, string mimeType)
     {
+        StreamType archiveType = StreamType.Unknown;
+        if (mimeType.Equals("application/zip", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Equals("application/x-zip-compressed", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Equals("multipart/x-zip", StringComparison.OrdinalIgnoreCase))
+        {
+            // Zip file, just pass it along to the other method
+            string fileFullName = await Services.Utilities.CopyStreamToTempFileAsync(stream);
+            return await DeserializeAnyAsync(fileFullName, StreamType.ZipArchive);
+        }
+        else if (mimeType.Equals("application/xml", StringComparison.OrdinalIgnoreCase) ||
+            mimeType.Equals("text/xml", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!stream.CanSeek)
+            {
+                // Copy to a MemoryStream so we can reset position after reading
+                var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                ms.Position = 0;
+                stream = ms;
+            }
+            try
+            {
+                long savedPosition = stream.Position;
+                using var reader = XmlReader.Create(stream, new XmlReaderSettings { IgnoreComments = true, IgnoreWhitespace = true });
+                reader.MoveToContent();
+                string root = reader.Name;
+                archiveType = root switch
+                {
+                    "Meal" => StreamType.Meal,
+                    "DivisiBill-People" => StreamType.People,
+                    "ArrayOfRestaurant" => StreamType.Venues,
+                    "Archive" => StreamType.XmlArchive,
+                    _ => StreamType.Unknown
+                };
+                if (archiveType == StreamType.Unknown)
+                    return (null, "Unsupported XML archive type");
+                else
+                {
+                    stream.Position = savedPosition;
+                    return (DeserializeFromXmlStream(stream, archiveType), "");
+                }
+            }
+            catch (Exception)
+            {
+                return (null, "Failed to read archive as an XML stream");
+            } 
+        }
+        else
+            return (null, "Unsupported archive MIME type");
+    }
+
+    /// <summary>
+    /// Deserializes an archive from the specified file, supporting both zip and xml formats. Returns the deserialized
+    /// archive and a status message indicating success or the reason for failure.
+    /// </summary>
+    /// <remarks>If a zip file is provided, the method searches for the first .xml entry and attempts to
+    /// deserialize it as an archive. Persistent storage is not restored from the archive during deserialization, that may
+    /// occur later if requested, see <see cref="RestoreAnyAsync"/>. The status message is empty on success; otherwise, it contains an error
+    /// description. The method disposes of any streams or archives it opens.</remarks>
+    /// <param name="archiveContainerName">The full path to the archive file to deserialize. Must be a .zip or .xml file.</param>
+    /// <returns>A tuple containing the deserialized <see cref="Archive"/> object and a status message. If deserialization fails,
+    /// the archive will be <see langword="null"/> and the status message will describe the error.</returns>
+    /// <param name="streamContent"></param>
+    public static async Task<(Archive, string)> DeserializeAnyAsync(string archiveContainerName, StreamType streamContent = StreamType.Unknown)
+    {
+        if (streamContent == StreamType.Unknown)
+            streamContent = Path.GetExtension(archiveContainerName).ToLower() switch
+            {
+                ".zip" => StreamType.ZipArchive,
+                ".xml" => StreamType.XmlArchive,
+                _ => StreamType.Unknown
+            };
+        if (streamContent == StreamType.XmlArchive)
+            streamContent = archiveContainerName.StartsWith("Venues") ? StreamType.Venues :
+                            archiveContainerName.StartsWith("People") ? StreamType.People :
+                            Utilities.TryDateTimeFromName(archiveContainerName, out _) ? StreamType.Meal :
+                            StreamType.XmlArchive; // If all else fails just assume it is an XML archive
+
         ZipArchive zipArchive = null; // The zip archive if a zip was selected
         Stream archiveStream = null; // The stream containing archived data (the XML entry or the xml file stream)
         try
         {
-            Utilities.DebugMsg($"In DeserializeAny: file name {archiveFullName}");
-            if (Path.GetExtension(archiveFullName).Equals(".zip", StringComparison.OrdinalIgnoreCase))
+            Utilities.DebugMsg($"In DeserializeAny: file name {archiveContainerName}");
+            switch (streamContent)
             {
-                try
-                {
-                    zipArchive = ZipFile.OpenRead(archiveFullName);
-                    Utilities.DebugMsg($"In DeserializeAny: opened zip archive {archiveFullName}");
-                }
-                catch (Exception ex)
-                {
-                    ex.ReportCrash();
-                    return (null, "In DeserializeAny: Failed to open archive file");
-                }
-                if (zipArchive is not null)
-                {
-                    // Find the first XML file in the zip archive and assume it is an archive file
-                    ZipArchiveEntry zipArchiveEntry = zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".xml", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                    if (zipArchiveEntry is not null)
+                case StreamType.Meal:
+                case StreamType.People:
+                case StreamType.Venues:
+                case StreamType.XmlArchive:
+                    // Individual item, just open the file stream
+                    archiveStream = File.OpenRead(archiveContainerName);
+                    break;
+                case StreamType.ZipArchive:
+                    try
                     {
-                        archiveFullName = zipArchiveEntry.Name;
-                        archiveStream = zipArchiveEntry.Open();
+                        zipArchive = ZipFile.OpenRead(archiveContainerName);
+                        Utilities.DebugMsg($"In DeserializeAny: opened zip archive {archiveContainerName}");
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.ReportCrash();
+                        return (null, "In DeserializeAny: Failed to open archive file");
+                    }
+                    if (zipArchive is not null)
+                    {
+                        // Find the first XML file in the zip archive and assume it is an archive file
+                        ZipArchiveEntry zipArchiveEntry = zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".xml", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                        if (zipArchiveEntry is not null)
+                        {
+                            archiveStream = zipArchiveEntry.Open();
+                            streamContent = StreamType.XmlArchive;
+                        }
+                        else
+                            return (null, "zip file contents unexpected");
+                        // We do not extract images here; image extraction will be performed later during restore for only the meals that were restored.
                     }
                     else
-                    {
-                        await Utilities.ShowAppSnackBarAsync($"In DeserializeAny: zip file does not contain a DivisiBill archive");
-                        return (null, "In DeserializeAny: zip file does not contain a DivisiBill archive");
-                    }
-                    // We do not extract images here; image extraction will be performed later during restore for only the meals that were restored.
-                }
-                else
-                    return (null, "Archive file is not a valid zip file");
+                        return (null, "Archive file is not a valid zip file");
+                        break;
+                    default:
+                        return (null, "In DeserializeAny: unsupported stream content type");
+                case StreamType.Unknown:
+                    return (null, "Archive file must be a .zip or .xml file containing archive data");
             }
-            else if (Path.GetExtension(archiveFullName).Equals(".xml", StringComparison.OrdinalIgnoreCase))
-                archiveStream = File.OpenRead(archiveFullName);
-            else
-                return (null, "Archive file must be a .zip or .xml file");
 
             // By this point we have an archive name and a stream to the archive (XML content)
             if (archiveStream is not null)
             {
-                Archive archive = Archive.DeserializeFromStream(archiveStream, archiveFullName);
+                Archive archive = Archive.DeserializeFromXmlStream(archiveStream, streamContent);
+                if (archive is not null)
+                {
+                    archive.ContainerFullName = archiveContainerName;
+                    archive.IsZipped = zipArchive is not null;
+                }
+
                 return archive switch
                 {
                     null => (null, "Failed to deserialize archive"),
@@ -331,7 +454,18 @@ public class Archive
 
     private static readonly XmlSerializer xmlSerializer = new(typeof(Archive));
     #endregion
-    #region Restore Archive
+    #region Unpack Archive Data to Disk
+    /// <summary>
+    /// The full name of the file the <see cref="Archive"/> was deserialized from.
+    /// </summary>
+    public string ContainerFullName { get; set; } = null;
+    
+    /// <summary>
+    /// A value indicating whether <see cref="ContainerFullName"/> is compressed using the ZIP format as opposed to
+    /// being a simple XML file.
+    /// </summary>
+    public bool IsZipped { get; set; } = false;
+    
     /// <summary>
     /// Filters the available meals (presumably the all those available in an archive) to those created within the specified
     /// date range and updates the selected meals
@@ -351,20 +485,21 @@ public class Archive
     }
 
     /// <summary>
-    /// Restores application data from the current in-memory state in an Archive object, optionally deleting existing data and handling
-    /// duplicates according to the specified parameters.
+    /// Restores bills, venues and people from an archive, optionally deleting existing data and handling
+    /// duplicates according to the specified parameters. This method does not modify user settings.
     /// </summary>
     /// <remarks>This method disables cloud backup during the restore process to prevent conflicts. If
     /// DeleteBeforeRestore is true, all existing venues, persons, and meals are removed before restoring. When
-    /// onlyRelatedParam is true, only data related to the currently selected items is restored, which can be useful for
-    /// partial or selective restores. The method also checks for image files associated with restored meals.</remarks>
+    /// onlyRelatedParam is true, only data related to the currently selected meals is restored, which can be useful for
+    /// partial or selective restores. The method also checks for image files associated with restored meals but does not restore any
+    /// because they are not present in a simple XML archive, see <see cref="RestoreAnyAsync"/> for that.</remarks>
     /// <param name="DeleteBeforeRestore">true to delete all existing data before restoring data of that class; otherwise, false to merge restored data with existing data.</param>
     /// <param name="OverwriteDuplicates">true to overwrite existing items with the same identifiers during restore; otherwise, false to preserve existing
     /// items and skip duplicates.</param>
     /// <param name="onlyRelatedParam">true to restore only people and venues related to the Meals being restored; otherwise, false to restore all available
     /// data.</param>
     /// <returns>true if the restore operation completes successfully; otherwise, false.</returns>
-    public async Task<bool> RestoreAsync(bool DeleteBeforeRestore, bool OverwriteDuplicates, bool onlyRelatedParam)
+    private async Task<bool> RestoreXmlAsync(bool DeleteBeforeRestore, bool OverwriteDuplicates, bool onlyRelatedParam)
     {
         // Restore each object type except user specifiable defaults because
         // those are restored through a ViewModel and we want to stay ignorant of those.
@@ -463,12 +598,13 @@ public class Archive
             App.HandleActivityChanges();
         }
     }
+    #endregion
+    #region Creating and Restoring a Zip Archive
     /// <summary>
-    /// Restores bills, venues, people and bill images from an archive, optionally deleting existing data and handling
-    /// duplicate or related items as specified. It does not modify user settings.
+    /// Restores data and bill images from a zip archive or just data from a simple XML archive.
     /// </summary>
-    /// <remarks>User settings from the archive are ignored. If the archive contains images, only
-    /// images associated with restored items are extracted. If an error occurs during restore or image extraction, a notification is
+    /// <remarks>User settings from the archive are ignored. Uses <see cref="RestoreXmlAsync"/> to restore data and If the archive contains images, any
+    /// images associated with restored meals are extracted. If an error occurs during restore or image extraction, a notification is
     /// returned and the operation may be incomplete.</remarks>
     /// <param name="deleteBeforeRestore">Indicates whether existing data and images should be deleted before restoring from the archive. Set to <see
     /// langword="true"/> to remove all current items prior to restore; otherwise, restored items will be merged.</param>
@@ -476,23 +612,22 @@ public class Archive
     /// langword="true"/> to replace duplicates; otherwise, duplicates are skipped.</param>
     /// <param name="onlyRelated">Indicates whether only items related to the selected meals should be restored. Set to <see langword="true"/> to
     /// restore only related items; otherwise, all items in the archive are restored.</param>
-    /// <param name="zipPath">The file path to the archive (ZIP file) containing the data and images to restore. If empty or null, image
-    /// extraction is skipped.</param>
+    /// 
     ///<returns>A tuple containing a boolean indicating success or failure, and a string message with details about any failure.</returns>
-    public async Task<(bool, string)> RestoreFilesAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated, string zipPath)
+    public async Task<(bool, string)> RestoreAnyAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated)
     {
         try
         {
             // Restore the data items
-            await RestoreAsync(deleteBeforeRestore, overwriteDuplicates, onlyRelated);
+            await RestoreXmlAsync(deleteBeforeRestore, overwriteDuplicates, onlyRelated);
 
             // If the archive was a zip and contains images, selectively extract images belonging to meals being restored
-            if (!string.IsNullOrWhiteSpace(zipPath) && File.Exists(zipPath))
+            if (IsZipped && !string.IsNullOrWhiteSpace(ContainerFullName) && File.Exists(ContainerFullName))
             {
                 try
                 {
                     // Open the archive and put the entries in a dictionary indexed by name
-                    using var zip = ZipFile.OpenRead(zipPath);
+                    using var zip = ZipFile.OpenRead(ContainerFullName);
                     Dictionary<string, ZipArchiveEntry> zippedImages = [];
                     foreach (var entry in zip.Entries) // mostly image files though the archive XML will be in there too
                         zippedImages[entry.Name] = entry;
@@ -546,8 +681,7 @@ public class Archive
         }
         return (true, string.Empty);
     }
-    #endregion
-    #region Creating a Zip Archive
+    
     /// <summary>
     /// Creates a ZIP archive containing the current bill data in XML format, and optionally includes associated meal
     /// images.
@@ -560,7 +694,7 @@ public class Archive
     /// langword="true"/> to add images; otherwise, only the XML data is archived.</param>
     /// <returns>The full file path of the created ZIP archive if successful; otherwise, <see langword="null"/> if there are no
     /// bills to archive or an error occurs.</returns>
-    public string Zip(bool saveImages = true)
+    public string ZipAsync(bool saveImages = true)
     {
         if (AllMeals is null || AllMeals.Count == 0)
         {
@@ -582,14 +716,14 @@ public class Archive
             {
                 archiveZip.CreateEntryFromFile(xmlFilePath, xmlFileName);
                 File.Delete(xmlFilePath); // Delete the XML file after zipping
-                Utilities.DebugMsg($"In {nameof(Zip)}: created zip archive {zipFilePath} containing {xmlFileName}");
+                Utilities.DebugMsg($"In ZipAsync: created zip archive {zipFilePath} containing {xmlFileName}");
                 if (saveImages)
                 {
                     // Save bill images if requested
                     foreach (var meal in AllMeals.Where(m => m.HasImage && File.Exists(m.ImagePath)))
                     {
                         archiveZip.CreateEntryFromFile(meal.ImagePath, meal.ImageName);
-                        Utilities.DebugMsg($"In {nameof(Zip)}: added image {meal.ImageName} to zip archive");
+                        Utilities.DebugMsg($"In ZipAsync: added image {meal.ImageName} to zip archive");
                     }
                 }
             }

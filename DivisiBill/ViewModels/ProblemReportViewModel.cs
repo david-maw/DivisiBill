@@ -55,8 +55,7 @@ internal partial class ProblemReportViewModel : ObservableObject
         try
         {
             // Attach an archive of just the current bill and its image if there is one
-            var archive = new Archive([Meal.CurrentMeal], true);
-            tempFilePath = archive.Zip(true);
+            tempFilePath = Meal.CurrentMeal.CreateZipArchive();
             if (tempFilePath is not null)
                 message.Attachments!.Add(new EmailAttachment(tempFilePath));
         }

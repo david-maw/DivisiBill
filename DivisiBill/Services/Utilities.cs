@@ -1182,3 +1182,5 @@ public sealed class Counter
         Interlocked.Decrement(ref current);
     public void Reset() => current = 0;
 }
+
+public record StreamRequest(Stream FileStream, string MimeType);

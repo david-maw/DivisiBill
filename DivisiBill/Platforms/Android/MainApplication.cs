@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace DivisiBill.Platforms.Android;
+namespace DivisiBill.Platforms.ShouldBeAndroid;
 
 [Application]
 public class MainApplication : MauiApplication

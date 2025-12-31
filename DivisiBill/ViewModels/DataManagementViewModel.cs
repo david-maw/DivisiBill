@@ -43,9 +43,6 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
-    // Path to the zip file selected (if any). Used later to extract images selectively during restore.
-    private string? selectedArchiveZipPath = null;
-
     /// <summary>
     /// Selects all but the latest meal for each venue from local storage and navigates to the meal list page with specific query parameters.
     /// </summary>
@@ -143,7 +140,7 @@ internal partial class DataManagementViewModel : ObservableObject
             await Utilities.DisplayAlertAsync("Archiving Error", "No bills meet the archive criteria");
             return;
         }
-        string zipFullName = archive.Zip(SaveImages);
+        string zipFullName = archive.ZipAsync(SaveImages);
         if (string.IsNullOrWhiteSpace(zipFullName) || !File.Exists(zipFullName))
         {
             await Utilities.ShowAppSnackBarAsync("Archive Zip File Creation Failed");
@@ -200,8 +197,6 @@ internal partial class DataManagementViewModel : ObservableObject
     [RelayCommand]
     public async Task SelectArchiveAsync()
     {
-        Stream? archiveStream = null; // The stream containing archived data (the XML entry or the xml file stream)
-        selectedArchiveZipPath = null;
         try
         {
             var result = await FilePicker.PickAsync(new PickOptions()
@@ -218,19 +213,15 @@ internal partial class DataManagementViewModel : ObservableObject
                 IsBusy = true;
                 string archiveName = result.FileName;
                 Utilities.DebugMsg($"In SelectArchiveAsync: file name {archiveName}");
-                string ext = Path.GetExtension(archiveName);
-                if (ext.Equals(".zip", StringComparison.OrdinalIgnoreCase))
-                {
-                    // If the original selection was a zip file record its path so images can be selectively extracted during restore later
-                    selectedArchiveZipPath = result.FullPath;
-                }
-                else if (!ext.Equals(".xml", StringComparison.OrdinalIgnoreCase))
-                    await Utilities.ShowAppSnackBarAsync("Archive file must be a .zip or .xml file");
 
-                // By this point we have an archive file name
-                (Archive? archive, string message) = await Archive.DeserializeAny(result.FullPath);
+                // Uncomment these lines to more easily test the stream handling page
+                // App.Current.IntentQueue.Enqueue(new Services.StreamRequest(File.OpenRead(result.FullPath), result.ContentType));
+                // await Shell.Current.Navigation.PushModalAsync(new Views.RestorePage());
+
+                (Archive? archive, string message) = await Archive.DeserializeAnyAsync(result.FullPath);
                 if (archive is null)
                 {
+                    IsBusy = false;
                     if (string.IsNullOrWhiteSpace(message))
                         message = "Archive deserialization failed: Unknown error";
                     await Utilities.ShowAppSnackBarAsync(message);
@@ -251,7 +242,6 @@ internal partial class DataManagementViewModel : ObservableObject
             else
             {
                 SelectedArchive = null;
-                selectedArchiveZipPath = null;
                 // Set dates based on all the local meals (initially all are selected)
                 StartDate = EarliestStartDate = Meal.LocalMealList?.LastOrDefault()?.CreationTime ?? DateTime.Now;
                 FinishDate = LatestFinishDate = Meal.LocalMealList?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
@@ -267,7 +257,6 @@ internal partial class DataManagementViewModel : ObservableObject
         }
         finally
         {
-            archiveStream?.Dispose();
             IsBusy = false;
         }
     }
@@ -319,7 +308,7 @@ internal partial class DataManagementViewModel : ObservableObject
             }
 
             // Restore the data items
-            (bool restoreWorked, string  restoreFailureText) = await archive.RestoreFilesAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, selectedArchiveZipPath);
+            (bool restoreWorked, string  restoreFailureText) = await archive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated);
 
             if (restoreWorked)
             {
@@ -328,7 +317,6 @@ internal partial class DataManagementViewModel : ObservableObject
 
                 // Clear selected archive after restore
                 SelectedArchive = null;
-                selectedArchiveZipPath = null;
             }
             else if (restoreFailureText != null)
                 await Utilities.ShowAppSnackBarAsync($"Restore completed with issues: {restoreFailureText}");

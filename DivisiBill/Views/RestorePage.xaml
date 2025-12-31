@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="DivisiBill.Views.RestorePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+    Title="Intent Page"
+    x:DataType="vm:RestoreViewModel">
+    <VerticalStackLayout Padding="10,0" Spacing="10" VerticalOptions="Center">
+        <Label
+            Margin="0,0,0,0"
+            FontSize="Large"
+            HorizontalOptions="Center"
+            Text="Restore an Archive" />
+        <Label
+            FontAttributes="Bold"
+            HorizontalOptions="Center"
+            Text="{Binding SelectedArchive.SelectedMeals.Count, StringFormat='Selected {0} Bills Between'}" />
+        <HorizontalStackLayout
+            Margin="0,-5,0,0"
+            HorizontalOptions="Center"
+            Spacing="10">
+            <DatePicker
+                Date="{Binding StartDate}"
+                MaximumDate="{Binding FinishDate}"
+                MinimumDate="{Binding EarliestStartDate}" />
+            <Label Text="and" VerticalOptions="Center" />
+            <DatePicker
+                Date="{Binding FinishDate}"
+                MaximumDate="{Binding LatestFinishDate}"
+                MinimumDate="{Binding StartDate}" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+            <CheckBox IsChecked="{Binding DeleteBeforeRestore}" />
+            <Label Text="Delete Everything First" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout
+            Grid.Row="3"
+            Grid.Column="1"
+            IsEnabled="{Binding DeleteBeforeRestore, Converter={StaticResource Not}}">
+            <CheckBox IsChecked="{Binding OverwriteDuplicates}" />
+            <Label
+                LineBreakMode="WordWrap"
+                Text="Overwrite Duplicate Items"
+                VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout>
+            <CheckBox IsChecked="{Binding OnlyRelated}" />
+            <Label
+                LineBreakMode="WordWrap"
+                Text="Only Restore Related People and Venues"
+                VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <Button
+            Margin="5"
+            Command="{Binding RestoreArchiveCommand}"
+            HorizontalOptions="Center"
+            IsEnabled="{Binding SelectedArchive.SelectedMeals.Count, Converter={StaticResource IsNonZero}}"
+            Text="Restore" />
+        <Label
+            HorizontalOptions="Center"
+            Text="{Binding IntentDescription}" />
+        <Button
+            Margin="5"
+            Command="{Binding ExitActionCommand}"
+            HorizontalOptions="End"
+            Text="Exit" />
+    </VerticalStackLayout>
+</ContentPage>
