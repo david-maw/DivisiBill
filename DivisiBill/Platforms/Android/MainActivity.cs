@@ -141,10 +141,7 @@ internal class BackPress(Activity activity) : OnBackPressedCallback(true)
         {
             const int delay = 2000; // same as the lifetime of the toast
             if (backPressed + delay > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
-            {
-                activity.FinishAndRemoveTask();
-                Process.KillProcess(Process.MyPid());
-            }
+                activity.Finish();
             else
             {
                 Toast.MakeText(activity, "Repeat to Close", ToastLength.Short)?.Show();

@@ -62,7 +62,7 @@ public partial class AppShell : Shell
             return base.OnBackButtonPressed();
         }
         //TODO make this work better, ideally detect the default shell page automatically
-        else if (CurrentPage.GetType() == typeof(Views.LineItemsPage))
+        else if (CurrentPage?.GetType() == typeof(Views.LineItemsPage))
             return base.OnBackButtonPressed(); // With empty navigation stacks this will simply exit
         else
         {
