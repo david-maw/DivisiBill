@@ -50,7 +50,8 @@ public class MainActivity : MauiAppCompatActivity
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {
-        System.Diagnostics.Trace.Listeners.Add(new AndroidLogTraceListener("DivisiBill"));
+        if (!System.Diagnostics.Debugger.IsAttached) // log the messages if there's no debugger listening
+            System.Diagnostics.Trace.Listeners.Add(new AndroidLogTraceListener("DivisiBill"));
         Log.Debug("OnCreate", $"MainActivity created: Intent = {Intent?.Action}");
 
         // Evaluate before base.OnCreate so MAUI can query this very early

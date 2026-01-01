@@ -583,7 +583,7 @@ public class Archive
                 // The Summary objects will have been created by xmlSerializer so they are brand new and we must figure out whether there are corresponding image files already
                 foreach (Meal meal in SelectedMeals)
                     meal.Summary.CheckImageFiles();
-                App.HandleActivityChanges(); // So we can check for remote meals if necessary
+                App.HandleActivityChanges(); // May set IsCloudAllowed back to true, depending on other options
                 await Meal.AddLocalMeals(SelectedMeals, OverwriteDuplicates);
             }
             return true;

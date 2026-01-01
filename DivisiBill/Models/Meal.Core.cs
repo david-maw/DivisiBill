@@ -339,8 +339,8 @@ public partial class Meal : ObservableObjectPlus
         {
             await App.CloudAllowedSource.WaitWhilePausedAsync();
             Utilities.DebugMsg("In BackupToRemoteAsync, CloudAllowedSource no longer paused");
-            // This is where all the elapsed time goes, reaching out over the network
-            await BackupMissingAsync();
+            // This is where all the elapsed time goes, reaching out over the network, so we don't wait for it
+            _ = BackupMissingAsync();
         }
     }
     /// <summary>
