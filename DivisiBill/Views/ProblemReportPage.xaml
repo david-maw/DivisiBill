@@ -22,7 +22,10 @@
                     Stroke="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}">
                 <Grid RowDefinitions="*, auto">
                     <Editor Text="{Binding DescriptionText}"/>
-                    <Button Grid.Row="1" Text="Clear" Command="{Binding ClearCommand}" VerticalOptions="End" HorizontalOptions="Center"/>
+                    <HorizontalStackLayout Grid.Row="1" VerticalOptions="End" HorizontalOptions="Center" Spacing="10">
+                        <Button Text="Clear" Command="{Binding ClearCommand}" IsEnabled="{Binding DescriptionText, Converter={StaticResource IsStringNotNullOrWhiteSpace}}"/>
+                        <Button Text="UnClear" Command="{Binding RetreiveDeletedCommand}" IsEnabled="{Binding DeletedDescriptionText, Converter={StaticResource IsStringNotNullOrWhiteSpace}}"/>
+                    </HorizontalStackLayout>
                 </Grid>
             </Border>
         </Grid>

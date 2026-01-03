@@ -16,6 +16,9 @@ internal partial class ProblemReportViewModel : ObservableObject
     [ObservableProperty]
     public partial string DescriptionText { get; set; } = string.Empty;
 
+    [ObservableProperty]
+    public partial string DeletedDescriptionText { get; set; } = string.Empty;
+
     partial void OnDescriptionTextChanged(string value) => Reported = false;
 
     [RelayCommand]
@@ -90,7 +93,16 @@ internal partial class ProblemReportViewModel : ObservableObject
     [RelayCommand]
     private void Clear()
     {
+        DeletedDescriptionText = DescriptionText;
         DescriptionText = string.Empty;
+        Reported = false;
+    }
+
+    [RelayCommand]
+    private void RetreiveDeleted()
+    {
+        DescriptionText += DeletedDescriptionText; 
+        DeletedDescriptionText =  string.Empty;
         Reported = false;
     }
 }
