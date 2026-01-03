@@ -1,3 +1,9 @@
+# 6.3.10
+
+## Allow Effect of Clear on Report Page to be Reversed
+
+The report page clear button now saves the cleared text so it can be restored using the "UnClear" button.
+
 # 6.3.9
 
 ## Show Simple Coupon Amount in UI Instead of Modified value
