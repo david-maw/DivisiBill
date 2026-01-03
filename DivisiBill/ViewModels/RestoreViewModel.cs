@@ -31,7 +31,8 @@ public partial class RestoreViewModel : ObservableObject
             DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
 
             SelectedArchive = archive;
-            if (archive.AllMeals is not null && archive.AllMeals.Count > 0)
+            SelectedMealsCount = archive.AllMeals is null ? 0 : archive.AllMeals.Count;
+            if (SelectedMealsCount > 0)
             {
                 StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
                 FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
@@ -68,13 +69,13 @@ public partial class RestoreViewModel : ObservableObject
 
             if (restoreWorked)
             {
-                IntentDescription = $"Restored {SelectedArchive.SelectedMeals.Count} bills";
+                IntentDescription = $"Restored {SelectedMealsCount} bills";
                 await Task.Delay(1000); // Give user a moment to see the success message
                 ExitAction();
             }
             else
             {
-                SelectedArchive.SelectedMeals?.Clear(); // disable restore
+                SelectedArchive.ClearDateRange(); // disable restore
                 IntentDescription = restoreFailureText != null ? $"Restore had a problem: {restoreFailureText}" : "Restore failed";
             }
         }
@@ -88,6 +89,9 @@ public partial class RestoreViewModel : ObservableObject
             IsBusy = false;
         }
     }
+
+    [ObservableProperty]
+    public partial int SelectedMealsCount { get; private set; } = 0;
 
     [ObservableProperty]
     public partial bool IsRestoreAllowed { get; set; } = false;
@@ -134,8 +138,8 @@ public partial class RestoreViewModel : ObservableObject
         if (StartDate > FinishDate)
             FinishDate = StartDate;
         if (SelectedArchive is not null)
-            SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
-        IsRestoreAllowed = SelectedArchive?.SelectedMeals.Count > 0;
+            SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
+        IsRestoreAllowed = SelectedMealsCount > 0;
     }
 
     [ObservableProperty]
@@ -146,8 +150,8 @@ public partial class RestoreViewModel : ObservableObject
         if (FinishDate < StartDate)
             StartDate = FinishDate;
         if (SelectedArchive is not null)
-            SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
-        IsRestoreAllowed = SelectedArchive?.SelectedMeals.Count > 0;
+            SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
+        IsRestoreAllowed = SelectedMealsCount > 0;
     }
 
     public Action? ExitPage = null;

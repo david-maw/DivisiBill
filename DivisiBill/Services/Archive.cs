@@ -1,5 +1,6 @@
 ﻿using DivisiBill.Models;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -53,7 +54,8 @@ public class Archive
     public Archive(List<Meal> mealsToArchive, bool onlyRelatedParam)
     {
         AllMeals = mealsToArchive;
-        SelectedMeals = mealsToArchive;
+        selectedMealsStartIndex = 0;
+        SelectedMealsCount = AllMeals.Count;
         PopulateArchive(onlyRelatedParam);
     }
     #endregion
@@ -141,21 +143,46 @@ public class Archive
     public List<GuidMappingEntry> AliasGuids { get; set; } = null;
 
     /// <summary>
-    /// Gets or sets the collection of meals currently selected by the user, ordered by CreationTime, oldest first.
-    /// This is the list of meals to be archived or restored, depending on the operation the user selects.
-    /// </summary>
-    [XmlIgnore]
-    public List<Meal> SelectedMeals { get; set; } = null;
-
-    /// <summary>
-    /// Gets or sets the collection of all the meals associated with this instance, some, or all of them may be selected for restore
-    /// (see <see cref="SelectedMeals"/>).
+    /// Gets or sets the collection of all the meals associated with this instance, all are selected for backup,
+    /// some, or all of them may be selected for restore (see <see cref="SelectedMeals"/>).
     /// </summary>
     [XmlArray("Meals")]
-    public List<Meal> AllMeals { get; set; } = null; 
+    public List<Meal> AllMeals { get; set; } = null;
+
+    /// <summary>
+    /// Start index and length of the current date-range selection within <see cref="AllMeals"/>.
+    /// Assumes <see cref="AllMeals"/> is sorted by CreationTime descending.
+    /// </summary>
+    [XmlIgnore]
+    private int selectedMealsStartIndex = 0;
+
+    [XmlIgnore]
+    public int SelectedMealsCount = 0;
+
+    /// <summary>
+    /// Gets the meals in this archive for the current selection as a read-only span over <see cref="AllMeals"/>.
+    /// Returns an empty span if no selection is active or <see cref="AllMeals"/> is null or empty.
+    /// </summary>
+    [XmlIgnore]
+    public ReadOnlySpan<Meal> SelectedMeals
+    {
+        get
+        {
+            if (AllMeals is { Count: > 0 } list && SelectedMealsCount > 0)
+            {
+                ReadOnlySpan<Meal> span = CollectionsMarshal.AsSpan(list);
+                // Clamp indices defensively
+                int start = Math.Clamp(selectedMealsStartIndex, 0, AllMeals.Count - 1);
+                int length = Math.Clamp(SelectedMealsCount, 0, AllMeals.Count - start);
+                return span.Slice(start, length);
+            }
+
+            return [];
+        }
+    }
     #endregion
     #region Serialization
-	/// <summary>
+    /// <summary>
     /// Serializes the current object to XML and writes the result to the specified stream.
     /// </summary>
     /// <remarks>The returned stream's position is reset to its original value before serialization. The
@@ -268,8 +295,10 @@ public class Archive
             }
 
             // Some old archives are out of order so sort the list just in case
-            if (archive?.AllMeals is not null && archive.AllMeals.Count > 1)
-                archive.SelectedMeals = archive.AllMeals.OrderByDescending(m => m.CreationTime).ToList();
+            archive.AllMeals.Sort((x, y) => DateTime.Compare(y.CreationTime, x.CreationTime));
+            // Initialize SelectedMeals and span window to all meals
+            archive.selectedMealsStartIndex = 0;
+            archive.SelectedMealsCount = archive.AllMeals?.Count ?? 0;
 
             return archive;
         }
@@ -478,10 +507,54 @@ public class Archive
     /// <returns>The number of meals selected within the specified date range. Returns 0 if there are no available meals.</returns>
     public int SetDateRange(DateOnly startDate, DateOnly finishDate)
     {
-        if (AllMeals is null)
+        if (AllMeals is null || AllMeals.Count == 0)
+        {
+            selectedMealsStartIndex = 0;
+            SelectedMealsCount = 0;
             return 0;
-        SelectedMeals = [.. AllMeals.Where(m => DateOnly.FromDateTime(m.CreationTime) >= startDate && DateOnly.FromDateTime(m.CreationTime) <= finishDate).OrderByDescending(m => m.CreationTime)];
-        return SelectedMeals.Count;
+        }
+
+        // AllMeals is assumed sorted by CreationTime descending (newest first)
+        int startIndex = -1;
+        int endIndex = -1;
+
+        for (int i = 0; i < AllMeals.Count; i++)
+        {
+            DateOnly mealDate = DateOnly.FromDateTime(AllMeals[i].CreationTime);
+
+            // First index where mealDate <= finishDate (since list is descending)
+            if (startIndex == -1 && mealDate <= finishDate)
+                startIndex = i;
+
+            // Last index where mealDate >= startDate
+            if (mealDate >= startDate)
+                endIndex = i;
+        }
+
+        if (startIndex == -1 || endIndex == -1 || endIndex < startIndex)
+        {
+            // No meals in range
+            selectedMealsStartIndex = 0;
+            SelectedMealsCount = 0;
+            return 0;
+        }
+
+        selectedMealsStartIndex = startIndex;
+        SelectedMealsCount = endIndex - startIndex + 1;
+
+        return SelectedMealsCount;
+    }
+    
+    /// <summary>
+    /// Clears the current meal date range selection and resets related state.
+    /// </summary>
+    /// <remarks>After calling this method, any previously selected meals and associated date range
+    /// information will be removed. Use this method to reset the selection before specifying a new date range or set of
+    /// meals.</remarks>
+    public void ClearDateRange()
+    {
+        selectedMealsStartIndex = 0;
+        SelectedMealsCount = 0;
     }
 
     /// <summary>
@@ -557,14 +630,22 @@ public class Archive
                     Person.AliasGuidList = AliasGuids;
                 await Person.SaveSettingsAsync();
             }
-            if (SelectedMeals is not null)
+            if (SelectedMealsCount > 0)
             {
                 if (DeleteBeforeRestore)
                 {
                     MealSummary.PermanentlyDeleteAllLocalMeals();
 
                     // The old current meal is deleted so look for the first meal that is not a fake meal (Size >= 0) to be the new one
-                    Meal m = SelectedMeals.Where(m => m.Size >= 0).FirstOrDefault();
+                    Meal m = null;
+                    foreach (var meal in SelectedMeals)
+                    {
+                        if (meal.Size >= 0)
+                        {
+                            m = meal;
+                            break;
+                        }
+                    }
                     if (m is null)
                     {
                         // No real meals so just make a fake one current
@@ -584,7 +665,7 @@ public class Archive
                 foreach (Meal meal in SelectedMeals)
                     meal.Summary.CheckImageFiles();
                 App.HandleActivityChanges(); // May set IsCloudAllowed back to true, depending on other options
-                await Meal.AddLocalMeals(SelectedMeals, OverwriteDuplicates);
+                await Meal.AddLocalMeals(SelectedMeals.ToArray(), OverwriteDuplicates);
             }
             return true;
         }
@@ -636,8 +717,11 @@ public class Archive
                         Meal.PermanentlyDeleteAllLocalImages();
 
                     // Iterate through the meals being restored that also have images present in the zip
-                    foreach (var meal in SelectedMeals.Where(m => zippedImages.ContainsKey(m.ImageName)))
+                    foreach (var meal in SelectedMeals)
                     {
+                        if (!zippedImages.ContainsKey(meal.ImageName))
+                            continue;
+
                         // Find corresponding local meal by ImageName so we can update it later
                         var localMealSummary = Meal.LocalMealList.FirstOrDefault(lm => lm.CreationTime == meal.CreationTime);
                         if (localMealSummary is null)

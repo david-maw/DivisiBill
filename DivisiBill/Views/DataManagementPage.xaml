@@ -67,13 +67,9 @@
                                 Grid.Row="3"
                                 Margin="5"
                                 Command="{Binding RestoreArchiveCommand}"
-                                Text="Restore">
-                                <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding SelectedArchive}" Value="{x:Null}">
-                                        <Setter Property="IsEnabled" Value="False" />
-                                    </DataTrigger>
-                                </Button.Triggers>
-                            </Button>
+                                IsEnabled="{Binding SelectedMealsCount, Converter={StaticResource IsNonZero}}"
+                                Text="Restore"/>
+
                             <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
                                 <CheckBox IsChecked="{Binding DeleteBeforeRestore}" />
                                 <Label Text="Delete Everything First" VerticalOptions="Center" />
@@ -86,8 +82,10 @@
                             <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" />
                             </HorizontalStackLayout>
                         </Grid>
-                    <Label Text="{Binding SelectedArchive.SelectedMeals.Count,StringFormat='{0} Bills Between', FallbackValue='Local Bills Between'}" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
+                        <!--One or other of the following labels shows-->
+                        <Label IsVisible="{Binding SelectedArchive, Converter={StaticResource IsNotNull}}" Text="{Binding SelectedMealsCount, StringFormat='Selected {0} Bills Between'}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label IsVisible="{Binding SelectedArchive, Converter={StaticResource IsNull}}"  Text="Local Bills Between" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
                             <DatePicker
                                 Date="{Binding StartDate}"
                                 MaximumDate="{Binding FinishDate}"

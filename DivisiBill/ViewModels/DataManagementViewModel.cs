@@ -27,21 +27,11 @@ internal partial class DataManagementViewModel : ObservableObject
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private readonly DateTime nextTime = DateTime.MinValue;
 
-    // Store the archive selected by SelectArchiveAsync
-    private Archive? selectedArchive = null;
-    public Archive? SelectedArchive
-    {
-        get => selectedArchive;
-        set
-        {
-            // Use SetProperty to raise PropertyChanged
-            if (SetProperty(ref selectedArchive, value))
-            {
-                // Notify the generated command that can-execute may have changed
-                RestoreArchiveCommand.NotifyCanExecuteChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial Archive? SelectedArchive { get; private set; }
+
+    [ObservableProperty]
+    public partial int SelectedMealsCount { get; private set; } = 0;
 
     /// <summary>
     /// Selects all but the latest meal for each venue from local storage and navigates to the meal list page with specific query parameters.
@@ -233,7 +223,8 @@ internal partial class DataManagementViewModel : ObservableObject
                 DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
 
                 SelectedArchive = archive;
-                if (archive.AllMeals is not null && archive.AllMeals.Count > 0)
+                SelectedMealsCount = archive.AllMeals is null ? 0 : archive.AllMeals.Count;
+                if (SelectedMealsCount > 0)
                 {
                     StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
                     FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
@@ -250,6 +241,7 @@ internal partial class DataManagementViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            IsBusy = false;
             ex.ReportCrash();
             // The user canceled or something went wrong
             await Utilities.ShowAppSnackBarAsync("Restore Faulted, Archive was unusable");
@@ -334,7 +326,7 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
-    private bool CanRestoreArchive() => SelectedArchive is not null;
+    private bool CanRestoreArchive() => SelectedMealsCount > 0;
 
     /// <summary>
     /// Indicates whether an archive is shared (the other alternative is to store it to disk). The default value is true.
@@ -402,7 +394,7 @@ internal partial class DataManagementViewModel : ObservableObject
         if (StartDate > FinishDate)
             FinishDate = StartDate;
         if (SelectedArchive is not null)
-            SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
+            SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
     }
 
     [ObservableProperty]
@@ -413,7 +405,7 @@ internal partial class DataManagementViewModel : ObservableObject
         if (FinishDate < StartDate)
             StartDate = FinishDate;
         if (SelectedArchive is not null)
-            SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
+            SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
     }
 
     /// <summary>
