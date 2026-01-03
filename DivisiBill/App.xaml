@@ -24,7 +24,9 @@
             <services:ApproximateDateTimeConverter x:Key="ApproximateDateTime"/>
             <services:LocationConverter x:Key="Location" />
             <services:IsNonZeroConverter x:Key="IsNonZero" />
+            <services:IsZeroConverter x:Key="IsZero" />
             <services:IsNegativeConverter x:Key="IsNegative" />
+            <services:IsPositiveConverter x:Key="IsPositive" />
             <services:AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" /> 
 
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All"/>
