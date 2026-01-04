@@ -136,6 +136,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
     {
         Person p = new(Guid.NewGuid());
         Contact contact = null;
+        if (Utilities.IsAndroid) // there's no contact picker on Windows
         try
         {
             if (await Utilities.HasContactsReadPermissionAsync())

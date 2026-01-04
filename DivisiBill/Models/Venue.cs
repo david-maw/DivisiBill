@@ -14,10 +14,10 @@ namespace DivisiBill.Models;
 public class Venue : INotifyPropertyChanged, IComparable<Venue>
 {
     public const string VenueFolderName = "Venues";
-    public const string TargetFileName = "Venues.xml";
+    public const string VenueFileName = "Venues.xml";
     public static event EventHandler<VenueDistanceChangedEventArgs> DistanceChanged;
 
-    private static string TargetPathName = null;
+    private static string VenueFullName = Path.Combine(App.BaseFolderPath, VenueFolderName, VenueFileName);
     private readonly Location MiddleOfNowhere = new(20, 170); // Middle of the Pacific, not close to anything
 
     private static readonly ObservableCollection<Venue> allVenues = [];
@@ -54,10 +54,20 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             allVenuesByDistance.Add(v);
         MarkSaved(); // Flag this as not needing to be saved so it won't be unless someone changes it 
     }
-    public static async Task InitializeAsync(string BasePathName)
+    public static async Task InitializeAsync()
     {
-        TargetPathName = Path.Combine(BasePathName, VenueFolderName, TargetFileName);
-        await Task.Run(() => LoadSettings());
+        bool loaded = false;
+        InitializeFolders();
+        if (File.Exists(VenueFullName))
+            loaded = await LoadFromLocal();
+        if (!loaded && App.IsCloudAllowed)
+            loaded = await LoadFromRemoteAsync(null, true); // Pass a null filename to just load the latest
+        if (!loaded)
+            LoadDefaultVenues();
+        allVenues.CollectionChanged += (s, e) =>
+        {
+            UpdateTime = DateTime.Now;
+        };
     }
 
     private static readonly XmlSerializer allVenuesSerializer = new(typeof(VenueRoot));
@@ -107,7 +117,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     }
     public static async Task<bool> LoadFromLocal()
     {
-        Stream stream = new FileStream(TargetPathName, FileMode.Open, FileAccess.Read);
+        Stream stream = new FileStream(VenueFullName, FileMode.Open, FileAccess.Read);
         if (stream is null)
             return false;
         else
@@ -115,7 +125,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             {
                 DateTime savedUpdateTime = App.Settings.VenueUpdateTime;
                 if (savedUpdateTime == DateTime.MinValue)
-                    savedUpdateTime = File.GetCreationTime(TargetPathName);
+                    savedUpdateTime = File.GetCreationTime(VenueFullName);
                 await LoadFromStreamAsync(stream, true);
                 //The deserialize operation changes the update time, so restore the old one
                 UpdateTime = savedUpdateTime;
@@ -130,21 +140,10 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
         return false;
     }
-    private static async Task LoadSettings()
+    public static void InitializeFolders()
     {
-        bool loaded = false;
-        if (File.Exists(TargetPathName))
-            loaded = await LoadFromLocal();
-        if (!loaded && App.IsCloudAllowed)
-            loaded = await LoadFromRemoteAsync(null, true); // Pass a null filename to just load the latest
-        if (!loaded)
-            LoadDefaultVenues();
-        allVenues.CollectionChanged += (s, e) =>
-           {
-               UpdateTime = DateTime.Now;
-           };
+        Directory.CreateDirectory(Path.GetDirectoryName(VenueFullName));
     }
-
     public static async Task SaveSettingsAsync(bool remote = true)
     {
         using MemoryStream stream = new(10000);
@@ -152,10 +151,10 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         Utilities.DebugExamineStream(stream);
         // Initiate local backup if it is permitted
         bool failed = true;
-        Directory.CreateDirectory(Path.GetDirectoryName(TargetPathName));
+        Directory.CreateDirectory(Path.GetDirectoryName(VenueFullName));
         try
         {
-            using (Stream fileStream = new FileStream(TargetPathName, FileMode.Create, FileAccess.Write))
+            using (Stream fileStream = new FileStream(VenueFullName, FileMode.Create, FileAccess.Write))
             {
                 stream.Position = 0;
                 await stream.CopyToAsync(fileStream);
@@ -174,7 +173,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             ex.ReportCrash();
         }
         if (failed)
-            File.Delete(TargetPathName);
+            File.Delete(VenueFullName);
         // Initiate backup to cloud if it is permitted, do not wait for result
         if (remote && App.IsCloudAllowed)
         {

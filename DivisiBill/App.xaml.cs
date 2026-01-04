@@ -161,7 +161,7 @@ public partial class App : Application, INotifyPropertyChanged
 
     /// <summary>
     /// Handles the event when a stream is to be read, triggered by an Android Intent.
-    /// This method initiates modal navigates to the appropriate page if DivisiBill is already running.
+    /// This method initiates modal navigation to the appropriate page if DivisiBill is already running.
     /// </summary>
     /// <param name="stream">The stream containing the file data to be processed. Must not be null.</param>
     /// <param name="mimeType">The MIME type of the file represented by the stream. Used to identify the file format.</param>
@@ -174,6 +174,13 @@ public partial class App : Application, INotifyPropertyChanged
             {   // The app is already running so we have infrastructure enough to just push a modal page here
                 Utilities.DebugMsg("App is already running, pushing IntentPage modally");
                 await Shell.Current.Navigation.PushModalAsync(new Views.RestorePage());
+            }
+            else // Do the minimum required initialization
+            {
+                // Create all the required folders, in case the app has never run before
+                Meal.InitializeFolders();
+                Person.InitializeFolders();
+                Venue.InitializeFolders();
             }
         }
         catch (Exception ex)

@@ -122,9 +122,9 @@ public partial class SplashPage : ContentPage
             await StatusMsgAsync("Cloud access not allowed");
         // At this point we have all the cloud access we are likely to get, so subsequent code can use remote services if they are available
         await StatusMsgAsync("Awaiting People Initialization");
-        await Person.InitializeAsync(App.BaseFolderPath);
+        await Person.InitializeAsync();
         await StatusMsgAsync("Awaiting Venue Initialization");
-        await Venue.InitializeAsync(App.BaseFolderPath);
+        await Venue.InitializeAsync();
         await Meal.InitializeAsync();
         await StatusMsgAsync($"Meal lists initialized, local meal count = {Meal.LocalMealList.Count}");
         // Give the interested user enough time to pause and read the messages

@@ -24,7 +24,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     public const string PersonFolderName = "People";
     public const string PersonFileName = "People.xml";
     public const string FromBill = "From Bill";
-    private static string PersonPathName = null;
+    private static string PersonPathName = Path.Combine(App.BaseFolderPath, PersonFolderName, PersonFileName);
     public static ObservableCollection<Person> AllPeople { get; set; } = [];
 
     static Person() => AllPeople.CollectionChanged += AllPeople_CollectionChanged;
@@ -47,12 +47,6 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             AllPeople.Add(person);
         UpdateTime = DateTime.MinValue; // Note that the list contains only default values
     }
-    public static async Task InitializeAsync(string BasePathName)
-    {
-        PersonPathName = Path.Combine(BasePathName, PersonFolderName, PersonFileName);
-        await InitializeAsync();
-    }
-
     private static void AllPeople_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
@@ -143,10 +137,16 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         return false;
     }
 
-    private static async Task InitializeAsync()
+    public static void InitializeFolders()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(PersonPathName));
+    }
+
+    public static async Task InitializeAsync()
     {
         Utilities.DebugMsg("Enter Person.InitializeAsync");
         bool loaded = false;
+        InitializeFolders();
         if (File.Exists(PersonPathName))
             loaded = LoadFromLocal();
         if (loaded)
@@ -183,8 +183,6 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         SerializeAllPeople(stream);
         stream.Position = 0;
         Utilities.DebugExamineStream(stream);
-        // Initiate local backup if it is permitted
-        Directory.CreateDirectory(Path.GetDirectoryName(PersonPathName));
         try
         {
             File.Delete(PersonPathName);
