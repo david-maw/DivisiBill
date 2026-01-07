@@ -10,7 +10,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-    <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 		<!-- Display name -->
 		<ApplicationTitle>web</ApplicationTitle>
 
@@ -47,11 +47,12 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-    <!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
-    <MauiAsset Include="divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
-    <!-- Don't need the MD files -->
-    <MauiAsset Remove="divisibill\**\*.md" />
-  </ItemGroup>
+
+		<!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
+		<MauiAsset Include="divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
+		<!-- Don't need the MD files -->
+		<MauiAsset Remove="divisibill\**\*.md" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.10" />
@@ -60,7 +61,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Resources\Images\" />
+		<!--Show this as a folder in Solution Explorer even if it has no files.-->
+		<Folder Include="Resources\Images\" />
 	</ItemGroup>
 
+  <ItemGroup>
+	<!-- DivisiBill MarkDown files: defined at project level so targets can use them for Inputs/Outputs -->
+    <DivisiBillMarkdownFiles Include="divisibill\**\*.md" />
+  </ItemGroup>
+
+  <!-- Per-file markdown -> html generation in-place; only runs when .md is newer than html or html is missing -->
+  <Target Name="GenerateDivisiBillHelpFile" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'divisibill\%(RecursiveDir)%(Filename).html')">
+    <Exec Command="pandoc -o &quot;divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=template.htmlt --wrap=none" />
+    <Message Text="Generating html file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
+  </Target>
 </Project>
