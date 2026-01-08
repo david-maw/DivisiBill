@@ -74,7 +74,7 @@
 
   <!-- Per-file markdown -> html generation in-place; only runs when .md is newer than html or html is missing -->
   <Target Name="GenerateDivisiBillHelpFiles" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'divisibill\%(RecursiveDir)%(Filename).html')">
-    <Exec Command="pandoc -o &quot;divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=template.htmlt --wrap=none" />
+    <Exec Command="pandoc -o &quot;divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=pandoc-template.html --wrap=none" />
     <Message Text="Generating html help file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
   </Target>
 

@@ -2,7 +2,7 @@
 
 ## Allow Effect of Clear on Report Page to be Reversed
 
-The report page clear button now saves the cleared text so it can be restored using the "UnClear" button.
+The report page clear button now saves the cleared text so it can be restored using the "UnClear" button (which appends the cleared text to the end of whatever is there).
 
 # 6.3.9
 

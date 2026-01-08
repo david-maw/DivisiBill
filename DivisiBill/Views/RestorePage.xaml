@@ -15,7 +15,7 @@
         <Label
             FontAttributes="Bold"
             HorizontalOptions="Center"
-            Text="{Binding SelectedArchive.SelectedMealsCount, StringFormat='Selected {0} Bills Between'}" />
+            Text="{Binding SelectedMealsCount, StringFormat='Selected {0} Bills Between'}" />
         <HorizontalStackLayout
             Margin="0,-5,0,0"
             HorizontalOptions="Center"
@@ -55,7 +55,7 @@
             Margin="5"
             Command="{Binding RestoreArchiveCommand}"
             HorizontalOptions="Center"
-            IsEnabled="{Binding SelectedArchive.SelectedMealsCount, Converter={StaticResource IsNonZero}}"
+            IsEnabled="{Binding SelectedMealsCount, Converter={StaticResource IsNonZero}}"
             Text="Restore" />
         <Label
             HorizontalOptions="Center"

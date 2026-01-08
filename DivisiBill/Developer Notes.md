@@ -52,7 +52,7 @@ Along with these is a small MAUI app called web which creates and displays just 
 so you can easily get a sense of how they'll look in an Android app, for example. 
 
 The HTML files are generated from MarkDown sources with the HTML being auto-generated
-by pandoc, which is run as part of the build of web or of DivisiBill itself.
+by [pandoc]([Pandoc - index](https://pandoc.org/index.html)), which is run as part of the build of web or of DivisiBill itself.
 
 Some of the files are svg files used to create overlays of page images with clickable hot spots.
 You can hand edit these (svg files are XML files) but it's easier to use an editor like Inkscape.

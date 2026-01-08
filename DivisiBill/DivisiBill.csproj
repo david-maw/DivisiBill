@@ -158,7 +158,7 @@
   <!--Note that the following targets require Pandoc to be installed and available in the system PATH and are run by VS any time and dotnet CLI during the build process.-->
   <!-- markdown -> Release Notes html generation in-place; only runs when Release Notes.md is newer than html or html is missing -->
   <Target Name="GenerateReleaseNotesHtml" BeforeTargets="PrepareForBuild" Inputs="Release Notes.md" Outputs="Release Notes.html">
-      <Exec Command="pandoc -o &quot;Release Notes.html&quot; &quot;Release Notes.md&quot; -s --template=template.htmlt --wrap=none" />
+      <Exec Command="pandoc -o &quot;Release Notes.html&quot; &quot;Release Notes.md&quot; -s --template=pandoc-template.html --wrap=none" />
       <Message Text="Generating Release Notes.html from Release Notes.md" Importance="High" />
   </Target>
 
@@ -169,13 +169,13 @@
 
   <ItemGroup>
     <MauiAsset Include="script.js">
-      <LogicalName>help\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+      <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
     </MauiAsset>
   </ItemGroup>
 
   <!-- help file markdown -> html generation in web\DivisiBill folder; only runs when .md is newer than html or html is missing -->
   <Target Name="GenerateDivisiBillHelpFile" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'..\web\divisibill\%(RecursiveDir)%(Filename).html')">
-      <Exec Command="pandoc -o &quot;..\web\divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=template.htmlt --wrap=none" />
+      <Exec Command="pandoc -o &quot;..\web\divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=pandoc-template.html --wrap=none" />
       <Message Text="Generating html file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
   </Target>
 
