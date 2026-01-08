@@ -24,10 +24,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Restore keystore
-      run: $b64Decoded = [Convert]::FromBase64String("${{ secrets.KEYSTORE_B64 }}");
-        [IO.File]::WriteAllBytes("$PWD/DivisiBill/keystore",$b64Decoded);
-  
     # Install the .NET Core workload
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -40,11 +36,20 @@ jobs:
 
     - name: Restore Dependencies
       run: dotnet restore DivisiBill/DivisiBill.csproj
-        
+    
+    # Install pandoc 
+    - name: Install Pandoc
+      run: choco install pandoc --no-progress -y
+
     # Test the release
     - name: Test
       run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net10.0-windows10.0.19041.0
       
+    # Restore the aAndroid keystore used to sign the APK/AAB    
+    - name: Restore keystore
+      run: $b64Decoded = [Convert]::FromBase64String("${{ secrets.KEYSTORE_B64 }}");
+        [IO.File]::WriteAllBytes("$PWD/DivisiBill/keystore",$b64Decoded);
+  
     # Build to apk and aab
     - name: Build
       env:
