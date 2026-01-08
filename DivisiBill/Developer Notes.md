@@ -9,7 +9,7 @@ Windows machine and:
 
  1. Use `dotnet restore` at a command prompt (use view -> terminal) to restore the 
     NuGet packages for the solution.
- 2. Use Visual Studio 2022 to debug it, or
+ 2. Use Visual Studio to debug it, or
  3. use `dotnet run -f:net8.0-windows10.0.19041.0` at a command prompt to run it
 
 There are several Git branches available but the only well-behaved one is "main". The "alpha" branch is used as part of the release CI/CD process and hops around somewhat randomly and others may come and go but should be considered experimental at best. 
@@ -41,18 +41,18 @@ coverage is minimal, but some of the most complex and fragile code is the code t
 costs so this tries to exercise it thoroughly.
 
 This allows more focused unit testing than running the whole program does. It runs on Windows as part
-of the CI/CD release process. There aren't many unit tests yet.
+of the CI/CD release process. There aren't many unit tests.
 
 ## 3) web
 
 This is a set of files making up a static web site for [AutoPlus](https://www.autopl.us), 
 the bulk of which are DivisiBill help files.
 
-Along with these is a small MAUI app which displays just the DivisiBill help files
+Along with these is a small MAUI app called web which creates and displays just the DivisiBill help files
 so you can easily get a sense of how they'll look in an Android app, for example. 
 
-Most of the HTML files are generated from MarkDown sources with the HTML being auto-generated
-by a Visual Studio MarkDown extension (see below).
+The HTML files are generated from MarkDown sources with the HTML being auto-generated
+by pandoc, which is run as part of the build of web or of DivisiBill itself.
 
 Some of the files are svg files used to create overlays of page images with clickable hot spots.
 You can hand edit these (svg files are XML files) but it's easier to use an editor like Inkscape.
@@ -63,11 +63,11 @@ Useful Visual Studio Extensions
 -------------------------------
 
 The Release Notes.html file is generated automatically from Release Notes.md
-by using the Markdown Editor NuGet (v1) package and enabling "Generate HTML File".
-You don't have to do this, you can just hand edit the HTML, but it's a pain.
+by pandoc so you'll need to install that (it is already present on github windows build servers).
+This note is here because it used to use the old MarkDown extension to generate HTML files.
 
-Likewise, the AutoPlus web site files in the web project (which include DivisiBill help files) 
-are also generated from MarkDown files which use the same MarkDown extension to automatically
+The AutoPlus web site files in the web project (which include DivisiBill help files) 
+are also generated from MarkDown files which use pandoc to automatically
 generate HTML when saved. 
 
 Not required, but very helpful is the Microsoft spell checking extension. It can occasionally be
@@ -77,13 +77,14 @@ For XAML processing, the "XAML Styler" extension is very helpful for keeping XAM
 readable and consistent. However, I did turn off reformatting on save and reordering of attributes
 because they caused too much disruption by making changes when I was just trying to change something else.
 
-The Bright XAML extension has some handy features.
+The Bright XAML extension has some handy features and is less intrusive.
 
 Handy Additional Tools
 ----------------------
 
 Some useful tools in this environment are:
 
+- Pandoc - for converting MarkDown files to HTML for help and release notes.
 - Inkscape - a graphical SVG editor, for help project interactive screen images.
 - GitHub CLI - especially useful for managing secrets.
 
@@ -136,7 +137,7 @@ Here are the branches with well defined functions:
 New development is typically done in a feature branch off main and merged into main when it's all done using a 
 normal pull request flow. This gives the main branch a detailed record of every change in a very 
 granular way. Once the feature branch is merged you can safely delete it
-or you can rebase it on main and keep it around for future features.
+or you can keep it around for future features.
 
 Releases are created by the repository owner simply by resetting the alpha branch
 to point at whatever set of changes are to be released and pushing the 
@@ -175,7 +176,7 @@ the changes to the "Release Notes.md" file (usually in a separate stream with a
 pull request). Also, do not forget to update the help files with any new page images and 
 explanatory text. 
 
-The VS MarkDown Editor mentioned above will recreate the Release Notes.html file.
+VS will run the code in the project file that uses pandoc to recreate the Release Notes.html file.
 Check in these changes (typically calling it "Release Notes for N.N.N").
 Do not forget to push these changes to the remote development stream.
 
@@ -212,8 +213,8 @@ Release Instructions
 The version should already be correct, but check that it is as you expect
 then push changes to the development branch on GitHub.
 
-Pushing the development branch to GitHub does not trigger a build, update the Alpha branch for that.
-Assuming it builds cleanly the resulting apk and aab files are pushed to the Google Play Store and will
+Pushing the development branch to GitHub does not trigger a build, push the Alpha branch for that.
+Assuming it builds cleanly the resulting apk and aab files are sent to the Google Play Store and will
 automatically get pushed to testers. If it looks good it can be promoted to the beta 
 (open testing) track or even the production track.
 
@@ -288,7 +289,7 @@ If you want to write the base64 data itself to a file use:
 
 > [IO.File]::WriteAllText("$PWD\Some.keystore.b64",$b64data) 
 
-To convert the base-64 string back to a file:
+To convert the base-64 string to a file:
 
 ```
     $b64Decoded = [Convert]::FromBase64String($b64data)
@@ -360,15 +361,9 @@ gh Get-Content keystore.b64 | secret set KEYSTORE_B64
 Using the DivisiBill Web Service
 --------------------------------
 
-The web service can be tested using the DivisiBill app by setting the DIVISIBILL_WS_USE environment variable to either ALTERNATE
-or RELEASE. Alternatively set DIVISIBILL_WS_URI to the URL for the web service, no key is needed. This setup must be done before
-running the app so you can do it in the debug properties dialog for the DivisiBill project in Visual Studio.
-
-An alternative way to do this and have the environment variable persist is to start a command prompt and enter (for example):
-
->    SETX DIVISIBILL_WS_URI http://localhost:7190/api/
-
-Don't forget to restart the Visual Studio instance for DivisiBill after doing this so the new environment variable can be used by the build process. For more complex scenarios read the developer notes for the DiviBillWs web service project.
+The Azure alternate web service can be tested using the DivisiBill app by using the "alternate" build. This will trigger
+the use of a URL for the web service from DIVISIBILL_ALTERNATE_WS_URI and a key from (DIVISIBILL_ALTERNATE_WS_KEY.
+The default release build of the web service deploys to this Azure Functions.
 
 Google Service Account
 ----------------------

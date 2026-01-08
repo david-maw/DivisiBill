@@ -68,11 +68,19 @@
   <ItemGroup>
 	<!-- DivisiBill MarkDown files: defined at project level so targets can use them for Inputs/Outputs -->
     <DivisiBillMarkdownFiles Include="divisibill\**\*.md" />
+    <!-- Specific autoplus MarkDown files -->
+    <AutoPlusMarkdownFiles Include="index.md;policy.md" />
   </ItemGroup>
 
   <!-- Per-file markdown -> html generation in-place; only runs when .md is newer than html or html is missing -->
-  <Target Name="GenerateDivisiBillHelpFile" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'divisibill\%(RecursiveDir)%(Filename).html')">
+  <Target Name="GenerateDivisiBillHelpFiles" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'divisibill\%(RecursiveDir)%(Filename).html')">
     <Exec Command="pandoc -o &quot;divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=template.htmlt --wrap=none" />
-    <Message Text="Generating html file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
+    <Message Text="Generating html help file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
+  </Target>
+
+  <!-- Generate html from autoplus markdown files (index.md and policy.md) -->
+  <Target Name="GenerateAutoPlusHelpFiles" BeforeTargets="PrepareForBuild" Inputs="@(AutoPlusMarkdownFiles)" Outputs="@(AutoPlusMarkdownFiles->'%(RecursiveDir)%(Filename).html')">
+    <Exec Command="pandoc -o &quot;%(AutoPlusMarkdownFiles.RecursiveDir)%(AutoPlusMarkdownFiles.Filename).html&quot; &quot;%(AutoPlusMarkdownFiles.Identity)&quot; -s --template=template.htmlt --wrap=none" />
+    <Message Text="Generating autoplus html file from %(AutoPlusMarkdownFiles.Identity)" Importance="High" />
   </Target>
 </Project>

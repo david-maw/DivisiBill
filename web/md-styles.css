@@ -3,7 +3,8 @@
 }
 
 html, body {
-    margin: 0;
+    max-width: 500px;
+    margin: 0 auto;
     border: 0;
     padding: 0;
     color: white;
@@ -11,15 +12,14 @@ html, body {
 }
 
 body {
-    margin: auto;
-    width: 80%;
-    padding: 20px;
+    width: 90%;
+    padding: 10px;
 }
 
-    body > h1 {
-        text-align: center;
-        font-size: 3.5em;
-    }
+h1 {
+    text-align: center;
+    font-size: 3.5em;
+}
 
 img {
     max-width: 100%;
@@ -57,5 +57,5 @@ u {
 
 @font-face {
     font-family: icons;
-    src: url(divisibill/materialdesignicons-webfont.ttf)
+    src: url(divisibill\materialdesignicons-webfont.ttf)
 }

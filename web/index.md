@@ -18,7 +18,7 @@ A bill may be entered by taking a picture of it and having the program list the 
 
 Once DivisiBill has the list of bill items and knows who had what, it calculates how much each guest owes, including tax and tip. It can handle restaurant discounts (split evenly or unevenly), deal with tax calculations that are off by a few cents (surprisingly common), and cope with a variety of other complex situations. The program is intended to handle more or less any common scenario.
 
-You can email the results to attendees, including an image of the bill if you wish.
+You can email the results to attendees, including an image of the bill and a data file they can choose to load into their own copy of DivisiBill.
 
 DivisiBill can also remember and reuse past bills, and if you choose to share your location will make a pretty good guess at which prior bill to use based on your location.
 

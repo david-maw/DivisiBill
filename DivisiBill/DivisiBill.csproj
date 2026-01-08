@@ -83,6 +83,7 @@
    <ItemGroup>
      <MauiAsset Remove="Resources\Raw\md-template.html" />
      <MauiCss Remove="Resources\Raw\md-styles.css" />
+     <MauiCss Remove="styles.css" />
    </ItemGroup>
 
    <ItemGroup>
@@ -92,6 +93,7 @@
 
    <ItemGroup>
      <MauiAsset Include="Release Notes.html" />
+     <MauiAsset Include="styles.css" />
    </ItemGroup>
 
    <ItemGroup>
@@ -152,6 +154,30 @@
   <PropertyGroup Condition="$(Configuration) == alternate">
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
   </PropertyGroup>
+
+  <!--Note that the following targets require Pandoc to be installed and available in the system PATH and are run by VS any time and dotnet CLI during the build process.-->
+  <!-- markdown -> Release Notes html generation in-place; only runs when Release Notes.md is newer than html or html is missing -->
+  <Target Name="GenerateReleaseNotesHtml" BeforeTargets="PrepareForBuild" Inputs="Release Notes.md" Outputs="Release Notes.html">
+      <Exec Command="pandoc -o &quot;Release Notes.html&quot; &quot;Release Notes.md&quot; -s --template=template.htmlt --wrap=none" />
+      <Message Text="Generating Release Notes.html from Release Notes.md" Importance="High" />
+  </Target>
+
+  <ItemGroup>
+      <!-- DivisiBill Help MarkDown files: defined at project level so targets can use them for Inputs/Outputs -->
+      <DivisiBillMarkdownFiles Include="..\web\divisibill\**\*.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiAsset Include="script.js">
+      <LogicalName>help\%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </MauiAsset>
+  </ItemGroup>
+
+  <!-- help file markdown -> html generation in web\DivisiBill folder; only runs when .md is newer than html or html is missing -->
+  <Target Name="GenerateDivisiBillHelpFile" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'..\web\divisibill\%(RecursiveDir)%(Filename).html')">
+      <Exec Command="pandoc -o &quot;..\web\divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=template.htmlt --wrap=none" />
+      <Message Text="Generating html file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
+  </Target>
 
   <!--Generate the file holding the build secrets on every build-->
   <!--First get the secrets from environment variables-->
