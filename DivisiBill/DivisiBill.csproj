@@ -14,11 +14,12 @@
       <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-     <NoWarn>NU1608;MVVMTK0045</NoWarn>
+     <NoWarn>NU1608;MVVMTK0045;CS1701</NoWarn>
      <!--NU1608 Because DivisiBill.InAppBilling 8.x triggers it-->
      <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
+	 <!--CS1701 Because CommunityToolkit/Mvvm 8.4.0 is built against net prior to 10.0, causing this warning-->
 
-     <!-- Display name -->
+	   <!-- Display name -->
       <ApplicationTitle>DivisiBill</ApplicationTitle>
  
       <!-- App Identifier -->
@@ -102,17 +103,17 @@
       <PackageReference Include="CommunityToolkit.Maui.Camera" Version="5.0.0" />
       <PackageReference Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
       <PackageReference Include="epj.RouteGenerator" Version="1.0.5" />
-      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.10" />
-      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.10" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
+      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.20" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
       <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
-     <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
-     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-      <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.10" />
-      <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.0" />
-      <PackageReference Include="Sentry.Maui" Version="5.16.2" />
+      <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+	  <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" />
+      <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.1" />
+      <PackageReference Include="Sentry.Maui" Version="6.0.0" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
-      <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="5.16.2" />
+      <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="6.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
       <PackageReference Include="SkiaSharp" Version="3.119.1" />
    </ItemGroup>
@@ -121,22 +122,11 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.0" />
   </ItemGroup>
+
+	<!--Add In-App Billing package for Android-->
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
-    <PackageReference Include="Xamarin.Android.Google.BillingClient">
-      <Version>8.1.0</Version>
-    </PackageReference>
+    <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.1.0" />
   </ItemGroup>
-
-  <!-- Build Properties must be defined within these property groups to ensure successful publishing
-       to the Mac App Store. See: https://aka.ms/maui-publish-app-store#define-build-properties-in-your-project-file -->
-   <PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Debug'">
-      <CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Debug.plist</CodesignEntitlements>
-   </PropertyGroup>
-
-   <PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Release'">
-      <CodesignEntitlements>Platforms/MacCatalyst/Entitlements.Release.plist</CodesignEntitlements>
-      <UseHardenedRuntime>true</UseHardenedRuntime>
-   </PropertyGroup>
 
   <!-- Sentry setup for PDB Upload -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(SENTRY_UPLOAD)' == 'true' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(DIVISIBILL_SENTRY_DSN)' != ''">
