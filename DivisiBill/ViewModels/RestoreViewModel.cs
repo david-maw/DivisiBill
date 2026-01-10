@@ -52,13 +52,12 @@ public partial class RestoreViewModel : ObservableObject
     /// Command to restore the previously selected archive (SelectedArchive). This restores archive items and selectively
     /// extracts images from the original zip only for the meals that were restored.
     /// </summary>
-    [RelayCommand (CanExecute = nameof(IsRestoreAllowed))]
+    [RelayCommand]
     public async Task RestoreArchiveAsync()
     {
         IsBusy = true;
         try
         {
-            IsRestoreAllowed = false;
             if (SelectedArchive is null)
                 return;
 
@@ -92,9 +91,6 @@ public partial class RestoreViewModel : ObservableObject
 
     [ObservableProperty]
     public partial int SelectedMealsCount { get; private set; } = 0;
-
-    [ObservableProperty]
-    public partial bool IsRestoreAllowed { get; set; } = false;
 
     [RelayCommand]
     public void ExitAction() => ExitPage?.Invoke();
@@ -139,7 +135,6 @@ public partial class RestoreViewModel : ObservableObject
             FinishDate = StartDate;
         if (SelectedArchive is not null)
             SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
-        IsRestoreAllowed = SelectedMealsCount > 0;
     }
 
     [ObservableProperty]
@@ -151,7 +146,6 @@ public partial class RestoreViewModel : ObservableObject
             StartDate = FinishDate;
         if (SelectedArchive is not null)
             SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
-        IsRestoreAllowed = SelectedMealsCount > 0;
     }
 
     public Action? ExitPage = null;
