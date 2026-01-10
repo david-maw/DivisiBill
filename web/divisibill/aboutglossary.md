@@ -12,11 +12,11 @@ Select this icon to save a snapshot of the current bill immediately without alte
 
 ## About AutoPlus
 
-This button takes you to an external web site to learn more about AutoPlus. The same site also has a copy of this help text if you would rather view it in a web browser.
+This button takes you to an external web site to learn more about AutoPlus. That site also has a copy of this help text if you would rather view it in a web browser.
 
-## About Xamarin
+## About MAUI
 
-This button takes you to an external web site to learn more about the Xamarin technology used to create DivisiBill. Xamarin is being replaced by Microsoft MAUI at the time of writing (2023) but for the moment both are supported.
+This button takes you to an external web site to learn more about the .NET MAUI technology used to create DivisiBill.
 
 ## Selectable Options
 

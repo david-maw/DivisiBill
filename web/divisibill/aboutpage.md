@@ -14,6 +14,6 @@ The other two pages are:
 
     This contains a list of highlights of the changes in the current and previous releases.
 
-- Report a Problem
+- [Report a Problem](problemreportpage.html)
 
-    This offers a text page pre-populated with some data where you can enter additional problem details to send to DivisiBill support.
+    This offers a text page where you can enter additional problem details to send to DivisiBill support.

@@ -16,7 +16,7 @@ Changes filtering, either by cycling round all the participants, or if an item i
 
 ### Add (<u>&#xF0419;</u>)
 
-Adds a new item to the bill before the currently selected item and selects the newly added item so you can edit the description, amount and assignment to participants.
+Adds a new item to the bill after the currently selected item and selects the newly added item so you can edit the description, amount and assignment to participants. The easiest way to add an item at the very beginning of the list is add it after the existing first item, then delete the first item leaving the one you added at the start of the list. Then undelete the former first item that you deleted and it will be inserted after the new first item (because it is the selected item now).
 
 ### Delete (<u>&#xF0A7A;</u>)
 

@@ -68,6 +68,7 @@
   <ItemGroup>
 	<!-- DivisiBill MarkDown files: defined at project level so targets can use them for Inputs/Outputs -->
     <DivisiBillMarkdownFiles Include="divisibill\**\*.md" />
+    <MauiAsset Remove="divisibill\md-styles.css" />
     <!-- Specific autoplus MarkDown files -->
     <AutoPlusMarkdownFiles Include="index.md;policy.md" />
   </ItemGroup>
