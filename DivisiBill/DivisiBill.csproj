@@ -12,6 +12,7 @@
       <ImplicitUsings>disable</ImplicitUsings>
       <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
       <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+	  <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies> <!--Because serialization assemblies do not play well with MAUI-->
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
      <NoWarn>NU1608;MVVMTK0045;CS1701</NoWarn>
@@ -110,18 +111,12 @@
       <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	  <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" />
-      <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.1" />
       <PackageReference Include="Sentry.Maui" Version="6.0.0" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
       <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="6.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
       <PackageReference Include="SkiaSharp" Version="3.119.1" />
    </ItemGroup>
-
-  <!--Add Tool For XML Serialization Compile-->
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.XmlSerializer.Generator" Version="10.0.0" />
-  </ItemGroup>
 
 	<!--Add In-App Billing package for Android-->
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
