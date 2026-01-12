@@ -35,7 +35,7 @@ public partial class VenueListPage : ContentPage
         if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
         {
             mapSettings.VenueLocationHasChanged = false; // don't execute this code again unnecessarily
-            Venue v = Venue.FindVenueByName(mapSettings.VenueName);
+            Venue? v = Venue.FindVenueByName(mapSettings.VenueName);
             v?.Location = mapSettings.VenueLocation;
         }
         if (context.CurrentItem is null)
@@ -66,14 +66,14 @@ public partial class VenueListPage : ContentPage
         Utilities.DebugMsg($"Leave VenueListPage.OnDisappearing");
     }
 
-    private async void OnShowMap(object sender, EventArgs e)
+    private async void OnShowMap(object? sender, EventArgs e)
     {
         if (Utilities.IsWinUI)
         {
             await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
             return;
         }
-        Venue? v = ((BindableObject)sender).BindingContext as Venue ?? context.CurrentItem;
+        Venue? v = (sender is BindableObject b && b.BindingContext is Venue venue) ? venue : context.CurrentItem;
         if (v is not null)
         {
             mapSettings = new(v.Name, v.Location);
@@ -83,7 +83,7 @@ public partial class VenueListPage : ContentPage
     #region Collection Scrolling
     private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
         => CurrentCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
-    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
         context.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
         context.LastVisibleItemIndex = e.LastVisibleItemIndex;
@@ -91,7 +91,7 @@ public partial class VenueListPage : ContentPage
     #endregion
 
     // TODO: Remove when https://github.com/dotnet/maui/issues/32332 is fixed
-    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+    private void OnDeleteSwipeItemInvoked(object? sender, EventArgs e)
     {
         if (sender is SwipeItem si && si.BindingContext is Venue v)
         {
@@ -99,7 +99,7 @@ public partial class VenueListPage : ContentPage
         }
     }
 
-    private void OnAssignSwipeItemInvoked(object sender, EventArgs e)
+    private void OnAssignSwipeItemInvoked(object? sender, EventArgs e)
     {
         if (sender is SwipeItem si && si.BindingContext is Venue v)
         {

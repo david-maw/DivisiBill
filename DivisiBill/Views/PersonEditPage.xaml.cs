@@ -37,7 +37,7 @@ public partial class PersonEditPage : ContentPage
             firstNameEntry.CursorPosition = firstNameEntry.Text.Length;
     }
     // When a field is completed, MAUI will move to the next, this exits if the field has a return type of Done 
-    private async void OnCompleted(object sender, System.EventArgs e)
+    private async void OnCompleted(object? sender, System.EventArgs e)
     {
         Entry? entry = sender as Entry;
         if (personEditViewModel is not null && entry?.ReturnType == ReturnType.Done)
