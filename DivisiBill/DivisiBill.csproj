@@ -12,6 +12,7 @@
       <ImplicitUsings>disable</ImplicitUsings>
       <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
       <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+	  <MauiXamlInflator>SourceGen</MauiXamlInflator>
 	  <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies> <!--Because serialization assemblies do not play well with MAUI-->
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -41,6 +42,25 @@
       <DefaultLanguage>en-us</DefaultLanguage>
       <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
    </PropertyGroup>
+
+	<!--Workaround until https://github.com/dotnet/maui/issues/33466 is fixed or I work around it by modifying XAML Label.FontSize size usage-->
+	<ItemGroup>
+		<MauiXaml Update="Views\*.xaml" NoWarn="0612" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
+	</PropertyGroup>
+
+	<!--Workaround until https://github.com/dotnet/roslyn/issues/81970 is fixed or I work around it by modifying XAML Label.FontSize size usage-->
+	<Target Name="EnsureCompilerGeneratedPath"
+		Condition="!Exists('$(CompilerGeneratedFilesOutputPath)')"
+        BeforeTargets="CoreCompile;CompileDesignTime">
+		<!-- Ensure the full compiler-generated path exists for all builds-->
+		<Message Text="Creating folder $(CompilerGeneratedFilesOutputPath)" Importance="high" />
+		<MakeDir Directories="$(CompilerGeneratedFilesOutputPath)" />
+	</Target>
 
 	<Target Name="DisplayCustomMessage" BeforeTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)'=='Debug'">
 		<Message Text="$(MSBuildProjectName) $(Configuration) build for $(TargetFramework), Web Service URI = $(DivisiBillWsUri)" Importance="high" />
