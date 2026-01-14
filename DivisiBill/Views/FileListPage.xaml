@@ -66,7 +66,7 @@
                                 FontSize="{StaticResource FontSizeTitle}"
                                 Text="{Binding SizeText}" VerticalOptions="Center"/>
                         </Grid>
-                        <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
+                        <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray300}}" HeightRequest="2" />
                     </VerticalStackLayout>
                 </SwipeView>
                 <!--  Click to Use (Windows only because swipe requires a touch screen) -->
@@ -128,6 +128,8 @@
                         Grid.Column="1"
                         Grid.ColumnSpan="2"
                         FontSize="{StaticResource FontSizeMedium}"
+                        LineBreakMode="TailTruncation"
+                        FontAttributes="Bold"
                         Text="{Binding CreatedDateTimeString}" />
                     <Label
                         Grid.Row="1"
@@ -136,12 +138,12 @@
                         LineBreakMode="TailTruncation"
                         Text="{Binding Name}" />
                     <Label
-                        Grid.Row="1"
+                        Grid.RowSpan="2"
                         Grid.Column="2"
-                        FontSize="{StaticResource FontSizeMedium}"
-                        Text="{Binding SizeText}" />
+                        FontSize="{StaticResource FontSizeTitle}"
+                        Text="{Binding SizeText}" VerticalOptions="Center"/>
                 </Grid>
-                <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
+                <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray300}}" HeightRequest="2"/>
             </VerticalStackLayout>
         </DataTemplate>
         <!--#endregion-->
@@ -179,13 +181,15 @@
                     <VerticalStackLayout IsVisible="{Binding ItemsFound}">
                         <Label
                             Margin="0,5"
-                            FontSize="{StaticResource FontSizeLarge}"
+                            FontSize="{StaticResource FontSizeTitle}"
+                            FontAttributes="Bold"
                             HorizontalOptions="Center"
                             IsVisible="{Binding ShowAsSelectableList}"
                             Text="{Binding FileListCount, StringFormat='{0} lists, tap to select'}" />
                         <Label
                             Margin="0,5"
-                            FontSize="{StaticResource FontSizeLarge}"
+                            FontSize="{StaticResource FontSizeTitle}"
+                            FontAttributes="Bold"
                             HorizontalOptions="Center"
                             IsVisible="{Binding ShowAsSelectableList, Converter={StaticResource Not}}"
                             Text="{Binding FileListCount, StringFormat='{0} lists, swipe or tap'}" />
@@ -196,7 +200,7 @@
                         HorizontalOptions="Center"
                         IsVisible="{Binding ItemsFound, Converter={StaticResource Not}}"
                         Text="{Binding ItemTypePlural, StringFormat='No {0} Found'}" />
-                    <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
+                    <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray300}}" HeightRequest="2"  Margin="10,0"/>
                 </VerticalStackLayout>
             </CollectionView.Header>
         </CollectionView>
