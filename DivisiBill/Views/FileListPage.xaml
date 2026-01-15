@@ -23,6 +23,26 @@
         <!-- TODO: MAUI DETOUR because the commands don't bind correctly use "Invoked" property until https://github.com/dotnet/maui/issues/32332 is fixed-->
         <DataTemplate x:Key="WithSwipe" x:DataType="services:RemoteItemInfo">
             <Grid ColumnDefinitions="*,*,*">
+                <!--Android colors the selected item anyway, but Windows uses a rather insipid gray that's difficult to see-->
+                <!--The usual trick of applying this at run time does not work because there are multiple DataTemplates-->
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="CommonStates">
+                        <VisualState Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Transparent" />
+                                <Setter Property="Scale" Value="1" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{StaticResource SelectedBackGroundColor}" />
+                                <Setter Property="Scale" Value="1.03" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <!--Begin the actual UI definition-->
                 <SwipeView Grid.Column="0" Grid.ColumnSpan="3">
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">

@@ -196,6 +196,7 @@
             EmptyView="No items defined"
             ItemSizingStrategy="MeasureAllItems"
             ItemTemplate="{StaticResource NoSwipe}"
+            services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
             ItemsSource="{Binding LineItems}"
             Scrolled="OnCollectionViewScrolled"
             SelectedItem="{Binding SelectedLineItem, Mode=TwoWay}"

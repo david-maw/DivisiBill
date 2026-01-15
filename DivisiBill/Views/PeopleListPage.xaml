@@ -80,6 +80,7 @@
             SelectionMode="Single"
             SelectedItem="{Binding SelectedPerson}"
             ItemTemplate="{StaticResource WithSwipe}"
+            services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
             ItemSizingStrategy="MeasureFirstItem"
             ItemsSource="{Binding AllPeople}"/>
         <!--#region Scroll Up/Down-->

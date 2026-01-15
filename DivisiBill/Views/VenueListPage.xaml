@@ -91,6 +91,7 @@
                         x:DataType="vm:VenueListViewModel"
                         Scrolled="OnCollectionViewScrolled"
                         ItemTemplate="{StaticResource WithSwipe}"
+                        services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
                         SelectionMode="Single"
                         SelectedItem="{Binding CurrentItem}"
                         Margin="10,0"
