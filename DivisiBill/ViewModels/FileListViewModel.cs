@@ -134,13 +134,7 @@ public partial class FileListViewModel : ObservableObjectPlus
     {
         ShowAsSelectableList = !ShowAsSelectableList;
         if (ShowAsSelectableList)
-        {
-            if (SelectedItem is not null)
-            {
-                SelectedItem.Selected = false; // deselect the old one 
-                SelectedItem = null;
-            }
-        }
+            SelectedItem?.Selected = false; // deselect any old one 
         else
         {
             foreach (RemoteItemInfo item in SelectedItems)
