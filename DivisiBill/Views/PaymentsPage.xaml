@@ -17,7 +17,7 @@
                 <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
                 <Setter Property="BackgroundColor" Value="Transparent" />
                 <Setter Property="FontFamily" Value="OpenSansRegular" />
-                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
                 <Setter Property="HorizontalOptions" Value="End"/>
             </Style>
         </ResourceDictionary>
@@ -30,14 +30,14 @@
             <VerticalStackLayout.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnPopupTapped" NumberOfTapsRequired="1"/>
             </VerticalStackLayout.GestureRecognizers>
-            <Label Text="Payment Breakdown" FontSize="Large" FontAttributes="Bold" TextDecorations="Underline" HorizontalOptions="Center"/>
+            <Label Text="Payment Breakdown" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" TextDecorations="Underline" HorizontalOptions="Center"/>
             <Grid ColumnDefinitions="*, auto" RowDefinitions="auto, auto, auto" ColumnSpacing="10" HorizontalOptions="Center">
                 <Label Grid.Row="0" Grid.Column="0" Text="Charge" VerticalOptions="Center"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Charge,StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Charge,StringFormat='{0:C}'}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold"/>
                 <Label Grid.Row="1" Grid.Column="0" Text="+ Tip" VerticalOptions="Center"/>
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding AdjustedTip,StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold"/>
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding AdjustedTip,StringFormat='{0:C}'}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold"/>
                 <Label Grid.Row="2" Grid.Column="0" Text="= Total" VerticalOptions="Center"/>
-                <Label Grid.Row="2" Grid.Column="1" Text="{Binding RoundedAmount,StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold"/>
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding RoundedAmount,StringFormat='{0:C}'}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold"/>
             </Grid>
             <Label IsVisible="{Binding IsPersonal}" HorizontalOptions="Center">
                 <Label.FormattedText>

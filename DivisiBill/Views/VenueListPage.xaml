@@ -47,7 +47,7 @@
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
                                 </MenuFlyout>
                             </FlyoutBase.ContextFlyout>
-                            <Label Text="{Binding Path=Name}" FontSize="Large" LineBreakMode="TailTruncation"/>
+                            <Label Text="{Binding Path=Name}" FontSize="{StaticResource FontSizeLarge}" LineBreakMode="TailTruncation"/>
                             <!--#region Icon indicating current Meal-->
                             <Image
                                 Grid.Column="1"
@@ -56,7 +56,7 @@
                                 WidthRequest="20"
                                 Source="{StaticResource ListGlyphCurrentMeal}"/>
                             <!--#endregion-->
-                            <Label Grid.Column="2" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="Small" VerticalOptions="Center" HorizontalOptions="End"/>
+                            <Label Grid.Column="2" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="{StaticResource FontSizeSmall}" VerticalOptions="Center" HorizontalOptions="End"/>
                         </Grid>
                         <BoxView Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
                     </VerticalStackLayout>
@@ -98,7 +98,7 @@
                         ItemsSource="{Binding VenueList}">
             <CollectionView.Header>
                 <VerticalStackLayout>
-                    <Label HorizontalOptions="Center" FontSize="Large" FontAttributes="Bold">
+                    <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold">
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span Text="{Binding VenueCount}"/>
@@ -126,9 +126,9 @@
         <!--#region Hint -->
         <Border IsVisible="{Binding ShowVenuesHint}" Style="{StaticResource HintStyle}">
             <VerticalStackLayout>
-                <Label Text="Swipe Venue left deletes" FontSize="Large" HorizontalOptions="Center"/>
-                <Label Text="Swipe Venue right uses" FontSize="Large" HorizontalOptions="Center"/>
-                <Label Text="See Help for more info" FontSize="Large" HorizontalOptions="Center"/>
+                <Label Text="Swipe Venue left deletes" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
+                <Label Text="Swipe Venue right uses" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
+                <Label Text="See Help for more info" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
                 <HorizontalStackLayout HorizontalOptions="Center">
                     <CheckBox IsChecked="{Binding ShowVenuesHint, Converter={StaticResource Not}}"/>
                     <Label Text="Hide this hint" VerticalOptions="Center"/>

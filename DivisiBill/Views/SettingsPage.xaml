@@ -13,14 +13,14 @@
         <VerticalStackLayout>
             <!--#region Heading -->
             <!--Note that only one of the next two lines is visible-->
-            <Label FontSize="22" HorizontalOptions="Center" Text="DivisiBill Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
-            <Label FontSize="22" HorizontalOptions="Center" Text="DivisiBill Pro Edition" IsVisible="{Binding Path=IsLimited, Converter={StaticResource Not}}"/>
+            <Label FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" Text="DivisiBill Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
+            <Label FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" Text="DivisiBill Pro Edition" IsVisible="{Binding Path=IsLimited, Converter={StaticResource Not}}"/>
             <!--Show the current location of the device the app is running on -->
             <Label Text="{Binding Path=AppLocation, StringFormat='Current Location={0}', Converter={StaticResource Location}, TargetNullValue='Location Unknown'}" HorizontalOptions="Center" IsVisible="{Binding UseLocation}"/>
             <!--#endregion-->
             <!--#region License Error Reporting -->
             <VerticalStackLayout IsVisible="{Binding Path=LicenseChecked, Converter={StaticResource Not}}">
-                <Label Text="Pro Edition Verification Incomplete" FontSize="Medium" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="Pro Edition Verification Incomplete" FontSize="{StaticResource FontSizeMedium}" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
             </VerticalStackLayout>
             <!--#endregion-->
@@ -156,13 +156,13 @@
             <VerticalStackLayout IsVisible="{x:Static services:Utilities.IsDebug}">
                 <!--Large blank space before-->
                 <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 350, 0, 0" />
-                <Label HorizontalOptions="Center" FontSize="Large" Text="Debug"/>
+                <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}" Text="Debug"/>
                 <!--#region Show Base Folder Path -->
-                <Label HorizontalOptions="Center" FontSize="Small" Text="{x:Static DivisiBill:App.BaseFolderPath}"/>
-                <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding BaseAddress}"/>
+                <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{x:Static DivisiBill:App.BaseFolderPath}"/>
+                <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{Binding BaseAddress}"/>
                 <!--#endregion-->
                 <!--#region Show Last Use -->
-                <Label HorizontalOptions="Center" FontSize="Small" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
+                <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
                 <!--#endregion-->
                 <!--#region Start Fresh Next Time (handy for testing) -->
                 <Grid ColumnDefinitions ="*, auto" HorizontalOptions="Center" ColumnSpacing="{OnPlatform 10, Android=0}">
@@ -173,7 +173,7 @@
                 <!--#region Scan Options -->
                 <HorizontalStackLayout HorizontalOptions="Center">
                     <Label Text="Scan Option:" VerticalOptions="Center"/>
-                    <Picker Title="Select a scan option" SelectedIndex="{Binding ScanOption}" FontSize="Small">
+                    <Picker Title="Select a scan option" SelectedIndex="{Binding ScanOption}" FontSize="{StaticResource FontSizeSmall}">
                         <Picker.ItemsSource>
                             <x:Array Type="{x:Type x:String}">
                                 <x:String>Actual Scan</x:String>

@@ -18,7 +18,7 @@
             2 - it simplifies the layout of the name input line-->
     <Grid Margin="10,0,10,10" ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *">
         <Label Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Path=Name}"
-               HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
+               HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
         <Label Grid.Row="1" Grid.ColumnSpan="2" Text="(in use)" IsVisible="{Binding IsForCurrentMeal}" HorizontalOptions="Center"/>
         <Label Grid.Row="2" Grid.ColumnSpan="2" HorizontalOptions="Center">
             <Label.FormattedText>

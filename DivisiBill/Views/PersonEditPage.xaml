@@ -16,7 +16,7 @@
     <ContentPage.Content>
         <Grid x:Name="grid" ColumnDefinitions="Auto,*" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
             <Label Grid.ColumnSpan="2" Text="{Binding Path=CurrentPerson.DisplayName}" LineBreakMode="MiddleTruncation"
-                   HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
+                   HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
             <Label Grid.Row="1" Grid.ColumnSpan="2" Text= "(used in current bill)" IsVisible="{Binding IsInUse}" HorizontalOptions="Center"/>
             <Label Grid.Row="2" Text="First Name" VerticalOptions="End"/>
             <Entry Grid.Row="2" Grid.Column="1" x:Name="firstNameEntry" Text="{Binding CurrentPerson.FirstName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>

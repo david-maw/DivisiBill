@@ -16,7 +16,7 @@
         <services:ColumnLayout Margin="10" x:DataType="views:ScanPage">
             <VerticalStackLayout x:Name="loading" IsVisible="False">
                 <ActivityIndicator IsRunning="True" HeightRequest="50"/>
-                <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="Large"/>
+                <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}"/>
                 <Button x:Name="cancelButton" Text="Cancel" HorizontalOptions="Center" Clicked="OnCancel" IsEnabled="False"/>
             </VerticalStackLayout>
             <Label Text="{Binding ErrorMessage}" HorizontalOptions="Center"/>
@@ -31,11 +31,11 @@
                         <Grid x:DataType="models:LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
                             <Label Text="{Binding Path = ItemName }" Grid.Column="0"
                                    LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"
-                                   FontFamily="monospace" FontSize="Medium" />
+                                   FontFamily="monospace" FontSize="{StaticResource FontSizeMedium}" />
 
                             <Label Text="{Binding Path = Amount, StringFormat='{0:C}'}" Grid.Column="1"
                                    LineBreakMode="NoWrap"
-                                   FontFamily="monospace" FontSize="Medium" HorizontalTextAlignment="End" />
+                                   FontFamily="monospace" FontSize="{StaticResource FontSizeMedium}" HorizontalTextAlignment="End" />
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

@@ -20,7 +20,7 @@
                 <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
                         <Label
                             Margin="0,0,0,-10"
-                            FontSize="Medium"
+                            FontSize="{StaticResource FontSizeMedium}"
                             HorizontalOptions="Center"
                             Text="Data Archive and Restore" />
                         <Grid
@@ -108,7 +108,7 @@
                     <VerticalStackLayout Padding="10,0,10,10">
                         <Label
                             Margin="0,0,0,5"
-                            FontSize="Medium"
+                            FontSize="{StaticResource FontSizeMedium}"
                             HorizontalOptions="Center"
                             Text="Key Archive and Restore" />
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing ="10">
@@ -127,7 +127,7 @@
                 <Border>
                 <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
                         <Label
-                            FontSize="Medium"
+                            FontSize="{StaticResource FontSizeMedium}"
                             HorizontalOptions="Center"
                             Text="Bill Management" />
                         <Button
@@ -146,7 +146,7 @@
                 <Border>
                 <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
                         <Label
-                            FontSize="Medium"
+                            FontSize="{StaticResource FontSizeMedium}"
                             HorizontalOptions="Center"
                             Text="DANGER AREA" />
                         <HorizontalStackLayout HorizontalOptions="Center">

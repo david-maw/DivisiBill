@@ -18,7 +18,7 @@
     <ContentPage.Resources>
         <x:String x:Key="StoppedTypingTimeThreshold">1000</x:String>
         <Style TargetType="Label">
-            <Setter Property="FontSize" Value="Body"/>
+            <Setter Property="FontSize" Value="{StaticResource FontSizeBody}"/>
         </Style>
         <Style TargetType="Entry">
             <Setter Property="Keyboard" Value="Numeric"/>
@@ -27,10 +27,10 @@
             <Setter Property="VerticalOptions" Value="Center"/>
             <Style.Triggers>
                 <Trigger TargetType="Entry" Property="IsFocused" Value="True">
-                    <Setter Property="FontSize" Value="Medium" />
+                    <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
                 </Trigger>
                 <Trigger TargetType="Entry" Property="IsFocused" Value="False">
-                    <Setter Property="FontSize" Value="Body" />
+                    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -38,23 +38,23 @@
     <ScrollView>
         <VerticalStackLayout>
             <!--#region Page heading - Venue Name, bill creation and last use times, encryption status -->
-            <Label Text="{Binding VenueName}" HorizontalOptions="Center" FontSize="Title">
+            <Label Text="{Binding VenueName}" HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1" Buttons="Primary"/>
                     <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="1" Buttons="Secondary"/>
                     <TapGestureRecognizer Command="{Binding OpenVenueCommand}" NumberOfTapsRequired="2" />
                 </Label.GestureRecognizers>
             </Label>
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDefault}" Text="Default Bill"/>
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsDefault, Converter={StaticResource Not}}"
+            <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding IsDefault}" Text="Default Bill"/>
+            <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding IsDefault, Converter={StaticResource Not}}"
                    Text="{Binding CreationTime, StringFormat='Created {}',  Converter={StaticResource ApproximateDateTime}}"/>
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsLastChangeTimeDifferent}"
+            <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding IsLastChangeTimeDifferent}"
                    Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{Binding IsEncrypted}" Text="Remote Data is Encrypted"/>
+            <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{Binding IsEncrypted}" Text="Remote Data is Encrypted"/>
             <!--#endregion-->
             <!--#region Bill Diagnostics (file name etc.) -->
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{x:Static services:Utilities.IsDebug}" Text="{Binding DiagnosticInfo}"/>
-            <Label HorizontalOptions="Center" FontSize="Small" IsVisible="{x:Static services:Utilities.IsDebug}" Text="{Binding DefaultFileName}"/>
+            <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{x:Static services:Utilities.IsDebug}" Text="{Binding DiagnosticInfo}"/>
+            <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{x:Static services:Utilities.IsDebug}" Text="{Binding DefaultFileName}"/>
             <!--#endregion-->
             <!--#region Bill information -->
             <Grid Margin="10,0" RowSpacing="-7" ColumnDefinitions="*,auto,auto" RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto">

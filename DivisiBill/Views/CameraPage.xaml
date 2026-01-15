@@ -38,7 +38,7 @@
             </Ellipse.GestureRecognizers>
         </Ellipse>
         <Label Text="No camera available"
-               FontSize="Header"
+               FontSize="{StaticResource FontSizeHeader}"
                IsVisible="{Binding IsCameraAvailable, Converter={StaticResource Not}}"
                HorizontalOptions="Center"
                VerticalOptions="Center"/>

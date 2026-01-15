@@ -16,8 +16,8 @@
                 <Button Text="Send Mail" Command="{Binding ReportMailCommand}" IsVisible="{Binding Reported, Converter={StaticResource Not}}"/>
                 <Label Text="Change text to report a problem" HorizontalOptions="Center" IsVisible="{Binding Reported}"/>
             </HorizontalStackLayout>
-            <Label Grid.Row="1" Text="Report Sent" FontSize="Large" HorizontalOptions="Center" IsVisible="{Binding Reported}" />
-            <Label Grid.Row="2" Text="Issue Description" FontSize="Large" HorizontalOptions="Center" IsVisible="{Binding Reported, Converter={StaticResource Not}}" />
+            <Label Grid.Row="1" Text="Report Sent" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" IsVisible="{Binding Reported}" />
+            <Label Grid.Row="2" Text="Issue Description" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" IsVisible="{Binding Reported, Converter={StaticResource Not}}" />
             <Border Grid.Row="3" Margin="10" Padding="5"
                     Stroke="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}">
                 <Grid RowDefinitions="*, auto">

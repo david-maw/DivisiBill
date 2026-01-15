@@ -18,11 +18,11 @@
         </ContentView>
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="16,10,16,20">
-                <Label FontSize="22" Text="{Binding Source={x:Static services:Utilities.VersionName}, x:DataType=x:String, StringFormat='DivisiBill {0}'}" HorizontalOptions="Center"/>
-                <Label FontSize="22" HorizontalOptions="Center" Text="by Autoplus Software"/>
+                <Label FontSize="{StaticResource FontSizeLarge}" Text="{Binding Source={x:Static services:Utilities.VersionName}, x:DataType=x:String, StringFormat='DivisiBill {0}'}" HorizontalOptions="Center"/>
+                <Label FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" Text="by Autoplus Software"/>
                 <!--Note that only one of the next two lines is visible-->
-                <Label FontSize="22" HorizontalOptions="Center" Text="Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
-                <Label FontSize="22" HorizontalOptions="Center" Text="Professional Edition" IsVisible="{Binding Path=IsLimited, Converter={StaticResource Not}}"/>
+                <Label FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" Text="Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
+                <Label FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" Text="Professional Edition" IsVisible="{Binding Path=IsLimited, Converter={StaticResource Not}}"/>
                 <Label HorizontalOptions="Center">
                     <Label.FormattedText>
                         <FormattedString>

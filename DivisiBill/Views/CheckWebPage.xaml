@@ -22,7 +22,7 @@
         StrokeThickness="2">
         <VerticalStackLayout Spacing="10" MinimumWidthRequest="280" VerticalOptions="Center">
             <Label
-                FontSize="Large"
+                FontSize="{StaticResource FontSizeLarge}"
                 HorizontalOptions="Center"
                 Text="{Binding PopupTitle}"
                 VerticalOptions="Center" />

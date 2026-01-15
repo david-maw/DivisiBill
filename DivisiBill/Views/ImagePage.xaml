@@ -24,14 +24,14 @@
         <!--#region No Image -->
         <Grid IsVisible="{Binding HasPreviewImage,Converter={StaticResource Not}}">
             <VerticalStackLayout IsVisible="{Binding IsBusy,Converter={StaticResource Not}}" Spacing="10">
-                <Label Text="No Image loaded" HorizontalOptions="Center" FontSize="Large" />
+                <Label Text="No Image loaded" HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}" />
                 <Button Text="Restore Deleted image" HorizontalOptions="Center" Command="{Binding UndeleteCommand}" IsVisible="{Binding HasDeletedImage}"/>
             </VerticalStackLayout>
         </Grid>
         <!--#endregion-->
         <!--#region Busy Indicator -->
         <VerticalStackLayout IsVisible="{Binding IsBusy}" Grid.Row="1">
-            <Label Text="Processing Image" HorizontalOptions="Center" FontSize="Large"/>
+            <Label Text="Processing Image" HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}"/>
             <ActivityIndicator Color="Red" HeightRequest="50" HorizontalOptions="Center" VerticalOptions="Center" IsRunning="True"/>
         </VerticalStackLayout>
         <!--#endregion-->

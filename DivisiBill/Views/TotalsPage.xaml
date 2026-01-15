@@ -22,7 +22,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="labelStyle" TargetType="Label">
-                <Setter Property="FontSize" Value="24"/>
+                <Setter Property="FontSize" Value="{StaticResource FontSizeTitle}"/>
                 <Setter Property="HorizontalTextAlignment" Value="End"/>
                 <Setter Property="VerticalTextAlignment" Value="Center"/>
                 <Setter Property="Padding" Value="0"/>
@@ -56,10 +56,10 @@
                     </SwipeView.RightItems>
                     <!--#region PersonCost display -->
                     <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions= "*,Auto">
-                        <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="24" />
+                        <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="{StaticResource FontSizeTitle}" />
                         <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}"
                                LineBreakMode="NoWrap"
-                               FontSize="24" IsEnabled="True" HorizontalTextAlignment="End" />
+                               FontSize="{StaticResource FontSizeTitle}" IsEnabled="True" HorizontalTextAlignment="End" />
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer
                                 CommandParameter="{Binding}"
@@ -125,12 +125,12 @@
                 <TapGestureRecognizer Command="{Binding PushVenueListCommand}" NumberOfTapsRequired="2" />
                 <SwipeGestureRecognizer Direction="Right" Command="{Binding GoToItemsCommand}"/>
             </Border.GestureRecognizers>
-            <Label Text="{Binding VenueName}" FontSize="Title" HorizontalOptions="Center">
+            <Label Text="{Binding VenueName}" FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="Center">
             </Label>
         </Border>
         <Label IsVisible="{Binding IsFiltered}"
                Text="{Binding FilteredSharerName, StringFormat='Filtering Items for {0}'}"
-               FontSize="Title" HorizontalOptions="Center">
+               FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="Center">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer
                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=GoToItemsCommand}"/>
@@ -159,9 +159,9 @@
         <!--#region Hint -->
         <Border IsVisible="{Binding ShowTotalsHint}" Style="{StaticResource HintStyle}">
             <VerticalStackLayout>
-                <Label Text="Swipe person or page" FontSize="24" HorizontalOptions="Center"/>
-                <Label Text="Double tap changes Title" FontSize="24" HorizontalOptions="Center"/>
-                <Label Text="See Help for more info" FontSize="24" HorizontalOptions="Center"/>
+                <Label Text="Swipe person or page" FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="Center"/>
+                <Label Text="Double tap changes Title" FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="Center"/>
+                <Label Text="See Help for more info" FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="Center"/>
                 <HorizontalStackLayout HorizontalOptions="Center">
                     <CheckBox IsChecked="{Binding ShowTotalsHint, Converter={StaticResource Not}}"/>
                     <Label Text="Hide this hint" VerticalOptions="Center"/>
@@ -179,13 +179,13 @@
         <!--#region Unshared amount (if suspiciously large) -->
         <Label IsVisible="{Binding IsUnsharedAmountSignificant}"
                Text="{Binding RoundingErrorAmount, StringFormat='Bug, rounding error {0:C}'}"
-               FontSize="24" HorizontalTextAlignment="Center">
+               FontSize="{StaticResource FontSizeTitle}" HorizontalTextAlignment="Center">
         </Label>
         <!--#endregion-->
         <!--#region Unallocated amount (if any nonzero item has not been allocated) -->
         <Label IsVisible="{Binding Path=IsAnyUnallocated}"
                Text="{Binding Path=UnallocatedAmount, StringFormat='Unallocated Amount {0:C}'}"
-               FontSize="24" HorizontalTextAlignment="Center">
+               FontSize="{StaticResource FontSizeTitle}" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowUnallocatedCommand}"/>
             </Label.GestureRecognizers>
@@ -216,7 +216,7 @@
                     Third column is blank, it's just used for spacing
                     Fourth column has all the amounts in it-->
                 <!--#region Subtotal -->
-                <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="24" LineBreakMode="TailTruncation" Text="Bill Subtotal"/>
+                <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="{StaticResource FontSizeTitle}" LineBreakMode="TailTruncation" Text="Bill Subtotal"/>
                 <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubTotal, StringFormat='{0:C}'}" Style="{StaticResource labelStyle}">
                     <Label.Behaviors>
                         <services:CurrencyLabelBehavior
@@ -228,11 +228,11 @@
                 </Label>
                 <!--#endregion-->
                 <!--#region Tax -->
-                <Label Grid.Row="1" FontSize="24" LineBreakMode="TailTruncation">
+                <Label Grid.Row="1" FontSize="{StaticResource FontSizeTitle}" LineBreakMode="TailTruncation">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="Tax" FontSize="24"/>
-                            <Span Text="{Binding IsDefaultTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}" FontSize="24"/>
+                            <Span Text="Tax" FontSize="{StaticResource FontSizeTitle}"/>
+                            <Span Text="{Binding IsDefaultTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}" FontSize="{StaticResource FontSizeTitle}"/>
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
@@ -252,17 +252,17 @@
                 </Label>
                 <!--#endregion-->
                 <!--#region Coupon after Tax-->
-                <Label Grid.Row="2" Grid.ColumnSpan="2" FontSize="24" LineBreakMode="TailTruncation" Text="Discount After Tax"
+                <Label Grid.Row="2" Grid.ColumnSpan="2" FontSize="{StaticResource FontSizeTitle}" LineBreakMode="TailTruncation" Text="Discount After Tax"
                        IsVisible="{Binding CouponAmountIfAfterTax, Converter={StaticResource IsNonZero}}"/>
-                <Label Grid.Row="2" Grid.Column="3" FontSize="24" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}"
+                <Label Grid.Row="2" Grid.Column="3" FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="End" Style="{StaticResource RedLabelTextStyle}"
                        Text="{Binding Path = RawCouponAmount, StringFormat='{0:C}'}" IsVisible="{Binding CouponAmountIfAfterTax, Converter={StaticResource IsNonZero}}"/>
                 <!--#endregion-->
                 <!--#region Tip -->
                 <Label Grid.Row="3" LineBreakMode="TailTruncation">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="Tip" FontSize="24"/>
-                            <Span Text="{Binding IsDefaultTip, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}" FontSize="24"/>
+                            <Span Text="Tip" FontSize="{StaticResource FontSizeTitle}"/>
+                            <Span Text="{Binding IsDefaultTip, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}" FontSize="{StaticResource FontSizeTitle}"/>
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
@@ -274,7 +274,7 @@
                        Text="{Binding Path = Tip, StringFormat='{0:C}'}"/>
                 <!--#endregion-->
                 <!--#region Total -->
-                <Label Grid.Row="4" FontSize="24" LineBreakMode="TailTruncation">Total</Label>
+                <Label Grid.Row="4" FontSize="{StaticResource FontSizeTitle}" LineBreakMode="TailTruncation">Total</Label>
                 <Label Grid.Row="4" Grid.Column="3" Style="{StaticResource labelStyle}"
                        Text="{Binding Path = TotalAmount, StringFormat='{0:C}'}"/>
                 <!--#endregion-->

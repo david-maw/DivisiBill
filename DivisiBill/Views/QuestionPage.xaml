@@ -21,7 +21,7 @@
         StrokeThickness="2">
         <VerticalStackLayout Spacing="10" VerticalOptions="Center">
             <Label
-                FontSize="Large"
+                FontSize="{StaticResource FontSizeLarge}"
                 HorizontalOptions="Center"
                 Text="{Binding Title}" />
             <Label Text="{Binding Text}" />

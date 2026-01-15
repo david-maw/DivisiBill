@@ -23,12 +23,12 @@
             </Image>
             <!--#endregion-->
             <!--#region App name and version information -->
-            <Label Grid.Row="2" FontSize="22" HorizontalOptions="Center">
+            <Label Grid.Row="2" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center">
                 <Label.FormattedText>
                     <FormattedString>
                         <FormattedString.Spans>
-                            <Span Text="DivisiBill " FontSize="22" />
-                            <Span Text="{x:Static services:Utilities.VersionName}" FontSize="22" FontAttributes="Bold" />
+                            <Span Text="DivisiBill " FontSize="{StaticResource FontSizeLarge}" />
+                            <Span Text="{x:Static services:Utilities.VersionName}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" />
                         </FormattedString.Spans>
                     </FormattedString>
                 </Label.FormattedText>

@@ -22,7 +22,7 @@
         <Label
             Text="{Binding VenueName,Mode=OneWay}"
             VerticalOptions="Center"
-            HorizontalOptions="Center" FontSize="Title" FontAttributes="Bold"/>
+            HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
         <Label VerticalOptions="Center" HorizontalOptions="Center">
             <Label.FormattedText>
                 <FormattedString>

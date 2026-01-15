@@ -90,19 +90,19 @@
                     RowDefinitions="Auto">
                     <Label
                         Grid.Column="0"
-                        FontSize="15"
+                        FontSize="{StaticResource FontSizeMedium}"
                         HorizontalOptions="Center"
                         Text="{Binding Sharers}"
                         VerticalOptions="Center" />
                     <Label
                         Grid.Column="1"
-                        FontSize="24"
+                        FontSize="{StaticResource FontSizeTitle}"
                         LineBreakMode="TailTruncation"
                         Text="{Binding ItemName}" />
                     <Label
                         x:Name="amountLabel"
                         Grid.Column="2"
-                        FontSize="24"
+                        FontSize="{StaticResource FontSizeTitle}"
                         HorizontalTextAlignment="End"
                         IsEnabled="True"
                         LineBreakMode="NoWrap"
@@ -110,7 +110,7 @@
                         Text="{Binding Path=FilteredAmount, Converter={StaticResource AbsoluteCurrency}}" />
                     <Label
                         Grid.Column="3"
-                        FontSize="15"
+                        FontSize="{StaticResource FontSizeMedium}"
                         IsVisible="{Binding Comped}"
                         Text="☺"
                         VerticalOptions="Center" />
@@ -170,14 +170,14 @@
                 <SwipeGestureRecognizer Command="{Binding GoToTotalsCommand}" Direction="Left" />
             </Border.GestureRecognizers>
             <Label
-                FontSize="Title"
+                FontSize="{StaticResource FontSizeTitle}"
                 HorizontalOptions="Center"
                 Text="{Binding VenueName}" />
         </Border>
         <!--#endregion-->
         <!--#region Filter Information-->
         <Label
-            FontSize="Title"
+            FontSize="{StaticResource FontSizeTitle}"
             HorizontalOptions="Center"
             IsVisible="{Binding IsFiltered}">
             <Label.FormattedText>
@@ -238,15 +238,15 @@
         <Border IsVisible="{Binding ShowLineItemsHint}" Style="{StaticResource HintStyle}">
             <VerticalStackLayout Padding="5">
                 <Label
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     HorizontalOptions="Center"
                     Text="Swipe items or page" />
                 <Label
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     HorizontalOptions="Center"
                     Text="Double tap changes Title" />
                 <Label
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     HorizontalOptions="Center"
                     Text="See Help for more info" />
                 <HorizontalStackLayout HorizontalOptions="Center">
@@ -292,14 +292,14 @@
                 <!--#region Subtotal (Overall or Individual)-->
                 <Label
                     Grid.Row="0"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
                     LineBreakMode="TailTruncation"
                     Text="Bill Subtotal" />
                 <Label
                     Grid.Row="0"
                     Grid.Column="1"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     HorizontalOptions="End"
                     IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
                     Text="{Binding SubTotal, StringFormat='{0:C}'}">
@@ -313,14 +313,14 @@
                 </Label>
                 <Label
                     Grid.Row="0"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     IsVisible="{Binding IsFiltered}"
                     LineBreakMode="TailTruncation"
                     Text="Person Subtotal" />
                 <Label
                     Grid.Row="0"
                     Grid.Column="1"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     HorizontalOptions="End"
                     IsVisible="{Binding IsFiltered}"
                     Text="{Binding FilteredSubTotal, StringFormat='{0:C}'}" />
@@ -328,7 +328,7 @@
                 <!--#region Post Tax Coupon (overall or individual)-->
                 <Label
                     Grid.Row="1"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     LineBreakMode="TailTruncation"
                     Text="Discount After Tax">
                     <Label.IsVisible>
@@ -341,7 +341,7 @@
                 <Label
                     Grid.Row="1"
                     Grid.Column="1"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     HorizontalOptions="End"
                     Style="{StaticResource RedLabelTextStyle}"
                     Text="{Binding RawCouponAmount, StringFormat='{0:C}'}">
@@ -354,7 +354,7 @@
                 </Label>
                 <Label
                     Grid.Row="1"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     LineBreakMode="TailTruncation"
                     Text="Discount After Tax">
                     <Label.IsVisible>
@@ -367,7 +367,7 @@
                 <Label
                     Grid.Row="1"
                     Grid.Column="1"
-                    FontSize="24"
+                    FontSize="{StaticResource FontSizeTitle}"
                     HorizontalOptions="End"
                     Style="{StaticResource RedLabelTextStyle}"
                     Text="{Binding FilteredCouponAmountIfAfterTax, StringFormat='{0:C}'}">
@@ -391,7 +391,7 @@
             IsVisible="False">
             <Label
                 x:Name="SharesCountHeader"
-                FontSize="24"
+                FontSize="{StaticResource FontSizeTitle}"
                 HorizontalOptions="Center" />
             <HorizontalStackLayout HorizontalOptions="Center">
                 <HorizontalStackLayout.Resources>
@@ -470,7 +470,7 @@
             <Entry
                 x:Name="SelectedAmountEntry"
                 Grid.Column="1"
-                FontSize="24"
+                FontSize="{StaticResource FontSizeTitle}"
                 HorizontalTextAlignment="End"
                 Keyboard="Numeric"
                 Placeholder="Value"

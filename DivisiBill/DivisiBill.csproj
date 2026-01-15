@@ -43,11 +43,6 @@
       <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
    </PropertyGroup>
 
-	<!--Workaround until https://github.com/dotnet/maui/issues/33466 is fixed or I work around it by modifying XAML Label.FontSize size usage-->
-	<ItemGroup>
-		<MauiXaml Update="Views\*.xaml" NoWarn="0612" />
-	</ItemGroup>
-
 	<PropertyGroup>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>

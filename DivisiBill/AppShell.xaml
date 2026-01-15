@@ -23,7 +23,7 @@
         <DataTemplate>
             <ContentView>
                 <!--x:DataType="BaseShellItem" Handles FlyoutItem too-->
-                <Label Text="{Binding Title}" FontSize="{OnIdiom Phone=Medium}"
+                <Label Text="{Binding Title}" FontSize="{OnIdiom Phone={StaticResource FontSizeMedium}}"
                        x:DataType="BaseShellItem"
                        Margin="20, 8"
                        VerticalTextAlignment="Center" />
@@ -35,7 +35,7 @@
             <ContentView>
                 <!--x:DataType="BaseShellItem" Handles MenuItem too, why it is not BaseMenuItem or MenuItem though is a mystery-->
                 <!--The Text property is mapped to Title by MenuShellItem, see https://github.com/dotnet/maui/issues/25190-->
-                <Label Text="{Binding Title}" FontSize="{OnIdiom Phone=Medium}"
+                <Label Text="{Binding Title}" FontSize="{OnIdiom Phone={StaticResource FontSizeMedium}}"
                        x:DataType="BaseShellItem"
                        Margin="20, 8"
                        VerticalTextAlignment="Center" />

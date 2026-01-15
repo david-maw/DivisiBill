@@ -75,7 +75,7 @@
                             Grid.Column="1"
                             Grid.ColumnSpan="3"
                             Margin="0,-2,0,-5"
-                            FontSize="Large"
+                            FontSize="{StaticResource FontSizeLarge}"
                             LineBreakMode="TailTruncation"
                             Text="{Binding VenueName}">
                             <Label.IsVisible>
@@ -99,7 +99,7 @@
                             Grid.Row="1"
                             Grid.Column="1"
                             Grid.ColumnSpan="3"
-                            FontSize="Small"
+                            FontSize="{StaticResource FontSizeSmall}"
                             Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}"
                             VerticalOptions="Start" />
                         <!--  Second item: Distance Information (May be null)  -->
@@ -108,7 +108,7 @@
                             Grid.Column="1"
                             Grid.ColumnSpan="3"
                             Margin="0,0,10,0"
-                            FontSize="Small"
+                            FontSize="{StaticResource FontSizeSmall}"
                             HorizontalOptions="End"
                             Text="{Binding Path=Distance, Converter={StaticResource Distance}}"
                             VerticalOptions="Start" />
@@ -305,11 +305,11 @@
     <services:ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading-->
         <Label
-            FontSize="Medium"
+            FontSize="{StaticResource FontSizeMedium}"
             HorizontalOptions="Center"
             IsVisible="{Binding FilteredVenueName, Converter={StaticResource IsStringNotNullOrWhiteSpace}}"
             Text="{Binding FilteredVenueName, StringFormat='For {0}'}" />
-        <Label FontSize="Medium" HorizontalOptions="Center">
+        <Label FontSize="{StaticResource FontSizeMedium}" HorizontalOptions="Center">
             <Label.FormattedText>
                 <FormattedString>
                     <Span Text="{Binding SelectedMealSummariesCountText, StringFormat='{0} of', TargetNullValue=''}" />
@@ -398,16 +398,16 @@
                             <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*,Auto">
                                 <Grid ColumnDefinitions="*, auto">
                                     <HorizontalStackLayout Spacing="10">
-                                        <Label FontSize="Large" Text="{Binding VenueName}" />
-                                        <Label FontSize="Large" Text="{Binding CountText, StringFormat='({0})'}" />
+                                        <Label FontSize="{StaticResource FontSizeLarge}" Text="{Binding VenueName}" />
+                                        <Label FontSize="{StaticResource FontSizeLarge}" Text="{Binding CountText, StringFormat='({0})'}" />
                                     </HorizontalStackLayout>
                                 </Grid>
                                 <Grid Grid.Row="1" ColumnDefinitions="*, auto" IsVisible="{Binding IsExpanded, Converter={StaticResource Not}, x:DataType=toolkit:Expander, Source={RelativeSource AncestorType={x:Type toolkit:Expander}}}">
-                                    <Label FontSize="Small" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}" />
+                                    <Label FontSize="{StaticResource FontSizeSmall}" Text="{Binding CreationTime, Converter={StaticResource ApproximateDateTime}}" />
                                     <Label
                                         Grid.Column="1"
                                         Margin="0,0,34,0"
-                                        FontSize="Small"
+                                        FontSize="{StaticResource FontSizeSmall}"
                                         HorizontalOptions="End"
                                         Text="{Binding Path=Distance, Converter={StaticResource Distance}}" />
                                 </Grid>
@@ -490,7 +490,7 @@
         <Label
             services:ColumnLayout.SameRow="True"
             Padding="2,10"
-            FontSize="Title"
+            FontSize="{StaticResource FontSizeTitle}"
             HorizontalOptions="Center"
             Text="Loading Bills..."
             IsVisible="{Binding IsMealListLoading}"

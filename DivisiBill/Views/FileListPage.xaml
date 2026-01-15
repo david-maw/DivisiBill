@@ -49,21 +49,21 @@
                             <Label
                                 Grid.Row="0"
                                 Grid.Column="1"
-                                FontSize="18"
+                                FontSize="{StaticResource FontSizeMedium}"
                                 LineBreakMode="TailTruncation"
                                 FontAttributes="Bold"
                                 Text="{Binding CreatedDateTimeString}" />
                             <Label
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                FontSize="16"
+                                FontSize="{StaticResource FontSizeMedium}"
                                 LineBreakMode="TailTruncation"
                                 Text="{Binding Name}" />
                             <Label
                                 Grid.Row="0"
                                 Grid.RowSpan="2"
                                 Grid.Column="2"
-                                FontSize="24"
+                                FontSize="{StaticResource FontSizeTitle}"
                                 Text="{Binding SizeText}" VerticalOptions="Center"/>
                         </Grid>
                         <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
@@ -127,18 +127,18 @@
                         Grid.Row="0"
                         Grid.Column="1"
                         Grid.ColumnSpan="2"
-                        FontSize="Medium"
+                        FontSize="{StaticResource FontSizeMedium}"
                         Text="{Binding CreatedDateTimeString}" />
                     <Label
                         Grid.Row="1"
                         Grid.Column="1"
-                        FontSize="Medium"
+                        FontSize="{StaticResource FontSizeMedium}"
                         LineBreakMode="TailTruncation"
                         Text="{Binding Name}" />
                     <Label
                         Grid.Row="1"
                         Grid.Column="2"
-                        FontSize="Medium"
+                        FontSize="{StaticResource FontSizeMedium}"
                         Text="{Binding SizeText}" />
                 </Grid>
                 <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" HeightRequest="2" />
@@ -179,20 +179,20 @@
                     <VerticalStackLayout IsVisible="{Binding ItemsFound}">
                         <Label
                             Margin="0,5"
-                            FontSize="Large"
+                            FontSize="{StaticResource FontSizeLarge}"
                             HorizontalOptions="Center"
                             IsVisible="{Binding ShowAsSelectableList}"
                             Text="{Binding FileListCount, StringFormat='{0} lists, tap to select'}" />
                         <Label
                             Margin="0,5"
-                            FontSize="Large"
+                            FontSize="{StaticResource FontSizeLarge}"
                             HorizontalOptions="Center"
                             IsVisible="{Binding ShowAsSelectableList, Converter={StaticResource Not}}"
                             Text="{Binding FileListCount, StringFormat='{0} lists, swipe or tap'}" />
                     </VerticalStackLayout>
                     <Label
                         Margin="0,5"
-                        FontSize="Large"
+                        FontSize="{StaticResource FontSizeLarge}"
                         HorizontalOptions="Center"
                         IsVisible="{Binding ItemsFound, Converter={StaticResource Not}}"
                         Text="{Binding ItemTypePlural, StringFormat='No {0} Found'}" />

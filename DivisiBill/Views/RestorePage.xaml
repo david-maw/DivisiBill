@@ -9,7 +9,7 @@
     <VerticalStackLayout Padding="10,0" Spacing="10" VerticalOptions="Center">
         <Label
             Margin="0,0,0,0"
-            FontSize="Large"
+            FontSize="{StaticResource FontSizeLarge}"
             HorizontalOptions="Center"
             Text="Restore an Archive" />
         <Label
