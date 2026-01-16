@@ -33,8 +33,7 @@
                                 BackgroundColor="PaleGreen"
                                 Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                                 CommandParameter="{Binding}"
-                                IconImageSource="{StaticResource GlyphLoad}"
-                                Invoked="OnUseSwipeItemInvoked" />
+                                IconImageSource="{StaticResource GlyphLoad}" />
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
@@ -43,8 +42,7 @@
                                 BackgroundColor="Red"
                                 Command="{Binding DeleteMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                                 CommandParameter="{Binding}"
-                                IconImageSource="{StaticResource GlyphDel}"
-                                Invoked="OnDeleteSwipeItemInvoked" />
+                                IconImageSource="{StaticResource GlyphDel}" />
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <!--#endregion-->
