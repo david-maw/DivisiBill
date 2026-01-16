@@ -20,16 +20,14 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"
-                                       Invoked="OnAssignSwipeItemInvoked" />
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}" />
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"
-                                       Invoked="OnDeleteSwipeItemInvoked" />
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}" />
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <VerticalStackLayout x:DataType="model:Venue">

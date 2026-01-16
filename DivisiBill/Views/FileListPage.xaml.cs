@@ -44,21 +44,4 @@ public partial class FileListPage : ContentPage
         fileListViewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;
     }
     #endregion
-
-    //TODO: Remove when https://github.com/dotnet/maui/issues/32332 is fixed
-    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
-    {
-        if (sender is SwipeItem si && si.BindingContext is RemoteItemInfo remoteItemInfo)
-        {
-            fileListViewModel.DeleteThisItemCommand.Execute(remoteItemInfo);
-        }
-    }
-
-    private void OnUseSwipeItemInvoked(object sender, EventArgs e)
-    {
-        if (sender is SwipeItem si && si.BindingContext is RemoteItemInfo remoteItemInfo)
-        {
-            fileListViewModel.UseCommand.Execute(remoteItemInfo);
-        }
-    }
 }
