@@ -4,14 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:local="clr-namespace:DivisiBill"
-    xmlns:views="clr-namespace:DivisiBill.Views"
+    xmlns:views="clr-namespace:DivisiBill.ViewsPartial"
     x:DataType="views:AppSnackBarPage"
     BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:AppSnackBarPage}"
     BackgroundColor="Transparent"
     Margin="0,0,0,5"
     Padding="0"
     VerticalOptions="End"
-    x:Class="DivisiBill.Views.AppSnackBarPage">
+    x:Class="DivisiBill.ViewsPartial.AppSnackBarPage">
     <Border Padding="5" StrokeShape="RoundRectangle 10"
             BackgroundColor="{AppThemeBinding Light={StaticResource LightRed}, Dark={StaticResource DarkRed}}" VerticalOptions="End">
         <Label Text="{Binding Text}" TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HorizontalOptions="Center"/>

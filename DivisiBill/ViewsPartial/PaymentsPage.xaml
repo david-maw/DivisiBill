@@ -4,13 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:local="clr-namespace:DivisiBill"
-    xmlns:views="clr-namespace:DivisiBill.Views"
+    xmlns:views="clr-namespace:DivisiBill.ViewsPartial"
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     x:DataType="vm:PaymentsViewModel"
     BackgroundColor="Transparent"
     Padding="0"
     Margin="0"
-    x:Class="DivisiBill.Views.PaymentsPage">
+    x:Class="DivisiBill.ViewsPartial.PaymentsPage">
     <toolkit:Popup.Resources>
         <ResourceDictionary>
             <Style TargetType="Label">

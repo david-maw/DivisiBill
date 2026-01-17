@@ -1,4 +1,4 @@
-namespace DivisiBill.Views;
+namespace DivisiBill.ViewsPartial;
 
 public partial class PaymentsPage : CommunityToolkit.Maui.Views.Popup
 {

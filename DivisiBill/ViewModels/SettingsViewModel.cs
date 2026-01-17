@@ -111,7 +111,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
 
     #region Commands
     [RelayCommand]
-    private async Task ChangePassword() => _ = await Shell.Current.ShowPopupAsync<bool>(new Views.ChangePasswordPopup());
+    private async Task ChangePassword() => _ = await Shell.Current.ShowPopupAsync<bool>(new ViewsPartial.ChangePasswordPopup());
     [RelayCommand]
     private void ClearPassword()
     {

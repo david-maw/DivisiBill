@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Maui.Views;
 using System.Runtime.CompilerServices;
 
-namespace DivisiBill.Views;
+namespace DivisiBill.ViewsPartial;
 
 public partial class QuestionPage : Popup<QuestionResponse>
 {

@@ -53,7 +53,7 @@ internal static class CallWs
             return webCallTask.Result;
         else
         { // The call did not complete successfully, so show a popup to let the user know and give them a chance to retry or abandon it}
-            IPopupResult<HttpResponseMessage> popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Views.CheckWebPage(webCallTask, webCall, webStopwatch), Utilities.GetNullPopupOptions());
+            IPopupResult<HttpResponseMessage> popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new ViewsPartial.CheckWebPage(webCallTask, webCall, webStopwatch), Utilities.GetNullPopupOptions());
             return popupResult?.Result ?? new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout); // If the user closed the popup, return a timeout result
         }
     }

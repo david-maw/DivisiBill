@@ -653,7 +653,7 @@ public static partial class Utilities // Partial for regex generator
     /// </summary>
     /// <param name="paymentsViewModel">A <see cref="PaymentsViewModel"/> populated with the required payment information</param>
     /// <returns></returns>
-    internal static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new Views.PaymentsPage(paymentsViewModel), Utilities.GetNullPopupOptions());
+    internal static async Task ShowPayments(PaymentsViewModel paymentsViewModel) => await Shell.Current.ShowPopupAsync(new ViewsPartial.PaymentsPage(paymentsViewModel), Utilities.GetNullPopupOptions());
     /// <summary>
     /// Show an application message that will go away by itself if not acknowledged. Can be invoked from any thread.
     /// </summary>
@@ -662,7 +662,7 @@ public static partial class Utilities // Partial for regex generator
     internal static Task ShowAppSnackBarAsync(string message)
     {
         RecordMsg("Snack message to user: " + message);
-        return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.ShowPopupAsync(new Views.AppSnackBarPage(message), Utilities.GetNullPopupOptions()));
+        return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.ShowPopupAsync(new ViewsPartial.AppSnackBarPage(message), Utilities.GetNullPopupOptions()));
     }
 
     /// <summary>
