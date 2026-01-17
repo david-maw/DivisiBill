@@ -89,7 +89,7 @@ internal partial class DataManagementViewModel : ObservableObject
         {
             var localMealDict = Meal.LocalMealList.ToDictionary(ms => ms.Id);
             bool foundOne = false;
-            foreach (var mealSummary in Meal.RemoteMealList.Where(ms => !localMealDict.ContainsKey(ms.Id)))
+            foreach (MealSummary? mealSummary in Meal.RemoteMealList.Where(ms => !localMealDict.ContainsKey(ms.Id)))
             {
                 mealSummary.FileSelected = true;
                 foundOne = true;
@@ -137,8 +137,8 @@ internal partial class DataManagementViewModel : ObservableObject
             return;
         }
         // At this point we have a zip archive file on disk containing a single XML file containing the archive data
-        try 
-        { 
+        try
+        {
             if (ArchiveShare)
             {
 
@@ -162,10 +162,12 @@ internal partial class DataManagementViewModel : ObservableObject
             {
                 FileSaverResult? fileSaverResult = null;
                 using (Stream s = new FileStream(zipFullName, FileMode.Open, FileAccess.Read))
-                { fileSaverResult = await FileSaver.Default.SaveAsync(zipFullName, s); }
+                {
+                    fileSaverResult = await FileSaver.Default.SaveAsync(zipFullName, s);
+                }
                 if (fileSaverResult.IsSuccessful)
                 {
-                    File.Delete(zipFullName); 
+                    File.Delete(zipFullName);
                     await Utilities.ShowAppSnackBarAsync("Archive to disk completed successfully");
                 }
                 else
@@ -189,7 +191,7 @@ internal partial class DataManagementViewModel : ObservableObject
     {
         try
         {
-            var result = await FilePicker.PickAsync(new PickOptions()
+            FileResult? result = await FilePicker.PickAsync(new PickOptions()
             {
                 PickerTitle = "Please select an archive file",
                 FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
@@ -270,7 +272,7 @@ internal partial class DataManagementViewModel : ObservableObject
         await Task.Yield(); // Give the UI a chance to update - this seems to sometimes be necessary on Android
         try
         {
-            var archive = SelectedArchive;
+            Archive archive = SelectedArchive;
 
             // Apply user settings from the archive (if present)
             if (archive.UserSettings is not null)
@@ -300,12 +302,12 @@ internal partial class DataManagementViewModel : ObservableObject
             }
 
             // Restore the data items
-            (bool restoreWorked, string  restoreFailureText) = await archive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated);
+            (bool restoreWorked, string restoreFailureText) = await archive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated);
 
             if (restoreWorked)
             {
                 // Navigate to meal list after restore
-                await App.GoToAsync(Routes.MealListByAgePage); 
+                await App.GoToAsync(Routes.MealListByAgePage);
 
                 // Clear selected archive after restore
                 SelectedArchive = null;
@@ -429,7 +431,7 @@ internal partial class DataManagementViewModel : ObservableObject
         string archiveName = "KeysArchive-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
         try
         {
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
             int keysArchived = await CryptManager.ArchivePrivateKeysToZipAsync(KeyArchivePassword, stream);
             if (keysArchived == 0)
                 await Utilities.ShowAppSnackBarAsync("No keys available to archive");
@@ -438,7 +440,7 @@ internal partial class DataManagementViewModel : ObservableObject
                 stream.Position = 0; // Reset stream position before saving
                 if (commandParameter is null || !commandParameter.Equals("share"))
                 {
-                    var result = await FileSaver.Default.SaveAsync(archiveName, stream);
+                    FileSaverResult result = await FileSaver.Default.SaveAsync(archiveName, stream);
                     if (result.IsSuccessful)
                         await Utilities.ShowAppSnackBarAsync($"{keysArchived} key(s) Archived to {result.FilePath}");
                     else
@@ -448,7 +450,7 @@ internal partial class DataManagementViewModel : ObservableObject
                 {
                     // Save to a temporary file for sharing
                     string tempArchiveFilePath = Path.Combine(FileSystem.CacheDirectory, archiveName);
-                    using (var fileStream = new FileStream(tempArchiveFilePath, FileMode.Create, FileAccess.Write))
+                    using (FileStream fileStream = new(tempArchiveFilePath, FileMode.Create, FileAccess.Write))
                     {
                         await stream.CopyToAsync(fileStream);
                     }
@@ -483,7 +485,7 @@ internal partial class DataManagementViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanArchiveOrRestoreKeys))]
     private async Task RestoreKeysAsync()
     {
-        var result = await FilePicker.PickAsync(new PickOptions
+        FileResult? result = await FilePicker.PickAsync(new PickOptions
         {
             PickerTitle = "Select key archive file",
             FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
@@ -501,7 +503,7 @@ internal partial class DataManagementViewModel : ObservableObject
 
         try
         {
-            using var stream = await result.OpenReadAsync();
+            using Stream stream = await result.OpenReadAsync();
             (int restoredKeys, int totalKeys) = await CryptManager.RestorePrivateKeysFromZipAsync(KeyArchivePassword, stream);
             if (restoredKeys == totalKeys)
                 await Utilities.ShowAppSnackBarAsync($"{restoredKeys} keys restored successfully.");
@@ -511,7 +513,7 @@ internal partial class DataManagementViewModel : ObservableObject
         catch (InvalidDataException ex)
         {
             string details = ex.Message;
-            if (details is not null && details == "RSA fingerprint mismatch.")
+            if (details is not null and "RSA fingerprint mismatch.")
                 details = "Incorrect password.";
             await Utilities.ShowAppSnackBarAsync($"Key restore error: {details}");
         }
@@ -522,13 +524,10 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
-    private bool CanArchiveOrRestoreKeys()
-    {
-        return !string.IsNullOrWhiteSpace(KeyArchivePassword);
-    }
+    private bool CanArchiveOrRestoreKeys() => !string.IsNullOrWhiteSpace(KeyArchivePassword);
 
     [RelayCommand]
-    private static async Task ClearCloudAsync ()
+    private static async Task ClearCloudAsync()
     {
         if (App.IsCloudAllowed) // Ensure that cloud access is allowed and usable
         {

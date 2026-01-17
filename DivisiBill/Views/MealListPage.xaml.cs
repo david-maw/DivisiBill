@@ -42,8 +42,8 @@ public partial class MealListPage : ContentPage
         if (ms is null)
             return;
         Meal m = ms.IsForCurrentMeal ? Meal.CurrentMeal : await Meal.LoadAsync(ms, true);
-        var navigationParameter = new ShellNavigationQueryParameters
-                {
+        ShellNavigationQueryParameters navigationParameter = new()
+        {
                     { "ShowStorage", viewModel.ShowLocalMeals && viewModel.ShowRemoteMeals }
                 };
         if (m is not null)

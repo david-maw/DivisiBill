@@ -11,7 +11,7 @@ public class MealSummarySerialization
     [TestMethod]
     public void DeserializeTest()
     {
-        MealSummary ms = MealSummary.LoadJsonFrom
+        var ms = MealSummary.LoadJsonFrom
             ("""{"CreationTime":"2024-12-05T16:53:05-08:00","Restaurant":"Aruba","RoundedAmount":120,"LastChangeTime":"2024-12-05T16:53:06-08:00","StoredVersion":2}""");
         // Note that RoundedAmount is ignored, it is no longer used
         Assert.IsNotNull(ms);
@@ -52,7 +52,7 @@ public class MealSummarySerialization
             ActualLastChangeTime = new DateTime(2025, 1, 2, 13, 14, 15),
         };
         string jsonData = ms1.GetJsonString();
-        MealSummary ms = MealSummary.LoadJsonFrom(jsonData);
+        var ms = MealSummary.LoadJsonFrom(jsonData);
         Assert.AreEqual(ms1.VenueName, ms.VenueName);
         Assert.AreEqual(ms1.CreationTime, ms.CreationTime);
         Assert.AreEqual(ms1.ActualLastChangeTime, ms.ActualLastChangeTime);
@@ -66,7 +66,7 @@ public class MealSummarySerialization
     {
         byte[] byteArray = Encoding.UTF8.GetBytes(MealSerialization.DefaultMealXml);
         using MemoryStream memoryStream = new(byteArray);
-        MealSummary ms = MealSummary.LoadFromMealStream(memoryStream, "dummy");
+        var ms = MealSummary.LoadFromMealStream(memoryStream, "dummy");
         Assert.IsNotNull(ms);
         Assert.AreEqual("Queasy Diner", ms.VenueName);
         Assert.AreEqual(2, ms.StoredVersion);

@@ -2,6 +2,7 @@ using DivisiBill.Services;
 using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
+
 public partial class ImagePage : ContentPage
 {
     private readonly ImageViewModel viewModel;

@@ -1,10 +1,10 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DivisiBill.Models;
 
@@ -49,10 +49,7 @@ public partial class LineItem : ObservableObject
     /// <summary>
     /// Initializes a new instance of <see cref="LineItem"/> with default values and a default item name.
     /// </summary>
-    public LineItem()
-    {
-        SetupSharedBy();
-    }
+    public LineItem() => SetupSharedBy();
 
     /// <summary>
     /// Initializes a new instance of <see cref="LineItem"/> copying values from the provided <paramref name="li"/>.
@@ -93,7 +90,7 @@ public partial class LineItem : ObservableObject
     public DinerID GetNextSharer(DinerID init = DinerID.none)
     {
         DinerID cur = init, next = DinerID.none;
-        foreach (var payee in SharedBy.Skip((int)init))
+        foreach (bool payee in SharedBy.Skip((int)init))
         {
             cur++;
             if (payee)
@@ -167,10 +164,10 @@ public partial class LineItem : ObservableObject
         if (sharerID == DinerID.none)
             return 0;
         int index = sharerID.ToIndex();
-        int shares = index < 0 || index >= SharedBy.Count 
-            ? 0 
-            : SharedBy[index] 
-                ? (1 + ExtraShares[index]) 
+        int shares = index < 0 || index >= SharedBy.Count
+            ? 0
+            : SharedBy[index]
+                ? (1 + ExtraShares[index])
                 : 0;
         return (byte)shares;
     }
@@ -188,15 +185,14 @@ public partial class LineItem : ObservableObject
             throw new Exception("Bad sharer ID");
 
         int sharerInx = sharerID.ToIndex();
-        bool extraChanged = false;
+        bool extraChanged;
         bool sharingChanged;
 
         if (count > 0)
         {
             sharingChanged = !SharedBy[sharerInx];
             SharedBy[sharerInx] = true;
-            // Was zero and now non-zero or vice versa
-            extraChanged = (ExtraShares[sharerInx] == 0) ^ (count > 1) ? false : (ExtraShares[sharerInx] != (count - 1));
+            extraChanged = ExtraShares[sharerInx] != (count - 1);
             ExtraShares[sharerInx] = (byte)(count - 1);
         }
         else
@@ -274,21 +270,23 @@ public partial class LineItem : ObservableObject
             return; // No need to share unless there are 2 or more participants to share it between
 
         // Figure out who spent something
-        var spenders = m.Costs.Where(pc => (pc.ChargedAmount) > 0).ToList();
+        var spenders = m.Costs.Where(pc => pc.ChargedAmount > 0).ToList();
 
         // Divide up the shared amount
-        var costPerPerson = new decimal[maxSharers]; // The sum of all the items distributed between all the sharers (a subset of participants)
+        decimal[] costPerPerson = new decimal[maxSharers]; // The sum of all the items distributed between all the sharers (a subset of participants)
         void assignIndividualCost(PersonCost pc) => costPerPerson[pc.DinerIndex] += pc.ChargedAmount; // Basically, stuff they paid for
 
         // If there are 0 or 1 existing sharers who spent money divide it between all participants otherwise just between existing sharers (which
         // might be all spending participants)
         if (TotalSharers < 2 || TotalSharers == m.Costs.Count)
-            foreach (var pc in spenders) assignIndividualCost(pc); // distribute among all spenders
+            foreach (PersonCost pc in spenders)
+                assignIndividualCost(pc); // distribute among all spenders
         else
-            foreach (var pc in spenders.Where(pc => GetShares(pc.DinerID) > 0)) assignIndividualCost(pc); // distribute among just existing sharers
+            foreach (PersonCost pc in spenders.Where(pc => GetShares(pc.DinerID) > 0))
+                assignIndividualCost(pc); // distribute among just existing sharers
 
         // At this point CostsPerPerson has a total amount entry for each person who purchased something, ignoring any discounts
-        var newShares = Meal.CostsToShares(costPerPerson);
+        byte[] newShares = Meal.CostsToShares(costPerPerson);
 
         // Transfer the calculated share allocation to this LineItem
         for (DinerID diner = DinerID.first; diner < DinerID.limit; diner++)
@@ -416,7 +414,7 @@ public partial class LineItem : ObservableObject
         get
         {
             DinerID maxDiner = GetMaxDiner();
-            var sb = new StringBuilder(SharedBy.Count);
+            StringBuilder sb = new(SharedBy.Count);
             for (DinerID diner = DinerID.first; diner <= maxDiner; diner++)
             {
                 sb.Append((char)('0' + GetShares(diner)));
@@ -506,7 +504,7 @@ public partial class LineItem : ObservableObject
     /// number, the next item number is advanced to one greater than the default. This method does not return a value
     /// and does not indicate whether an update occurred.</remarks>
     /// <param name="value">The name of the item used to determine the default item number.</param>
-    static void TrySetNextItemNumberFromName(string value)
+    private static void TrySetNextItemNumberFromName(string value)
     {
         int defaultItemNumber = DefaultItemNumber(value);
         if (defaultItemNumber >= NextItemNumber)
@@ -517,7 +515,7 @@ public partial class LineItem : ObservableObject
     /// </summary>
     /// <param name="value">The string to parse for an item number. Must not be null.</param>
     /// <returns>The item number as an integer if the input starts with "Item " followed by a valid integer; otherwise, -1.</returns>
-    static int DefaultItemNumber(string value) => !string.IsNullOrEmpty(value) && value.StartsWith("Item ") && value.Length > 5 && int.TryParse(value[5..], out int itemNumber)
+    private static int DefaultItemNumber(string value) => !string.IsNullOrEmpty(value) && value.StartsWith("Item ") && value.Length > 5 && int.TryParse(value[5..], out int itemNumber)
         ? itemNumber
         : -1;
 

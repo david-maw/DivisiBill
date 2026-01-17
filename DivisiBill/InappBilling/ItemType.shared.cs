@@ -1,39 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DivisiBill.InAppBilling;
 
-namespace DivisiBill.InAppBilling
+/// <summary>
+/// Product item type
+/// </summary>
+public enum ItemType
 {
     /// <summary>
-    /// Product item type
+    /// Single purchase (managed)
     /// </summary>
-    public enum ItemType
-    {
-        /// <summary>
-        /// Single purchase (managed)
-        /// </summary>
-        InAppPurchase,
-        /// <summary>
-        /// Single purchase that needs to be consumed manually
-        /// </summary>
-        InAppPurchaseConsumable,
-        /// <summary>
-        /// On going subscription
-        /// </summary>
-        Subscription
-    }
-
+    InAppPurchase,
     /// <summary>
-    /// Subscription proration mode
+    /// Single purchase that needs to be consumed manually
     /// </summary>
-    public enum SubscriptionProrationMode
-    {
-        ImmediateWithTimeProration = 1,
-        ImmediateAndChargeProratedPrice = 2,
-        ImmediateWithoutProration = 3,
-        Deferred = 4,
-        ImmediateAndChargeFullPrice = 5
-    }
+    InAppPurchaseConsumable,
+    /// <summary>
+    /// On going subscription
+    /// </summary>
+    Subscription
+}
+
+/// <summary>
+/// Subscription proration mode
+/// </summary>
+public enum SubscriptionProrationMode
+{
+    ImmediateWithTimeProration = 1,
+    ImmediateAndChargeProratedPrice = 2,
+    ImmediateWithoutProration = 3,
+    Deferred = 4,
+    ImmediateAndChargeFullPrice = 5
 }

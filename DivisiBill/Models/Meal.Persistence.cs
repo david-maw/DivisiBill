@@ -25,7 +25,7 @@ public partial class Meal : ObservableObjectPlus
         if (Directory.Exists(TempFolderPath))
         {
             // Clean out any old temp files
-            foreach (var file in Directory.GetFiles(TempFolderPath))
+            foreach (string file in Directory.GetFiles(TempFolderPath))
             {
                 try
                 {
@@ -146,7 +146,7 @@ public partial class Meal : ObservableObjectPlus
             m.SavedToRemote = true;
             m.UpdateAmounts();
             // Assign each known guid, not strictly necessary here but it's a handy spot
-            foreach (var personCost in m.Costs.Where(pc => !pc.PersonGUID.Equals(Guid.Empty)))
+            foreach (PersonCost personCost in m.Costs.Where(pc => !pc.PersonGUID.Equals(Guid.Empty)))
             {
                 personCost.SetDinerFromGuid();
             }
@@ -196,7 +196,7 @@ public partial class Meal : ObservableObjectPlus
         string TargetFileName = ms.FileName;
         try
         {
-            using var sourceStream = File.OpenRead(Path.Combine(MealFolderPath, TargetFileName));
+            using FileStream sourceStream = File.OpenRead(Path.Combine(MealFolderPath, TargetFileName));
             m = LoadFromStream(sourceStream, ms, setup);
             if (m is null)
             {
@@ -234,10 +234,7 @@ public partial class Meal : ObservableObjectPlus
         return m;
     }
     // Move a suspect file into a different folder so it doesn't keep causing trouble
-    public static void MoveSuspectFile(string TargetFileName)
-    {
-        File.Move(Path.Combine(MealFolderPath, TargetFileName), Path.Combine(SuspectFolderPath, TargetFileName));
-    }
+    public static void MoveSuspectFile(string TargetFileName) => File.Move(Path.Combine(MealFolderPath, TargetFileName), Path.Combine(SuspectFolderPath, TargetFileName));
     public static async Task<Meal> LoadFromRemoteAsync(MealSummary ms, bool setup = false)
     {
         Meal m = null;
@@ -304,7 +301,7 @@ public partial class Meal : ObservableObjectPlus
     internal void SaveToApp()
     {
         Utilities.DebugMsg($"In Meal.SaveToApp");
-        var buf = new byte[10000];
+        byte[] buf = new byte[10000];
         MemoryStream s = new(buf);
         SaveToStream(s);
         string myString = Encoding.UTF8.GetString(buf, 0, (int)s.Position);
@@ -327,7 +324,7 @@ public partial class Meal : ObservableObjectPlus
         using (StreamWriter sw = new(streamParameter, Encoding.UTF8, -1, true))
         using (var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true }))
         {
-            var namespaces = new XmlSerializerNamespaces();
+            XmlSerializerNamespaces namespaces = new();
             namespaces.Add(string.Empty, string.Empty);
             MealSerializer.Serialize(xmlWriter, this, namespaces);
         }
@@ -360,7 +357,7 @@ public partial class Meal : ObservableObjectPlus
         {
             try
             {
-                await Task.Run(() => SaveToFile());
+                await Task.Run(SaveToFile);
                 return true;
             }
             catch (IOException ex) when (ex.Message.StartsWith("Sharing violation"))
@@ -381,7 +378,7 @@ public partial class Meal : ObservableObjectPlus
             return;
         }
         string TargetFilePath = FilePath;
-        using var stream = File.Open(TargetFilePath, FileMode.Create); // Overwrites any existing file
+        using FileStream stream = File.Open(TargetFilePath, FileMode.Create); // Overwrites any existing file
         SaveToSnapshot();
         Summary.SnapshotStream.Position = 0;
         Summary.CopySnapshotTo(stream);
@@ -502,7 +499,7 @@ public partial class Meal : ObservableObjectPlus
     public string CreateZipArchive()
     {
         try
-        { 
+        {
             Archive archive = new([this], true);
             // Create the XML file in the cache directory
             string zipFileFullname = archive.ZipAsync();

@@ -26,7 +26,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     }
     private void Venue_DistanceChanged(object sender, VenueDistanceChangedEventArgs e)
     {
-        var changedMeals = Meal.LocalMealList.Where(m => m.VenueName.Equals(e.Venue.Name));
+        IEnumerable<MealSummary> changedMeals = Meal.LocalMealList.Where(m => m.VenueName.Equals(e.Venue.Name));
         foreach (MealSummary ms in changedMeals)
             ms.Distance = e.Venue.Distance; // Update the distance for the changed venue
         if (SortOrder == SortOrderType.byDistance)
@@ -167,16 +167,16 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                 }
             }
         else
-        if (e.Action == NotifyCollectionChangedAction.Reset)
-        {
-            foreach (MealSummary ms in MealList.Where(ms => ms.FileSelected && ms.IsLocal))
-                ms.FileSelected = false;
-            InvalidateMealList();
-        }
-        else
-        {
-            InvalidateMealList();
-        }
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (MealSummary ms in MealList.Where(ms => ms.FileSelected && ms.IsLocal))
+                    ms.FileSelected = false;
+                InvalidateMealList();
+            }
+            else
+            {
+                InvalidateMealList();
+            }
     }
     /// <summary>
     /// Called whenever the remote Meal list changes, which can happen if asynchronous archive or backup operations are in process
@@ -239,16 +239,16 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                 }
             }
         else
-        if (e.Action == NotifyCollectionChangedAction.Reset)
-        {
-            foreach (MealSummary ms in MealList.Where(ms => ms.FileSelected && ms.IsLocal))
-                ms.FileSelected = false;
-            InvalidateMealList();
-        }
-        else
-        {
-            InvalidateMealList();
-        }
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (MealSummary ms in MealList.Where(ms => ms.FileSelected && ms.IsLocal))
+                    ms.FileSelected = false;
+                InvalidateMealList();
+            }
+            else
+            {
+                InvalidateMealList();
+            }
     }
 
     /// <summary>
@@ -393,14 +393,15 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             int failed = 0;
             try
             {
-                list = [.. MealList.Where(ms => ms.FileSelected && ((tryLocal && (ms.IsLocal || ms.IsFake)) || (tryRemote && ms.IsRemote) && !ms.IsBusy))]; // need a separate list so as not to disturb the iterator
+                list = [.. MealList.Where(ms => ms.FileSelected && ((tryLocal && (ms.IsLocal || ms.IsFake)) || (tryRemote && ms.IsRemote && !ms.IsBusy)))]; // need a separate list so as not to disturb the iterator
                 Task<int> task = DeleteMultipleMeals(list, tryLocal, tryRemote);
                 Task whichTask = await Task.WhenAny(Task.Delay(500), task);
                 // Deletes, especially local ones, are really fast, so don't bother to show a busy indication unless they take a while
                 if (whichTask != task)
                 {
                     IsBusy = true;
-                    foreach (var ms in list) ms.IsBusy = true;
+                    foreach (MealSummary ms in list)
+                        ms.IsBusy = true;
                 }
                 failed = await task;
             }
@@ -413,7 +414,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                     int succeeded = list.Count - failed;
                     await Task.Delay(1000);
                     IsBusy = false;
-                    foreach (var ms in list) ms.IsBusy = false;
+                    foreach (MealSummary ms in list)
+                        ms.IsBusy = false;
                     if (succeeded == 0)
                         await Utilities.ShowAppSnackBarAsync("No bills deleted"); // there was only one so no need for a count information
                     else if (failed == 0)
@@ -425,8 +427,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         }
         else if (SelectedMealSummary is not null)
         {
-            var mealToDelete = SelectedMealSummary; // Because deleting it
-            var next = MealList.Alternate(mealToDelete);
+            MealSummary mealToDelete = SelectedMealSummary; // Because deleting it
+            MealSummary next = MealList.Alternate(mealToDelete);
             await DeleteOneMeal(mealToDelete, tryLocal, tryRemote);
             // If the meal is not showing any more select the next one
             if (!(mealToDelete.IsLocal && ShowLocalMeals)
@@ -526,7 +528,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     [RelayCommand]
     private void Undelete()
     {
-        MealSummary ms = MealSummary.PopMostRecentDeletion();
+        var ms = MealSummary.PopMostRecentDeletion();
         if (ms is not null)
         {
             ms.UnDelete();
@@ -622,7 +624,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     private async Task<(int Succeeded, int Failed)> DownloadMultipleMeals()
     {
         int failed = 0;
-        var list = new List<MealSummary>(MealList.Where(ms => ms.FileSelected && !ms.IsLocal && !ms.IsBusy)); // a separate list so as to ignore updates
+        List<MealSummary> list = [.. MealList.Where(ms => ms.FileSelected && !ms.IsLocal && !ms.IsBusy)]; // a separate list so as to ignore updates
         ProgressLimit = list.Count;
         Progress = 0;
         int attempted = 0;
@@ -632,8 +634,9 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             {
                 while (true)
                 {
-                    var ms = await downloadedQueue.DequeueAsync(CancellationToken.None);
-                    if (ms is null) break;
+                    MealSummary ms = await downloadedQueue.DequeueAsync(CancellationToken.None);
+                    if (ms is null)
+                        break;
                     ms.LocationChanged(isLocal: true);
                     ms.IsBusy = false;
                 }
@@ -647,10 +650,12 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                 MaxDegreeOfParallelism = -1, // Whatever the system can handle
                 CancellationToken = cancellationTokenSource.Token
             };
-            foreach (var ms in list) ms.IsBusy = true;
+            foreach (MealSummary ms in list)
+                ms.IsBusy = true;
             Task downLoad = Parallel.ForEachAsync(list, parallelOptions, async (mealSummary, cancellationToken) =>
             {
-                if (cancellationToken.IsCancellationRequested) throw new TaskCanceledException();
+                if (cancellationToken.IsCancellationRequested)
+                    throw new TaskCanceledException();
                 bool worked = await DownloadOneMeal(mealSummary, false);
                 // In order not to multi-thread access to LocalMealList we just queue the changed meal summaries and handle them all on one thread
                 if (worked)
@@ -672,7 +677,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                 downloadedQueue.Enqueue(null);
                 await locationChanger;
             }
-            foreach (var ms in list) ms.IsBusy = false;
+            foreach (MealSummary ms in list)
+                ms.IsBusy = false;
         }
         return (attempted - failed, failed);
     }
@@ -728,13 +734,13 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         int targetIndex = -1;
         if (IsGrouped)
         {
-            var targetGroup = MealSummaryGroups.FirstOrDefault(g => g.VenueName == Meal.CurrentMeal.VenueName);
+            MealSummaryGroup targetGroup = MealSummaryGroups.FirstOrDefault(g => g.VenueName == Meal.CurrentMeal.VenueName);
             if (targetGroup is not null)
                 targetIndex = MealSummaryGroups.IndexOf(targetGroup);
         }
         else
         { // Not grouped, so just find the meal
-            var targetMeal = MealList.FirstOrDefault(ms => ms.IsForCurrentMeal);
+            MealSummary targetMeal = MealList.FirstOrDefault(ms => ms.IsForCurrentMeal);
             if (targetMeal is not null)
                 targetIndex = MealList.IndexOf(targetMeal);
         }
@@ -747,7 +753,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     {
         if (group is null)
             return;
-        Venue v = Venue.FindVenueByName(group.VenueName);
+        var v = Venue.FindVenueByName(group.VenueName);
         if (v is not null)
         {
             SelectedGroup = group;
@@ -758,7 +764,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     [RelayCommand]
     private void SelectGroup(MealSummaryGroup group)
     {
-        if (group is null) return;
+        if (group is null)
+            return;
         if (SelectedGroup == group)
         {
             group.IsExpanded = false;
@@ -774,11 +781,12 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     [RelayCommand]
     private void SelectMeal(MealSummary ms)
     {
-        if (ms is null) return;
+        if (ms is null)
+            return;
         if (IsSelectableList)
         {
             ms.FileSelected = !ms.FileSelected;
-            SelectedMealSummariesCount += (ms.FileSelected) ? 1 : -1;
+            SelectedMealSummariesCount += ms.FileSelected ? 1 : -1;
         }
         else if (IsGrouped)
         {
@@ -794,7 +802,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     private void SelectNone()
     {
         IsSelectableList = true;
-        foreach (var mealSummary in MealList.Where(ms => ms.FileSelected))
+        foreach (MealSummary mealSummary in MealList.Where(ms => ms.FileSelected))
             mealSummary.FileSelected = false;
         SelectedMealSummariesCount = 0;
     }
@@ -809,7 +817,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         IsSelectableList = true;
 
         int howMany = 0;
-        foreach (var ms in MealList)
+        foreach (MealSummary ms in MealList)
         {
             if (ms.IsForCurrentMeal)
                 howMany += ms.FileSelected ? 1 : 0;
@@ -827,7 +835,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     {
         IsSelectableList = true;
         int howMany = 0; // An optimization to save repeated updates of SelectedMealSummariesCount
-        foreach (var ms in MealList)
+        foreach (MealSummary ms in MealList)
         {
             ms.FileSelected = !ms.FileSelected;
             if (ms.FileSelected)
@@ -850,7 +858,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     public void DeselectInvisibleMeals()
     {
         int howMany = 0;
-        foreach (var mealSummary in MealList.Where(ms => ms.FileSelected && !(ShowRemoteMeals || ms.IsLocal && ShowLocalMeals)))
+        foreach (MealSummary mealSummary in MealList.Where(ms => ms.FileSelected && !(ShowRemoteMeals || (ms.IsLocal && ShowLocalMeals))))
         {
             mealSummary.FileSelected = false;
             howMany++;
@@ -878,7 +886,11 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     public SortOrderType SortOrder
     {
         get;
-        set => SetProperty(ref field, value, () => { InvalidateMealList(); OnPropertyChanged(nameof(SortOrderName)); });
+        set => SetProperty(ref field, value, () =>
+        {
+            InvalidateMealList();
+            OnPropertyChanged(nameof(SortOrderName));
+        });
     } = SortOrderType.byDate;
     private string Sort
     {
@@ -915,7 +927,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     [RelayCommand]
     private void OnGroupExpanded(object o)
     {
-        Utilities.DebugMsg($">>> MainViewModel.OnGroupExpanded({(o ?? "null")})");
+        Utilities.DebugMsg($">>> MainViewModel.OnGroupExpanded({o ?? "null"})");
         if (o is MealSummaryGroup group)
         {
             if (group.IsExpanded)
@@ -956,13 +968,23 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     [NotifyPropertyChangedFor(nameof(WhereText))]
     public partial bool ShowLocalMeals { get; set; } = true;
 
-    partial void OnShowLocalMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
+    partial void OnShowLocalMealsChanged(bool value)
+    {
+        if (!value)
+            DeselectInvisibleMeals();
+        InvalidateMealList();
+    }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(WhereText))]
     public partial bool ShowRemoteMeals { get; set; } = false;
 
-    partial void OnShowRemoteMealsChanged(bool value) { if (!value) DeselectInvisibleMeals(); InvalidateMealList(); }
+    partial void OnShowRemoteMealsChanged(bool value)
+    {
+        if (!value)
+            DeselectInvisibleMeals();
+        InvalidateMealList();
+    }
     public string WhereText => ShowLocalMeals == ShowRemoteMeals ? null : ShowLocalMeals ? "local" : "remote";
     #endregion
 
@@ -1030,7 +1052,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             List<MealSummary> GetList()
             {
                 IEnumerable<MealSummary> mealSummaries = ShowLocalMeals
-                    ? (ShowRemoteMeals)
+                    ? ShowRemoteMeals
                         ? Meal.LocalMealList.Union(Meal.RemoteMealList).OrderByDescending(ms => ms.CreationTime) // merge the two lists
                         : Meal.LocalMealList
                     : ShowRemoteMeals ? Meal.RemoteMealList : [];
@@ -1076,7 +1098,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                     else
                     {
                         priorVenue = ms.VenueName;
-                        Venue v = Venue.FindVenueByName(ms.VenueName);
+                        var v = Venue.FindVenueByName(ms.VenueName);
                         priorDistance = ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
                     }
                 }
@@ -1251,10 +1273,24 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < LastItemIndex) await ScrollItemsImpl(LastVisibleItemIndex, ScrollToPosition.Start); break;
-                case "Down": if (FirstVisibleItemIndex > 0) await ScrollItemsImpl(FirstVisibleItemIndex, ScrollToPosition.End); break;
-                case "End": if (LastVisibleItemIndex < LastItemIndex) { await ScrollItemsImpl(LastItemIndex, ScrollToPosition.End); } break;
-                case "Start": if (FirstVisibleItemIndex > 0) { await ScrollItemsImpl(0, ScrollToPosition.Start); } break;
+                case "Up":
+                    if (LastVisibleItemIndex < LastItemIndex)
+                        await ScrollItemsImpl(LastVisibleItemIndex, ScrollToPosition.Start); break;
+                case "Down":
+                    if (FirstVisibleItemIndex > 0)
+                        await ScrollItemsImpl(FirstVisibleItemIndex, ScrollToPosition.End); break;
+                case "End":
+                    if (LastVisibleItemIndex < LastItemIndex)
+                    {
+                        await ScrollItemsImpl(LastItemIndex, ScrollToPosition.End);
+                    }
+                    break;
+                case "Start":
+                    if (FirstVisibleItemIndex > 0)
+                    {
+                        await ScrollItemsImpl(0, ScrollToPosition.Start);
+                    }
+                    break;
                 default: break;
             }
         }
@@ -1282,18 +1318,18 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         static bool boolValue(object value) => value is string s && bool.TryParse(s, out bool parsedBool) ? parsedBool : value is bool b && b;
 
         #region Leave alone if not set
-        if (query.TryGetValue("sort", out var sortValue))
+        if (query.TryGetValue("sort", out object sortValue))
             Sort = sortValue?.ToString();
-        if (query.TryGetValue("ShowLocal", out var showLocalValue))
+        if (query.TryGetValue("ShowLocal", out object showLocalValue))
             ShowLocalMeals = boolValue(showLocalValue);
-        if (query.TryGetValue("ShowRemote", out var showRemoteValue))
+        if (query.TryGetValue("ShowRemote", out object showRemoteValue))
             ShowRemoteMeals = boolValue(showRemoteValue);
         #endregion
         #region Default values if not set
-        IsSelectableList = query.TryGetValue("IsSelectableList", out var selectableValue) && boolValue(selectableValue);
-        IsGrouped = query.TryGetValue("grouped", out var groupValue) && boolValue(groupValue);
-        SetCount = query.TryGetValue("count", out var countValue) && boolValue(countValue);
-        FilteredVenueName = query.TryGetValue("venue", out var venueValue) && venueValue is string venueName ? Uri.UnescapeDataString(venueName).ToString() : null;
+        IsSelectableList = query.TryGetValue("IsSelectableList", out object selectableValue) && boolValue(selectableValue);
+        IsGrouped = query.TryGetValue("grouped", out object groupValue) && boolValue(groupValue);
+        SetCount = query.TryGetValue("count", out object countValue) && boolValue(countValue);
+        FilteredVenueName = query.TryGetValue("venue", out object venueValue) && venueValue is string venueName ? Uri.UnescapeDataString(venueName).ToString() : null;
         #endregion
     }
 }

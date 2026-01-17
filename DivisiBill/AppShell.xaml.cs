@@ -78,7 +78,7 @@ public partial class AppShell : Shell
     private void OnHelpClicked(object sender, EventArgs e)
     {
         Shell.Current.FlyoutIsPresented = false;
-        var targetType = CurrentPage.GetType();
+        Type targetType = CurrentPage.GetType();
 
         if (CurrentItem.Route.Equals("Information")) // This is FlyoutContent with Embedded ShellItems 
             targetType = typeof(AboutPage); // Just use the same help page for all of them

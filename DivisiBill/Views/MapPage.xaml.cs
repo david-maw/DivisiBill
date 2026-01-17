@@ -51,7 +51,7 @@ public partial class MapPage : ContentPage
             mapCenter = App.UseLocation ? App.MyLocation : null;
         if (mapCenter is not null)
         {
-            var mapSpan = new MapSpan(mapCenter, 0.01, 0.01);
+            MapSpan mapSpan = new(mapCenter, 0.01, 0.01);
             await Task.Delay(200); // Without this the MoveToRegion is ignored 
             map.MoveToRegion(mapSpan);
         }
@@ -73,7 +73,8 @@ public partial class MapPage : ContentPage
     /// <returns>Simpler number</returns>
     private static double Simplified(double d)
     {
-        if (d <= 0) return d;
+        if (d <= 0)
+            return d;
 
         double digits = Math.Floor(Math.Log10(d));
         double exponent = Math.Pow(10, digits);
@@ -151,7 +152,7 @@ public partial class MapPage : ContentPage
         VenueLocationHasChanged = false;
         if (VenueLocation is not null)
         {
-            var mapSpan = new MapSpan(VenueLocation, 0.01, 0.01);
+            MapSpan mapSpan = new(VenueLocation, 0.01, 0.01);
             if (mapSpan is not null)
             {
                 await Task.Delay(200); // Without this the MoveToRegion is ignored 
@@ -181,5 +182,4 @@ public partial class MapPage : ContentPage
         OnPropertyChanged(propertyName);
         return true;
     }
-
 }

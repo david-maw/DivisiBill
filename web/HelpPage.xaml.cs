@@ -1,5 +1,3 @@
-using System.Windows.Input;
-
 namespace web;
 
 [QueryProperty(nameof(PageName), "page")]
@@ -44,6 +42,13 @@ public partial class HelpPage : ContentPage
 
     public ICommand BackCommand { get; }
 
-    private async void OnIndexIconClicked(object sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages')");
-    private void OnExitIconClicked(object sender, EventArgs e) => Shell.Current.Navigation.PopAsync();
+    private async void OnIndexIconClicked(object sender, System.EventArgs e)
+    {
+        await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages')");
+    }
+
+    private void OnExitIconClicked(object sender, EventArgs e)
+    {
+        Shell.Current.Navigation.PopAsync();
+    }
 }

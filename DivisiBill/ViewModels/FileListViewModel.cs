@@ -16,8 +16,7 @@ public partial class FileListViewModel : ObservableObjectPlus
 
     ~FileListViewModel()
     {
-        if (FileList is not null)
-            FileList.CollectionChanged -= FileList_CollectionChanged;
+        FileList?.CollectionChanged -= FileList_CollectionChanged;
     }
 
     public async Task<bool> InitializeAsync()
@@ -25,7 +24,7 @@ public partial class FileListViewModel : ObservableObjectPlus
         Utilities.DebugMsg($"In FileListViewModel.InitializeAsync FileList is {(FileList is null ? "" : "not ")} null");
         if (FileList is not null)
             return true; // already initialized
-        var returnedItems = await RemoteWs.GetItemInfoListAsync(itemTypeName);
+        List<RemoteItemInfo> returnedItems = await RemoteWs.GetItemInfoListAsync(itemTypeName);
         if (returnedItems is null)
             return false;
         FileList = [.. returnedItems];
@@ -175,10 +174,18 @@ public partial class FileListViewModel : ObservableObjectPlus
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
-                case "Down": if (FirstVisibleItemIndex > 0) ScrollItemsTo(FirstVisibleItemIndex, true); break;
-                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(lastItemIndex, false); break;
-                case "Start": if (FirstVisibleItemIndex > 0) ScrollItemsTo(0, true); break;
+                case "Up":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollItemsTo(LastVisibleItemIndex, false); break;
+                case "Down":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollItemsTo(FirstVisibleItemIndex, true); break;
+                case "End":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollItemsTo(lastItemIndex, false); break;
+                case "Start":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollItemsTo(0, true); break;
                 default: break;
             }
         }

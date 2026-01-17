@@ -28,8 +28,8 @@ public partial class CameraPage : ContentPage
     {
         async void DoIt()
         {
-            var navigationParameter = new ShellNavigationQueryParameters
-                {
+            ShellNavigationQueryParameters navigationParameter = new()
+            {
                     { "ImageStream", e.Media}
                 };
             // Just exit back to the caller (an ImagePage)
@@ -37,7 +37,7 @@ public partial class CameraPage : ContentPage
         }
 
         if (Dispatcher.IsDispatchRequired)
-            Dispatcher.Dispatch(() => DoIt());
+            Dispatcher.Dispatch(DoIt);
         else
             DoIt();
     }

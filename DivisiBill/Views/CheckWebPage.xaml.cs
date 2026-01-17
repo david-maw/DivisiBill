@@ -13,7 +13,7 @@ public partial class CheckWebPage : CommunityToolkit.Maui.Views.Popup<HttpRespon
     {
         InitializeComponent();
         BindingContext = ViewModel = new ViewModels.CheckWebPageViewModel(
-            (HttpResponseMessage result) => this.CloseAsync(result), webCallTask, webCall, webStopwatch);
+            (HttpResponseMessage result) => CloseAsync(result), webCallTask, webCall, webStopwatch);
         Opened += async (sender, e) => await ViewModel.WaitForConnection();
     }
 }

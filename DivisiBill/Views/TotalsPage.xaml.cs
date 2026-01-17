@@ -33,7 +33,7 @@ public partial class TotalsPage : ContentPage
 
         if (pc is not null)
         {
-            var v = new PeopleListPage(pc);
+            PeopleListPage v = new(pc);
             v.OnPersonSelected += HandlePersonSelected;
             await Navigation.PushAsync(v);
         }
@@ -53,7 +53,7 @@ public partial class TotalsPage : ContentPage
     }
     public async void OnAddItem(object sender, EventArgs e)
     {
-        var v = new PeopleListPage();
+        PeopleListPage v = new();
         v.OnPersonSelected += HandlePersonSelected;
         await Navigation.PushAsync(v);
     }

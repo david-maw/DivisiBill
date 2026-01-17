@@ -124,12 +124,12 @@ public partial class VenueListViewModel : ObservableObjectPlus
     {
         if (App.IsCloudAllowed)
         {
-            var fileListViewModel = new FileListViewModel(RemoteWs.VenueListTypeName);
+            FileListViewModel fileListViewModel = new(RemoteWs.VenueListTypeName);
             await fileListViewModel.InitializeAsync();
             if (fileListViewModel.FileListCount > 0)
             {
                 await Shell.Current.Navigation.PushAsync(new Views.FileListPage(fileListViewModel));
-                var result = await fileListViewModel.SelectionCompleted.Task;
+                RemoteItemInfo? result = await fileListViewModel.SelectionCompleted.Task;
                 if (result is not null)
                 {
                     bool loaded = await Venue.LoadFromRemoteAsync(result.Name, result.ReplaceRequested);
@@ -199,7 +199,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
             IsAnyDeletedVenue = true;
             v.Forget();
             _ = Venue.SaveSettingsAsync();
-            var mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == v.Name);
+            IEnumerable<MealSummary> mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == v.Name);
             if (mealsForVenue.Any() && await Utilities.AskAsync("Question", "Do you want to delete local bills for " + v.Name))
             {
                 foreach (MealSummary sum in mealsForVenue.OrderBy((ms) => ms.CreationTime))
@@ -269,10 +269,18 @@ public partial class VenueListViewModel : ObservableObjectPlus
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
-                case "Down": if (FirstVisibleItemIndex > 0) ScrollItemsTo(FirstVisibleItemIndex, true); break;
-                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(lastItemIndex, false); break;
-                case "Start": if (FirstVisibleItemIndex > 0) ScrollItemsTo(0, true); break;
+                case "Up":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollItemsTo(LastVisibleItemIndex, false); break;
+                case "Down":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollItemsTo(FirstVisibleItemIndex, true); break;
+                case "End":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollItemsTo(lastItemIndex, false); break;
+                case "Start":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollItemsTo(0, true); break;
                 default: break;
             }
         }

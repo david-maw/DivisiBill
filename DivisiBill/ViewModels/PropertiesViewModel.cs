@@ -11,15 +11,10 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     public static int StoppedTypingTimeThreshold = 2000;
     #endregion
     #region Constructor/Destructor
-    public PropertiesViewModel()
-    {
-        if (Meal.CurrentMeal is not null)
-            Meal.CurrentMeal.PropertyChanged += CurrentMeal_PropertyChanged;
-    }
+    public PropertiesViewModel() => Meal.CurrentMeal?.PropertyChanged += CurrentMeal_PropertyChanged;
     ~PropertiesViewModel()
     {
-        if (Meal.CurrentMeal is not null)
-            Meal.CurrentMeal.PropertyChanged -= CurrentMeal_PropertyChanged;
+        Meal.CurrentMeal?.PropertyChanged -= CurrentMeal_PropertyChanged;
     }
     #endregion
     #region Enter / Exit Page

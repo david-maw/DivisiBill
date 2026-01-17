@@ -15,9 +15,9 @@ public class SimpleLocation : IEquatable<SimpleLocation>
     {
         if (location is not null)
         {
-            this.accuracy = location.AccuracyOrDefault();
-            this.Latitude = Utilities.Adjusted(location.Latitude, accuracy);
-            this.Longitude = Utilities.Adjusted(location.Longitude, accuracy);
+            accuracy = location.AccuracyOrDefault();
+            Latitude = Utilities.Adjusted(location.Latitude, accuracy);
+            Longitude = Utilities.Adjusted(location.Longitude, accuracy);
         }
     }
     public bool Equals(SimpleLocation other) => Latitude == other.Latitude && Longitude == other.Longitude && accuracy == other.accuracy;
@@ -39,7 +39,7 @@ public class SimpleLocation : IEquatable<SimpleLocation>
         {
             using StreamWriter sw = new(stream, System.Text.Encoding.UTF8, -1, true);
             using var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { OmitXmlDeclaration = true });
-            var namespaces = new XmlSerializerNamespaces();
+            XmlSerializerNamespaces namespaces = new();
             namespaces.Add(string.Empty, string.Empty);
             xmlSerializer.Serialize(xmlWriter, this, namespaces);
             return true;

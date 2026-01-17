@@ -37,7 +37,7 @@ public class ScannedBill
     {
         using StreamWriter sw = new(s, Encoding.UTF8, 512, true);
         using var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true, NewLineOnAttributes = true });
-        var namespaces = new XmlSerializerNamespaces();
+        XmlSerializerNamespaces namespaces = new();
         namespaces.Add(string.Empty, string.Empty);
         itemsSerializer.Serialize(xmlWriter, this, namespaces);
     }
@@ -49,7 +49,7 @@ public class ScannedBill
     {
         SourceName ??= Meal.CurrentMeal.FileName;
         string TargetFilePath = Path.Combine(Meal.ImageFolderPath, Path.ChangeExtension(SourceName, "xml"));
-        using var stream = File.Open(TargetFilePath, FileMode.Create); // Overwrites any existing file
+        using FileStream stream = File.Open(TargetFilePath, FileMode.Create); // Overwrites any existing file
         Serialize(stream);
         Utilities.DebugExamineStream(stream);
     }
@@ -72,7 +72,7 @@ public class ScannedBill
         }
         else
         {
-            using var stream = File.Open(TargetFilePath, FileMode.Open); // Expect an existing file
+            using FileStream stream = File.Open(TargetFilePath, FileMode.Open); // Expect an existing file
             result = Deserialize(stream);
             Utilities.DebugExamineStream(stream);
         }
@@ -243,5 +243,4 @@ public class FormElement
 {
     public string FieldName { get; set; }
     public string FieldValue { get; set; }
-
 }

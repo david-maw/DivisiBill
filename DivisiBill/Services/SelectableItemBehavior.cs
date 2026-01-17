@@ -75,7 +75,7 @@ public static class SelectableItemBehavior
         // into the root element of each item.
         cv.ItemTemplate = new DataTemplate(() =>
         {
-            var content = originalTemplate.CreateContent();
+            object content = originalTemplate.CreateContent();
 
             if (content is VisualElement ve)
             {
@@ -91,16 +91,16 @@ public static class SelectableItemBehavior
     {
         // Add "Normal" and "Selected" visual states to the VisualElement root so
         // CollectionView's VisualStateManager selection logic can style it.
-        var groups = new VisualStateGroupList();
-        var common = new VisualStateGroup { Name = "CommonStates" };
+        VisualStateGroupList groups = [];
+        VisualStateGroup common = new() { Name = "CommonStates" };
 
-        var normal = new VisualState { Name = "Normal" };
+        VisualState normal = new() { Name = "Normal" };
         normal.Setters.Add(new Setter { Property = VisualElement.BackgroundColorProperty, Value = Colors.Transparent });
 
         // Background color can be overridden via an app-level resource, otherwise a hard-coded fallback is used.
-        var highlightColor = TryGetResource<Color>("SelectedBackGroundColor", Color.FromArgb("f17b01"));
+        Color highlightColor = TryGetResource<Color>("SelectedBackGroundColor", Color.FromArgb("f17b01"));
 
-        var selected = new VisualState { Name = "Selected" };
+        VisualState selected = new() { Name = "Selected" };
         selected.Setters.Add(new Setter { Property = VisualElement.BackgroundColorProperty, Value = highlightColor });
 
         common.States.Add(normal);
@@ -110,15 +110,10 @@ public static class SelectableItemBehavior
         VisualStateManager.SetVisualStateGroups(root, groups);
     }
 
-    private static T TryGetResource<T>(string key, T fallback)
-    {
+    private static T TryGetResource<T>(string key, T fallback) =>
         // Look up an application resource by key, falling back if missing or wrong type
-        if (Application.Current?.Resources.TryGetValue(key, out var value) == true &&
-            value is T typed)
-        {
-            return typed;
-        }
-
-        return fallback;
-    }
+        Application.Current?.Resources.TryGetValue(key, out object value) == true &&
+            value is T typed
+            ? typed
+            : fallback;
 }

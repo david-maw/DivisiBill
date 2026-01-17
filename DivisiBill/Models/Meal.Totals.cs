@@ -69,8 +69,8 @@ public partial class Meal
     /// </summary>
     [ObservableProperty]
     public partial double TaxRate { get; set; }
-    partial void OnTaxRateChanged(double value) 
-    { 
+    partial void OnTaxRateChanged(double value)
+    {
         TaxDelta = 0;
         Tax = GetTax();
         MarkAsChanged();
@@ -127,7 +127,7 @@ public partial class Meal
     public decimal GetRawCouponAmount()
     {
         decimal couponAmount = 0;
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
         {
             if (item.Amount < 0)
                 couponAmount -= item.Amount; // Amount is negative, so couponAmount will be positive
@@ -147,7 +147,7 @@ public partial class Meal
     {
         decimal subTotal = 0;
         decimal couponAmount = 0;
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
         {
             if (item.Amount < 0)
                 couponAmount -= item.Amount; // Amount is negative, so couponAmount will be positive
@@ -210,7 +210,7 @@ public partial class Meal
     [XmlIgnore]
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(LineItems))]
-    public partial LineItem.DinerID AmountForSharerID {  get; set; }
+    public partial LineItem.DinerID AmountForSharerID { get; set; }
     partial void OnAmountForSharerIDChanged(LineItem.DinerID value)
     {
         // Set the value in each individual LineItem - it's easier to get at that way
@@ -227,7 +227,7 @@ public partial class Meal
 
     [XmlIgnore]
     [ObservableProperty]
-    public partial decimal TotalAmount {  get; set; }
+    public partial decimal TotalAmount { get; set; }
     partial void OnTotalAmountChanged(decimal value) => IsDistributed = false;
 
     /// <summary>
@@ -247,7 +247,7 @@ public partial class Meal
 
     [XmlIgnore]
     [ObservableProperty]
-    public partial decimal Tip {  get; set; }
+    public partial decimal Tip { get; set; }
     partial void OnTipChanged(decimal value) => TotalAmount = GetTotalAmount();
 
     private decimal GetTip() => Math.Round(GetTipBasis() * (decimal)TipRate, 2) + TipDelta;
@@ -272,9 +272,10 @@ public partial class Meal
     [XmlIgnore]
     [ObservableProperty]
     public partial decimal Tax { get; private set; }
-    partial void OnTaxChanged(decimal value) 
+    partial void OnTaxChanged(decimal value)
     {
-        if (TipOnTax) Tip = GetTip();
+        if (TipOnTax)
+            Tip = GetTip();
         TotalAmount = GetTotalAmount();
     }
 
@@ -336,7 +337,7 @@ public partial class Meal
             if (ratioDelta > 1M / (precision * 2M))
             {
                 roundedRatio += 1M / precision;
-                ratioDelta = (1M / precision) - ratioDelta;
+                ratioDelta = 1M / precision - ratioDelta;
             }
             return (ratioDelta < defaultRateDelta) ? (double)roundedRatio : defaultRate;
         }
@@ -356,7 +357,7 @@ public partial class Meal
         if (IsAnyUnallocated)
             accumulatedTotal = Math.Round(TotalAmount + 0.001M, 0);
         else
-            foreach (var costItem in Costs)
+            foreach (PersonCost costItem in Costs)
                 accumulatedTotal += Math.Round(costItem.Amount + 0.001M, 0);
         return accumulatedTotal;
     }

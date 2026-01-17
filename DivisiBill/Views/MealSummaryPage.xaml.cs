@@ -7,7 +7,7 @@ public partial class MealSummaryPage : ContentPage
     {
         base.OnNavigatedTo(args);
         #region Nasty kludge to get the page bindings refreshed
-        var temp = BindingContext;
+        object temp = BindingContext;
         BindingContext = null;
         BindingContext = temp;
         #endregion

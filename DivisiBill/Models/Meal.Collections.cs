@@ -44,15 +44,15 @@ public partial class Meal
         if (savedLineItems.Count != 0)
         {
             LineItems.Clear();
-            foreach (var item in savedLineItems)
+            foreach (LineItem item in savedLineItems)
                 LineItems.Add(item);
             savedLineItems.Clear();
             LineItem.NextItemNumber = savedNextItemNumber;
             // Now make sure all the diners still exist
-            var dinerIndexValid = new bool[LineItem.maxSharers];
-            foreach (var item in Costs)
+            bool[] dinerIndexValid = new bool[LineItem.maxSharers];
+            foreach (PersonCost item in Costs)
                 dinerIndexValid[item.DinerIndex] = true;
-            foreach (var item in LineItems)
+            foreach (LineItem item in LineItems)
             {
                 for (int i = 0; i < LineItem.maxSharers; i++)
                 {
@@ -72,7 +72,7 @@ public partial class Meal
         if (LineItems.Count > 1 || (LineItems.Count == 1 && LineItems[0].Amount != 0))
         {
             savedLineItems.Clear();
-            foreach (var item in LineItems)
+            foreach (LineItem item in LineItems)
                 savedLineItems.Add(item);
             LineItems.Clear();
             savedNextItemNumber = LineItem.NextItemNumber;
@@ -108,14 +108,14 @@ public partial class Meal
             if (costInx < 0)
             {
                 // costs list is empty, the merge is trivial
-                foreach (var pc in savedCosts)
+                foreach (PersonCost pc in savedCosts)
                     Costs.Add(pc);
             }
             else
             {
                 for (int savedCostInx = savedCosts.Count - 1; savedCostInx >= 0; savedCostInx--)
                 {
-                    var pc = savedCosts[savedCostInx];
+                    PersonCost pc = savedCosts[savedCostInx];
                     while ((costInx >= 0) && (Costs[costInx].DinerID > pc.DinerID))
                     {
                         costInx--;
@@ -123,11 +123,11 @@ public partial class Meal
                     if ((costInx >= 0) && (Costs[costInx].DinerID == pc.DinerID))
                     {
                         // Oh dear, the CostIndex has been reused, so do not replace this one if it is in use
-                        var newPersonCost = Costs[costInx];
+                        PersonCost newPersonCost = Costs[costInx];
                         if (newPersonCost.Amount == 0) // If the amount is zero, perhaps no items refer to it
                         {
                             bool shared = false;
-                            foreach (var item in LineItems)
+                            foreach (LineItem item in LineItems)
                             {
                                 if (item.SharedBy[newPersonCost.DinerIndex])
                                 {
@@ -156,13 +156,13 @@ public partial class Meal
     /// </summary>
     public void ClearCosts()
     {
-        var newSavedCosts = new List<PersonCost>();
-        foreach (var pc in Costs)
+        List<PersonCost> newSavedCosts = [];
+        foreach (PersonCost pc in Costs)
         {
             if (pc.Amount == 0) // If the amount is zero, perhaps no items refer to it
             {
                 bool shared = false;
-                foreach (var item in LineItems)
+                foreach (LineItem item in LineItems)
                 {
                     if (item.SharedBy[pc.DinerIndex])
                     {
@@ -176,7 +176,7 @@ public partial class Meal
         }
         if (newSavedCosts.Count > 0)
         {
-            foreach (var pc in newSavedCosts)
+            foreach (PersonCost pc in newSavedCosts)
                 Costs.Remove(pc);
             savedCosts = newSavedCosts;
         }
@@ -200,7 +200,7 @@ public partial class Meal
     {
         double totalAmount = 0, maxAmount = 0;
 
-        foreach (var a in amounts)
+        foreach (decimal a in amounts)
         {
             if (a > 0)
             {
@@ -274,7 +274,7 @@ public partial class Meal
     {
         LineItem.DinerID oldDinerID = pc.DinerID;
         // Iterate through the items, moving the sharers from old to new entry
-        foreach (var costItem in LineItems)
+        foreach (LineItem costItem in LineItems)
             costItem.SwapSharerID(newDinerID, oldDinerID);
         // Find if a PersonCost used to use this DinerID and if so give it the ID from this one
         PersonCost previousPersonCost = Costs.FirstOrDefault(item => item.DinerID == newDinerID);
@@ -292,7 +292,7 @@ public partial class Meal
         //Now remove that diner from any items
         LineItem.DinerID dinerID = pc.DinerID;
         // Costs is sorted by DinerID, so just look in the right place
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
         {
             if (item.GetShares(dinerID) > 0)
                 item.SetShares(dinerID, 0);
@@ -309,7 +309,7 @@ public partial class Meal
     {
         if (Costs.Count == 0)
             return;
-        foreach (var li in LineItems)
+        foreach (LineItem li in LineItems)
             li.DeallocateShares();
         Costs.Clear();
     }
@@ -325,14 +325,14 @@ public partial class Meal
             CostListResequence();
         if (Costs.Count >= LineItem.maxSharers)
             return null;
-        foreach (var item in CurrentMeal.Costs)
+        foreach (PersonCost item in CurrentMeal.Costs)
         {
             if (item.Diner == p)
                 return null;
         }
-        LineItem.DinerID availDinerID = (LineItem.DinerID)((int)LineItem.DinerID.first + Costs.Count);
+        var availDinerID = (LineItem.DinerID)((int)LineItem.DinerID.first + Costs.Count);
         // Allocate a new item, populate it, and add it to the list
-        var pc = new PersonCost() { DinerID = availDinerID, Diner = p };
+        PersonCost pc = new() { DinerID = availDinerID, Diner = p };
         Costs.Insert(pc.DinerIndex, pc);
         return pc;
     }
@@ -352,7 +352,7 @@ public partial class Meal
             return;
         LineItem.DinerID oldDinerID = pcToChange.DinerID;
         pcToChange.DinerID = newUnusedDinerID; // Important to do this first
-        foreach (var li in LineItems.Where(li => li.GetShares(oldDinerID) > 0))
+        foreach (LineItem li in LineItems.Where(li => li.GetShares(oldDinerID) > 0))
             li.TransferShares(newSharerID: newUnusedDinerID, oldSharerID: oldDinerID);
     }
 
@@ -367,7 +367,7 @@ public partial class Meal
         LineItem.DinerID desiredID = LineItem.DinerID.first;
         try
         {
-            foreach (var pc in Costs.ToList())
+            foreach (PersonCost pc in Costs.ToList())
             {
                 if (pc.DinerID != desiredID)
                     PersonCostRenumber(pc, desiredID);

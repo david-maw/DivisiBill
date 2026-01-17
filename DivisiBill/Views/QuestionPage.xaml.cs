@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 
 namespace DivisiBill.Views;
+
 public partial class QuestionPage : Popup<QuestionResponse>
 {
     public QuestionPage(string titleParam, string textParam, bool initialYes)
@@ -18,7 +19,7 @@ public partial class QuestionPage : Popup<QuestionResponse>
         // Pass back the values that were set in the UI
         QuestionResponse d = new() { Yes = Yes, Ask = AskAgain };
         // Close the dialog
-        await this.CloseAsync(d);
+        await CloseAsync(d);
     }
     public bool Yes { get; set => SetProperty(ref field, value); } = false;
     public bool AskAgain { get; set => SetProperty(ref field, value); } = true; // Must start out true or we wouldn't be in this page

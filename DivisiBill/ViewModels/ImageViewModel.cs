@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
 using SkiaSharp;
 
@@ -54,7 +55,8 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
 
             PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.TempImageFilePath));
         }
-        else PreviewImageSource = Meal.CurrentMeal.HasImage ? ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath)) : null;
+        else
+            PreviewImageSource = Meal.CurrentMeal.HasImage ? ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath)) : null;
         // Track subsequent changes
         Meal.CurrentMeal.Summary.PropertyChanged += CurrentMeal_PropertyChanged;
     }
@@ -113,7 +115,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             IsBusy = true;
             browsedPictureName = null;
             // Parameter to PickPhotosAsync works around https://github.com/dotnet/maui/issues/32535
-            var photo = (await MediaPicker.PickPhotosAsync(new MediaPickerOptions())).FirstOrDefault();
+            FileResult photo = (await MediaPicker.PickPhotosAsync(new MediaPickerOptions())).FirstOrDefault();
             // We have identified an  image, now copy it to the private storage area, so we have it later, if it is needed
             if (photo is not null)
             {
@@ -146,8 +148,8 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         {
             if (imageChanged)
                 Store();
-            var navigationParameter = new ShellNavigationQueryParameters
-                {
+            ShellNavigationQueryParameters navigationParameter = new()
+            {
                     { "ImagePath", Meal.CurrentMeal.ImagePath}
                 };
             if (!string.IsNullOrEmpty(browsedPictureName))
@@ -263,7 +265,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             IsBusy = false;
             return;
         }
-        using var stream = await photo.OpenReadAsync();
+        using Stream stream = await photo.OpenReadAsync();
         await LoadImageStreamAsync(stream);
     }
     /// <summary>
@@ -279,7 +281,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             IsBusy = false;
             return;
         }
-        using (var newStream = File.Create(Meal.TempImageFilePath))
+        using (FileStream newStream = File.Create(Meal.TempImageFilePath))
         {
             if (stream.Length > 200_000) // Arbitrary upper limit on file size below which we just use it as is 
             {
@@ -312,13 +314,13 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     }
     private static async Task ImageSharpConvert(Stream stream, FileStream newStream)
     {
-        using var image = await SixLabors.ImageSharp.Image.LoadAsync(stream);
+        using SixLabors.ImageSharp.Image image = await SixLabors.ImageSharp.Image.LoadAsync(stream);
         // We have to do a little dance here because it is possible that the EXIF orientation data says to rotate this image by 90 degrees
         // meaning the bitmap width is actually the height of the final image and vice versa
         int exifOrientation = 0;
         if (image.Metadata.ExifProfile is not null)
         {
-            foreach (var item in image.Metadata.ExifProfile.Values)
+            foreach (IExifValue item in image.Metadata.ExifProfile.Values)
                 if (item.Tag == SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.Orientation)
                 {
                     exifOrientation = (ushort)item.GetValue();
@@ -351,20 +353,20 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     private void SkiaConvert(Stream stream, FileStream newStream)
     {
         var v = SKImage.FromEncodedData(stream);
-        SKBitmap bitmap = SKBitmap.FromImage(v);
+        var bitmap = SKBitmap.FromImage(v);
 
         double scale = 1000.0 / Math.Max(bitmap.Width, bitmap.Height);
 
-        var newBitmap = new SKBitmap((int)(bitmap.Width * scale), (int)(bitmap.Height * scale), SKColorType.Gray8, SKAlphaType.Opaque);
+        SKBitmap newBitmap = new((int)(bitmap.Width * scale), (int)(bitmap.Height * scale), SKColorType.Gray8, SKAlphaType.Opaque);
 
         bitmap.ScalePixels(newBitmap, new SKSamplingOptions(SKFilterMode.Linear));
 
         using var image = SKImage.FromBitmap(newBitmap);
-        using var data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+        using SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
         data.SaveTo(newStream);
 #if WINDOWS
         // Save the bytes to a file for testing
-        var bytes = data.ToArray();
+        byte[] bytes = data.ToArray();
         File.WriteAllBytes(@"c:\temp\divisibilltest.jpg", bytes);
 #endif
     }
@@ -372,8 +374,8 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     #region IQueryAttributable Implementation
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        replacementImageStream = query.TryGetValue("ImageStream", out var streamObject) ? streamObject as Stream : null; // Comes from the camera page
-        browsedPictureName = query.TryGetValue("Browsed", out var browsedObject) ? browsedObject as string : null; // From a browse initiated by the camera page
+        replacementImageStream = query.TryGetValue("ImageStream", out object streamObject) ? streamObject as Stream : null; // Comes from the camera page
+        browsedPictureName = query.TryGetValue("Browsed", out object browsedObject) ? browsedObject as string : null; // From a browse initiated by the camera page
         startWithCamera = query.TryGetValue("StartWithCamera", out object startWithCameraObject) && startWithCameraObject is string s && bool.TryParse(s, out bool b) && b;
     }
     #endregion

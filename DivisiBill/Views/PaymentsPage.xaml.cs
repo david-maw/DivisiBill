@@ -7,5 +7,5 @@ public partial class PaymentsPage : CommunityToolkit.Maui.Views.Popup
         BindingContext = paymentsViewModel;
         InitializeComponent();
     }
-    private async void OnPopupTapped(object sender, TappedEventArgs e) => await this.CloseAsync();
+    private async void OnPopupTapped(object sender, TappedEventArgs e) => await CloseAsync();
 }

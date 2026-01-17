@@ -41,7 +41,7 @@ public class CurrencyValidationBehavior : Behavior<Entry>
     protected override void OnAttachedTo(Entry entry)
     {
         savedEntry = entry;
-        if (bindingWasSet = (BindingContext is null))
+        if (bindingWasSet = BindingContext is null)
             SetBinding(BindingContextProperty,
             new Binding
             {
@@ -80,7 +80,7 @@ public class CurrencyValidationBehavior : Behavior<Entry>
         }
         else if (string.IsNullOrWhiteSpace(savedEntry.Text))
         {
-            IsEqual = (IsValid = AllowBlank) && (!TestEquality || (UnequalStyle is null || (IsSet(EqualValueProperty) && 0 == EqualValue)));
+            IsEqual = (IsValid = AllowBlank) && (!TestEquality || UnequalStyle is null || (IsSet(EqualValueProperty) && 0 == EqualValue));
             savedEntry.Style = IsValid ? IsEqual ? ValidStyle : UnequalStyle : InvalidStyle;
             return;
         }
@@ -88,7 +88,7 @@ public class CurrencyValidationBehavior : Behavior<Entry>
         if (formatValid && double.TryParse(savedEntry.Text, out double f) && f <= MaximumValue && f >= MinimumValue)
         {
             IsValid = true;
-            IsEqual = !TestEquality || (UnequalStyle is null || (IsSet(EqualValueProperty) && decimal.Parse(savedEntry.Text) == EqualValue));
+            IsEqual = !TestEquality || UnequalStyle is null || (IsSet(EqualValueProperty) && decimal.Parse(savedEntry.Text) == EqualValue);
             savedEntry.Style = IsEqual ? ValidStyle : UnequalStyle;
         }
         else

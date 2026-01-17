@@ -17,7 +17,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     public const string VenueFileName = "Venues.xml";
     public static event EventHandler<VenueDistanceChangedEventArgs> DistanceChanged;
 
-    private static string VenueFullName = Path.Combine(App.BaseFolderPath, VenueFolderName, VenueFileName);
+    private static readonly string VenueFullName = Path.Combine(App.BaseFolderPath, VenueFolderName, VenueFileName);
     private readonly Location MiddleOfNowhere = new(20, 170); // Middle of the Pacific, not close to anything
 
     private static readonly ObservableCollection<Venue> allVenues = [];
@@ -38,14 +38,14 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     }
     private static void LoadDefaultVenues()
     {
-        var initialVenues = new List<Venue>() {
+        List<Venue> initialVenues = [
             new() {Name = "California Pizza Kitchen", Latitude= 33.6120, Longitude = -117.7080, Accuracy = 10},
             new() {Name = "Claim Jumper"},
             new() {Name = "Kings",                    Latitude= 33.6132, Longitude = -117.7084, Accuracy = 10},
             new() {Name = "MacDonalds"},
             new() {Name = "Queasy Diner",             Latitude= 20.79, Longitude = -156.24, Accuracy = 700},
             new() {Name = "Wendys"},
-        };
+        ];
         initialVenues.Sort();
         foreach (Venue v in initialVenues)
             allVenues.Add(v);
@@ -140,10 +140,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
         return false;
     }
-    public static void InitializeFolders()
-    {
-        Directory.CreateDirectory(Path.GetDirectoryName(VenueFullName));
-    }
+    public static void InitializeFolders() => Directory.CreateDirectory(Path.GetDirectoryName(VenueFullName));
     public static async Task SaveSettingsAsync(bool remote = true)
     {
         using MemoryStream stream = new(10000);
@@ -200,7 +197,6 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             Utilities.DebugMsg("In Venue.DeserializeList exception thrown:" + ex);
             return null;
         }
-
     }
 
     /// <summary>
@@ -211,19 +207,19 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     /// <param name="replace">Whether to replace the old list completely or just merge in the new one</param>
     public static void MergeVenues(Stream sourceStream, bool replace)
     {
-        var storedVenues = DeserializeList(sourceStream);
+        List<Venue> storedVenues = DeserializeList(sourceStream);
         MergeVenues(storedVenues, replace);
     }
     public static void MergeVenues(List<Venue> newVenues, bool replace)
     {
-        var allVenuesDictionary = new SortedDictionary<string, Venue>();
+        SortedDictionary<string, Venue> allVenuesDictionary = [];
         if (!replace)
-            foreach (var r in allVenues)
+            foreach (Venue r in allVenues)
                 allVenuesDictionary.Add(r.Name, r);
         allVenues.Clear();
         allVenuesByDistance.Clear();
 
-        foreach (var storedVenue in newVenues)
+        foreach (Venue storedVenue in newVenues)
         {
             if (!string.IsNullOrEmpty(storedVenue.Name))
             {
@@ -247,7 +243,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             }
         }
         // allVenuesDictionary is now fully populated with what will become the new list so populate AllVenues with it
-        foreach (var keyValuePair in allVenuesDictionary)
+        foreach (KeyValuePair<string, Venue> keyValuePair in allVenuesDictionary)
         {
             Venue venue = keyValuePair.Value;
             venue.IsLocationValid = App.UseLocation && venue.Accuracy <= Distances.AccuracyLimit;
@@ -270,7 +266,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     private bool InsertInAllVenues()
     {
         int index = -1, newIndex = -1;
-        foreach (var item in allVenues)
+        foreach (Venue item in allVenues)
         {
             index++;
             int i = CompareTo(item);
@@ -327,13 +323,13 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     public static async Task UpdateAllDistances()
     {
         allVenuesByDistanceIsSorted = false;
-        foreach (var v in allVenuesByDistance)
+        foreach (Venue v in allVenuesByDistance)
             v.Distance = Distances.Simplified(App.GetDistanceTo(v.Location));
         await Task.Yield();
-        var sortableList = new List<Venue>(allVenuesByDistance);
+        List<Venue> sortableList = [.. allVenuesByDistance];
         sortableList.Sort(CompareDistances);
         allVenuesByDistance.Clear();
-        foreach (var v in sortableList)
+        foreach (Venue v in sortableList)
             allVenuesByDistance.Add(v);
         allVenuesByDistanceIsSorted = true;
     }
@@ -383,12 +379,14 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         return v;
     }
     public static void SetCurrentByName(string desiredName) => Current = FindVenueByName(desiredName);
-    public int CompareTo(Venue otherVenue) => string.Compare(this.Name, otherVenue.Name, ignoreCase: true);
+    public int CompareTo(Venue otherVenue) => string.Compare(Name, otherVenue.Name, ignoreCase: true);
     public static int CompareDistances(Venue item1, Venue item2) => item1.CompareDistanceTo(item2);
     public int CompareDistanceTo(Venue otherVenue)
     {
-        if (this == otherVenue) return 0;
-        if (otherVenue is null) return 1;
+        if (this == otherVenue)
+            return 0;
+        if (otherVenue is null)
+            return 1;
         int result = SimplifiedDistance.CompareTo(otherVenue.SimplifiedDistance);
         if (result == 0)
             result = CompareTo(otherVenue);
@@ -397,13 +395,13 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 
     public static void SerializeVenues(Stream s)
     {
-        var venues = new List<Venue>(allVenues);
+        List<Venue> venues = [.. allVenues];
         venues.Sort((r1, r2) => r1.Name.CompareTo(r2.Name));
         VenueRoot vr = new() { Venues = venues };
         using (StreamWriter sw = new(s, System.Text.Encoding.UTF8, -1, true))
         using (var xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings() { Indent = true, OmitXmlDeclaration = true }))
         {
-            var namespaces = new XmlSerializerNamespaces();
+            XmlSerializerNamespaces namespaces = new();
             namespaces.Add(string.Empty, string.Empty);
             allVenuesSerializer.Serialize(xmlWriter, vr, namespaces);
         }
@@ -453,7 +451,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     {
         get => (Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid
                 ? MiddleOfNowhere
-                : new Location(this.Latitude, this.Longitude) { Accuracy = Accuracy };
+                : new Location(Latitude, Longitude) { Accuracy = Accuracy };
         set
         {
             if (value is null)
@@ -510,7 +508,8 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             if (name != newValue)
             {
                 name = newValue;
-                if (allVenues.Contains(this)) MoveToCorrectPlace();
+                if (allVenues.Contains(this))
+                    MoveToCorrectPlace();
                 OnPropertyChanged();
                 UpdateTime = DateTime.Now;
             }
@@ -601,7 +600,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
             if (value >= 0 && field != value)
             {
                 field = value is <= 0 or >= Distances.Inaccurate ? 0 : value;
-                IsLocationValid = (field != 0);
+                IsLocationValid = field != 0;
             }
         }
 
@@ -625,7 +624,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 [XmlRoot("ArrayOfRestaurant")]
 public class VenueRoot
 {
-    public VenueRoot() => this.Venues = [];
+    public VenueRoot() => Venues = [];
 
     [XmlElement("Restaurant")]
     public List<Venue> Venues { get; set; }

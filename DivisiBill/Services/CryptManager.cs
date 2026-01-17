@@ -79,7 +79,7 @@ internal class CryptManager
     /// </summary>
     public static bool HasStoredPassword =>
         !string.IsNullOrEmpty(GetStoredPasswordFingerprintHex());
-    
+
     /// <summary>
     /// Gets a value indicating whether an RSA key for the default password is currently in secure storage.
     /// </summary>
@@ -91,9 +91,10 @@ internal class CryptManager
         get
         {
             string? fingerprintHex = GetStoredPasswordFingerprintHex();
-            if (string.IsNullOrWhiteSpace(fingerprintHex)) return false;
+            if (string.IsNullOrWhiteSpace(fingerprintHex))
+                return false;
             string storageKey = StorageKeyForFingerprintHex(fingerprintHex);
-            string? base64 =  Task.Run(() => SecureStorage.Default.GetAsync(storageKey)).GetAwaiter().GetResult();
+            string? base64 = Task.Run(() => SecureStorage.Default.GetAsync(storageKey)).GetAwaiter().GetResult();
             return !string.IsNullOrWhiteSpace(base64);
         }
     }
@@ -108,15 +109,16 @@ internal class CryptManager
     public static string? GetStoredPasswordFingerprintHex()
     {
         string? hexString = Preferences.Default.Get(ActiveRsaFingerprintKey, string.Empty);
-        if (string.IsNullOrWhiteSpace(hexString)) return null;
-        try 
-        { 
-            _ = Convert.FromHexString(hexString); 
-            return hexString; 
+        if (string.IsNullOrWhiteSpace(hexString))
+            return null;
+        try
+        {
+            _ = Convert.FromHexString(hexString);
+            return hexString;
         }
-        catch 
-        { 
-            return null; 
+        catch
+        {
+            return null;
         }
     }
 
@@ -130,9 +132,16 @@ internal class CryptManager
     public static byte[]? GetStoredPasswordFingerprint()
     {
         string? hexString = Preferences.Default.Get(ActiveRsaFingerprintKey, string.Empty);
-        if (string.IsNullOrWhiteSpace(hexString)) return null;
-        try { return Convert.FromHexString(hexString); }
-        catch { return null; }
+        if (string.IsNullOrWhiteSpace(hexString))
+            return null;
+        try
+        {
+            return Convert.FromHexString(hexString);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     /// <summary>
@@ -160,7 +169,7 @@ internal class CryptManager
     /// matches the stored fingerprint; otherwise, false.</returns>
     public static async Task<bool> VerifyPasswordAgainstStoredAsync(string password)
     {
-        var stored = GetStoredPasswordFingerprint();
+        byte[]? stored = GetStoredPasswordFingerprint();
         if (stored is null)
             return string.IsNullOrWhiteSpace(password);
         else if (string.IsNullOrWhiteSpace(password))
@@ -218,17 +227,14 @@ internal class CryptManager
         });
     }
 
-    public static void ClearPassword()
-    {
+    public static void ClearPassword() =>
         // Clear the active fingerprint (current identity)
         Preferences.Default.Remove(ActiveRsaFingerprintKey); // There is no longer a current RSA, though we keep the RSA itself for decryption
-    }
 
     public static async Task<RSA?> GetStoredRsaFromFingerprintAsync()
     {
-        var fp = GetStoredPasswordFingerprint();
-        if (fp is null) return null;
-        return await RetrieveRsaByFingerprintAsync(fp);
+        byte[]? fp = GetStoredPasswordFingerprint();
+        return fp is null ? null : await RetrieveRsaByFingerprintAsync(fp);
     }
     #endregion Password / RSA management
     #region Password hashing primitives
@@ -261,10 +267,12 @@ internal class CryptManager
     [Obsolete($"Use {nameof(VerifyPasswordAgainstStoredAsync)} instead.")]
     public static bool VerifyPasswordHash(string password, string hashedPassword)
     {
-        var parts = hashedPassword.Split('.');
-        if (parts.Length != 3) return false;
+        string[] parts = hashedPassword.Split('.');
+        if (parts.Length != 3)
+            return false;
 
-        if (!int.TryParse(parts[0], out int iterations) || iterations <= 1) return false;
+        if (!int.TryParse(parts[0], out int iterations) || iterations <= 1)
+            return false;
         byte[] salt = Convert.FromBase64String(parts[1]);
         byte[] key = Convert.FromBase64String(parts[2]);
 
@@ -274,8 +282,8 @@ internal class CryptManager
     }
     #endregion Password hashing primitives
     #region Hybrid encryption
-    static readonly byte[] signature = "DM250928"u8.ToArray();
-    
+    private static readonly byte[] signature = "DM250928"u8.ToArray();
+
     /// <summary>
     /// Encrypts the given plaintext using AES-256-GCM and wraps the AES key with RSA-OAEP(SHA-256).
     /// </summary>
@@ -299,7 +307,7 @@ internal class CryptManager
         byte[] tag = new byte[TagSize];
 
         // Encrypt plaintext
-        using (var aesGcm = new AesGcm(aesKey, TagSize))
+        using (AesGcm aesGcm = new(aesKey, TagSize))
         {
             aesGcm.Encrypt(nonce, plaintext, ciphertext, tag);
         }
@@ -354,7 +362,7 @@ internal class CryptManager
         // Read plaintext from input stream
         byte[] plaintext = await ReadFullyAsync(inputStream, cancellationToken).ConfigureAwait(false);
         // Encrypt using EncryptToBytes
-        byte[] encrypted = await Task.Run(()=> EncryptToBytes(plaintext, rsa));
+        byte[] encrypted = await Task.Run(() => EncryptToBytes(plaintext, rsa));
         // Write encrypted data to output stream
         await outputStream.WriteAsync(encrypted, cancellationToken).ConfigureAwait(false);
     }
@@ -380,7 +388,7 @@ internal class CryptManager
         // Signature
         if (encrypted.Length < signature.Length)
             throw new InvalidDataException("Missing signature.");
-        if (!encrypted.Slice(0, signature.Length).SequenceEqual(signature))
+        if (!encrypted[..signature.Length].SequenceEqual(signature))
             throw new InvalidDataException("Unrecognized signature.");
         offset += signature.Length;
 
@@ -410,9 +418,9 @@ internal class CryptManager
         else
             throw new InvalidDataException($"Unsupported header version ({version}).");
 
-        if (aesEncryptedLength < 63 || aesEncryptedLength > 1024)
+        if (aesEncryptedLength is < 63 or > 1024)
             throw new InvalidDataException($"Invalid encrypted key length ({aesEncryptedLength}).");
-        
+
         string fingerprintHex = ToFingerprintHex(storedFingerprint);
         RSA? rsa = null;
         try
@@ -453,7 +461,7 @@ internal class CryptManager
 
             // Decrypt payload
             byte[] plaintext = new byte[cipherLength];
-            using var aesGcm = new AesGcm(aesKey, TagSize);
+            using AesGcm aesGcm = new(aesKey, TagSize);
             aesGcm.Decrypt(nonce, ciphertext, tag, plaintext);
             return plaintext;
         }
@@ -479,7 +487,7 @@ internal class CryptManager
         // Read the entire encrypted envelope from the input stream
         byte[] encrypted = await ReadFullyAsync(inputStream, cancellationToken).ConfigureAwait(false);
         // Decrypt using DecryptEnvelopeToBytes
-        byte[] plaintext = await Task.Run(()=>DecryptToBytes(encrypted));
+        byte[] plaintext = await Task.Run(() => DecryptToBytes(encrypted));
         // Write the plaintext to the output stream
         await outputStream.WriteAsync(plaintext, cancellationToken).ConfigureAwait(false);
     }
@@ -518,7 +526,7 @@ internal class CryptManager
         HashSet<string> fingerprints = await LoadVerifiedRsaFingerprintListAsync();
         if (fingerprints.Count == 0)
             return 0;
-        using ZipArchive zip = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
+        using ZipArchive zip = new(outputStream, ZipArchiveMode.Create, leaveOpen: true);
         using RSA rsaFromPwd = RsaFromPassword(password);
 
         // Get the active fingerprint and ensure it's first
@@ -532,7 +540,7 @@ internal class CryptManager
         }
         orderedFingerprints.AddRange(fingerprints);
 
-        foreach (var fingerprintHex in orderedFingerprints)
+        foreach (string fingerprintHex in orderedFingerprints)
         {
             // Retrieve private key (the public key can be derived from it)
             string storageKey = StorageKeyForFingerprintHex(fingerprintHex);
@@ -546,7 +554,7 @@ internal class CryptManager
             byte[] encryptedPrivateKey = EncryptToBytes(pkcs8, rsaFromPwd);
 
             // Add encrypted private key entry
-            ZipArchiveEntry encEntry = zip.CreateEntry(fingerprintHex+".enc", CompressionLevel.Optimal);
+            ZipArchiveEntry encEntry = zip.CreateEntry(fingerprintHex + ".enc", CompressionLevel.Optimal);
             using (Stream encStream = encEntry.Open())
             {
                 await encStream.WriteAsync(encryptedPrivateKey);
@@ -568,7 +576,7 @@ internal class CryptManager
     /// <param name="zipStream">Input stream containing the zip archive.</param>
     /// <returns>Task representing the restore operation and an integer representing th
     /// number of keys restored.</returns>
-    public static async Task<(int,int)> RestorePrivateKeysFromZipAsync(string password, Stream zipStream)
+    public static async Task<(int, int)> RestorePrivateKeysFromZipAsync(string password, Stream zipStream)
     {
         ArgumentNullException.ThrowIfNull(password);
         ArgumentNullException.ThrowIfNull(zipStream);
@@ -577,7 +585,7 @@ internal class CryptManager
         HashSet<string> importedFingerprints = new(StringComparer.Ordinal);
         HashSet<string> existingFingerprints = await LoadVerifiedRsaFingerprintListAsync();
 
-        using ZipArchive zip = new ZipArchive(zipStream, ZipArchiveMode.Read, leaveOpen: true);
+        using ZipArchive zip = new(zipStream, ZipArchiveMode.Read, leaveOpen: true);
         using RSA rsaFromPwd = RsaFromPassword(password);
 
         var keyEntries = zip.Entries.Where((e) => e.Name.EndsWith(".enc")).ToList();
@@ -592,7 +600,7 @@ internal class CryptManager
 
             // Read encrypted private key
             using Stream encStream = entry.Open();
-            using var ms = new MemoryStream();
+            using MemoryStream ms = new();
             await encStream.CopyToAsync(ms);
             byte[] encryptedPrivateKey = ms.ToArray();
 
@@ -617,7 +625,7 @@ internal class CryptManager
         existingFingerprints.UnionWith(importedFingerprints);
         SaveRsaFingerprintList(existingFingerprints);
         return (importedFingerprints.Count, keyEntries.Count);
-    } 
+    }
     #endregion
     #region Fingerprint Utilities
     /// <summary>
@@ -652,7 +660,7 @@ internal class CryptManager
     /// </summary>
     private static async Task<byte[]> ReadFullyAsync(Stream stream, CancellationToken cancellationToken)
     {
-        using var ms = new MemoryStream();
+        using MemoryStream ms = new();
         await stream.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
         return ms.ToArray();
     }
@@ -700,7 +708,7 @@ internal class CryptManager
     {
         static void ClearBigInteger(Org.BouncyCastle.Math.BigInteger value)
         {
-            var bytes = value.ToByteArrayUnsigned();
+            byte[] bytes = value.ToByteArrayUnsigned();
             Array.Clear(bytes, 0, bytes.Length);
         }
 
@@ -728,13 +736,13 @@ internal class CryptManager
     private static RSA ConvertToDotNetRsa(AsymmetricCipherKeyPair keyPair)
     {
         // Extract private key parameters
-        RsaPrivateCrtKeyParameters privateKeyParams = (RsaPrivateCrtKeyParameters)keyPair.Private;
+        var privateKeyParams = (RsaPrivateCrtKeyParameters)keyPair.Private;
 
         // Convert to RSAParameters
-        RSAParameters rsaParams = DotNetUtilities.ToRSAParameters(privateKeyParams);
+        var rsaParams = DotNetUtilities.ToRSAParameters(privateKeyParams);
 
         // Create and import into RSA object
-        RSA rsa = RSA.Create();
+        var rsa = RSA.Create();
         rsa.ImportParameters(rsaParams);
         rsaParams = default; // Clear sensitive data
         return rsa;
@@ -805,9 +813,9 @@ internal class CryptManager
     /// The set will be empty if no verified fingerprints are available.</returns>
     public static async Task<HashSet<string>> LoadVerifiedRsaFingerprintListAsync()
     {
-        var fingerPrintSet = LoadRsaFingerprintList();
+        HashSet<string> fingerPrintSet = LoadRsaFingerprintList();
         HashSet<string> set = new(StringComparer.Ordinal);
-        foreach (var line in fingerPrintSet)
+        foreach (string line in fingerPrintSet)
         {
             // Ensure there is a correctly named item in secure storage
             string storageKey = StorageKeyForFingerprintHex(line);
@@ -833,14 +841,16 @@ internal class CryptManager
 
     private static bool IsHexFingerprint(string s)
     {
-        if (s.Length != 64) return false;
+        if (s.Length != 64)
+            return false;
         for (int i = 0; i < s.Length; i++)
         {
             char c = s[i];
-            bool hex = (c >= '0' && c <= '9') ||
-                       (c >= 'a' && c <= 'f') ||
-                       (c >= 'A' && c <= 'F');
-            if (!hex) return false;
+            bool hex = c is (>= '0' and <= '9') or
+                       (>= 'a' and <= 'f') or
+                       (>= 'A' and <= 'F');
+            if (!hex)
+                return false;
         }
         return true;
     }
@@ -865,7 +875,7 @@ internal class CryptManager
             byte[] pkcs8 = Convert.FromBase64String(base64);
             try
             {
-                RSA rsa = RSA.Create();
+                var rsa = RSA.Create();
                 rsa.ImportPkcs8PrivateKey(pkcs8, out _);
                 return rsa;
             }
@@ -907,7 +917,7 @@ internal class CryptManager
             byte[] pkcs8 = Convert.FromBase64String(base64);
             try
             {
-                RSA rsa = RSA.Create();
+                var rsa = RSA.Create();
                 rsa.ImportPkcs8PrivateKey(pkcs8, out _);
                 return rsa;
             }
@@ -934,7 +944,7 @@ internal class CryptManager
         {
             // Remove all indexed keys
             HashSet<string> fingerprints = LoadRsaFingerprintList();
-            foreach (var fingerprint in fingerprints)
+            foreach (string fingerprint in fingerprints)
             {
                 if (SecureStorage.Default.Remove(CryptManager.StorageKeyForFingerprintHex(fingerprint)))
                     removed++;

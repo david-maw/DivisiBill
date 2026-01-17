@@ -32,7 +32,7 @@ internal partial class ProblemReportViewModel : ObservableObject
             // Attach user information and comments
             scope.AddAttachment(Encoding.Latin1.GetBytes(Utilities.GetAppInformation() + "\n" + DescriptionText), "UserMsg.txt", AttachmentType.Default, "text/plain");
             // Attach an archive of just the current bill
-            var archive = new Archive([Meal.CurrentMeal], true);
+            Archive archive = new([Meal.CurrentMeal], true);
             scope.AddAttachment(archive.AsXmlStream(), "archive-" + mealFileName);
             // Attach a copy of the bill image if there is one
             if (Meal.CurrentMeal.HasImage && File.Exists(Meal.CurrentMeal.ImagePath))
@@ -47,7 +47,7 @@ internal partial class ProblemReportViewModel : ObservableObject
     private async Task ReportMail()
     {
         string body = Utilities.GetAppInformation() + "\n" + DescriptionText;
-        var message = new EmailMessage
+        EmailMessage message = new()
         {
             Subject = "DivisiBill Message",
             Body = !Utilities.IsWinUI ? body // Detour an annoying bug where Windows/Outlook truncates longer messages, this text makes that obvious
@@ -101,8 +101,8 @@ internal partial class ProblemReportViewModel : ObservableObject
     [RelayCommand]
     private void RetreiveDeleted()
     {
-        DescriptionText += DeletedDescriptionText; 
-        DeletedDescriptionText =  string.Empty;
+        DescriptionText += DeletedDescriptionText;
+        DeletedDescriptionText = string.Empty;
         Reported = false;
     }
 }

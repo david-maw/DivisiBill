@@ -94,12 +94,12 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
     {
         if (App.IsCloudAllowed)
         {
-            var fileListViewModel = new FileListViewModel(RemoteWs.PersonListTypeName);
+            FileListViewModel fileListViewModel = new(RemoteWs.PersonListTypeName);
             await fileListViewModel.InitializeAsync();
             if (fileListViewModel.FileListCount > 0)
             {
                 await Shell.Current.Navigation.PushAsync(new Views.FileListPage(fileListViewModel));
-                var result = await fileListViewModel.SelectionCompleted.Task;
+                RemoteItemInfo result = await fileListViewModel.SelectionCompleted.Task;
                 if (result is not null)
                 {
                     bool loaded = await Person.LoadFromRemoteAsync(result.Name, result.ReplaceRequested);
@@ -137,19 +137,19 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
         Person p = new(Guid.NewGuid());
         Contact contact = null;
         if (Utilities.IsAndroid) // there's no contact picker on Windows
-        try
-        {
-            if (await Utilities.HasContactsReadPermissionAsync())
-                contact = await Contacts.Default.PickContactAsync();
-        }
-        catch (PermissionException)
-        {
-            // Permission denied, just ignore it and offer up a null screen
-        }
-        catch (Exception ex)
-        {
-            ex.ReportCrash();
-        }
+            try
+            {
+                if (await Utilities.HasContactsReadPermissionAsync())
+                    contact = await Contacts.Default.PickContactAsync();
+            }
+            catch (PermissionException)
+            {
+                // Permission denied, just ignore it and offer up a null screen
+            }
+            catch (Exception ex)
+            {
+                ex.ReportCrash();
+            }
 
         if (contact is not null)
         {
@@ -233,10 +233,18 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(LastVisibleItemIndex, false); break;
-                case "Down": if (FirstVisibleItemIndex > 0) ScrollItemsTo(FirstVisibleItemIndex, true); break;
-                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollItemsTo(lastItemIndex, false); break;
-                case "Start": if (FirstVisibleItemIndex > 0) ScrollItemsTo(0, true); break;
+                case "Up":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollItemsTo(LastVisibleItemIndex, false); break;
+                case "Down":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollItemsTo(FirstVisibleItemIndex, true); break;
+                case "End":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollItemsTo(lastItemIndex, false); break;
+                case "Start":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollItemsTo(0, true); break;
                 default: break;
             }
         }

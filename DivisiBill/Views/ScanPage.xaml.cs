@@ -130,12 +130,12 @@ public partial class ScanPage : ContentPage, IQueryAttributable
             if (changed) // mark the bill as new and preserve the old one
                 await Meal.CurrentMeal.MarkAsNewAsync("Scan");
         }
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
             Meal.CurrentMeal.LineItems.Add(item);
 
         // See if there is a scanned subtotal or tax value (if so, take the first)
         decimal ScannedSubTotal = 0, ScannedTax = 0;
-        foreach (var item in scannedBill.FormElements)
+        foreach (FormElement item in scannedBill.FormElements)
         {
             if (ScannedSubTotal == 0 && item.FieldName.Equals("Subtotal") && decimal.TryParse(item.FieldValue, out decimal d))
             {
@@ -187,9 +187,9 @@ public partial class ScanPage : ContentPage, IQueryAttributable
     #region IQueryAttributable Implementation
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        scannedBill = query.TryGetValue("ScannedBill", out var scannedBillObject)
+        scannedBill = query.TryGetValue("ScannedBill", out object scannedBillObject)
             ? scannedBillObject as ScannedBill : new ScannedBill();
-        ImagePath = query.TryGetValue("ImagePath", out var imagePathObject)
+        ImagePath = query.TryGetValue("ImagePath", out object imagePathObject)
             ? imagePathObject as string : null;
     }
     #endregion

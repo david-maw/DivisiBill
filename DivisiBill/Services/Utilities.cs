@@ -104,7 +104,7 @@ public static partial class Utilities // Partial for regex generator
         // Go through the list to see if the item is already in it and where it should be now
         // A linear search because we do not know the former item location, if any.
         int oldIndex = -1, index = -1, newIndex = -1;
-        foreach (var item in list)
+        foreach (T item in list)
         {
             index++;
             if (oldIndex < 0 && item == targetItem) // The item is already in the list
@@ -223,7 +223,7 @@ public static partial class Utilities // Partial for regex generator
                 list.Insert(i, itemToInsert);
         }
     }
-    
+
     /// <summary>
     /// Inserts an item into the list immediately after the specified existing item, or at the end of the list if the
     /// existing item is not found or is null.
@@ -246,7 +246,7 @@ public static partial class Utilities // Partial for regex generator
             if (i < 0)
                 list.Add(itemToInsert); // existingItem was not in the list, so just add the new one at the start
             else
-                list.Insert(i+1, itemToInsert);
+                list.Insert(i + 1, itemToInsert);
         }
     }
 
@@ -269,7 +269,7 @@ public static partial class Utilities // Partial for regex generator
         if (selected is null)
             return collection.FirstOrDefault();
 
-        foreach (var item in collection)
+        foreach (T item in collection)
         {
             if (item.Equals(selected))
                 found = true; // This should always happen exactly once
@@ -293,7 +293,7 @@ public static partial class Utilities // Partial for regex generator
     public static (T, int) FindItemAndIndex<T>(this IEnumerable<T> items, Predicate<T> predicate)
     {
         int index = 0;
-        foreach (var item in items)
+        foreach (T item in items)
         {
             if (predicate(item))
                 return (item, index);
@@ -385,7 +385,7 @@ public static partial class Utilities // Partial for regex generator
                 sourceStream.Position = 0;
                 streamName = "stream-" + (string.IsNullOrWhiteSpace(streamName) ? "anonymous.txt" : streamName);
                 string streamPath = Path.Combine(FileSystem.Current.CacheDirectory, streamName);
-                using (var fileStream = File.Create(streamPath))
+                using (FileStream fileStream = File.Create(streamPath))
                     sourceStream.CopyTo(fileStream);
                 scope.AddAttachment(streamPath);
                 File.Delete(streamPath);
@@ -428,7 +428,7 @@ public static partial class Utilities // Partial for regex generator
         if (!httpResponse.IsSuccessStatusCode)
         {
             RecordMsg($"HTTP {(int)httpResponse.StatusCode} {httpResponse.ReasonPhrase}", callerName, sourceFilePath, sourceLineNumber);
-            var body = await httpResponse.Content.ReadAsStringAsync();
+            string body = await httpResponse.Content.ReadAsStringAsync();
             if (!string.IsNullOrWhiteSpace(body))
                 Utilities.RecordMsg(body, callerName, sourceFilePath, sourceLineNumber);
             return false;
@@ -469,7 +469,7 @@ public static partial class Utilities // Partial for regex generator
         await PauseBeforeMessageSource.WaitWhilePausedAsync();
         StatusMsgInvoked?.Invoke(msg);
         // Extract just the file name - has to be done manually because this may be an Android build compiled on Windows
-        var sourceFileName = sourceFilePath[(sourceFilePath.LastIndexOf('\\') + 1)..];
+        string sourceFileName = sourceFilePath[(sourceFilePath.LastIndexOf('\\') + 1)..];
         SentrySdk.AddBreadcrumb(
             type: "debug",
             category: "Utilities.StatusMsg",
@@ -506,7 +506,7 @@ public static partial class Utilities // Partial for regex generator
     {
         try
         {
-            var status = await permission.CheckStatusAsync();
+            PermissionStatus status = await permission.CheckStatusAsync();
             if (status == PermissionStatus.Granted)
                 return true;
             bool asked = permission.ShouldShowRationale();
@@ -758,10 +758,14 @@ public static partial class Utilities // Partial for regex generator
         double Hours = age.TotalHours;
         double Minutes = age.TotalMinutes;
 #pragma warning disable CS0642 // Possible mistaken empty statement
-        if (MakeText(Years, "year")) ;
-        else if (MakeText(Days, "day")) ;
-        else if (MakeText(Hours, "hour")) ;
-        else if (MakeText(Minutes, "minute")) ;
+        if (MakeText(Years, "year"))
+            ;
+        else if (MakeText(Days, "day"))
+            ;
+        else if (MakeText(Hours, "hour"))
+            ;
+        else if (MakeText(Minutes, "minute"))
+            ;
 #pragma warning restore CS0642 // Possible mistaken empty statement
         if (!string.IsNullOrEmpty(s))
             s = "(" + s + ")";
@@ -922,7 +926,7 @@ public static partial class Utilities // Partial for regex generator
 
     public static void EnumerateInheritance(object o)
     {
-        var objectType = o.GetType();
+        Type objectType = o.GetType();
         while (objectType is not null)
         {
             DebugMsg(objectType.ToString());
@@ -933,8 +937,8 @@ public static partial class Utilities // Partial for regex generator
     // From stack overflow discussion at https://stackoverflow.com/questions/1600962/displaying-the-build-date
     public static async Task InitializeUtilitiesAsync()
     {
-        using var notesStream = await FileSystem.OpenAppPackageFileAsync("Release Notes.html");
-        using var reader = new StreamReader(notesStream);
+        using Stream notesStream = await FileSystem.OpenAppPackageFileAsync("Release Notes.html");
+        using StreamReader reader = new(notesStream);
         ReleaseNotes = new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
     internal static string CurrencySymbol = System.Globalization.NumberFormatInfo.CurrentInfo.CurrencySymbol;
@@ -947,18 +951,18 @@ public static partial class Utilities // Partial for regex generator
     private static HtmlWebViewSource GetReleaseNotes()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var stream = assembly.GetManifestResourceStream("DivisiBill.Release Notes.html");
-        using var reader = new StreamReader(stream);
+        Stream stream = assembly.GetManifestResourceStream("DivisiBill.Release Notes.html");
+        using StreamReader reader = new(stream);
         return new HtmlWebViewSource { Html = reader.ReadToEnd() };
     }
     public static HtmlWebViewSource ReleaseNotes { get; private set; }
     public static async Task<string> CopyStreamToTempFileAsync(Stream input)
     {
         // Create a unique temp file path
-        var tempPath = Path.Combine(FileSystem.CacheDirectory, Path.GetRandomFileName());
+        string tempPath = Path.Combine(FileSystem.CacheDirectory, Path.GetRandomFileName());
 
         // Copy the stream to the file
-        using (var output = File.OpenWrite(tempPath))
+        using (FileStream output = File.OpenWrite(tempPath))
         {
             await input.CopyToAsync(output);
         }
@@ -1014,13 +1018,13 @@ public static partial class Utilities // Partial for regex generator
         }
     }
     internal static bool IsValid(this Location location) => location is not null && App.UseLocation && location.Accuracy <= Distances.AccuracyLimit;
-    internal static bool IsAccurate(this Location location) => (location is not null && location.Accuracy.HasValue);
+    internal static bool IsAccurate(this Location location) => location is not null && location.Accuracy.HasValue;
     /// <summary>
     /// This is accuracy, but as an integer (not double) number of meters or an "inaccurate" value
     /// </summary>
     /// <param name="location">The Location object to be evaluated</param>
     /// <returns>The distance from the current location, or an "inaccurate" value</returns>
-    public static int AccuracyOrDefault(this Location location) => location.IsAccurate() ? (int)Math.Round(location.Accuracy.Value) : (Distances.Inaccurate);
+    public static int AccuracyOrDefault(this Location location) => location.IsAccurate() ? (int)Math.Round(location.Accuracy.Value) : Distances.Inaccurate;
     internal static string MakeLocationText(Location location) => location is null || !location.IsValid() ? null :
                 MakeLocationText(location.Latitude, location.Longitude, location.AccuracyOrDefault());
 
@@ -1076,7 +1080,7 @@ public static class Distances
     internal static string Text(int distance) =>
         distance <= Close ? "close"
         : (distance < 1000 ? string.Format("{0} m", distance)
-        : (distance < 9950 ? string.Format("{0:F1} km", (distance) / 1000.0)
+        : (distance < 9950 ? string.Format("{0:F1} km", distance / 1000.0)
         : (distance >= Inaccurate ? ""
         : string.Format("{0} km", (distance + 499) / 1000))));
 }

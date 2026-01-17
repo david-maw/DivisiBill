@@ -1,21 +1,21 @@
 ﻿#nullable enable
 
-using Android.App;
-using Android.Content.PM;
-using Android.OS;
-using Android.Widget;
+using global::Android.App;
+using global::Android.Content;
+using global::Android.Content.PM;
+using global::Android.OS;
+using global::Android.Util;
+using global::Android.Views;
+using global::Android.Widget;
 using AndroidX.Activity;
-using Android.Views;
-using Android.Content;
-using Android.Util;
 
-namespace DivisiBill.Platforms.ShouldBeAndroid;
+namespace DivisiBill.Platforms.Android;
 
 [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTask,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
 [IntentFilter(
     [Intent.ActionView, Intent.ActionOpenDocument, Intent.ActionGetContent],
-    Categories = [ Intent.CategoryDefault, Intent.CategoryBrowsable ],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
     DataMimeType = "application/zip"
     )]
 [IntentFilter(
@@ -64,7 +64,7 @@ public class MainActivity : MauiAppCompatActivity
             OnBackPressedDispatcher.AddCallback(this, new BackPress(this));
             // As long as we're forced to show an inset area in .NET10 as of 11/19/25, use it to display status
             // Window.AddFlags(WindowManagerFlags.Fullscreen); 
-            Window?.SetSoftInputMode(SoftInput.AdjustPan); 
+            Window?.SetSoftInputMode(SoftInput.AdjustPan);
         }
         else if (Intent is not null)
             HandleIntent(Intent);
@@ -80,23 +80,23 @@ public class MainActivity : MauiAppCompatActivity
         base.OnNewIntent(intent);
         HandleIntent(intent);
     }
-    static bool IsFileIntent(Intent? intent)
+    private static bool IsFileIntent(Intent? intent)
     {
         if (intent is null)
             return false;
 
-        var action = intent.Action;
-        return action == Intent.ActionView
-            || action == Intent.ActionOpenDocument
-            || action == Intent.ActionGetContent
-            || action == Intent.ActionSend;
+        string? action = intent.Action;
+        return action is Intent.ActionView
+            or Intent.ActionOpenDocument
+            or Intent.ActionGetContent
+            or Intent.ActionSend;
     }
-    void HandleIntent(Intent? intent)
+    private void HandleIntent(Intent? intent)
     {
         if (intent is null || !IsFileIntent(intent))
             return;
 
-        Android.Net.Uri? uri;
+        global::Android.Net.Uri? uri;
         string? mimeType;
 
         if (intent.Action == Intent.ActionSend)
@@ -113,20 +113,20 @@ public class MainActivity : MauiAppCompatActivity
         if (uri is not null && !string.IsNullOrEmpty(mimeType))
             StreamDispatcher.Dispatch(uri, mimeType);
     }
-    Android.Net.Uri? GetUriFromIntent(Intent intent)
+    private global::Android.Net.Uri? GetUriFromIntent(Intent intent)
     {
         if (OperatingSystem.IsAndroidVersionAtLeast(33))
         {
             // New API (Android 13+)
             return intent.GetParcelableExtra(
                 Intent.ExtraStream,
-                Java.Lang.Class.FromType(typeof(Android.Net.Uri))
-            ) as Android.Net.Uri;
+                Java.Lang.Class.FromType(typeof(global::Android.Net.Uri))
+            ) as global::Android.Net.Uri;
         }
         else
         {
             // Old API (Android 12 and below)
-            return intent.GetParcelableExtra(Intent.ExtraStream) as Android.Net.Uri;
+            return intent.GetParcelableExtra(Intent.ExtraStream) as global::Android.Net.Uri;
         }
     }
 }

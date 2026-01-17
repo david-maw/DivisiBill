@@ -1,24 +1,21 @@
 ﻿using System.ComponentModel;
 
-namespace DivisiBill.InAppBilling
+namespace DivisiBill.InAppBilling;
+
+[AttributeUsage(AttributeTargets.All)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+internal sealed class PreserveAttribute : Attribute
 {
-	[AttributeUsage(AttributeTargets.All)]
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	sealed class PreserveAttribute : Attribute
-	{
-#pragma warning disable SA1401 // Fields should be private
-		public bool AllMembers;
-		public bool Conditional;
-#pragma warning restore SA1401 // Fields should be private
+    public bool AllMembers;
+    public bool Conditional;
 
-		public PreserveAttribute(bool allMembers, bool conditional)
-		{
-			AllMembers = allMembers;
-			Conditional = conditional;
-		}
+    public PreserveAttribute(bool allMembers, bool conditional)
+    {
+        AllMembers = allMembers;
+        Conditional = conditional;
+    }
 
-		public PreserveAttribute()
-		{
-		}
-	}
+    public PreserveAttribute()
+    {
+    }
 }

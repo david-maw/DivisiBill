@@ -20,24 +20,22 @@
 
     <ContentPage.Resources>
         <!-- #region UI for Single Select -->
-        <!-- TODO: MAUI DETOUR because the commands don't bind correctly use "Invoked" property until https://github.com/dotnet/maui/issues/32332 is fixed-->
         <DataTemplate x:Key="WithSwipe" x:DataType="services:RemoteItemInfo">
             <Grid ColumnDefinitions="*,*,*">
                 <!--Android colors the selected item anyway, but Windows uses a rather insipid gray that's difficult to see-->
-                <!--The usual trick of applying this at run time does not work because there are multiple DataTemplates-->
+                <!--The usual trick of applying this via the CollectionView at run time does not work because there are multiple
+                    DataTemplates and we only want it applied to this one-->
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup Name="CommonStates">
                         <VisualState Name="Normal">
                             <VisualState.Setters>
                                 <Setter Property="BackgroundColor" Value="Transparent" />
-                                <Setter Property="Scale" Value="1" />
                             </VisualState.Setters>
                         </VisualState>
 
                         <VisualState Name="Selected">
                             <VisualState.Setters>
                                 <Setter Property="BackgroundColor" Value="{StaticResource SelectedBackGroundColor}" />
-                                <Setter Property="Scale" Value="1.03" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -48,7 +46,6 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem
                                 BackgroundColor="PaleGreen"
-                                Invoked="OnUseSwipeItemInvoked"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=UseCommand, x:DataType=vm:FileListViewModel}"
                                 CommandParameter="{Binding}"
                                 IconImageSource="{StaticResource GlyphLoad}" />
@@ -58,7 +55,6 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem
                                 BackgroundColor="Red"
-                                Invoked="OnDeleteSwipeItemInvoked"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=vm:FileListViewModel}"
                                 CommandParameter="{Binding}"
                                 IconImageSource="{StaticResource GlyphDel}" />
@@ -220,7 +216,7 @@
                         HorizontalOptions="Center"
                         IsVisible="{Binding ItemsFound, Converter={StaticResource Not}}"
                         Text="{Binding ItemTypePlural, StringFormat='No {0} Found'}" />
-                    <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray300}}" HeightRequest="2"  Margin="10,0"/>
+                    <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray300}}" HeightRequest="2" Margin="10,0"/>
                 </VerticalStackLayout>
             </CollectionView.Header>
         </CollectionView>

@@ -64,10 +64,10 @@ public partial class Meal
     public decimal GetUnallocatedAmount()
     {
         decimal d = 0;
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
         {
             bool isAllocated = false;
-            foreach (var payee in item.SharedBy)
+            foreach (bool payee in item.SharedBy)
             {
                 if (payee)
                 {
@@ -86,7 +86,7 @@ public partial class Meal
                 d = UnusedDiscount;
         }
         return d;
-    } 
+    }
     #endregion
     /// <summary>
     /// <para>Walk through all the Cost items (the participants) and allocate the appropriate share of the costs to each participant.</para>
@@ -115,7 +115,7 @@ public partial class Meal
             return; // There's nobody to share with 
         #endregion
         #region Initialization
-        PersonCost[] sharers = new PersonCost[LineItem.maxSharers];
+        var sharers = new PersonCost[LineItem.maxSharers];
 
         if (LineItems.Count == 0)
         {
@@ -129,13 +129,13 @@ public partial class Meal
         decimal unallocatedRunningTotal = 0;
         // Store a reference to each participants cost at their diner index 
         // in the sharers array to simplify the next step
-        foreach (var personCost in Costs)
+        foreach (PersonCost personCost in Costs)
         {   // Note DinerIndex starts at 1
             sharers[personCost.DinerIndex] = personCost;
             personCost.ClearAllAmounts(); // Take this opportunity to clear out old data (even for irrelevant fields it simplifies debugging)
         }
         // Now step through all the line items, sharing out their cost
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
         {
             // Figure out what each person pays toward that item
             decimal[] amounts = item.GetAmounts();
@@ -183,7 +183,7 @@ public partial class Meal
 
         // Calculate the discount for each participant, if coupons are to be applied after tax, scale the coupon amount to a corresponding discount before tax
         decimal totalChargedAmount = 0, totalCouponAmount = 0;
-        foreach (var costItem in Costs)
+        foreach (PersonCost costItem in Costs)
         {
             costItem.PreTaxCouponAmount = costItem.CouponAmount / (1M + (IsCouponAfterTax ? (decimal)TaxRate : 0));
             costItem.Discount = costItem.CompedAmount + costItem.PreTaxCouponAmount;
@@ -215,7 +215,7 @@ public partial class Meal
             Tax = 0; // Because there will be no costs there can be no tax
             // Calculate the ratio by which to multiply each participant's coupon amount so the total equals the total cost
             decimal ratio = totalChargedAmount / totalCouponAmount;
-            foreach (var costItem in Costs.Where(pc => pc.PreTaxCouponAmount > 0))
+            foreach (PersonCost costItem in Costs.Where(pc => pc.PreTaxCouponAmount > 0))
             {
                 // Scale this participant's coupon share appropriately
                 costItem.PreTaxCouponAmount *= ratio;
@@ -243,7 +243,7 @@ public partial class Meal
         decimal remainingUnusedCouponAmount = 0;
         // Sum of all the amounts so far calculated
         totalChargedAmount = 0;
-        foreach (var costItem in Costs)
+        foreach (PersonCost costItem in Costs)
         {
             if (costItem.Discount <= costItem.OrderAmount)
             {
@@ -267,10 +267,10 @@ public partial class Meal
         if (remainingUnusedCouponAmount > 0)
         {
             decimal discountPerUnit = remainingUnusedCouponAmount / Costs.Sum(pc => pc.Amount);
-            foreach (var costItem in Costs)
+            foreach (PersonCost costItem in Costs)
             {
                 if (costItem.Amount > 0)
-                    costItem.Amount -=  costItem.Amount * discountPerUnit;
+                    costItem.Amount -= costItem.Amount * discountPerUnit;
                 costItem.UnusedCouponAmount = 0; // We used all we can so record that
             }
             remainingUnusedCouponAmount = 0; // Because we just consumed it all
@@ -287,7 +287,7 @@ public partial class Meal
         decimal modifiedTaxRate = Tax == 0 ? 0 : Tax / TaxedAmount; // identical to TaxRate unless TaxDelta is set
         decimal modifiedTipRate = Tip == 0 ? 0 : Tip / GetTipBasis(); // identical to TipRate unless TipDelta is set
 
-        foreach (var costItem in costsWithOrderAmount) // So, just the people who bought things
+        foreach (PersonCost costItem in costsWithOrderAmount) // So, just the people who bought things
         {
             decimal shareOfTax = costItem.Amount * modifiedTaxRate;
             // The tip is shared according to what each person spent
@@ -328,12 +328,12 @@ public partial class Meal
 
         // The following check isn't necessarily reporting something wrong, but it is weird enough to be worth noting
         if (UnallocatedAmount == 0 && remainingUnusedCouponAmount != 0)
-            Utilities.RecordMsg( $"Excess discount {remainingUnusedCouponAmount:C} is unusual in {DebugDisplay}");
+            Utilities.RecordMsg($"Excess discount {remainingUnusedCouponAmount:C} is unusual in {DebugDisplay}");
         #endregion
         #region Round all values
         // Until now we've been doing full accuracy calculations so as to minimize rounding errors
         // From this point onward, all the amounts are in exact dollars and cents so we have to handle them explicitly.
-        foreach (var pc in costsWithOrderAmount)
+        foreach (PersonCost pc in costsWithOrderAmount)
             pc.RoundAllAmounts();
         SubTotal = totalChargedAmount = Math.Round(totalChargedAmount, 2);
         CouponAmountIfAfterTax = Math.Round(GetCouponAmountIfAfterTax(), 2);
@@ -377,7 +377,7 @@ public partial class Meal
                     decimal totalForCluster = cluster.CostsWithSameOrderAmount.Sum(costItem => costItem.Amount) + roundingErrorLeft;
                     decimal amountPerParticipant = Math.Truncate(totalForCluster * 100 / cluster.SameOrderAmountCount) / 100; // round down to the nearest penny
                     roundingErrorLeft = totalForCluster - amountPerParticipant * cluster.SameOrderAmountCount;
-                    foreach (var costItem in cluster.CostsWithSameOrderAmount)
+                    foreach (PersonCost costItem in cluster.CostsWithSameOrderAmount)
                         costItem.Amount = amountPerParticipant;
                     if (roundingErrorLeft == 0)
                         break; // All done
@@ -385,7 +385,7 @@ public partial class Meal
             }
             if (Math.Abs(roundingErrorLeft) >= 0.005m) // sharing among clusters of identical orders didn't do it, try giving it to any solo participant 
             {
-                var ci = amountClusters.Where(result => result.SameOrderAmountCount == 1) // Just the ones with unique order amounts
+                PersonCost ci = amountClusters.Where(result => result.SameOrderAmountCount == 1) // Just the ones with unique order amounts
                     .SelectMany(cluster => cluster.CostsWithSameOrderAmount) // Flatten the lists
                     .FirstOrDefault(ci => (ci.Amount + roundingErrorLeft) > 0); // now see if there's one that can handle the remainder 
                 if (ci is not null)
@@ -398,7 +398,7 @@ public partial class Meal
         if (roundingErrorLeft != 0) // As a last resort, just give it to the first participant that can handle it
         {
             // The extra is added(or subtracted from) the first non zero total it would not overwhelm.
-            var costItem = costsWithAmount.FirstOrDefault(ci => (ci.Amount + roundingErrorLeft) > 0);
+            PersonCost costItem = costsWithAmount.FirstOrDefault(ci => (ci.Amount + roundingErrorLeft) > 0);
             if (costItem is not null)
                 costItem.Amount += roundingErrorLeft;
             else // We could not find any way to allocate remainingTotal should always be zero
@@ -408,7 +408,7 @@ public partial class Meal
         #endregion
         #region Final Calculations and Cleanup
         // Now that all the costs have been distributed to individuals, recalculate the total amounts
-        TotalAmount = Math.Round(GetTotalAmount(),2);
+        TotalAmount = Math.Round(GetTotalAmount(), 2);
         RoundedAmount = GetRoundedAmount();
         if (UnallocatedAmount == 0 && ExcessDiscount != 0)
             UnallocatedAmount = -ExcessDiscount; // To make it obvious to the user
@@ -457,11 +457,11 @@ public partial class Meal
         if (Costs.Count == 0)
             return; // There's nobody to share with
 
-        PersonCost[] sharers = new PersonCost[LineItem.maxSharers];
+        var sharers = new PersonCost[LineItem.maxSharers];
 
         // Store a reference to each participants cost at their diner index 
         // in the sharers array to simplify the next step
-        foreach (var item in Costs)
+        foreach (PersonCost item in Costs)
         {   // Note DinerIndex starts at 1
             sharers[item.DinerIndex] = item;
             item.OrderAmount = 0;
@@ -477,7 +477,7 @@ public partial class Meal
             return;
         }
         // Now step through all the line items, sharing out their cost
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
         {
             // Figure out what each person pays toward that item
             decimal[] amounts = GetAmounts(item);
@@ -519,14 +519,14 @@ public partial class Meal
 
         // First, we get a list of the costs that were exceeded by a discount and zero them, adding up the unused discount.
         decimal excessDiscount = 0;
-        foreach (var costItem in Costs.Where(pc => pc.Discount > pc.OrderAmount))
+        foreach (PersonCost costItem in Costs.Where(pc => pc.Discount > pc.OrderAmount))
         {
             excessDiscount += costItem.Discount - costItem.OrderAmount;
             costItem.Discount = costItem.OrderAmount;
         }
 
         // Now it's possible to get a list of just the people who spent money
-        var nonZeroCosts = Costs.Where(pc => pc.OrderAmount > pc.Discount).ToArray();
+        PersonCost[] nonZeroCosts = Costs.Where(pc => pc.OrderAmount > pc.Discount).ToArray();
 
         // if necessary, share out the extra discount 
         if (excessDiscount > 0 && nonZeroCosts.Length > 0)
@@ -534,9 +534,9 @@ public partial class Meal
             int remainingCosts = nonZeroCosts.Length; // How many have not yet been given a share
             // Iterate through the people who have some cost left, sharing out the remaining discounts as evenly as possible.
             // Do the smallest ones first so as to be sure to use up all the excess discount in a single pass 
-            foreach (var costItem in nonZeroCosts.OrderBy(pc => pc.OrderAmount - pc.Discount))
+            foreach (PersonCost costItem in nonZeroCosts.OrderBy(pc => pc.OrderAmount - pc.Discount))
             {
-                var extraDiscount = costItem.OrderAmount - costItem.Discount; // Each person gets no more discount than they spent
+                decimal extraDiscount = costItem.OrderAmount - costItem.Discount; // Each person gets no more discount than they spent
                 extraDiscount = Math.Min(extraDiscount, excessDiscount / remainingCosts); // and no more than a share of what's left
                 costItem.Discount += extraDiscount;
                 excessDiscount -= extraDiscount;
@@ -551,7 +551,7 @@ public partial class Meal
         decimal remainingTotal = TotalAmount;
         decimal TipBasis = GetOrderAmount();
 
-        foreach (var costItem in Costs.Where(pc => pc.OrderAmount > 0)) // So, just the people who bought things
+        foreach (PersonCost costItem in Costs.Where(pc => pc.OrderAmount > 0)) // So, just the people who bought things
         {
             decimal taxableAmount = Math.Max(0, costItem.ChargedAmount
                 - (IsCouponAfterTax ? 0 : (costItem.Discount - costItem.CompedAmount))); // Comped items are included in discount number
@@ -571,7 +571,7 @@ public partial class Meal
         if (IsUnsharedAmountSignificant && nonZeroCosts.Length > 0)
         {
             Utilities.DebugMsg($"In {nameof(DistributeCosts20230527)} : {remainingTotal:C} was unallocated after sharing costs in {DebugDisplay}");
-            var costItem = nonZeroCosts.First(ci => (ci.Amount + remainingTotal) > 0);
+            PersonCost costItem = nonZeroCosts.First(ci => (ci.Amount + remainingTotal) > 0);
             costItem.Amount += remainingTotal;
         }
         // Now that all the costs have been distributed to individuals, recalculate the rounded amount
@@ -592,7 +592,8 @@ public partial class Meal
         DistributeCosts();
         foreach ((PersonCost oldPc, PersonCost newPc) in OldCosts.Zip(Costs))
         {
-            if (oldPc is null || newPc is null) break;
+            if (oldPc is null || newPc is null)
+                break;
             totalDifference += Math.Abs(oldPc.Amount - newPc.Amount);
         }
         if (report && totalDifference > 0.25m && UnallocatedAmount == 0)

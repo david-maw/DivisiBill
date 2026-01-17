@@ -33,7 +33,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     public MealSummary ShallowCopy() => MemberwiseClone() as MealSummary;
 
     public override bool Equals(object obj) => obj is not null && (ReferenceEquals(this, obj)
-        || this.GetType() == obj.GetType() && FileName == ((MealSummary)obj).FileName);
+        || (GetType() == obj.GetType() && FileName == ((MealSummary)obj).FileName));
     public override int GetHashCode() => FileName.GetHashCode();
     public override string ToString() => FileName + " (" + VenueName + ")";
     #endregion
@@ -367,7 +367,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     }
 
     public static MealSummary PopMostRecentDeletion() => DeletedStack.Count > 0 ? DeletedStack.Pop() : null;
-    
+
     /// <summary>
     /// Undelete a local Meal and its associated image, if by some weird mischance the corresponding file already exists, just discard it
     /// </summary>
@@ -384,7 +384,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         }
         return unexpected;
     }
-    
+
     /// <summary>
     /// Undelete a Meal image, if meal currently has an image, swap them
     /// </summary>
@@ -473,7 +473,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     #endregion
     #region Persistence
     private static readonly DataContractJsonSerializer mealSummarySerializer = new(typeof(MealSummary));
-    private static XmlRootAttribute root = new ("Meal");
+    private static readonly XmlRootAttribute root = new("Meal");
     private static readonly XmlSerializer mealSummaryXmlSerializer = new(typeof(MealSummary), root);
     public static MealSummary LoadJsonFrom(Stream sourceStream)
     {
@@ -498,7 +498,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     }
     public string GetJsonString()
     {
-        var buf = new byte[10000];
+        byte[] buf = new byte[10000];
         MemoryStream s = new(buf);
         SaveJsonToStream(s);
         string myString = System.Text.Encoding.UTF8.GetString(buf, 0, (int)s.Position);
@@ -541,7 +541,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     public static MealSummary LoadFromMealFile(string TargetFileName)
     {
         MealSummary ms = null;
-        using (var sourceStream = File.OpenRead(Path.Combine(Meal.MealFolderPath, TargetFileName)))
+        using (FileStream sourceStream = File.OpenRead(Path.Combine(Meal.MealFolderPath, TargetFileName)))
         {
             if (sourceStream.Length > 0) // Empty files are clearly bad
                 ms = LoadFromMealStream(sourceStream, TargetFileName);
@@ -614,10 +614,10 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// <returns></returns>
     public bool TryAddTo(Collection<MealSummary> list)
     {
-        (var ms, var inx) = list.FindItemAndIndex((item) => item.CreationTime <= this.CreationTime);
+        (MealSummary ms, int inx) = list.FindItemAndIndex((item) => item.CreationTime <= CreationTime);
         if (ms is null)
             list.Add(this);
-        else if (ms.CreationTime == this.CreationTime)
+        else if (ms.CreationTime == CreationTime)
             return false; // Nothing to do, it is already in the list
         else
             list.Insert(inx, this);
@@ -640,8 +640,10 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// <returns>+1 if this would sort later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
     public int CompareVenueTo(MealSummary otherMs)
     {
-        if (this.Equals(otherMs)) return 0;
-        if (otherMs is null) return 1;
+        if (Equals(otherMs))
+            return 0;
+        if (otherMs is null)
+            return 1;
         int result = VenueName.CompareTo(otherMs.VenueName);
         if (result == 0)
             result = CompareCreationTimeTo(otherMs);
@@ -658,8 +660,10 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// <returns>+1 if this would sort later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
     public int CompareDistanceTo(MealSummary otherMs)
     {
-        if (this.Equals(otherMs)) return 0;
-        if (otherMs is null) return 1;
+        if (Equals(otherMs))
+            return 0;
+        if (otherMs is null)
+            return 1;
         int result = Distance.CompareTo(otherMs.Distance);
         if (result == 0)
             result = VenueName.CompareTo(otherMs.VenueName);

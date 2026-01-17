@@ -35,7 +35,7 @@ public partial class VenueListPage : ContentPage
         if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
         {
             mapSettings.VenueLocationHasChanged = false; // don't execute this code again unnecessarily
-            Venue? v = Venue.FindVenueByName(mapSettings.VenueName);
+            var v = Venue.FindVenueByName(mapSettings.VenueName);
             v?.Location = mapSettings.VenueLocation;
         }
         if (context.CurrentItem is null)
@@ -52,7 +52,10 @@ public partial class VenueListPage : ContentPage
 
         await Task.Delay(200); // Without the delay the scroll doesn't work
 
-        try { CurrentCollectionView.ScrollTo(context.CurrentItem); }
+        try
+        {
+            CurrentCollectionView.ScrollTo(context.CurrentItem);
+        }
         catch (Exception) { } // Don't care if the selection fails
     }
     protected override async void OnDisappearing()

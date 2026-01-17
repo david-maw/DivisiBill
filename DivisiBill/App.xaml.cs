@@ -79,7 +79,11 @@ public partial class App : Application, INotifyPropertyChanged
         ModifyEntry();
         // Enable connectivity monitoring
         Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
-        StreamDispatcher.Activated += StreamDispatcher_Activated;
+#if ANDROID
+        DivisiBill.Platforms.Android.StreamDispatcher.Activated += StreamDispatcher_Activated;
+#elif WINDOWS
+        DivisiBill.Platforms.Windows.StreamDispatcher.Activated += StreamDispatcher_Activated;
+#endif
     }
 
     ~App()
@@ -112,7 +116,7 @@ public partial class App : Application, INotifyPropertyChanged
     #region Lifecycle and window management
     #region Persist Changes
     // TODO: remove workaround for https://github.com/dotnet/maui/issues/27167
-    static async void PersistAsNeeded() => await MainThread.InvokeOnMainThreadAsync(ActualPersistAsNeeded);
+    private static async void PersistAsNeeded() => await MainThread.InvokeOnMainThreadAsync(ActualPersistAsNeeded);
 
     /// <summary>
     /// Persists application state and settings if necessary. This method can be called multiple times safely and will
@@ -121,7 +125,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <remarks>This method updates the last use timestamp and saves venue and meal settings if changes are
     /// detected. Exceptions during persistence are ignored to ensure the application can continue shutting down or
     /// performing other operations without interruption.</remarks>
-    static async void ActualPersistAsNeeded()
+    private static async void ActualPersistAsNeeded()
     {
         Utilities.DebugMsg($"In App.PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
         if (!InitializationComplete.Task.IsCompleted)
@@ -149,7 +153,7 @@ public partial class App : Application, INotifyPropertyChanged
     #endregion
     #region Application Launch
     private static string priorWhat = "unknown";
-#pragma warning disable IDE0044 // Add readonly modifier - IDE is confused by isIntentLaunch being set in Android only code
+
     /// <summary>
     /// Gets or sets a value indicating whether the App was initiated by an Android intent other than Intent.ActionMain (the
     /// regular application start intent).
@@ -157,7 +161,6 @@ public partial class App : Application, INotifyPropertyChanged
     /// <remarks>This property is set to <see langword="true"/> only on Android platforms when the
     /// application is started via an intent. On other platforms, this property remains <see langword="false"/>.</remarks>
     public bool IsIntentLaunch { get; set; } = false; // Only set true on Android
-#pragma warning restore IDE0044
 
     /// <summary>
     /// Handles the event when a stream is to be read, triggered by an Android Intent.
@@ -196,7 +199,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// asynchronous manner, enabling coordination between producers and consumers without blocking threads. The queue
     /// is read-only and should not be reassigned.</remarks>
     public readonly AwaitableQueue<StreamRequest> IntentQueue = new();
-    
+
     /// <summary>
     /// Creates and returns the application's main window based on the current activation state.
     /// </summary>
@@ -210,7 +213,7 @@ public partial class App : Application, INotifyPropertyChanged
     protected override Window CreateWindow(IActivationState activationState)
     {
 #if ANDROID
-        IsIntentLaunch = Platforms.ShouldBeAndroid.MainActivity.IsIntentLaunch;
+        IsIntentLaunch = Platforms.Android.MainActivity.IsIntentLaunch;
 #endif
         return IsIntentLaunch
             ? new Window(new Views.RestorePage())
@@ -436,7 +439,7 @@ public partial class App : Application, INotifyPropertyChanged
         {
             try
             {
-                var v = di.Attributes;
+                FileAttributes v = di.Attributes;
                 string debugDir = Path.Combine(debugRoot, BaseFolderName);
                 Directory.CreateDirectory(debugDir);
                 using (Stream testStream = new FileStream(Path.Combine(debugDir, "test"), FileMode.Create, FileAccess.Write))
@@ -445,7 +448,9 @@ public partial class App : Application, INotifyPropertyChanged
                 string PersonPathName = Path.Combine(debugDir, Person.PersonFolderName, Person.PersonFileName);
                 if (File.Exists(PersonPathName))
                     using (Stream testStream = new FileStream(PersonPathName, FileMode.Open, FileAccess.Read))
-                    { BaseFolderPath = debugDir; } // We are allowed to use files in a folder the developer can see, so do that
+                    {
+                        BaseFolderPath = debugDir;
+                    } // We are allowed to use files in a folder the developer can see, so do that
             }
             // No problem if this faults, we just keep the standard BaseFolderPath, so log it and go on
             catch (UnauthorizedAccessException ex)
@@ -664,22 +669,22 @@ public partial class App : Application, INotifyPropertyChanged
     /// <returns>A <see cref="ShellNavigationQueryParameters"/> object containing the parsed parameters.</returns>
     private static ShellNavigationQueryParameters UriQueryToParameters(string uriQuery)
     {
-        var parameters = new ShellNavigationQueryParameters();
+        ShellNavigationQueryParameters parameters = [];
 
         if (string.IsNullOrEmpty(uriQuery))
             return parameters;
 
         // Remove leading '?' if present
-        var query = uriQuery.TrimStart('?');
+        string query = uriQuery.TrimStart('?');
 
-        foreach (var param in query.Split('&'))
+        foreach (string param in query.Split('&'))
         {
-            var parts = param.Split('=');
+            string[] parts = param.Split('=');
             if (parts.Length != 2)
                 continue;
 
-            var key = Uri.UnescapeDataString(parts[0]);
-            var value = Uri.UnescapeDataString(parts[1]);
+            string key = Uri.UnescapeDataString(parts[0]);
+            string value = Uri.UnescapeDataString(parts[1]);
             parameters.Add(key, value);
         }
 
@@ -693,7 +698,7 @@ public partial class App : Application, INotifyPropertyChanged
     {
         if (Shell.Current is not null)
         {
-            var Nav = Shell.Current.Navigation;
+            INavigation Nav = Shell.Current.Navigation;
             if (Nav.NavigationStack.Count > depth)
                 await Nav.PopToRootAsync();
             else
@@ -712,7 +717,7 @@ public partial class App : Application, INotifyPropertyChanged
     {
         try
         {
-            var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+            PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
             UseLocation = status == PermissionStatus.Granted; // UWP always seems to return true
             if (!UseLocation)
             {

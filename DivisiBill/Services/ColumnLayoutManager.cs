@@ -19,7 +19,7 @@ public class ColumnLayoutManager(ColumnLayout layout) : ILayoutManager
         int row = -1;
         for (int childIndex = 0; childIndex < stackLayout.Count; childIndex++)
         {
-            var child = stackLayout[childIndex];
+            IView child = stackLayout[childIndex];
 
             bool useStar = ColumnLayout.IsFillSetForView(child) ?
                 ColumnLayout.GetFillForView(child) : // it's set, just use it

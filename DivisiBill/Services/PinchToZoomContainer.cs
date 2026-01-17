@@ -9,14 +9,15 @@ internal class PinchToZoomContainer : ContentView
 
     public PinchToZoomContainer()
     {
-        var pinchGesture = new PinchGestureRecognizer();
+        PinchGestureRecognizer pinchGesture = new();
         pinchGesture.PinchUpdated += OnPinchUpdated;
         GestureRecognizers.Add(pinchGesture);
-        var panGesture = new PanGestureRecognizer();
+        PanGestureRecognizer panGesture = new();
         panGesture.PanUpdated += OnPanUpdated;
         GestureRecognizers.Add(panGesture);
-        var tapGesture = new TapGestureRecognizer() { NumberOfTapsRequired = 2 };
-        tapGesture.Tapped += OnTapped; ;
+        TapGestureRecognizer tapGesture = new() { NumberOfTapsRequired = 2 };
+        tapGesture.Tapped += OnTapped;
+        ;
         GestureRecognizers.Add(tapGesture);
     }
 
@@ -64,8 +65,8 @@ internal class PinchToZoomContainer : ContentView
             double originY = (e.ScaleOrigin.Y - deltaY) * deltaHeight;
 
             // Calculate the transformed element pixel coordinates.
-            double targetX = xOffset - (originX * Content.Width) * (currentScale - startScale);
-            double targetY = yOffset - (originY * Content.Height) * (currentScale - startScale);
+            double targetX = xOffset - originX * Content.Width * (currentScale - startScale);
+            double targetY = yOffset - originY * Content.Height * (currentScale - startScale);
 
             // Apply translation based on the change in origin.
             Content.TranslationX = Math.Clamp(targetX, -Content.Width * (currentScale - 1), 0);

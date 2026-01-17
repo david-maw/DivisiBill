@@ -181,7 +181,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
-    
+
     private async Task PurchaseProLicenseAsync()
     {
         if (Utilities.IsWinUI)
@@ -295,7 +295,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     #endregion
     #region Cryptography Properties
     [ObservableProperty]
-    public partial bool HasPassword { get; set; } 
+    public partial bool HasPassword { get; set; }
     #endregion
     #region Cloud Access Properties
     /// <summary>
@@ -312,7 +312,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     {
         get
         {
-            var profiles = Connectivity.ConnectionProfiles;
+            IEnumerable<ConnectionProfile> profiles = Connectivity.ConnectionProfiles;
             if (profiles.Contains(ConnectionProfile.WiFi))
             {
                 return "WiFi enabled";// Active Wi-Fi connection.

@@ -52,7 +52,8 @@ public partial class Meal : ObservableObjectPlus
                 classIsInitialized = true;
                 await StatusMsgAsync("Starting Meal.InitializeAsync");
                 App.Settings ??= new AppSettings();
-                await GetLocalMealListAsync(); ;
+                await GetLocalMealListAsync();
+                ;
                 if (LocalMealList.Count == 0 && Utilities.IsDebug)
                 {
                     await StatusMsgAsync("Creating fake bill list so we have something to work with");
@@ -65,11 +66,11 @@ public partial class Meal : ObservableObjectPlus
                     // Determine which mealSummary is closest so we can use it instead of the old one
                     MealSummary closestMealSummary = null;
                     Venue closestVenue = null;
-                    foreach (var ms in LocalMealList)
+                    foreach (MealSummary ms in LocalMealList)
                     {
                         if (App.UseLocation)
                         {
-                            Venue v = Venue.FindVenueByName(ms.VenueName);
+                            var v = Venue.FindVenueByName(ms.VenueName);
                             ms.Distance = v is null ? Distances.Unknown : v.Distance;
                             if (v is not null && (closestVenue is null || closestVenue.CompareDistanceTo(v) > 0))
                             {
@@ -113,7 +114,7 @@ public partial class Meal : ObservableObjectPlus
         if (!App.RecentlyUsed && CurrentMeal is not null && CurrentMeal.TooOldToContinue) // Maybe we need to replace the current meal with the closest one
         {
             MealSummary ClosestMealSummary = CurrentMeal.Summary;
-            foreach (var ms in LocalMealList.Where(ms1 => ms1.CompareDistanceTo(ClosestMealSummary) < 0))
+            foreach (MealSummary ms in LocalMealList.Where(ms1 => ms1.CompareDistanceTo(ClosestMealSummary) < 0))
                 ClosestMealSummary = ms;
             if (ClosestMealSummary != CurrentMeal.Summary)
             {
@@ -252,21 +253,21 @@ public partial class Meal : ObservableObjectPlus
             {
                 // The list of files has changed, so evaluate what's there now
                 // First, the Meals which are now missing should be marked as not local and removed from the local list (they may still be in the remote list)
-                Dictionary<string, string> newFilenames = files.ToDictionary(fn => fn);
+                var newFilenames = files.ToDictionary(fn => fn);
                 var missingList = LocalMealList.Where(ms => !newFilenames.ContainsKey(ms.FileName)).ToList(); // a separate list because we're changing LocalMealList
-                foreach (var ms in missingList)
+                foreach (MealSummary ms in missingList)
                 {
                     ms.IsLocal = false;
                     LocalMealList.Remove(ms);
                 }
                 // What's left has a corresponding file
-                Dictionary<string, MealSummary> existingLocalMs = LocalMealList.ToDictionary(ms => ms.FileName);
-                Dictionary<string, MealSummary> existingRemoteMs = RemoteMealList.ToDictionary(ms => ms.FileName);
+                var existingLocalMs = LocalMealList.ToDictionary(ms => ms.FileName);
+                var existingRemoteMs = RemoteMealList.ToDictionary(ms => ms.FileName);
                 // Iterate through the stored meals and create a  MealSummary object for each
                 // The list of MealSummary objects is what is stored in LocalMealList, and it includes the presence of an image file if one exists
-                foreach (var fileName in files.Where(fn => !existingLocalMs.ContainsKey(fn)))
+                foreach (string fileName in files.Where(fn => !existingLocalMs.ContainsKey(fn)))
                 {
-                    if (existingRemoteMs.TryGetValue(fileName, out var ms))
+                    if (existingRemoteMs.TryGetValue(fileName, out MealSummary ms))
                     {
                         // The MealSummary is already in the RemoteMealList, so just mark it as local too and add it to LocalMealList
                         // because local meals are automatically backed up, this is the most common case
@@ -285,7 +286,7 @@ public partial class Meal : ObservableObjectPlus
                         }
                         catch (Exception ex)
                         {
-                            var fileStream = File.Create(Path.Combine(Meal.MealFolderPath, fileName));
+                            FileStream fileStream = File.Create(Path.Combine(Meal.MealFolderPath, fileName));
                             ReportCrash("Method", "GetLocalMealListAsync", fileStream, ex, fileName);
                         }
                         if (ms is null || ms.Size < 0) // it's a bad file
@@ -308,7 +309,7 @@ public partial class Meal : ObservableObjectPlus
     {
         bool wasEmpty = LocalMealList.Count == 0;
         HashSet<string> localMealNames = [.. LocalMealList.Where(ms => !ms.IsDefault).Select(ms => ms.Id)];
-        foreach (var meal in newMeals)
+        foreach (Meal meal in newMeals)
         {
             if (meal.Size < 0)
                 continue; // This is a bad bill
@@ -348,12 +349,12 @@ public partial class Meal : ObservableObjectPlus
     /// </summary>
     internal static bool SelectOlder()
     {
-        var list = LocalMealList.Where(ms => ms.IsLocal).OrderBy(ms => ms.VenueName).ThenByDescending(ms => ms.CreationTime);
-        var distinctCount = list.DistinctBy(ms => ms.VenueName).Count();
+        IOrderedEnumerable<MealSummary> list = LocalMealList.Where(ms => ms.IsLocal).OrderBy(ms => ms.VenueName).ThenByDescending(ms => ms.CreationTime);
+        int distinctCount = list.DistinctBy(ms => ms.VenueName).Count();
         if (list.Count() == distinctCount)
             return false; // nothing to do
         string priorVenue = string.Empty;
-        foreach (var ms in list)
+        foreach (MealSummary ms in list)
             if (!(ms.FileSelected = priorVenue.Equals(ms.VenueName)))
                 priorVenue = ms.VenueName;
         return true;
@@ -420,10 +421,10 @@ public partial class Meal : ObservableObjectPlus
             #endregion
             #region Participant List and Amounts
             int maxDinerIndex = 0;
-            foreach (var pc in Costs)
+            foreach (PersonCost pc in Costs)
             {
                 if (pc.Amount != 0)
-                    sw.WriteLine("{0} {1, -40} {2,10:C}", (byte)(pc.DinerID) % 10,
+                    sw.WriteLine("{0} {1, -40} {2,10:C}", (byte)pc.DinerID % 10,
                        pc.Diner is null ? pc.Nickname : pc.Diner.DisplayName,
                        pc.Amount);
                 maxDinerIndex = Math.Max(maxDinerIndex, pc.DinerIndex % 10);
@@ -440,7 +441,7 @@ public partial class Meal : ObservableObjectPlus
                 sw.WriteLine();
             decimal dinerSubTotal = 0;
             string spaces = new(' ', LineItem.maxSharers - 1 - maxDinerIndex);
-            foreach (var lineItem in LineItems)
+            foreach (LineItem lineItem in LineItems)
             {
                 sw.Write(spaces);
                 for (int i = maxDinerIndex; i >= 0; i--)
@@ -504,7 +505,7 @@ public partial class Meal : ObservableObjectPlus
         List<string> recipients = [];
         if (whoFor is null) // send it to everyone
         {
-            foreach (var pc in Costs.Where(pc => !string.IsNullOrWhiteSpace(pc.Diner?.Email)))
+            foreach (PersonCost pc in Costs.Where(pc => !string.IsNullOrWhiteSpace(pc.Diner?.Email)))
                 recipients.Add(pc.Diner.Email);
         }
         else // send it to just the one person
@@ -513,7 +514,7 @@ public partial class Meal : ObservableObjectPlus
                 recipients.Add(whoFor.Diner.Email);
         }
         string body = ToString(whoFor);
-        var message = new EmailMessage
+        EmailMessage message = new()
         {
             Subject = "DivisiBill sent you a bill",
             Body = body,
@@ -523,11 +524,11 @@ public partial class Meal : ObservableObjectPlus
             message.Subject += " from " + VenueName;
 
         // Make an archive and attach it
-        var zipFullName = CreateZipArchive();
+        string zipFullName = CreateZipArchive();
         // Attach archive file
         message.Attachments.Add(new EmailAttachment(zipFullName));
         // Attach a copy of the message in a text file to make it easier to read.
-        var fn = "Bill-" + CreationTime.ToString("yyyyMMddHHmmss") + ".txt";
+        string fn = "Bill-" + CreationTime.ToString("yyyyMMddHHmmss") + ".txt";
         string tempFileFullName = Path.Combine(TempFolderPath, fn);
         File.WriteAllText(tempFileFullName, body);
         message.Attachments.Add(new EmailAttachment(tempFileFullName));
@@ -563,7 +564,7 @@ public partial class Meal : ObservableObjectPlus
     }
     private void SetupChangedEvents()
     {
-        foreach (var item in LineItems)
+        foreach (LineItem item in LineItems)
             item.PropertyChanged += OnLineItemChange;
         LineItems.CollectionChanged += LineItems_CollectionChanged; // Will take care of any future additions and deletions from LineItems
         Costs.CollectionChanged += Costs_CollectionChanged;
@@ -669,7 +670,7 @@ public partial class Meal : ObservableObjectPlus
         // DivisiBill was storing new guids for nicknames because it didn't know about the people we do.
         // In the other case the guid and nickname are legitimate, but the person record has been deleted.
         // Either way, we have an unused (by us) guid and a nickname, so we'll just make a new Person record
-        var newPeople = new List<Person>();
+        List<Person> newPeople = [];
         int nextNumber = 1;
         foreach (PersonCost personCost in Costs.Where(pc => pc.Diner is null)) // Rare case where the guid didn't correspond to a known person
         {
@@ -772,7 +773,7 @@ public partial class Meal : ObservableObjectPlus
     public bool HasRemoteImage => Summary.HasRemoteImage;
     public void DeleteImage() => Summary.DeleteImage();
     public void TryUndeleteImage() => Summary.TryUndeleteImage();
-    public bool ReplaceImage(String s) => Summary.ReplaceImage(s);
+    public bool ReplaceImage(string s) => Summary.ReplaceImage(s);
 
     /// <summary>
     /// Permanently deletes all local image files from storage, removing them without the possibility of recovery.
@@ -794,7 +795,7 @@ public partial class Meal : ObservableObjectPlus
                 ex.ReportCrash();
             }
         }
-    } 
+    }
     #endregion
     #region Change Monitoring
     /// <summary>
@@ -828,7 +829,8 @@ public partial class Meal : ObservableObjectPlus
                 // difficult by the fact that the CreationTime has been changed, but we can use the original FileName
                 if (string.IsNullOrEmpty(FileName))
                 {
-                    if (Utilities.IsDebug) Debugger.Break();
+                    if (Utilities.IsDebug)
+                        Debugger.Break();
                 }
                 else
                 {
@@ -897,13 +899,13 @@ public partial class Meal : ObservableObjectPlus
         if (e.Action is System.Collections.Specialized.NotifyCollectionChangedAction.Add or
             System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
         { // Make sure the new items report any changes
-            foreach (var item in e.NewItems)
+            foreach (object item in e.NewItems)
                 ((LineItem)item).PropertyChanged += OnLineItemChange;
         }
         if (e.Action is System.Collections.Specialized.NotifyCollectionChangedAction.Remove or
             System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
         { // Make sure the old items no longer report any changes
-            foreach (var item in e.OldItems)
+            foreach (object item in e.OldItems)
                 ((LineItem)item).PropertyChanged -= OnLineItemChange;
             if (LineItems.Count == 0)
                 LineItem.NextItemNumber = 1;
@@ -1048,13 +1050,20 @@ public partial class Meal : ObservableObjectPlus
         get
         {
             StringBuilder info = new(Frozen ? "Frozen" : "Thawed", 100);
-            if (Summary.IsLocal) info.Append(", IsLocal");
-            if (SavedToFile) info.Append(", SavedToFile");
-            if (Summary.IsRemote) info.Append(", IsRemote");
-            if (SavedToRemote) info.Append(", SavedToRemote");
-            if (HasImage) info.Append(", HasImage");
-            if (HasRemoteImage) info.Append(", HasRemoteImage");
-            if (HasDeletedImage) info.Append(", HasDeletedImage");
+            if (Summary.IsLocal)
+                info.Append(", IsLocal");
+            if (SavedToFile)
+                info.Append(", SavedToFile");
+            if (Summary.IsRemote)
+                info.Append(", IsRemote");
+            if (SavedToRemote)
+                info.Append(", SavedToRemote");
+            if (HasImage)
+                info.Append(", HasImage");
+            if (HasRemoteImage)
+                info.Append(", HasRemoteImage");
+            if (HasDeletedImage)
+                info.Append(", HasDeletedImage");
             return info.ToString();
         }
     }

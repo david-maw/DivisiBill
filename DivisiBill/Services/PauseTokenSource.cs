@@ -21,8 +21,9 @@ public class PauseTokenSource
             {
                 while (true)
                 {
-                    var tcs = m_paused;
-                    if (tcs is null) return;
+                    TaskCompletionSource<bool> tcs = m_paused;
+                    if (tcs is null)
+                        return;
                     if (Interlocked.CompareExchange(ref m_paused, null, tcs) == tcs)
                     {
                         tcs.SetResult(true);
@@ -35,7 +36,7 @@ public class PauseTokenSource
 
     internal Task WaitWhilePausedAsync()
     {
-        var cur = m_paused;
+        TaskCompletionSource<bool> cur = m_paused;
         return cur is not null ? cur.Task : s_completedTask;
     }
 

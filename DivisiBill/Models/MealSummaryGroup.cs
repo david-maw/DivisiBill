@@ -83,7 +83,7 @@ public partial class MealSummaryGroup : ObservableObject
     {
         get
         {
-            Venue v = Venue.FindVenueByName(VenueName);
+            var v = Venue.FindVenueByName(VenueName);
             return v is null ? Distances.Unknown : v.SimplifiedDistance;
         }
     }
@@ -111,8 +111,10 @@ public partial class MealSummaryGroup : ObservableObject
     /// <returns>+1 if this would sort later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
     public int CompareVenueTo(MealSummaryGroup otherGroup)
     {
-        if (this.Equals(otherGroup)) return 0;
-        if (otherGroup is null) return 1;
+        if (Equals(otherGroup))
+            return 0;
+        if (otherGroup is null)
+            return 1;
         int result = VenueName.CompareTo(otherGroup.VenueName);
         if (result == 0)
             result = CompareCreationTimeTo(otherGroup);
@@ -129,8 +131,10 @@ public partial class MealSummaryGroup : ObservableObject
     /// <returns>+1 if this would sort later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
     public int CompareDistanceTo(MealSummaryGroup otherGroup)
     {
-        if (this.Equals(otherGroup)) return 0;
-        if (otherGroup is null) return 1;
+        if (Equals(otherGroup))
+            return 0;
+        if (otherGroup is null)
+            return 1;
         int result = Distance.CompareTo(otherGroup.Distance);
         if (result == 0)
             result = VenueName.CompareTo(otherGroup.VenueName);

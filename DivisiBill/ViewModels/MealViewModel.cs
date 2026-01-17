@@ -163,7 +163,7 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             SavedCost sc = deletedCosts.Pop();
             InsertCost(sc.PersonCost);
-            foreach (var si in sc.ShareInfoList)
+            foreach (ShareInfo si in sc.ShareInfoList)
                 si.LineItem.SetShares(sc.PersonCost.DinerID, si.Shares);
             IsAnyDeletedCost = deletedCosts.Count > 0;
             DistributeCostsIfNeeded();
@@ -254,8 +254,8 @@ public partial class MealViewModel : ObservableObjectPlus
 
         if (pc.Diner is not null)
         {
-            var navigationParameter = new ShellNavigationQueryParameters
-                {
+            ShellNavigationQueryParameters navigationParameter = new()
+            {
                     { "TargetPerson", pc.Diner }
                 };
             await App.PushAsync(Routes.PersonEditPage, navigationParameter);
@@ -335,7 +335,7 @@ public partial class MealViewModel : ObservableObjectPlus
             ClearFiltering();
         }
         SavedCost sc = new() { PersonCost = pc };
-        foreach (var li in LineItems.Where((li) => li.SharedBy[pc.DinerIndex]))
+        foreach (LineItem li in LineItems.Where((li) => li.SharedBy[pc.DinerIndex]))
         {
             ShareInfo si = new() { LineItem = li, Shares = li.GetShares(pc.DinerID) };
             sc.ShareInfoList.Add(si);
@@ -357,7 +357,7 @@ public partial class MealViewModel : ObservableObjectPlus
             return;
         LineItem.DinerID oldDinerID = pcToChange.DinerID;
         pcToChange.DinerID = newUnusedDinerID; // Important to do this first
-        foreach (var li in LineItems.Where(li => li.GetShares(oldDinerID) > 0))
+        foreach (LineItem li in LineItems.Where(li => li.GetShares(oldDinerID) > 0))
             li.TransferShares(newSharerID: newUnusedDinerID, oldSharerID: oldDinerID);
     }
     public void CostListResequence()
@@ -365,7 +365,7 @@ public partial class MealViewModel : ObservableObjectPlus
         LineItem.DinerID desiredID = LineItem.DinerID.first;
         try
         {
-            foreach (var pc in Costs.ToList())
+            foreach (PersonCost pc in Costs.ToList())
             {
                 if (pc.DinerID != desiredID)
                     PersonCostRenumber(pc, desiredID);
@@ -511,7 +511,7 @@ public partial class MealViewModel : ObservableObjectPlus
     {
         if (Meal.CurrentMeal.AmountForSharerID == LineItem.DinerID.none)
         {
-            foreach (var li in LineItems.Reverse())
+            foreach (LineItem li in LineItems.Reverse())
                 deletedLineItems.Push(li);
             LineItems.Clear();
             IsAnyDeletedLineItem = true;
@@ -616,10 +616,18 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             switch (whereTo)
             {
-                case "Up": if (LastVisibleItemIndex < lastItemIndex) ScrollLineItemsTo(LastVisibleItemIndex, false); break;
-                case "Down": if (FirstVisibleItemIndex > 0) ScrollLineItemsTo(FirstVisibleItemIndex, true); break;
-                case "End": if (LastVisibleItemIndex < lastItemIndex) ScrollLineItemsTo(lastItemIndex, false); break;
-                case "Start": if (FirstVisibleItemIndex > 0) ScrollLineItemsTo(0, true); break;
+                case "Up":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollLineItemsTo(LastVisibleItemIndex, false); break;
+                case "Down":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollLineItemsTo(FirstVisibleItemIndex, true); break;
+                case "End":
+                    if (LastVisibleItemIndex < lastItemIndex)
+                        ScrollLineItemsTo(lastItemIndex, false); break;
+                case "Start":
+                    if (FirstVisibleItemIndex > 0)
+                        ScrollLineItemsTo(0, true); break;
                 default: break;
             }
         }

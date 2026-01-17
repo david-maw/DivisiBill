@@ -1,17 +1,15 @@
-using System;
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
+namespace web;
 
-namespace web
+internal class Program : MauiApplication
 {
-    internal class Program : MauiApplication
+    protected override MauiApp CreateMauiApp()
     {
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        return MauiProgram.CreateMauiApp();
+    }
 
-        static void Main(string[] args)
-        {
-            var app = new Program();
-            app.Run(args);
-        }
+    private static void Main(string[] args)
+    {
+        Program app = new();
+        app.Run(args);
     }
 }

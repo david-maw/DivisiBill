@@ -73,9 +73,9 @@ public class MealTests
 
     [TestMethod]
     [DataRow(false, false, 52.00, 5.20, 0.00, 13.00)]
-    [DataRow(false, true,  55.00, 5.23, 2.73, 13.00)]
-    [DataRow(true, false,  52.00, 5.20, 0.00, 14.04)]
-    [DataRow(true, true,   55.00, 5.23, 2.73, 14.05)]
+    [DataRow(false, true, 55.00, 5.23, 2.73, 13.00)]
+    [DataRow(true, false, 52.00, 5.20, 0.00, 14.04)]
+    [DataRow(true, true, 55.00, 5.23, 2.73, 14.05)]
     public void VerifyAmounts(bool tipOnTax, bool taxOnDiscount, double subTotal, double tax, double taxableDiscount, double tip)
     {
         TestMeal.TipOnTax = tipOnTax;
@@ -98,7 +98,7 @@ public class MealTests
         TestMeal.IsCouponAfterTax = taxOnDiscount;
         TestMeal.FinalizeSetup();
         decimal sum = 0;
-        foreach (var pc in TestMeal.Costs)
+        foreach (PersonCost pc in TestMeal.Costs)
         {
             sum += pc.Amount;
         }
@@ -191,7 +191,7 @@ public class MealTests
 
         SharedMeal.FinalizeSetup();
         int i = 0;
-        foreach (var pc in SharedMeal.Costs)
+        foreach (PersonCost pc in SharedMeal.Costs)
         {
             Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount,
                 $"Unexpected amount for {pc.Nickname}");
@@ -235,7 +235,7 @@ public class MealTests
         Assert.AreEqual(SharedMeal.TotalAmount, SharedMeal.Costs.Sum(pc => pc.Amount),
             $"Total was not equal to the sum of the individual costs when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
-        foreach (var pc in SharedMeal.Costs)
+        foreach (PersonCost pc in SharedMeal.Costs)
         {
             Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount,
                 $"Unexpected amount for {pc.Nickname}");
@@ -251,9 +251,9 @@ public class MealTests
     /// <param name="expectedCosts">List of resultant costs to validate</param>
     [TestMethod]
     [DataRow(false, false, 3.00, 4.00, 4.00, 1.00)]
-    [DataRow(false, true,  3.00, 4.00, 4.00, 1.00)]
-    [DataRow(true, false,  3.00, 4.00, 4.00, 1.00)]
-    [DataRow(true, true,   3.00, 4.00, 4.00, 1.00)]
+    [DataRow(false, true, 3.00, 4.00, 4.00, 1.00)]
+    [DataRow(true, false, 3.00, 4.00, 4.00, 1.00)]
+    [DataRow(true, true, 3.00, 4.00, 4.00, 1.00)]
     public void SharingEdgeCase3(bool tipOnTax, bool taxOnCoupon, params double[] expectedCosts)
     {
         Meal SharedMeal = GetEdgeCaseMeal();
@@ -272,8 +272,8 @@ public class MealTests
 
         SharedMeal.FinalizeSetup();
 
-        
-        Assert.IsLessThanOrEqualTo(0.01m * SharedMeal.Costs.Count,Math.Abs(SharedMeal.RoundingErrorAmount), 
+
+        Assert.IsLessThanOrEqualTo(0.01m * SharedMeal.Costs.Count, Math.Abs(SharedMeal.RoundingErrorAmount),
             $"Excessive Rounding Error {SharedMeal.RoundingErrorAmount:C} when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
         Assert.AreNotEqual(0, SharedMeal.UnallocatedAmount,
@@ -282,7 +282,7 @@ public class MealTests
         decimal measuredTotal = 0;
         int expectedCostIndex = 0;
 
-        foreach (var pc in SharedMeal.Costs)
+        foreach (PersonCost pc in SharedMeal.Costs)
         {
             Assert.AreEqual((decimal)expectedCosts[expectedCostIndex++], pc.Amount,
                 $"Unexpected amount for {pc.Nickname}");

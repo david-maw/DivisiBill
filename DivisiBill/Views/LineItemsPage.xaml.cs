@@ -46,7 +46,7 @@ public partial class LineItemsPage : ContentPage
         if (sender is Button btn && LineItemsListView.SelectedItem is LineItem li)
         {
             CurrentPersonCost = (PersonCost)btn.CommandParameter;
-            var sharer = ((PersonCost)btn.CommandParameter).DinerID;
+            LineItem.DinerID sharer = ((PersonCost)btn.CommandParameter).DinerID;
             byte shares = CurrentShares = li.GetShares(sharer);
             if (!SharesCountContainer.IsVisible)
             {
@@ -136,13 +136,13 @@ public partial class LineItemsPage : ContentPage
             double totalAvailableForButtons = Width - SharesContainer.Margin.Left - SharesContainer.Spacing * (buttons - 1) - SharesContainer.Margin.Right;
             double buttonWidth = totalAvailableForButtons / buttons; // this will be integer arithmetic so there could be a bit left over
             // First hide all of them
-            foreach (var button in ShareButtons)
+            foreach (Button button in ShareButtons)
                 button.IsVisible = false;
             // Now set up and show a button for each PersonCost
             int buttonNumber = 0; // numbered from the left 0, 1, 2...
-            foreach (var c in mealViewModel.Costs)
+            foreach (PersonCost c in mealViewModel.Costs)
             {
-                var button = ShareButtons[c.DinerIndex];
+                Button button = ShareButtons[c.DinerIndex];
                 button.BorderWidth = 0;
                 button.IsVisible = true;
                 button.CommandParameter = c;
@@ -165,8 +165,9 @@ public partial class LineItemsPage : ContentPage
 
     private void DrawAllSharesButtons(LineItem li)
     {
-        if (li is null || ShareButtons is null) return;
-        foreach (var btn in ShareButtons)
+        if (li is null || ShareButtons is null)
+            return;
+        foreach (Button btn in ShareButtons)
         {
             if (btn.IsVisible && btn.CommandParameter is PersonCost pc)
                 DrawSharesButton(btn, li.GetShares(pc.DinerID));
@@ -197,7 +198,7 @@ public partial class LineItemsPage : ContentPage
             mealViewModel.LineItemDeselected(priorLi);
         }
 
-        var li = e.CurrentSelection.Count == 0 ? null : (LineItem)e.CurrentSelection[0];
+        LineItem li = e.CurrentSelection.Count == 0 ? null : (LineItem)e.CurrentSelection[0];
         ItemEntryContainer.IsVisible = li is not null;
         totalsContainer.IsVisible = li is null;
         SharesCountContainer.IsVisible = false;
@@ -234,12 +235,13 @@ public partial class LineItemsPage : ContentPage
     private void UpdateSharesInfoHeaderText(byte shares)
     {
         SharesCountHeader.Text = CurrentPersonCost.Nickname + ": " + shares + " share";
-        if (shares != 1) SharesCountHeader.Text += "s";
+        if (shares != 1)
+            SharesCountHeader.Text += "s";
     }
     public void SelectFirstUnallocatedLineItem()
     {
         mealViewModel.ClearFiltering();
-        var li = mealViewModel.LineItems.FirstOrDefault(li2 => li2.TotalSharers == 0);
+        LineItem li = mealViewModel.LineItems.FirstOrDefault(li2 => li2.TotalSharers == 0);
         if (li is not null)
             LineItemsListView.SelectedItem = li;
     }

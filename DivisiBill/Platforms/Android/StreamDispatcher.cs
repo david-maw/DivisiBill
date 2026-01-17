@@ -1,14 +1,16 @@
 ﻿#nullable enable
-namespace DivisiBill;
+using Android.Content;
+
+namespace DivisiBill.Platforms.Android;
 
 public static class StreamDispatcher
 {
     public static event Action<Stream, string>? Activated;
 
-    public static void Dispatch(Android.Net.Uri uri, string mimeType)
+    public static void Dispatch(global::Android.Net.Uri uri, string mimeType)
     {
-        var context = Android.App.Application.Context;
-        var stream = context.ContentResolver?.OpenInputStream(uri);
+        Context context = global::Android.App.Application.Context;
+        Stream? stream = context.ContentResolver?.OpenInputStream(uri);
 
         if (stream is not null)
         {

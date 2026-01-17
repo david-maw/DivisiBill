@@ -43,11 +43,11 @@ public static class RemoteWs
         {
             while (true)
             {
-                var itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, MaxItems, latestName);
+                Stream itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, MaxItems, latestName);
                 if (itemListJson is not null && itemListJson.Length > 0)
                 {
                     List<WsDataItem> wsDataItems = JsonSerializer.Deserialize<List<WsDataItem>>(itemListJson);
-                    foreach (var wsDataItem in wsDataItems)
+                    foreach (WsDataItem wsDataItem in wsDataItems)
                     {
                         string description = wsDataItem.Summary;
 
@@ -124,7 +124,7 @@ public static class RemoteWs
             // Allow a caller to provide no name and just get the latest item
             if (string.IsNullOrWhiteSpace(name))
             {
-                var itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, 1);
+                Stream itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, 1);
                 List<WsDataItem> items = await JsonSerializer.DeserializeAsync<List<WsDataItem>>(itemListJson);
                 name = items.FirstOrDefault()?.Name;
                 if (string.IsNullOrWhiteSpace(name))
@@ -190,9 +190,9 @@ public static class RemoteWs
             return false;
 
         // Remove any bills which are no longer present in the cloud - there will rarely be any, so this isn't optimized
-        Dictionary<string, RemoteItemInfo> remoteItemsDict = remoteItems.ToDictionary(ri => ri.Name);
+        var remoteItemsDict = remoteItems.ToDictionary(ri => ri.Name);
         var missingList = Meal.RemoteMealList.Where(ms => !remoteItemsDict.ContainsKey(ms.Id)).ToList(); // a separate list because we're changing RemoteMealList
-        foreach (var ms in missingList)
+        foreach (MealSummary ms in missingList)
         {
             ms.IsRemote = false;
             Meal.RemoteMealList.Remove(ms);
@@ -200,13 +200,13 @@ public static class RemoteWs
 
         // We have a list of the remote Meal items, so try and create a MealSummary for each of them
         int WholeFilesLoaded = 0;
-        Dictionary<string, MealSummary> existingLocalMs = Meal.LocalMealList.ToDictionary(ms => ms.Id);
-        Dictionary<string, MealSummary> existingRemoteMs = Meal.RemoteMealList.ToDictionary(ms => ms.Id);
+        var existingLocalMs = Meal.LocalMealList.ToDictionary(ms => ms.Id);
+        var existingRemoteMs = Meal.RemoteMealList.ToDictionary(ms => ms.Id);
 
         // Iterate through the remote items which are not known to us 
-        foreach (var remoteItem in remoteItems.Where(ri => !existingRemoteMs.ContainsKey(ri.Name)))
+        foreach (RemoteItemInfo remoteItem in remoteItems.Where(ri => !existingRemoteMs.ContainsKey(ri.Name)))
         {
-            if (existingLocalMs.TryGetValue(remoteItem.Name, out var ms))
+            if (existingLocalMs.TryGetValue(remoteItem.Name, out MealSummary ms))
             {
                 // This MealSummary is already stored locally so just flag it as being remote as well, add the summary to the remote list and move on
                 ms.IsRemote = true;
@@ -220,7 +220,7 @@ public static class RemoteWs
                 string description = remoteItem.Description;
                 if (!string.IsNullOrEmpty(description))
                 {
-                    var buf = System.Text.Encoding.UTF8.GetBytes(description);
+                    byte[] buf = System.Text.Encoding.UTF8.GetBytes(description);
                     MemoryStream s = new(buf);
                     ms = MealSummary.LoadJsonFrom(s);
                     if (ms is null)
@@ -268,9 +268,9 @@ public static class RemoteWs
         }
         // now iterate through the remote meals which are known to us, updating attributes, these should
         // not have changed unless another copy of DivisiBill has changed them.
-        foreach (var knownRemoteItem in remoteItems.Where(ri => existingRemoteMs.ContainsKey(ri.Name)))
+        foreach (RemoteItemInfo knownRemoteItem in remoteItems.Where(ri => existingRemoteMs.ContainsKey(ri.Name)))
         {
-            if (existingRemoteMs.TryGetValue(knownRemoteItem.Name, out var knownMs))
+            if (existingRemoteMs.TryGetValue(knownRemoteItem.Name, out MealSummary knownMs))
             {
                 // This MealSummary already exists, just correct any attributes that might have changed
                 knownMs.Size = knownRemoteItem.Size;

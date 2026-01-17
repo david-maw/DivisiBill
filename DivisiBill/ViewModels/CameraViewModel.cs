@@ -40,7 +40,7 @@ public partial class CameraViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+            PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.Camera>();
             if (status != PermissionStatus.Granted)
             {
                 status = await Permissions.RequestAsync<Permissions.Camera>();
@@ -104,11 +104,11 @@ public partial class CameraViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            var photo = (await MediaPicker.PickPhotosAsync()).FirstOrDefault();
+            FileResult photo = (await MediaPicker.PickPhotosAsync()).FirstOrDefault();
             // We have identified an  image, now copy it to the private storage area, so we have it later, if it is needed
             if (photo is not null)
             {
-                var navigationParameter = new ShellNavigationQueryParameters
+                ShellNavigationQueryParameters navigationParameter = new()
                 {
                     { "Browsed", photo.FileName},
                     { "ImageStream", await photo.OpenReadAsync()}

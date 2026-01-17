@@ -86,7 +86,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
         #region Timer Handling
         const int waitSeconds = 30;
         PauseToken runningStatus = App.IsRunningSource.Token;
-        int ElapsedSeconds() => (int)((webStopwatch.Elapsed).TotalSeconds);
+        int ElapsedSeconds() => (int)webStopwatch.Elapsed.TotalSeconds;
         string ToSecondsText(int i) => i + " second" + (i == 1 ? "" : "s");
         // prepare a timer for use later
         Timer elapsedTimer = new(e =>
@@ -134,7 +134,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
                     IsCountingDown = true;
                     Progress = 1;
                     do
-                    {                      
+                    {
                         if (runningStatus.IsPaused)
                         {
                             SetStatusMessage(null, "Paused");

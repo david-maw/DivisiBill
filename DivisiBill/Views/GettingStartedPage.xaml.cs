@@ -56,8 +56,8 @@ public partial class GettingStartedPage : ContentPage
             if (e.Source == ShellNavigationSource.Push)
             {
                 if (originalString.Contains(Routes.GettingStartedPage)) // we only care about navigating from this page
-                    navigationAllowed = (targetString.StartsWith(Routes.HelpPage) // Don't cancel if the navigation is to the Help Page
-                        || targetString.Contains("Popup")); // or if it is to a popup
+                    navigationAllowed = targetString.StartsWith(Routes.HelpPage) // Don't cancel if the navigation is to the Help Page
+                        || targetString.Contains("Popup"); // or if it is to a popup
             }
             else if (e.Source is ShellNavigationSource.PopToRoot or ShellNavigationSource.Pop)
             {

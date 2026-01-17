@@ -26,7 +26,7 @@ public class ScanTests
     {
         decimal cost = (decimal)costParam;
         OrderLine orderLine = new() { ItemName = name, ItemCost = costString };
-        LineItem lineItem = orderLine.ToLineItem();
+        var lineItem = orderLine.ToLineItem();
 
         Assert.AreEqual(expectedName ?? name, lineItem.ItemName, "Item name was not transferred correctly");
         Assert.AreEqual(cost, lineItem.Amount, "Item cost was not scanned correctly");

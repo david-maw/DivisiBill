@@ -1,6 +1,7 @@
-﻿using CommunityToolkit.Maui.Extensions;
-using DivisiBill.Models;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
 using DivisiBill.InAppBilling;
+using DivisiBill.Models;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
@@ -20,7 +21,7 @@ internal static class CallWs
     private const string PurchaseHeaderName = "divisibill-android-purchase";
     private const string TokenHeaderName = "divisibill-token";
     private const string KeyHeaderName = "x-functions-key";
-    private static string KeyString = Generated.BuildInfo.DivisiBillWsKey;
+    private static readonly string KeyString = Generated.BuildInfo.DivisiBillWsKey;
     public static readonly TimeSpan CallTimeout = TimeSpan.FromSeconds(30);
     private static readonly HttpClient client = new() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri), Timeout = CallTimeout };
 
@@ -44,7 +45,7 @@ internal static class CallWs
     /// <returns></returns>
     internal static async Task<HttpResponseMessage> CallUncertainWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
     {
-        Stopwatch webStopwatch = Stopwatch.StartNew();
+        var webStopwatch = Stopwatch.StartNew();
         Task<HttpResponseMessage> webCallTask = webCall();
         await webCallTask.OrDelay(5000); // If it responds quickly, don't even bother to show a dialog
         // Call the web service and wait for a response or until the user gives up 
@@ -52,7 +53,7 @@ internal static class CallWs
             return webCallTask.Result;
         else
         { // The call did not complete successfully, so show a popup to let the user know and give them a chance to retry or abandon it}
-            var popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Views.CheckWebPage(webCallTask, webCall, webStopwatch), Utilities.GetNullPopupOptions());
+            IPopupResult<HttpResponseMessage> popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Views.CheckWebPage(webCallTask, webCall, webStopwatch), Utilities.GetNullPopupOptions());
             return popupResult?.Result ?? new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout); // If the user closed the popup, return a timeout result
         }
     }
@@ -81,7 +82,7 @@ internal static class CallWs
     /// <exception cref="OperationCanceledException"></exception>
     internal static Task<ScannedBill> ImageToScannedBill(string ImagePath, CancellationToken cancel)
     {
-        var readFile = File.ReadAllBytes(ImagePath);
+        byte[] readFile = File.ReadAllBytes(ImagePath);
         MemoryStream stream = new(readFile);
         cancel.ThrowIfCancellationRequested();
         return ImageToScannedBill(stream, cancel);
@@ -100,10 +101,10 @@ internal static class CallWs
             return null;
         string content = null;
         // Create a multi part form data content message body and send it
-        using (var fileContent = new StreamContent(imageStream))
-        using (var stringContent = new StringContent(Billing.OcrPurchase.OriginalJson, Encoding.UTF8, "application/json"))
+        using (StreamContent fileContent = new(imageStream))
+        using (StringContent stringContent = new(Billing.OcrPurchase.OriginalJson, Encoding.UTF8, "application/json"))
         {
-            var multipartFormDataContent = new MultipartFormDataContent
+            MultipartFormDataContent multipartFormDataContent = new()
             {
                 { stringContent, "license" },
                 { fileContent, "fileContent", "bill-image-name" }
@@ -112,8 +113,9 @@ internal static class CallWs
             content = await PostFormToScanAsync(multipartFormDataContent, cancel);
         }
 
-        var sb = System.Text.Json.JsonSerializer.Deserialize<ScannedBill>(content);
-        if (sb is null) return null;
+        ScannedBill sb = System.Text.Json.JsonSerializer.Deserialize<ScannedBill>(content);
+        if (sb is null)
+            return null;
         // Now set the scans remaining count
         Billing.ScansLeft = sb.ScansLeft;
         return sb;
@@ -201,12 +203,12 @@ internal static class CallWs
             // Store the license by calling a web service
             try
             {
-                var formData = new Dictionary<string, string>
+                Dictionary<string, string> formData = new()
                 {
                     { "purchase", purchase.OriginalJson },
                     { "signature", purchase.Signature }
                 };
-                var content = new FormUrlEncodedContent(formData);
+                FormUrlEncodedContent content = new(formData);
                 HttpResponseMessage response = await client.PostAsync("RecordAndroidPurchase?subscription=", content);
                 return response.IsSuccessStatusCode;
             }
@@ -231,15 +233,15 @@ internal static class CallWs
         {
             try
             {
-                var formData = new Dictionary<string, string>
+                Dictionary<string, string> formData = new()
                 {
                     { "purchase", purchase.OriginalJson },
                     { "signature", purchase.Signature }
                 };
-                var content = new FormUrlEncodedContent(formData);
+                FormUrlEncodedContent content = new(formData);
                 Utilities.DebugMsg("In VerifyPurchase, awaiting VerifyAndroidPurchase");
                 // validate the license by calling a web service
-                var response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase", content));
+                HttpResponseMessage response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase", content));
                 if (response.IsSuccessStatusCode)
                 {
                     string s = await response.Content.ReadAsStringAsync();
@@ -327,7 +329,7 @@ internal static class CallWs
         if (CryptManager.HasStoredPassword && !CryptManager.HasStoredRsa)
             throw new CryptographicException("Unable to access stored key");
 
-        using var multipartFormDataContent = new MultipartFormDataContent
+        using MultipartFormDataContent multipartFormDataContent = new()
         {
             await FormContent("data", itemData)
         };
@@ -386,12 +388,12 @@ internal static class CallWs
     }
     public static async Task<string> GetItemsStringAsync(string itemTypeName, int top = 50, string before = "30000000000000")
     {
-        var content = await GetItemsAsync(itemTypeName, top, before);
+        HttpContent content = await GetItemsAsync(itemTypeName, top, before);
         return await content.ReadAsStringAsync();
     }
     public static async Task<Stream> GetItemsStreamAsync(string itemTypeName, int top = 50, string before = "30000000000000")
     {
-        var content = await GetItemsAsync(itemTypeName, top, before);
+        HttpContent content = await GetItemsAsync(itemTypeName, top, before);
         return await content.ReadAsStreamAsync();
     }
     private static async Task<HttpContent> GetItemsAsync(string itemTypeName, int top, string before)
@@ -401,7 +403,7 @@ internal static class CallWs
             param += "&before=" + before;
         HttpResponseMessage response = await client.GetAsync(itemTypeName + "s" + param);
         StoreTokenHeader(response);
-        var temp = response.Content;
+        HttpContent temp = response.Content;
         return temp;
     }
     public static async Task<string> DeleteAllItemsAsync(string itemTypeName)
@@ -430,12 +432,12 @@ internal static class CallWs
             };
 
             Stream fileStream = File.OpenRead(filePath);
-            var blobName = Path.GetFileName(filePath);
+            string blobName = Path.GetFileName(filePath);
             // Detect a few common MIME types based on the file extension
             using RSA rsa = CryptManager.HasStoredPassword ? await CryptManager.GetStoredRsaFromFingerprintAsync() : null;
             if (rsa is not null)
             {
-                var encrypted = new MemoryStream();
+                MemoryStream encrypted = new();
                 await CryptManager.EncryptAsync(fileStream, encrypted, rsa);
                 encrypted.Position = 0;
                 fileStream.Close();
@@ -443,10 +445,10 @@ internal static class CallWs
                 fileStream = encrypted;
                 blobName += ".enc";
             }
-            using var content = new StreamContent(fileStream);
+            using StreamContent content = new(fileStream);
             content.Headers.ContentType = new MediaTypeHeaderValue(GetMediaTypeFromName(blobName));
 
-            using var form = new MultipartFormDataContent
+            using MultipartFormDataContent form = new()
             {
                 { content, "file", blobName }
             };
@@ -467,14 +469,14 @@ internal static class CallWs
         string blobNameValue = fileNameValue + (isEncrypted ? ".enc" : string.Empty); // Add .enc at the end if necessary
         try
         {
-            var response = await client.GetAsync($"file/{Uri.EscapeDataString(blobNameValue)}", HttpCompletionOption.ResponseHeadersRead);
+            HttpResponseMessage response = await client.GetAsync($"file/{Uri.EscapeDataString(blobNameValue)}", HttpCompletionOption.ResponseHeadersRead);
             response.EnsureSuccessStatusCode();
 
-            using var responseStream = await response.Content.ReadAsStreamAsync();
-            using var fileStream = File.Create(savePath);
+            using Stream responseStream = await response.Content.ReadAsStreamAsync();
+            using FileStream fileStream = File.Create(savePath);
             if (isEncrypted)
             {
-                using var decrypted = new MemoryStream();
+                using MemoryStream decrypted = new();
                 await CryptManager.DecryptAsync(responseStream, decrypted);
                 decrypted.Position = 0;
                 await decrypted.CopyToAsync(fileStream);
@@ -519,8 +521,8 @@ internal static class CallWs
             return null;
         }
 
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
-        var items = await httpResponse.Content.ReadFromJsonAsync<List<ImageItem>>(options) ?? new List<ImageItem>();
+        JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true, WriteIndented = true };
+        List<ImageItem> items = await httpResponse.Content.ReadFromJsonAsync<List<ImageItem>>(options) ?? [];
         return items;
     }
     public static async Task<string> DeleteAllFilesAsync()

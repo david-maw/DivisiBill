@@ -19,7 +19,7 @@ public partial class RestoreViewModel : ObservableObject
 {
     public async Task WaitForUpdatesAsync()
     {
-        var intentInfo = await App.Current.IntentQueue.DequeueAsync(CancellationToken.None);
+        StreamRequest intentInfo = await App.Current.IntentQueue.DequeueAsync(CancellationToken.None);
         (Archive archive, string errorMsg) = await Archive.DeserializeAnyAsync(intentInfo.FileStream, intentInfo.MimeType);
         if (archive is null)
             IntentDescription = $"DivisiBill could not open the archive: " + errorMsg;

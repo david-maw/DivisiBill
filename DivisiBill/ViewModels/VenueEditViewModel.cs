@@ -79,7 +79,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         if (!IsForCurrentMeal)
         {
             ActiveVenue.Forget();
-            var mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == ActiveVenue.Name);
+            IEnumerable<MealSummary> mealsForVenue = Meal.LocalMealList.Where((ms) => ms.IsLocal && ms.VenueName == ActiveVenue.Name);
             if (mealsForVenue.Any() && await Utilities.AskAsync("Question", "Do you want to delete local bills for " + ActiveVenue.Name))
             {
                 foreach (MealSummary sum in mealsForVenue.OrderBy((ms) => ms.CreationTime))
@@ -104,7 +104,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
             if (nameChanged)
             {
                 // Before making name changes permanent, ensure that the user really wants to rename a Venue used with stored meals
-                var count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name && !ms.IsForCurrentMeal);
+                int count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name && !ms.IsForCurrentMeal);
                 if (count == 0 || await Utilities.AskAsync("Question",
                     $"There are {count} stored local bills for \"{ActiveVenue.Name}\", rename it anyway and disassociate them?"))
                 {

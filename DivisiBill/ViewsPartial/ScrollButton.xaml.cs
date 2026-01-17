@@ -75,7 +75,7 @@ public partial class ScrollButton : ContentView
     private static void OnVerticalOptionsChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var control = (ScrollButton)bindable;
-        LayoutOptions newLayoutOptions = (LayoutOptions)newValue;
+        var newLayoutOptions = (LayoutOptions)newValue;
         ((ContentView)bindable).VerticalOptions = newLayoutOptions;
         control.Down = newLayoutOptions.Equals(LayoutOptions.End);
     }

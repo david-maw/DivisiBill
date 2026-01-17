@@ -15,7 +15,8 @@ internal class Saver
         Utilities.DebugMsg("Enter SaveRequestLoop");
         for (int i = 0; i < 1000; i++) // test - wait until we explicitly allow continue 
         {
-            if (!App.pauseInitialization) break;
+            if (!App.pauseInitialization)
+                break;
             await Task.Delay(10000);
         }
         while (true)
@@ -38,7 +39,8 @@ internal class Saver
     {
         for (int i = 0; i < 1000; i++) // test - wait until we explicitly allow continue 
         {
-            if (!App.pauseInitialization) break;
+            if (!App.pauseInitialization)
+                break;
             await Task.Delay(10000);
         }
         Utilities.DebugMsg($"Enter TimedLoop({delayTime},{remote})");

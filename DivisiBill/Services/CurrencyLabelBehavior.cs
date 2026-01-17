@@ -28,7 +28,7 @@ internal class CurrencyLabelBehavior : Behavior<Label>
     protected override void OnAttachedTo(Label label)
     {
         savedLabel = label;
-        if (bindingWasSet = (BindingContext is null))
+        if (bindingWasSet = BindingContext is null)
             SetBinding(BindingContextProperty,
             new Binding
             {
@@ -60,7 +60,8 @@ internal class CurrencyLabelBehavior : Behavior<Label>
         }
         if (!(TestEquality && IsSet(UnequalStyleProperty) && IsSet(EqualValueProperty)))
             IsEqual = true; // if we are not testing just treat it as matching
-        else IsEqual = IsSet(TargetValueProperty)
+        else
+            IsEqual = IsSet(TargetValueProperty)
             ? TargetValue == EqualValue
             : decimal.TryParse(savedLabel.Text, NumberStyles.Currency, CultureInfo.CurrentCulture, out decimal d) && d == EqualValue;
         savedLabel.Style = IsEqual ? ValidStyle : UnequalStyle;

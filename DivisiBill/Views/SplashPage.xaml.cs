@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Models;
 using DivisiBill.Services;
@@ -74,7 +75,7 @@ public partial class SplashPage : ContentPage
         await InitializeUtilitiesAsync();
         if (App.SentryAllowed && App.Settings.SendCrashAsk)
         {
-            var d = await Shell.Current.ShowPopupAsync<QuestionResponse>(
+            IPopupResult<QuestionResponse> d = await Shell.Current.ShowPopupAsync<QuestionResponse>(
                 new QuestionPage("Telemetry", "Do you want to report crash data anonymously to DivisiBill Support?", App.Settings.SendCrashYes),
                 Utilities.GetNullPopupOptions(false));
             // It's ok to ask the questions in debug builds, but debug builds never send reports, regardless of the answer

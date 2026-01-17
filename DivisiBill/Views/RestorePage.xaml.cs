@@ -17,13 +17,13 @@ public partial class RestorePage : ContentPage
     }
     public async void ExitPage()
     {
-            if (App.Current.IsIntentLaunch)
-            {
+        if (App.Current.IsIntentLaunch)
+        {
 #if ANDROID
-                Platform.CurrentActivity.Finish();
+            Platform.CurrentActivity.Finish();
 #endif
-            }
-            else
-                await Navigation.PopModalAsync();
+        }
+        else
+            await Navigation.PopModalAsync();
     }
 }

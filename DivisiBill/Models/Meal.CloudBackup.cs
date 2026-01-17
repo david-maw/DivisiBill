@@ -49,10 +49,10 @@ public partial class Meal
         // We use HashSet types to store the data, but the performance difference pales compared to the network time above        
         HashSet<string> remoteMealNames = remoteFileInfoList is null ? [] : [.. remoteFileInfoList.Select(x => x.Name)];
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
-        var remoteFileInfoDict = remoteFileInfoList is null ? [] : remoteFileInfoList.ToDictionary(m => m.Name);
+        Dictionary<string, RemoteItemInfo> remoteFileInfoDict = remoteFileInfoList is null ? [] : remoteFileInfoList.ToDictionary(m => m.Name);
         HashSet<string> localMealNames = [];
         // Mark meals in the remote meal set as being remote and populate the set of local meals  
-        foreach (var ms in LocalMealList)
+        foreach (MealSummary ms in LocalMealList)
         {
             if (remoteMealNames.Contains(ms.Id))
             {
@@ -74,7 +74,7 @@ public partial class Meal
         // If we are backing up images, queue each image that is local but not remote for transmission
         if (App.IsCloudImageBackupAllowed)
         {
-            foreach (var ms in LocalMealList.Where(ms => ms.HasImage && !ms.HasRemoteImage))
+            foreach (MealSummary ms in LocalMealList.Where(ms => ms.HasImage && !ms.HasRemoteImage))
             {
                 slowImageBackupQueue.Enqueue(ms);
             }
@@ -109,19 +109,19 @@ public partial class Meal
         await App.CloudAllowedSource.WaitWhilePausedAsync();
         DebugMsg("In RecoverFromRemoteAsync, CloudAllowedSource no longer paused");
         List<RemoteItemInfo> remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
-        var remoteMealNames = remoteFileInfoList.Select(x => x.Name);
+        IEnumerable<string> remoteMealNames = remoteFileInfoList.Select(x => x.Name);
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
         // Get a dictionary of local file names
-        var localMealDict = new Dictionary<string, MealSummary>();
+        Dictionary<string, MealSummary> localMealDict = [];
         await GetLocalMealListAsync();
-        foreach (var ms in LocalMealList)
+        foreach (MealSummary ms in LocalMealList)
             localMealDict.Add(ms.Id, ms);
         // Get a list of remote only files (quite inefficient but that probably doesn't matter)
         var remoteOnlyFileInfoList = remoteFileInfoList.Where(rfi => !localMealDict.ContainsKey(rfi.Name)).ToList();
         int totalFiles = remoteOnlyFileInfoList.Count, filesWithoutError = 0, filesInError = 0, costMismatches = 0;
         decimal totalDifference = 0;
         ReportProgress(totalFiles, filesWithoutError, filesInError);
-        foreach (var rfi in remoteOnlyFileInfoList)
+        foreach (RemoteItemInfo rfi in remoteOnlyFileInfoList)
         {
             using Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name);
             cancellationToken.ThrowIfCancellationRequested();
@@ -163,7 +163,7 @@ public partial class Meal
                     {
                         // this is a handy place to scan multiple bills to check for differences between the old and new DistributeCosts algorithms
                         decimal difference = m.CompareCostDistribution(report: false);
-                        if (Utilities.IsDebug && (difference) > 0)
+                        if (Utilities.IsDebug && difference > 0)
                         {
                             DebugMsg($"In Meal.RecoverFromRemoteAsync: Cost Mismatch of {difference:C} in {m.DebugDisplay}");
                             costMismatches++;
@@ -219,11 +219,10 @@ public partial class Meal
         while (true)
         {
             // Priority order: backupQueue > imageBackupQueue > slowImageBackupQueue
-            MealSummary ms = null;
             bool backupImage = false;
 
             // Try to get from backupQueue first
-            if (backupQueue.TryDequeue(out ms))
+            if (backupQueue.TryDequeue(out MealSummary ms))
                 backupImage = false;
             // Then try image queues
             else if (imageBackupQueue.TryDequeue(out ms) || slowImageBackupQueue.TryDequeue(out ms))
@@ -231,10 +230,10 @@ public partial class Meal
             else
             {
                 // If all queues are empty, wait for any to have an item
-                var summaryTask = backupQueue.DequeueAsync(cancellationToken);
-                var imageTask = imageBackupQueue.DequeueAsync(cancellationToken);
-                var slowImageTask = slowImageBackupQueue.DequeueAsync(cancellationToken);
-                var firstCompleted = await Task.WhenAny(summaryTask, imageTask, slowImageTask);
+                Task<MealSummary> summaryTask = backupQueue.DequeueAsync(cancellationToken);
+                Task<MealSummary> imageTask = imageBackupQueue.DequeueAsync(cancellationToken);
+                Task<MealSummary> slowImageTask = slowImageBackupQueue.DequeueAsync(cancellationToken);
+                Task<MealSummary> firstCompleted = await Task.WhenAny(summaryTask, imageTask, slowImageTask);
                 // One or more queues have an item, so get it from the one that completed first
                 backupImage = firstCompleted != summaryTask;
                 ms = await firstCompleted;

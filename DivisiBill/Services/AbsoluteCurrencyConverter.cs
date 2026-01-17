@@ -10,7 +10,7 @@ public sealed class AbsoluteCurrencyConverter : IValueConverter
             return string.Empty;
 
         // Try to parse as decimal/double
-        if (decimal.TryParse(value.ToString(), out var amount))
+        if (decimal.TryParse(value.ToString(), out decimal amount))
         {
             // Apply Math.Abs and format as currency
             return Math.Abs(amount).ToString("C", culture);
