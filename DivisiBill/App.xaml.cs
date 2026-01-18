@@ -1,4 +1,5 @@
-﻿using DivisiBill.Models;
+﻿using Android.Health.Connect.DataTypes;
+using DivisiBill.Models;
 using DivisiBill.Services;
 using Microsoft.Maui.Handlers;
 using System.ComponentModel;
@@ -16,6 +17,9 @@ public partial class App : Application, INotifyPropertyChanged
     public static readonly bool SentryAllowed = !string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillSentryDsn);
     #endregion
     internal static bool UseLocation = true;
+    /// <summary>
+    /// Indicates whether a license was able to be checked, the check itself may or may not have worked.
+    /// </summary>
     internal static bool LicenseChecked = false;
     /// <summary>
     /// IsLimited is the inverse of whether Professional Edition has been purchased, so it is only ever set, not reset.
@@ -584,14 +588,47 @@ public partial class App : Application, INotifyPropertyChanged
                 await Billing.ConsumeDepletedOcrLicense();
             #endregion
 
-            if (string.IsNullOrEmpty(App.Settings.UserKey))
+            static string NullIfEmpty(string s) => string.IsNullOrEmpty(s) ? null : s; // Local helper function to simplify expressions below
+           
+            string storedAccountId = NullIfEmpty(App.Settings.UserKey);
+            string proAccountId = NullIfEmpty(Billing.ProPurchase?.ObfuscatedAccountId);
+            string ocrAccountId = NullIfEmpty(Billing.OcrPurchase?.ObfuscatedAccountId);
+
+            if (proAccountId is null || ocrAccountId is null || proAccountId == ocrAccountId)
+                Utilities.DebugMsg("In CheckLicenses: ProAccountId and OcrAccountId are the same or at least one is null");
+            else
+                Utilities.DebugMsg("In CheckLicenses: ProAccountId and OcrAccountId differ so we'll prefer the ProAccountId value");
+
+            if (storedAccountId is null)
             {
-                static string NullIfEmpty(string s) => string.IsNullOrEmpty(s) ? null : s; // Helper local function to simplify expressions below
-                // Probably a clean install, so the UserKey has not been set yet, generate a token if we must, but prefer to use an existing one
+                // Probably a clean install, so the AccountId has not been set yet, generate a token if we must, but prefer to use an existing one
                 // There are some peculiar license keys which were allocated before we started using ObfuscatedAccountId, since they are used for testing
                 // we handle that case here.
-                App.Settings.UserKey = NullIfEmpty(Billing.ProPurchase?.ObfuscatedAccountId) ?? NullIfEmpty(Billing.OcrPurchase?.ObfuscatedAccountId) ?? Utilities.GenerateToken();
+                Utilities.DebugMsg("In CheckLicenses: There is no stored AccountId");
+                App.Settings.UserKey = proAccountId ?? ocrAccountId ?? Utilities.GenerateToken();
             }
+            else
+            {
+                // We have a saved AccountId already but make sure it is the same as the one in the licenses because if not that indicates a different user
+                // and in that case we need to use the one for the user, not the old one that we had persisted for some previous user
+                Utilities.DebugMsg($"In CheckLicenses: AccountId is already set to {storedAccountId.TruncatedTo(7)}");
+                string accountIdFromAnyLicense = NullIfEmpty(proAccountId ?? ocrAccountId);
+                if (accountIdFromAnyLicense is null)
+                    Utilities.DebugMsg("In CheckLicenses: No AccountId available from licenses so we'll just keep the stored one");
+                else if (!string.Equals(storedAccountId, accountIdFromAnyLicense))
+                {
+                    // They differ, so we must be a different user now
+                    Utilities.DebugMsg($"In CheckLicenses: The AccountId from the licenses {accountIdFromAnyLicense.TruncatedTo(7)} overrides the stored one {storedAccountId.TruncatedTo(7)}");
+                    App.Settings.UserKey = accountIdFromAnyLicense;
+                }
+                else if (ocrAccountId is null)
+                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the Pro license matches and there is no OCR AccountId");
+                else if (string.Equals(accountIdFromAnyLicense, ocrAccountId))
+                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the Pro license matches that of the OCR license, the normal case");
+                else
+                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license does not match, it will be ignored");
+            }
+
             Utilities.DebugMsg("Exiting CheckLicenses, found Pro Subscription = " + FoundProSubscription + ", scans left = " + Billing.ScansLeft);
         }
         else
@@ -750,13 +787,16 @@ public partial class App : Application, INotifyPropertyChanged
             }
         }
     }
+    /// <summary>
+    /// Use the fake location, settable only in a debug build and if a fake location is defined.
+    /// </summary>
     public static bool UseFakeLocation
     {
         get => field;
         set => field = value && Utilities.IsDebug && FakeLocation is not null;
     }
     /// <summary>
-    /// Settable to permit unit testing
+    /// The AccountId most recently used by the application
     /// </summary>
     public static ISettings Settings { get; set; } = null;
 
