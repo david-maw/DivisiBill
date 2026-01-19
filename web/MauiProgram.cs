@@ -1,4 +1,6 @@
-﻿namespace web;
+﻿using Microsoft.Extensions.Logging;
+
+namespace web;
 
 public static class MauiProgram
 {

@@ -1,4 +1,7 @@
-﻿namespace web.Platforms.Android;
+﻿using Android.App;
+using Android.Runtime;
+
+namespace web.Platforms.Android;
 
 [Application]
 public class MainApplication : MauiApplication

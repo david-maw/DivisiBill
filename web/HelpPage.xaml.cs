@@ -40,7 +40,7 @@ public partial class HelpPage : ContentPage
     }
     public string PageName { get; set; } = "";
 
-    public ICommand BackCommand { get; }
+    public System.Windows.Input.ICommand BackCommand { get; }
 
     private async void OnIndexIconClicked(object sender, System.EventArgs e)
     {
