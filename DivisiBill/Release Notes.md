@@ -1,3 +1,13 @@
+# Version 6.3.11
+
+## Handle User Changing While DivisiBill is Installed
+
+Occasionally a user will change the Play Store identity used on their device, this is a very rare situation, but it is allowed. When this happens most of the locally persisted data will not change, but the user identity stored with any license should override the one stored with the app so that the new user's cloud storage is accessible. 
+
+## Improve Items Page Layout
+
+There is more space around the individual shares count buttons (the ones that show up when you long-press a participant button).
+
 # 6.3.10
 
 ## Allow Effect of Clear on Report Page to be Reversed
