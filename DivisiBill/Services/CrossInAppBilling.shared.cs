@@ -1,6 +1,6 @@
 ﻿using DivisiBill.InAppBilling;
 
-namespace DivisiBill;
+namespace DivisiBill.Services;
 
 /// <summary>
 /// Cross platform InAppBilling implementations
