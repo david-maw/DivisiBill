@@ -43,8 +43,9 @@
       <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
    </PropertyGroup>
 
+	<!--Set EmitCompilerGeneratedFiles to true and CompilerGeneratedFilesOutputPath to an existing path to enable source-generated files to be visible in the IDE-->
 	<PropertyGroup>
-		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<EmitCompilerGeneratedFiles  Condition="'$(Configuration)'=='Debug'">false</EmitCompilerGeneratedFiles>
 		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
 	</PropertyGroup>
 
