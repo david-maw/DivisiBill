@@ -1,6 +1,10 @@
 # Version 6.3.11
 
-## Handle User Changing While DivisiBill is Installed
+## Clarify Pro Subscription
+
+The help for the subscription feature on the Settings page has been reworded to make it clearer that it is an optional annual subscription and to emphasize its benefits. 
+
+## Handle User Changing
 
 Occasionally a user will change the Play Store identity used on their device, this is a very rare situation, but it is allowed. When this happens most of the locally persisted data will not change, but the user identity stored with any license should override the one stored with the app so that the new user's cloud storage is accessible. 
 
@@ -10,17 +14,17 @@ There is more space around the individual shares count buttons (the ones that sh
 
 # 6.3.10
 
-## Allow Effect of Clear on Report Page to be Reversed
+## Allow Clear to be Undone
 
 The report page clear button now saves the cleared text so it can be restored using the "UnClear" button (which appends the cleared text to the end of whatever is there).
 
 # 6.3.9
 
-## Show Simple Coupon Amount in UI Instead of Modified value
+## Show Simple Coupon Amount
 
 A bill with coupons applied after tax would show an incorrect value for the sum of the coupons (it was actually showing what the coupon would be worth before tax). The sum of any coupons is once again shown.
 
-## Support Android 'Send To' and 'Open With' Actions
+## Android 'Send To' and 'Open With'
 
 You can now send or open zip or xml files to DivisiBill, if they are archived DivisiBill data it will open them and permit them to be restored much as the restore from the Data Management page does.
 
@@ -32,19 +36,19 @@ Restoring an archive created before 6.3.7 would fail to restore bills (people an
 
 # 6.3.7
 
-## Allow "Retry" Option When Waiting for Web Response
+## Allow "Retry" Option
 
-The initial web request waits for 30s between failed calls, it is now possible to proceed with the next call without waiting by tapping the "Retry" button. The existing "Give Up" button is unchanged.
+The initial web request waits for 30s between failed calls, it is now possible to retry the call without waiting by tapping the "Retry" button. The existing "Give Up" button is unchanged.
 
 # 6.3.6
 
-## Attach a Bill Archive to Mail Messages
+## Mail a Bill Archive
 
-Instead of a bill explanation and a bill image (if there was one) being attached to an email message, we now attach an explanation as before and a bill archive. The archive is a zip file holding any bill image and also an xml representation of the bill. The attached archive can be used with the restore function on the data management page to load the bill and any image to another instance of DivisiBill.
+Instead of a bill explanation and a bill image (if there was one) being attached to an email message, we now attach an explanation and a bill archive. The archive is a zip file holding any bill image and also an xml representation of the bill, its participants and its venue. The attached archive can be used with the restore function on the data management page to load the bill and any image to another instance of DivisiBill.
 
 # 6.3.5
 
-## Item Insert User Interface Changes
+## Item Insert Changes
 
 When inserting an item on the items page it will now be inserted after the selected item (it was previously inserted before the selected item). If no item is currently selected the new item will be added at the end of the list. The new item will be selected once it has been added.
 

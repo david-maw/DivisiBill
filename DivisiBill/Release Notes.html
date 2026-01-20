@@ -10,29 +10,31 @@
 </head>
 <body>
 <h1 id="version-6.3.11">Version 6.3.11</h1>
-<h2 id="handle-user-changing-while-divisibill-is-installed">Handle User Changing While DivisiBill is Installed</h2>
+<h2 id="clarify-pro-subscription">Clarify Pro Subscription</h2>
+<p>The help for the subscription feature on the Settings page has been reworded to make it clearer that it is an optional annual subscription and to emphasize its benefits.</p>
+<h2 id="handle-user-changing">Handle User Changing</h2>
 <p>Occasionally a user will change the Play Store identity used on their device, this is a very rare situation, but it is allowed. When this happens most of the locally persisted data will not change, but the user identity stored with any license should override the one stored with the app so that the new user’s cloud storage is accessible.</p>
 <h2 id="improve-items-page-layout">Improve Items Page Layout</h2>
 <p>There is more space around the individual shares count buttons (the ones that show up when you long-press a participant button).</p>
 <h1 id="section">6.3.10</h1>
-<h2 id="allow-effect-of-clear-on-report-page-to-be-reversed">Allow Effect of Clear on Report Page to be Reversed</h2>
+<h2 id="allow-clear-to-be-undone">Allow Clear to be Undone</h2>
 <p>The report page clear button now saves the cleared text so it can be restored using the “UnClear” button (which appends the cleared text to the end of whatever is there).</p>
 <h1 id="section-1">6.3.9</h1>
-<h2 id="show-simple-coupon-amount-in-ui-instead-of-modified-value">Show Simple Coupon Amount in UI Instead of Modified value</h2>
+<h2 id="show-simple-coupon-amount">Show Simple Coupon Amount</h2>
 <p>A bill with coupons applied after tax would show an incorrect value for the sum of the coupons (it was actually showing what the coupon would be worth before tax). The sum of any coupons is once again shown.</p>
-<h2 id="support-android-send-to-and-open-with-actions">Support Android ‘Send To’ and ‘Open With’ Actions</h2>
+<h2 id="android-send-to-and-open-with">Android ‘Send To’ and ‘Open With’</h2>
 <p>You can now send or open zip or xml files to DivisiBill, if they are archived DivisiBill data it will open them and permit them to be restored much as the restore from the Data Management page does.</p>
 <h1 id="section-2">6.3.8</h1>
 <h2 id="archive-restore-of-old-archives">Archive Restore of Old Archives</h2>
 <p>Restoring an archive created before 6.3.7 would fail to restore bills (people and venues were fine). This has been corrected but any archives created with 6.3.7 will need to be re-created using 6.3.8 or later in order to restore bills correctly.</p>
 <h1 id="section-3">6.3.7</h1>
-<h2 id="allow-retry-option-when-waiting-for-web-response">Allow “Retry” Option When Waiting for Web Response</h2>
-<p>The initial web request waits for 30s between failed calls, it is now possible to proceed with the next call without waiting by tapping the “Retry” button. The existing “Give Up” button is unchanged.</p>
+<h2 id="allow-retry-option">Allow “Retry” Option</h2>
+<p>The initial web request waits for 30s between failed calls, it is now possible to retry the call without waiting by tapping the “Retry” button. The existing “Give Up” button is unchanged.</p>
 <h1 id="section-4">6.3.6</h1>
-<h2 id="attach-a-bill-archive-to-mail-messages">Attach a Bill Archive to Mail Messages</h2>
-<p>Instead of a bill explanation and a bill image (if there was one) being attached to an email message, we now attach an explanation as before and a bill archive. The archive is a zip file holding any bill image and also an xml representation of the bill. The attached archive can be used with the restore function on the data management page to load the bill and any image to another instance of DivisiBill.</p>
+<h2 id="mail-a-bill-archive">Mail a Bill Archive</h2>
+<p>Instead of a bill explanation and a bill image (if there was one) being attached to an email message, we now attach an explanation and a bill archive. The archive is a zip file holding any bill image and also an xml representation of the bill, its participants and its venue. The attached archive can be used with the restore function on the data management page to load the bill and any image to another instance of DivisiBill.</p>
 <h1 id="section-5">6.3.5</h1>
-<h2 id="item-insert-user-interface-changes">Item Insert User Interface Changes</h2>
+<h2 id="item-insert-changes">Item Insert Changes</h2>
 <p>When inserting an item on the items page it will now be inserted after the selected item (it was previously inserted before the selected item). If no item is currently selected the new item will be added at the end of the list. The new item will be selected once it has been added.</p>
 <p>If you want to insert an item before the first one, select the first one, insert the new item, then delete the first one. The selection will switch to the new item and tapping “Undelete” will restore the former first item after the new one.</p>
 <h2 id="handle-obscure-coupon-scenario">Handle Obscure Coupon Scenario</h2>
