@@ -109,15 +109,15 @@
             <Label Text="Program built without web services" IsVisible="{Binding WsUriDefined, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
             <Grid IsVisible="{Binding WsUriDefined}">
                 <VerticalStackLayout IsVisible="{Binding LicenseChecked}">
-                    <Label HorizontalOptions="Center" Margin="0,5">
+                    <Label HorizontalOptions="Center" Margin="0,5" >
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding LicensingHelpCommand}"/>
                         </Label.GestureRecognizers>
                         <Label.FormattedText>
                             <FormattedString>
-                                <Span Text="Tap "/>
-                                <Span Text="here" TextDecorations="Underline"/>
-                                <Span Text=" for licensing help"/>
+                                <Span Text="Tap " FontSize="{StaticResource FontSizeLarge}"/>
+                                <Span Text="here" TextDecorations="Underline" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{StaticResource MediumSpringGreen}"/>
+                                <Span Text=" for licensing help" FontSize="{StaticResource FontSizeLarge}"/>
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>

@@ -53,8 +53,9 @@
             <Color x:Key="ImageGlyphDark">Green</Color>
             <Color x:Key="NegativeNumber">Red</Color>
             <Color x:Key="SelectedBackGroundColor">#f17b01</Color> <!-- Same color that Android uses by default -->
-
-            <!--  ICON NAME  -->
+            <Color x:Key="MediumSpringGreen">#FF00FA9A</Color> <!--Same as corresponding CSS color-->
+            
+            <!--  Icon names  -->
 
             <x:String x:Key="TextArrowDown">&#xF0CDC;</x:String>
             <x:String x:Key="TextArrowUp">&#xF0CE2;</x:String>

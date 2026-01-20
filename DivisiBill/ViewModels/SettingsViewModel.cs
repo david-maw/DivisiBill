@@ -206,6 +206,13 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
+    private async Task SubscriptionHelpAsync()
+    {
+        Shell.Current.FlyoutIsPresented = false;
+        await App.PushAsync($"{Routes.HelpPage}?page=licensing");
+    }
+
+    [RelayCommand]
     private void SystemSettings() => AppInfo.Current.ShowSettingsUI();
 
     [RelayCommand]
