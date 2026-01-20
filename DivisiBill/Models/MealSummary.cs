@@ -24,12 +24,7 @@ namespace DivisiBill.Models;
 public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary>
 {
     #region Global
-    public MealSummary() => Meal.CurrentMealSummaryChanged += NotifyCurrentMealSummaryChanged;
-    ~MealSummary()
-    {
-        Meal.CurrentMealSummaryChanged -= NotifyCurrentMealSummaryChanged;
-    }
-
+    static MealSummary() => Meal.CurrentMealSummaryChanged += NotifyCurrentMealSummaryChanged;
     public MealSummary ShallowCopy() => MemberwiseClone() as MealSummary;
 
     public override bool Equals(object obj) => obj is not null && (ReferenceEquals(this, obj)
