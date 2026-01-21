@@ -14,7 +14,7 @@
              Title="Venue List">
     <ContentPage.Resources>
         <DataTemplate x:Key="WithSwipe">
-            <Grid ColumnDefinitions="*,*,*">
+            <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*">
                 <SwipeView Grid.ColumnSpan="3" x:DataType="model:Venue">
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
@@ -56,7 +56,6 @@
                             <!--#endregion-->
                             <Label Grid.Column="2" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="{StaticResource FontSizeSmall}" VerticalOptions="Center" HorizontalOptions="End"/>
                         </Grid>
-                        <BoxView Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
                     </VerticalStackLayout>
                     <!--#endregion-->
                 </SwipeView>
@@ -71,6 +70,7 @@
                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
+                <BoxView Grid.Row="1" Grid.ColumnSpan="3" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
                 <!--#endregion-->
             </Grid>
         </DataTemplate>

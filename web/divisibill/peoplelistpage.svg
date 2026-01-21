@@ -27,9 +27,9 @@
      showgrid="false"
      inkscape:zoom="0.36"
      inkscape:cx="540.27778"
-     inkscape:cy="529.16667"
+     inkscape:cy="531.94444"
      inkscape:window-width="2560"
-     inkscape:window-height="1529"
+     inkscape:window-height="1577"
      inkscape:window-x="1192"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -54,7 +54,7 @@
        xlink:href="peoplelistglossary.html#flyout"
        target="_parent"
        xlink:title="Open/Close Flyout"
-       transform="matrix(0.99390409,0,0,0.8541763,0.76489099,3.204499)">
+       transform="matrix(0.99390409,0,0,0.8541763,0.76489099,81.204499)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect936"
@@ -68,7 +68,7 @@
        xlink:href="peoplelistglossary.html#use"
        target="_parent"
        xlink:title="Use the selected person"
-       transform="matrix(1.0745036,0,0,1.0244928,-215.05007,-6.0074451)">
+       transform="matrix(1.0745036,0,0,1.0244928,-215.05007,69.992555)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect940"
@@ -82,7 +82,7 @@
        xlink:href="peoplelistglossary.html#add"
        target="_parent"
        xlink:title="Add a Person"
-       transform="matrix(1.2390119,0,0,1.0244928,-511.65217,-10.007445)">
+       transform="matrix(1.2390119,0,0,1.0244928,-511.65217,65.992555)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.5464;stroke-linecap:round"
          id="rect944"
@@ -96,7 +96,7 @@
        xlink:href="peoplelistglossary.html#delete"
        target="_parent"
        xlink:title="Delete the selected person"
-       transform="matrix(1.1693504,0,0,1.0244928,13.312086,-10.007445)">
+       transform="matrix(1.1693504,0,0,1.0244928,13.312086,65.992555)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect940-4"
@@ -110,7 +110,7 @@
        xlink:href="peoplelistglossary.html#ellipsis"
        target="_parent"
        xlink:title="Open menu"
-       transform="matrix(0.79001542,0,0,1.0244928,220.56306,-10.007445)">
+       transform="matrix(0.79001542,0,0,1.0244928,220.56306,65.992555)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:23.5464;stroke-linecap:round"
          id="rect944-4"

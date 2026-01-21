@@ -87,7 +87,8 @@ public partial class Meal : ObservableObjectPlus
                 {
                     CurrentMeal = new Meal();
                     CurrentMeal.LoadFakeSettings();
-                    CurrentMeal.Summary.CreationTime = DateTime.MinValue; // flag the meal as default with no side effects
+                    CurrentMeal.Summary.CreationTime = DateTime.Now;
+                    LocalMealList.Insert(0, CurrentMeal.Summary); // ensure it is in the local meal list
                 }
                 Application.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel
                 SnapshotNeeded.IsPaused = true;
@@ -326,12 +327,11 @@ public partial class Meal : ObservableObjectPlus
                     meal.SaveToFile();
                     meal.Summary.IsLocal = true;
                 }
-                // If the original list was empty, new items may be added, otherwise they must be inserted in the correct place
+                // If the original list was empty, the new item may be added, otherwise it must be inserted in the correct place
                 if (wasEmpty)
                     LocalMealList.Add(meal.Summary);
                 else
                     LocalMealList.Upsert(meal.Summary);
-                // remove all meals, not just one, only change current if old was removed.
                 localMealNames.Add(meal.Summary.Id); // to ensure we do not add duplicates
             }
         }
@@ -604,7 +604,6 @@ public partial class Meal : ObservableObjectPlus
     {
         if (string.IsNullOrWhiteSpace(VenueName))
             VenueName = "Queasy Diner";
-        CreationTime = DateTime.MinValue; // flag the bill as fake
         CreateFakeCosts();
         CreateFakeLineItems();
         TaxRate = 0.0775;
@@ -618,18 +617,18 @@ public partial class Meal : ObservableObjectPlus
         // Note that they are added in order
         LocalMealList.Add(new MealSummary()
         {
-            VenueName = "Fake McDonalds",
+            VenueName = Venue.AllVenues[1].Name,
             CreationTime = new DateTime(2021, 1, 2, 3, 4, 5),
         });
         LocalMealList.Add(new MealSummary()
         {
-            VenueName = "Fake California Pizza Kitchen",
+            VenueName = Venue.AllVenues[2].Name,
             CreationTime = new DateTime(2010, 11, 12, 14, 43, 20),
             FileSelected = true
         });
         LocalMealList.Add(new MealSummary()
         {
-            VenueName = "Fake McDonalds",
+            VenueName = Venue.AllVenues[1].Name,
             CreationTime = new DateTime(2010, 11, 11, 11, 11, 11),
         });
     }

@@ -39,12 +39,11 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     private static void LoadDefaultVenues()
     {
         List<Venue> initialVenues = [
-            new() {Name = "California Pizza Kitchen", Latitude= 33.6120, Longitude = -117.7080, Accuracy = 10},
-            new() {Name = "Claim Jumper"},
-            new() {Name = "Kings",                    Latitude= 33.6132, Longitude = -117.7084, Accuracy = 10},
-            new() {Name = "MacDonalds"},
             new() {Name = "Queasy Diner",             Latitude= 20.79, Longitude = -156.24, Accuracy = 700},
-            new() {Name = "Wendys"},
+            new() {Name = "Bad Pizza",                Latitude= 33.6120, Longitude = -117.7080, Accuracy = 10},
+            new() {Name = "Too Much Food"},
+            new() {Name = "Bad Burgers"},
+            new() {Name = "Really bad burgers"},
         ];
         initialVenues.Sort();
         foreach (Venue v in initialVenues)

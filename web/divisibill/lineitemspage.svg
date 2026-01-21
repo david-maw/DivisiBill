@@ -25,11 +25,11 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="1"
      showgrid="false"
-     inkscape:zoom="0.45"
-     inkscape:cx="511.11111"
-     inkscape:cy="1065.5556"
+     inkscape:zoom="1.03"
+     inkscape:cx="510.19417"
+     inkscape:cy="687.86408"
      inkscape:window-width="2560"
-     inkscape:window-height="1529"
+     inkscape:window-height="1577"
      inkscape:window-x="1192"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -140,7 +140,7 @@
        target="_parent"
        xlink:title="Edit an item"
        inkscape:label="LineItem Link"
-       transform="matrix(1.0013213,0,0,7.503735,0.3343036,-4735.4062)">
+       transform="matrix(1.0186063,0,0,5.0988554,-12.276434,-3107.075)">
       <rect
          style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:10.7465;stroke-linecap:round"
          id="rect847"
@@ -208,7 +208,7 @@
        target="_parent"
        xlink:title="Sharing Control"
        inkscape:label="Sharing"
-       transform="matrix(1.0060563,0,0,0.97372942,1.8850855,86.941522)">
+       transform="matrix(0.93999023,0,0,0.25994824,3.1386468,282.70725)">
       <rect
          style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect852"
@@ -225,7 +225,7 @@
        target="_parent"
        xlink:title="Comp on/off"
        inkscape:label="Comp"
-       transform="matrix(1.0060563,0,0,0.97372942,1.8850855,86.941522)">
+       transform="matrix(1.0060563,0,0,0.25790092,1.8850855,279.56447)">
       <rect
          style="opacity:1;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect981"
