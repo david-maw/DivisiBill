@@ -52,25 +52,39 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     public partial int Distance { get; set; } = Distances.Unknown;
 
     public bool IsForCurrentMeal => ActiveVenue.IsForCurrentMeal;
-    public bool HasUnsavedChanges => !(Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name) && Utilities.StringFunctionallyEqual(Notes, ActiveVenue.Notes));
+    public bool NoChanges => Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name)
+        && Utilities.StringFunctionallyEqual(Notes, ActiveVenue.Notes)
+        && Equals(Location, ActiveVenue.Location);
     public bool IsNewNameInvalid => string.IsNullOrWhiteSpace(Name) || Venue.AllVenues.Any((v) => ActiveVenue != v && Name.Equals(v.Name, StringComparison.Ordinal));
     #endregion
-    public async Task SaveChanges()
+    /// <summary>
+    /// Persists changes made to the active venue, including its name, notes, and location, and updates related meal and
+    /// venue state as necessary.
+    /// </summary>
+    /// <remarks>If the name of the current venue is changed, this method updates the current meal and venue state to reflect
+    /// the new name. Changes are saved asynchronously to ensure that all updates are persisted.</remarks>
+    /// <returns>A task that represents the asynchronous save operation.</returns>
+    public async Task SaveActive()
     {
-        // if the name being changed is the same as the one on the current meal, fix the meal too
-        if (IsForCurrentMeal)
-            await Meal.CurrentMeal.ChangeVenueAsync(Name);
-        // Check to see if the current venue has changed
-        if (ActiveVenue == Venue.Current)
-            Venue.SetCurrentByName(null); // we have renamed the current venue, so there will not be a current venue until one is created
-        else if (Venue.Current == null && Meal.CurrentMeal.VenueName == ActiveVenue.Name)
-            Venue.SetCurrentByName(Meal.CurrentMeal.VenueName); // There wasn't previously a current venue but this is now it
-        // Change the stored name
-        ActiveVenue.Name = Name;
+        bool updateCurrentVenue = false;
+        if (!Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name))
+        {
+            // if the name being changed is the same as the one on an unfrozen current meal, fix the current meal too
+            if (IsForCurrentMeal && !Meal.CurrentMeal.Frozen)
+                await Meal.CurrentMeal.ChangeVenueAsync(Name);
+            // Check to see if the current venue has changed
+            if (ActiveVenue == Venue.Current)
+                Venue.SetCurrentByName(null); // we have renamed the current venue, so there will not be a current venue until one is created
+            else if (Venue.Current == null && Meal.CurrentMeal.VenueName == Name)
+                updateCurrentVenue = true; // There wasn't previously a current venue but this is now it
+            ActiveVenue.Name = Name; 
+        }
         ActiveVenue.Notes = Notes;
         ActiveVenue.Location = Location;
-        // Make sure a changes are persisted
+        // Make sure any changes are persisted
         await Venue.SaveSettingsAsync();
+        if (updateCurrentVenue) // Now that the list of venues has been updated we can try and select the new venue name we just stored
+            Venue.SetCurrentByName(Name); 
     }
     #region Commands
     [RelayCommand]
@@ -91,36 +105,42 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
-    private async Task Save()
+    private async Task ExitPageAsync()
     {
-        if (IsNewNameInvalid)
+        if (!NoChanges)
         {
-            // Just restore the original name
-            Name = ActiveVenue.Name;
-        }
-        else
-        {
-            bool nameChanged = !ActiveVenue.Name.Equals(Name, StringComparison.Ordinal);
-            if (nameChanged)
+            if (IsNewNameInvalid)
             {
-                // Before making name changes permanent, ensure that the user really wants to rename a Venue used with stored meals
-                int count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name && !ms.IsForCurrentMeal);
-                if (count == 0 || await Utilities.AskAsync("Question",
-                    $"There are {count} stored local bills for \"{ActiveVenue.Name}\", rename it anyway and disassociate them?"))
+                // Just restore the original name
+                Name = ActiveVenue.Name;
+                return; // Just go back to the page
+            }
+            else
+            {
+                bool nameChanged = !ActiveVenue.Name.Equals(Name, StringComparison.Ordinal);
+                if (nameChanged)
                 {
-                    await SaveChanges();
-                    count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name);
-                    if (count > 0)
-                        await Utilities.ShowAppSnackBarAsync($"{count} local stored bills use \"{ActiveVenue.Name}\"");
-                    await App.PopAsync();
+                    // Before making name changes permanent, ensure that the user really wants to rename a Venue used with stored meals
+                    int count = Meal.LocalMealList.Count((ms) => ms.VenueName == ActiveVenue.Name && !(ms.IsForCurrentMeal && !Meal.CurrentMeal.Frozen));
+                    if (count == 0 || await Utilities.AskAsync("Question",
+                        $"There are {count} stored local bills for \"{ActiveVenue.Name}\", rename it anyway and disassociate them?"))
+                    {
+                        await SaveActive();
+                        // Now check how many bills use the new venue name
+                        count = Meal.LocalMealList.Count((ms) => ms.VenueName == Name);
+                        if (count > 0)
+                            await Utilities.ShowAppSnackBarAsync($"{count} local stored bills use \"{Name}\"");
+                        else
+                            await Utilities.ShowAppSnackBarAsync($"No local stored bills use \"{Name}\"");
+                    }
+                }
+                else // name didn't change
+                {
+                    await SaveActive();
                 }
             }
-            else // name didn't change
-            {
-                await SaveChanges();
-                await App.PopAsync();
-            }
         }
+        await App.PopAsync();
     }
 
     [RelayCommand]

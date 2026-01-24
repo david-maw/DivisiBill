@@ -7,7 +7,7 @@
              x:DataType="viewmodels:VenueEditViewModel"
              x:Class="DivisiBill.Views.VenueEditPage">
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior Command="{Binding SaveCommand}"/>
+        <BackButtonBehavior Command="{Binding ExitPageCommand}"/>
     </Shell.BackButtonBehavior>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>

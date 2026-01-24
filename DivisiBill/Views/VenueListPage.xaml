@@ -51,7 +51,8 @@
                                 Grid.Column="1"
                                 IsVisible="{Binding IsForCurrentMeal}"
                                 HorizontalOptions="End"
-                                WidthRequest="20"
+                                WidthRequest="25"
+                                Margin="5,0"
                                 Source="{StaticResource ListGlyphCurrentMeal}"/>
                             <!--#endregion-->
                             <Label Grid.Column="2" Text="{Binding Distance, Converter={StaticResource Distance}}" FontSize="{StaticResource FontSizeSmall}" VerticalOptions="Center" HorizontalOptions="End"/>
