@@ -311,6 +311,7 @@ internal partial class DataManagementViewModel : ObservableObject
 
                 // Clear selected archive after restore
                 SelectedArchive = null;
+                SelectedMealsCount = 0;
             }
             else if (restoreFailureText != null)
                 await Utilities.ShowAppSnackBarAsync($"Restore completed with issues: {restoreFailureText}");
