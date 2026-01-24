@@ -85,9 +85,11 @@ public partial class Meal : ObservableObjectPlus
                 CurrentMeal ??= AppMeal;
                 if (CurrentMeal is null)
                 {
-                    CurrentMeal = new Meal();
-                    CurrentMeal.LoadFakeSettings();
-                    CurrentMeal.Summary.CreationTime = DateTime.Now;
+
+                    Meal fake = new();
+                    fake.LoadFakeSettings();
+                    fake.Summary.CreationTime = DateTime.Now;
+                    CurrentMeal = fake; // We wait to assign it until the meal id fully formed and has a venue name
                     LocalMealList.Insert(0, CurrentMeal.Summary); // ensure it is in the local meal list
                 }
                 Application.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel
