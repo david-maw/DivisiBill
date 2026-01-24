@@ -218,6 +218,7 @@ internal static class Billing
                     ProductId = OldProProductId, // temporary
                     State = PurchaseState.Failed,
                     Id = GetJsonFieldValue(json, "orderId"),
+                    ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
                     Signature = signatureB64,
                     OriginalJson = json
                 };
@@ -340,6 +341,7 @@ internal static class Billing
                     ProductId = OcrLicenseProductId,
                     State = PurchaseState.Failed,
                     Id = GetJsonFieldValue(json, "orderId"),
+                    ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
                     Signature = signatureB64,
                     OriginalJson = json
                 };
