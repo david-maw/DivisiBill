@@ -413,7 +413,7 @@ namespace DivisiBill.Generated
 ```
 
 Annoyingly when you change VS build from Android to Windows (and maybe other times) these files sometimes get generated with `CDATA`
-tags actually in the file, which is irritating and a [bug](https://developercommunity.visualstudio.com/t/Project-Generated-Files-Sometimes-Contai/10604117?port=1025&fsid=289c13cb-3f26-49b3-ad9f-3ce964430f13&q=CDATA&ref=native&refTime=1729901351487&refUserId=87be68b7-e95b-4f21-a5ac-92dc4c3f90a9) Microsoft took a while to fix - it was finally fixed in February 2025 though not yet released. To work around this just repeat the build. 
+tags actually in the file, which is irritating and a [bug](https://developercommunity.visualstudio.com/t/Project-Generated-Files-Sometimes-Contai/10604117?port=1025&fsid=289c13cb-3f26-49b3-ad9f-3ce964430f13&q=CDATA&ref=native&refTime=1729901351487&refUserId=87be68b7-e95b-4f21-a5ac-92dc4c3f90a9) Microsoft took a while to fix - it was finally fixed in February 2025 and released later in the year. To work around this just repeat the build. 
 
 On the developer machine, the secrets are stored in environment variables that mostly begin with DIVISIBILL_.
 CI/CD creates environment variables on the fly using secrets stored in the CI/CD system. Some example secrets and their corresponding environment variable (the full list is above):
@@ -435,11 +435,9 @@ The project file also deploys the PDB file for a release build to Sentry using a
 
 A local debug build on Windows is helpful (see "Windows Debug Environment"$pwd below) but it uses some secrets that are not needed elsewhere so they are just stored as environment variables on the development system:
 
-DIVISIBILL_BING_MAPS_SECRET - the key to use bing maps in the Community Toolkit because MAUI doesn't do maps on Windows
+DIVISIBILL_BING_MAPS_SECRET - the former key to use bing maps in the Community Toolkit because MAUI doesn't do maps on Windows, unfortunately bing maps itself is no longer supported.
 DIVISIBILL_TEST_PRO_JSON_B64 - A base-64 encoded JSON representation of a Pro License on Android
 DIVISIBILL_TEST_OCR_JSON_B64 - A base-64 encoded JSON representation of an OCR License on Android
-
-The Bing Maps key is issued when you sign up for Bing maps.
 
 The DIVISIBILL_TEST_xxx_JSON_B64 environment variables are used to test licensing on a Windows system because the Android play API isn't readily usable there. They are created by capturing the JSON from an android app, storing it in a file and then using PowerShell to create an environment variable from it. A PowerShell script to create an appropriate environment variable looks like this:
 
