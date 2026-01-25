@@ -12,6 +12,14 @@ Occasionally a user will change the Play Store identity used on their device, th
 
 There is more space around the individual shares count buttons (the ones that show up when you long-press a participant button).
 
+## Disable Restore Button
+
+Sometimes the archive Restore button on the "Manage Data" page would remain enabled even after the selected archive was "forgotten".
+
+## Current Venue Settings
+
+The current venue was not always being identified in the list of venues. This has been corrected. Also, venue renaming (especially of the current venue) has been made more reliable.
+
 # 6.3.10
 
 ## Allow Clear to be Undone
