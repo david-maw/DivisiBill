@@ -314,7 +314,7 @@ public static partial class Utilities // Partial for regex generator
         s.AppendLine("Version " + VersionName + " build " + Revision + " at " + BuildTime);
         if (Billing.ProPurchase is not null)
         {
-            s.AppendLine("Professional Edition Purchase ID: " + Billing.ProPurchase.Id
+            s.AppendLine($"Professional Edition Purchase ({Billing.ProPurchase.ProductId}) ID: {Billing.ProPurchase.Id}"
                     + ", PurchaseState = " + Billing.ProPurchase.State);
             if (!string.IsNullOrEmpty(App.Settings?.UserKey))
             {
@@ -325,8 +325,7 @@ public static partial class Utilities // Partial for regex generator
             }
         }
         if (Billing.OcrPurchase is not null)
-            s.AppendLine("OCR Purchase ID: " + Billing.OcrPurchase.Id + ", scans remaining = " + Billing.ScansLeft
-                + ", PurchaseState = " + Billing.OcrPurchase.State);
+            s.AppendLine($"OCR Purchase ID: {Billing.OcrPurchase.Id}, PurchaseState = {Billing.OcrPurchase.State}, scans remaining = {Billing.ScansLeft}");
         return s.ToString();
     }
 

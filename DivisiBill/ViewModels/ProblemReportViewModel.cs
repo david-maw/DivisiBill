@@ -86,7 +86,7 @@ internal partial class ProblemReportViewModel : ObservableObject
             if (!string.IsNullOrWhiteSpace(tempFilePath) && File.Exists(tempFilePath))
                 File.Delete(tempFilePath);
         }
-        await Utilities.DisplayAlertAsync("Issue Reported", "Your mail has been sent", "ok");
+        await Utilities.DisplayAlertAsync("Issue Reported", "A mail message has been created", "ok");
         await App.GoToRoot(1);
     }
 
