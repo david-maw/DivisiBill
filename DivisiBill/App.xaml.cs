@@ -622,8 +622,8 @@ public partial class App : Application, INotifyPropertyChanged
                 }
                 else if (ocrAccountId is null)
                     Utilities.DebugMsg("In CheckLicenses: The AccountId of the Pro license matches and there is no OCR AccountId");
-                else if (string.Equals(accountIdFromAnyLicense, ocrAccountId))
-                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the Pro license matches that of the OCR license, the normal case");
+                else if (proAccountId is null)
+                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license matches and there is no Pro AccountId");
                 else
                     Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license does not match, it will be ignored");
             }
