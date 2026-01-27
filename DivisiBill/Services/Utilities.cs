@@ -800,26 +800,7 @@ public static partial class Utilities // Partial for regex generator
             return false;
         }
     }
-    internal static DateTime DateTimeFromName(string name)
-    {
-        string s = Path.GetFileNameWithoutExtension(name);
-        if (s.Length == 14
-            && int.TryParse(s[..4], out int y)
-            && y > 2010 && y < 2030
-            && int.TryParse(s.AsSpan(4, 2), out int m)
-            && m >= 1 && m <= 12
-            && int.TryParse(s.AsSpan(6, 2), out int d)
-            && d >= 1 && d <= 31
-            && int.TryParse(s.AsSpan(8, 2), out int hh)
-            && hh >= 0 && hh <= 23
-            && int.TryParse(s.AsSpan(10, 2), out int mm)
-            && mm >= 0 && mm < 60
-            && int.TryParse(s.AsSpan(12, 2), out int ss)
-            && ss >= 0 && ss < 60)
-            return new DateTime(y, m, d, hh, mm, ss); // Plausible date
-        else
-            return DateTime.MinValue;
-    }
+    internal static DateTime DateTimeFromName(string name) => TryDateTimeFromName(name, out DateTime dateTime) ? dateTime : DateTime.MinValue;
     internal static bool WithinOneSecond(DateTime t1, DateTime t2) => Math.Abs((t1 - t2).TotalMilliseconds) < 1000;
 
     [GeneratedRegex(@"^/Date\((\d+)(-\d{2})(\d{2})\)/$")]
