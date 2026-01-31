@@ -837,6 +837,15 @@ public static partial class Utilities // Partial for regex generator
     }
 
     /// <summary>
+    /// Returns null if the specified string is null, empty, or consists only of white-space characters; otherwise,
+    /// returns the original string.
+    /// </summary>
+    /// <param name="value">The string to evaluate. If null, empty, or white-space, the method returns null.</param>
+    /// <returns>The original string if it is not null, empty, or white-space; otherwise, null.</returns>
+    public static string NullIfWhiteSpace(this string value)
+        => string.IsNullOrWhiteSpace(value) ? null : value;
+
+    /// <summary>
     /// A string extension method to return a string which fits in a specified number of characters,
     /// adding an ellipsis if it is necessary to truncate it 
     /// </summary>
@@ -1000,10 +1009,10 @@ public static partial class Utilities // Partial for regex generator
     internal static bool IsValid(this Location location) => location is not null && App.UseLocation && location.Accuracy <= Distances.AccuracyLimit;
     internal static bool IsAccurate(this Location location) => location is not null && location.Accuracy.HasValue;
     /// <summary>
-    /// This is accuracy, but as an integer (not double) number of meters or an "inaccurate" value
+    /// Accuracy, but as either an integer (not double) number of meters or an "inaccurate" value
     /// </summary>
     /// <param name="location">The Location object to be evaluated</param>
-    /// <returns>The distance from the current location, or an "inaccurate" value</returns>
+    /// <returns>An integral distance from the current location, or an "inaccurate" value</returns>
     public static int AccuracyOrDefault(this Location location) => location.IsAccurate() ? (int)Math.Round(location.Accuracy.Value) : Distances.Inaccurate;
     internal static string MakeLocationText(Location location) => location is null || !location.IsValid() ? null :
                 MakeLocationText(location.Latitude, location.Longitude, location.AccuracyOrDefault());

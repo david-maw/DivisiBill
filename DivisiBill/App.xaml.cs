@@ -809,11 +809,11 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     public static async Task InitializeLocationAsync()
     {
+        UseFakeLocation = false;
         if (UseLocation)
-        {
-            UseFakeLocation = false;
             await TryGetMyLocationAsync(LocationMonitorCancellationTokenSource.Token);
-        }
+        else
+            MyLocation = null;
     }
     private static async Task GetMyLocationAsync(CancellationToken cancellationToken)
     {

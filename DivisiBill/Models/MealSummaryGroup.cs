@@ -58,11 +58,8 @@ public partial class MealSummaryGroup : ObservableObject
     /// The <see cref="MealSummary.CreationTime"/> of the newest Meal in the group.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ApproximateAge))]
     public partial DateTime CreationTime { get; set; } = default;
-    partial void OnCreationTimeChanged(DateTime value)
-    {
-        OnPropertyChanged(nameof(ApproximateAge));
-    }
 
     public string ApproximateAge => CreationTime.ApproximateAge();
 
@@ -74,7 +71,6 @@ public partial class MealSummaryGroup : ObservableObject
     public partial int Count { get; set; } = 0;
 
     public bool CountLarge => Count > maxMeals;
-
     public string CountText => Count <= maxMeals ? $"{Count}" : $"{maxMeals} of {Count}";
 
     [ObservableProperty]
@@ -86,7 +82,7 @@ public partial class MealSummaryGroup : ObservableObject
             var v = Venue.FindVenueByName(VenueName);
             return v is null ? Distances.Unknown : v.SimplifiedDistance;
         }
-    }
+    }   
     public void NotifyDistanceChanged() => OnPropertyChanged(nameof(Distance));
     public ObservableCollection<MealSummary> MealSummaries { get; } = [];
     public ObservableCollection<MealSummary> FirstMealSummaries => new(MealSummaries.Take(maxMeals));

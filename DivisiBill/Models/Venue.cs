@@ -1,17 +1,17 @@
 // Ignore Spelling: Deserialize
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
 [DebuggerDisplay("{Name}")]
-public class Venue : INotifyPropertyChanged, IComparable<Venue>
+public partial class Venue : ObservableObject, IComparable<Venue>
 {
     public const string VenueFolderName = "Venues";
     public const string VenueFileName = "Venues.xml";
@@ -28,11 +28,11 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         get => field;
         private set
         {
-            if (field != value)
+            if (!ReferenceEquals(field, value))
             {
                 field?.IsForCurrentMeal = false;
-                field = value;
                 value?.IsForCurrentMeal = true;
+                field = value;
             }
         }
     }
@@ -343,7 +343,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     {
         if (allVenues is null) // initializing
             return null;
-        Venue v = new() { name = VenueName ?? "New", Notes = notesParam };
+        Venue v = new() { Name = VenueName ?? "New", Notes = notesParam };
         if (VenueName is null)
             v.Location = App.MyLocation; // Assign current location only to a newly created venue with no name
         // Find out where in the sorted list this venue should go, can't use BinarySearch method because it is
@@ -417,6 +417,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     internal static bool IsDefaultList => UpdateTime == DateTime.MinValue;
 
     public static Guid Updater { get; set; }
+    
     /// <summary>
     /// Use a new location if it is more accurate than the old one and within the same area
     /// </summary>
@@ -443,8 +444,6 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         }
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
     [XmlIgnore]
     public Location Location
     {
@@ -453,7 +452,7 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
                 : new Location(Latitude, Longitude) { Accuracy = Accuracy };
         set
         {
-            if (value is null)
+            if (value is null || !App.UseLocation || Accuracy is <= 0 or >= Distances.AccuracyLimit)
             {
                 IsLocationValid = false;
                 UpdateTime = DateTime.Now;
@@ -471,81 +470,46 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
         }
     }
 
+    [ObservableProperty]
     [XmlIgnore]
-    public int Distance
+    public partial int Distance { get; set; } = Distances.Inaccurate;
+
+    partial void OnDistanceChanged(int oldValue, int newValue)
     {
-        set
-        {
-            if ((Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid)
-            {
-                value = Distances.Inaccurate;
-            }
-            if (field != value)
-            {
-                int oldDistance = field;
-                field = value;
-                if (allVenuesByDistanceIsSorted & allVenuesByDistance.Contains(this))
-                    MoveToCorrectPlaceByDistance();
-                OnPropertyChanged();
-                DistanceChanged?.Invoke(this, new VenueDistanceChangedEventArgs(this, oldDistance, value));
-            }
-        }
-        get;
-    } = Distances.Inaccurate; [XmlIgnore]
+        if (allVenuesByDistanceIsSorted & allVenuesByDistance.Contains(this))
+            MoveToCorrectPlaceByDistance();
+        DistanceChanged?.Invoke(this, new VenueDistanceChangedEventArgs(this, oldValue, newValue));
+        UpdateTime = DateTime.Now;
+    }
+
+    [XmlIgnore]
     public int SimplifiedDistance => Distances.Simplified(Distance);
 
-    private string name;
-
+    [ObservableProperty]
     [XmlAttribute]
-    public string Name
+    public partial string Name { get; set; }
+
+    partial void OnNameChanged(string oldValue, string newValue)
     {
-        set
-        {
-            string newValue = null;
-            if (!string.IsNullOrEmpty(value))
-                newValue = value.Trim();
-            if (name != newValue)
-            {
-                name = newValue;
-                if (allVenues.Contains(this))
-                    MoveToCorrectPlace();
-                OnPropertyChanged();
-                UpdateTime = DateTime.Now;
-            }
-        }
-        get => name;
+        Name = string.IsNullOrEmpty(newValue) ? null : newValue.Trim();
+        if (allVenues.Contains(this))
+            MoveToCorrectPlace();
+        UpdateTime = DateTime.Now;
     }
 
+    [ObservableProperty]
     [XmlAttribute]
-    public string Notes
+    public partial string Notes { get; set; }
+
+    partial void OnNotesChanged(string oldValue, string newValue)
     {
-        set
-        {
-            string newValue = null;
-            if (!string.IsNullOrEmpty(value))
-                newValue = value.Trim();
-            if (field != newValue)
-            {
-                field = newValue;
-                OnPropertyChanged();
-            }
-        }
-        get;
+        Notes = string.IsNullOrEmpty(newValue) ? null : newValue.Trim();
+        UpdateTime = DateTime.Now;
     }
 
+    [ObservableProperty]
     [XmlIgnore]
-    public bool IsForCurrentMeal
-    {
-        get => field;
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-    } = false;
+    public partial bool IsForCurrentMeal { get; set; }
 
     [XmlAttribute(AttributeName = "Latitude"), DefaultValue(0.0)]
     public double AdjustedLatitude
@@ -566,44 +530,45 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
 
     private double Longitude { get; set; } = 0.0;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the current location meets the required validation criteria.
+    /// </summary>
+    /// <remarks>Use this property to determine if the location information provided is considered valid
+    /// according to the application's validation rules. This property is typically used to enable or disable actions
+    /// that require a valid location.</remarks>
+    [ObservableProperty]
     [XmlIgnore]
-    public bool IsLocationValid
+    public partial bool IsLocationValid { get; private set; }
+    partial void OnIsLocationValidChanged(bool value)
     {
-        get => App.UseLocation && Accuracy <= Distances.AccuracyLimit && field;
-        set
+        if (value)
         {
-            if (value != field)
-            {
-                field = value;
-                if (value)
-                    Distance = App.GetDistanceTo(Location);
-                else
-                {
-                    // Reset these because they are persisted
-                    Latitude = 0.0;
-                    Longitude = 0.0;
-                    Accuracy = 0;
-                    // Reset distance because it is no longer correct
-                    Distance = Distances.Unknown;
-                }
-                OnPropertyChanged();
-            }
+            if (App.UseLocation && Accuracy <= Distances.AccuracyLimit)
+                Distance = App.GetDistanceTo(Location);
+            else
+                IsLocationValid = false;
+        }
+        else
+        {
+            // Reset these because they are persisted
+            Latitude = 0.0;
+            Longitude = 0.0;
+            Accuracy = 0;
+            // Reset distance because it is no longer correct
+            Distance = Distances.Unknown;
         }
     }
 
-    [XmlAttribute, DefaultValue(0)]
-    public int Accuracy
-    {
-        set
-        {
-            if (value >= 0 && field != value)
-            {
-                field = value is <= 0 or >= Distances.Inaccurate ? 0 : value;
-                IsLocationValid = field != 0;
-            }
-        }
 
-        get => field > 0 ? (field) : Latitude == 0 && Longitude == 0 ? Distances.Inaccurate : Distances.AccuracyLimit;
+    [ObservableProperty]
+    [XmlAttribute, DefaultValue(0)]
+    public partial int Accuracy { get; set; } = 0;
+
+    partial void OnAccuracyChanged(int oldValue, int newValue)
+    {
+        if (newValue >= 0)
+            Accuracy = newValue is > 0 and < Distances.Inaccurate ? newValue : 0;
+        IsLocationValid = App.UseLocation && Accuracy is > 0 and <= Distances.AccuracyLimit;
     }
     public bool Forget() => allVenues.Remove(this) && allVenuesByDistance.Remove(this);
     public static void ForgetAllVenues()
@@ -614,8 +579,6 @@ public class Venue : INotifyPropertyChanged, IComparable<Venue>
     }
     private void MoveToCorrectPlace() => allVenues.Upsert(this);
     private void MoveToCorrectPlaceByDistance() => allVenuesByDistance.Upsert(this, CompareDistances);
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propChanged = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
 }
 
 // The VenueRoot class is needed because 'Venue' used to be 'Restaurant' and so the persisted XML has to use

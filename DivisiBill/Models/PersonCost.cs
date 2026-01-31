@@ -1,37 +1,35 @@
-using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using DivisiBill.Services;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
 [DebuggerDisplay("[{DinerIndex}] {Nickname} - {PersonGUID.ToString()}")]
-public class PersonCost : INotifyPropertyChanged
+public partial class PersonCost : ObservableObject
 {
-    public event PropertyChangedEventHandler PropertyChanged;
-    private LineItem.DinerID dinerID; // defined per bill
-    private string nickname; // in case there's no diner
-
     // This is the GUID of the diner
     [XmlAttribute]
     public Guid PersonGUID { set; get; }
 
 
     // This is the name of the diner, or a default
+    /// <summary>
+    /// Gets or sets the nickname of the diner associated with this instance.
+    /// </summary>
+    /// <remarks>If a diner is assigned, this property returns the diner's nickname. Otherwise, it returns the
+    /// locally stored nickname value. Setting this property has no effect if a diner is already assigned, as the
+    /// diner's nickname takes precedence. If the nickname is null or consists only of whitespace, the property returns
+    /// "Unknown" by default.</remarks>
     [XmlAttribute]
     public string Nickname
     {
         set
         {
-            if (string.IsNullOrEmpty(nickname) || !nickname.Equals(value))
-            {
-                if (Debugger.IsAttached && Diner is not null)
-                    Debugger.Break(); // It is useless to set a Nickname if a diner is set because it will be ignored  
-                nickname = value;
-                OnPropertyChanged();
-            }
+            if (SetProperty(ref field, value) && Diner is not null)
+                Debugger.Break(); // It is useless to set a Nickname if a diner is set because it will be ignored  
         }
-        get => (Diner is null) ? (string.IsNullOrWhiteSpace(nickname) ? "Unknown" : nickname) : Diner.Nickname;
+        get => Diner is not null ? Diner.Nickname : field.NullIfWhiteSpace() ?? "Unknown";
     }
 
     /// <summary>
@@ -44,27 +42,23 @@ public class PersonCost : INotifyPropertyChanged
             Diner = Person.FindByGuid(PersonGUID);
         return Diner is not null;
     }
-    // Note that this is not a data member
+    /// <summary>
+    /// Gets or sets the person associated with the diner.
+    /// </summary>
+    /// <remarks>This property is not serialized and is used to track the current person in relation to other
+    /// properties such as DinerID and Nickname. Changing this property raises property change notifications for those
+    /// related properties.</remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DinerID))]
+    [NotifyPropertyChangedFor(nameof(Nickname))]
     [XmlIgnore]
-    public Person Diner
+    public partial Person Diner { get; set; }
+    partial void OnDinerChanged(Person value)
     {
-        set
-        {
-            if (field != value)
-            {
-                if (value is null) // we must be resetting the diner value
-                    nickname = null; // make sure no old value has been left lying around
-                else
-                {
-                    field = value;
-                    PersonGUID = value.PersonGUID;
-                }
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DinerID));
-                OnPropertyChanged(nameof(Nickname)); // No need to assign this as the presence of a diner value overrides it 
-            }
-        }
-        get;
+        if (value is null) // we must be resetting the diner value
+            Nickname = null; // make sure no old value has been left lying around
+        else
+            PersonGUID = value.PersonGUID;
     }
 
     /// <summary>
@@ -119,36 +113,16 @@ public class PersonCost : INotifyPropertyChanged
     /// the original amount is restored. <see cref="CouponAmount"/> contains the user specified coupon vale not the pre-tax calculated 
     /// one in <see cref="PreTaxCouponAmount"/>.
     /// </summary>
+    [ObservableProperty]
     [XmlIgnore]
-    public decimal CouponAmount
-    {
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-        get;
-    }
+    public partial decimal CouponAmount { get; set; }
     /// <summary>
     /// The sum of any comped items this participant got, and any coupons (possibly reduced if they are taxable).
     /// Coupon amounts (not reduced) and comped items are also tracked separately.
     /// </summary>
+    [ObservableProperty]
     [XmlIgnore]
-    public decimal Discount
-    {
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-        get;
-    }
+    public partial decimal Discount { get; set; }
 
     /// <summary>
     /// The amount actually charged - the order amount minus anything that was comped and excluding any coupons.
@@ -158,91 +132,48 @@ public class PersonCost : INotifyPropertyChanged
     /// <summary>
     /// The sum of this participant's shares in comped items.
     /// </summary>
+    [ObservableProperty]
     [XmlIgnore]
-    public decimal CompedAmount
-    {
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-        get;
-    }
+    public partial decimal CompedAmount { get; set; }
     /// <summary>
     /// The sum of shares in any items this participant ordered, including comped items, excluding coupons
     /// </summary>
+    [ObservableProperty]
     [XmlIgnore]
-    public decimal OrderAmount
-    {
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-        get;
-    }
+    public partial decimal OrderAmount { get; set; }
     /// <summary>
     /// The amount this participant will pay, so it has any coupons subtracted, comped items ignored and a 
     /// fair share of <see cref="Meal.Tip"/> and <see cref="Meal.Tax"/> added.
     /// </summary>
+    [ObservableProperty]
     [XmlIgnore]
-    public decimal Amount
-    {
-        set
-        {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-        get;
-    }
+    public partial decimal Amount { get; set; }
 
+    /// <summary>
+    /// Gets or sets an identifier for a diner.
+    /// </summary>
+    /// <remarks>This property is used to a specific diner in the context of an order.
+    /// Ensure that the DinerID is valid and corresponds to an existing diner in the system. This is persisted
+    /// but for historical reasons it is under the name DinerIndex (see <see cref="DinerIndexStored"/>).</remarks>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DinerIndex))]
     [XmlIgnore]
-    public LineItem.DinerID DinerID
-    {
-        set
-        {
-            if (dinerID != value)
-            {
-                dinerID = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DinerIndex));
-            }
-        }
-        get => dinerID;
-    }
+    public partial LineItem.DinerID DinerID { get; set; }
+    partial void OnDinerIDChanged(LineItem.DinerID value) => DinerIndexStored = (uint)value;
 
     // This is used to persist the DinerID value, to stay compatible with older stored meals.
     // So the thing called DinerIndex in the persisted XML is actually the DinerID value
     [XmlAttribute(AttributeName = "DinerIndex")]
-    public uint DinerIndexStored
-    {
-        set
-        {
-            if ((uint)dinerID != value)
-            {
-                dinerID = (LineItem.DinerID)value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DinerID));
-            }
-        }
-        get => (uint)dinerID;
-    }
+    [ObservableProperty]
+    public partial uint DinerIndexStored { get; set; }
+    partial void OnDinerIndexStoredChanged(uint value) => DinerID = (LineItem.DinerID)value;
 
     // Diner ID values start at 1, this starts at 0 and is used as an array index usually
     [XmlIgnore]
-    public byte DinerIndex => (byte)((int)dinerID - 1);
+    public byte DinerIndex => (byte)((int)DinerID - 1);
 
     [XmlIgnore]
     public string DinerIDText => ((char)('①' + DinerIndex)).ToString();
-    protected virtual void OnPropertyChanged([CallerMemberName] string propChanged = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
+
     public void SwapDinerID(PersonCost pc) => (pc.DinerID, DinerID) = (DinerID, pc.DinerID);
 }
