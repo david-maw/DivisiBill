@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="DivisiBill.Views.DataManagementPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:DivisiBill"
-    xmlns:services="clr-namespace:DivisiBill.Services"
-    xmlns:views="clr-namespace:DivisiBill.Views"
-    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     Title="Manage Data"
     x:DataType="vm:DataManagementViewModel"
     BindingContext="{vm:DataManagementViewModel}"
