@@ -1,3 +1,9 @@
+# Version 6.3.12
+
+## Improve Properties Page UI
+
+The line corresponding to the item being edited is now bold as well as being enlarged slightly.
+
 # Version 6.3.11
 
 ## Clarify Pro Subscription
