@@ -29,7 +29,6 @@ public partial class PropertiesPage : ContentPage
             ? FlyoutBehavior.Disabled
             : FlyoutBehavior.Flyout;
     }
-    private void GoToVenuesByName(object sender, EventArgs e) => Navigation.PushAsync(new VenueListByNamePage());
     private async void OnEntryFocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry focusedEntry)
