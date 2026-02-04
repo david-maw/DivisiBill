@@ -155,10 +155,13 @@
 
   <!--Note that the following targets require Pandoc to be installed and available in the system PATH and are run by VS any time and dotnet CLI during the build process.-->
   <!-- markdown -> Release Notes html generation in-place; only runs when Release Notes.md is newer than html or html is missing -->
-  <Target Name="GenerateReleaseNotesHtml" BeforeTargets="PrepareForBuild" Inputs="Release Notes.md" Outputs="Release Notes.html">
-      <Exec Command="pandoc -o &quot;Release Notes.html&quot; &quot;Release Notes.md&quot; -s --template=pandoc-template.html --wrap=none" />
-      <Message Text="Generating Release Notes.html from Release Notes.md" Importance="High" />
-  </Target>
+	<Target Name="GenerateReleaseNotesHtml"
+			BeforeTargets="PrepareForBuild"
+			Inputs="$(MSBuildProjectDirectory)\Release Notes.md"
+			Outputs="$(MSBuildProjectDirectory)\Release Notes.html">
+		<Exec Command="pandoc -o &quot;Release Notes.html&quot; &quot;Release Notes.md&quot; -s --template=pandoc-template.html --wrap=none" />
+		<Message Text="Generating Release Notes.html from Release Notes.md" Importance="High" />
+	</Target>
 
   <ItemGroup>
       <!-- DivisiBill Help MarkDown files: defined at project level so targets can use them for Inputs/Outputs -->

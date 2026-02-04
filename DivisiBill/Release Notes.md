@@ -4,6 +4,10 @@
 
 The line corresponding to the item being edited is now bold as well as being enlarged slightly.
 
+Whenever a numeric input field is tapped the number within it is selected and the on screen keyboard is shown so you can simply type a new number without having to delete the existing one first.
+ 
+To dismiss the on screen keyboard tap the return button; this may be labeled "done" or have a symbol on it, often a check mark (<u>&#xF012C;</u>).
+
 # Version 6.3.11
 
 ## Clarify Pro Subscription
