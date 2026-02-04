@@ -29,19 +29,30 @@ public partial class PropertiesPage : ContentPage
             ? FlyoutBehavior.Disabled
             : FlyoutBehavior.Flyout;
     }
-    private async void OnEntryFocused(object sender, FocusEventArgs e)
+
+    // Manage keyboard visibility for InputViewss (Entry and Edit controls)
+    InputView currentInputView = null;
+    private async void OnFocused(object sender, FocusEventArgs e)
     {
-        if (sender is Entry focusedEntry)
+        currentInputView = sender as InputView;
+        if (currentInputView is not null)
         {
-            await focusedEntry.ShowKeyboardAsync();
+            await currentInputView.ShowKeyboardAsync();
+
+            if (sender is Entry)
+            {
+                // Select all text so input replaces it
+                currentInputView.CursorPosition = 0;
+                currentInputView.SelectionLength = currentInputView.Text?.Length ?? 0; 
+            }
         }
     }
-    private async void OnEntryCompleted(object sender, EventArgs e)
+    private async void OnInputViewUnfocused(object sender, FocusEventArgs e)
     {
-        if (sender is Entry focusedEntry)
-        {
-            await focusedEntry.HideKeyboardAsync();
-            focusedEntry.Unfocus();
-        }
+        await Task.Yield();// Give Focused for the next control a chance to run
+
+        if (currentInputView is null && sender is InputView inputView)
+            await inputView.HideKeyboardAsync();
     }
+    private async void OnCompleted(object sender, EventArgs e) => (sender as VisualElement)?.Unfocus();
 }

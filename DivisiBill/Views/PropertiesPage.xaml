@@ -124,8 +124,9 @@
                     x:Name="entryTipRate"
                     Grid.Row="1"
                     Grid.Column="1"
-                    Completed="OnEntryCompleted"
-                    Focused="OnEntryFocused"
+                    Completed="OnCompleted"
+                    Focused="OnFocused"
+                    Unfocused="OnInputViewUnfocused"
                     MaxLength="2"
                     ReturnCommand="{Binding UnloadTipRateStringCommand}"
                     Text="{Binding TipRateString}">
@@ -160,8 +161,9 @@
                     x:Name="entryTipAmount"
                     Grid.Row="2"
                     Grid.Column="1"
-                    Completed="OnEntryCompleted"
-                    Focused="OnEntryFocused"
+                    Completed="OnCompleted"
+                    Focused="OnFocused"
+                    Unfocused="OnInputViewUnfocused"
                     ReturnCommand="{Binding UnloadTipStringCommand}"
                     Text="{Binding TipString}">
                     <Entry.Behaviors>
@@ -238,8 +240,9 @@
                     x:Name="entryTaxRate"
                     Grid.Row="5"
                     Grid.Column="1"
-                    Completed="OnEntryCompleted"
-                    Focused="OnEntryFocused"
+                    Completed="OnCompleted"
+                    Focused="OnFocused"
+                    Unfocused="OnInputViewUnfocused"
                     MaxLength="5"
                     ReturnCommand="{Binding UnloadTaxRateStringCommand}"
                     Text="{Binding TaxRateString}">
@@ -274,8 +277,9 @@
                     x:Name="entryTaxAmount"
                     Grid.Row="6"
                     Grid.Column="1"
-                    Completed="OnEntryCompleted"
-                    Focused="OnEntryFocused"
+                    Completed="OnCompleted"
+                    Focused="OnFocused"
+                    Unfocused="OnInputViewUnfocused"
                     MaxLength="8"
                     ReturnCommand="{Binding UnloadTaxStringCommand}"
                     Text="{Binding TaxString}">
@@ -341,8 +345,9 @@
                     x:Name="entryScannedTax"
                     Grid.Row="8"
                     Grid.Column="1"
-                    Completed="OnEntryCompleted"
-                    Focused="OnEntryFocused"
+                    Completed="OnCompleted"
+                    Focused="OnFocused"
+                    Unfocused="OnInputViewUnfocused"
                     MaxLength="8"
                     ReturnCommand="{Binding UnloadScannedTaxCommand}"
                     Text="{Binding ScannedTaxString}">
@@ -400,8 +405,9 @@
                     x:Name="entryScannedSubtotal"
                     Grid.Row="10"
                     Grid.Column="1"
-                    Completed="OnEntryCompleted"
-                    Focused="OnEntryFocused"
+                    Completed="OnCompleted"
+                    Focused="OnFocused"
+                    Unfocused="OnInputViewUnfocused"
                     MaxLength="8"
                     ReturnCommand="{Binding UnloadScannedSubTotalCommand}"
                     Text="{Binding ScannedSubTotalString}">
@@ -436,7 +442,10 @@
                 HorizontalOptions="Center"
                 Text="{Binding VenueName, StringFormat='Venue notes for {0}'}" />
             <Border Margin="5">
-                <Editor Text="{Binding VenueNotes}" />
+                <Editor Text="{Binding VenueNotes}"
+                    Completed="OnCompleted"
+                    Focused="OnFocused"
+                    Unfocused="OnInputViewUnfocused"/>
             </Border>
             <!--#endregion-->
         </VerticalStackLayout>
