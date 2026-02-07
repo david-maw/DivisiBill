@@ -4,6 +4,7 @@
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:appmodel ="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
              xmlns:views="clr-namespace:DivisiBill.Views"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:SplashPage}"
              x:DataType="views:SplashPage"
              Title="Starting Divisibill, please wait"
@@ -17,11 +18,14 @@
                Text="{Binding Title, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"
                BackgroundColor="{Binding BackgroundColor, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"/>
     </Shell.TitleView>
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="Red" StatusBarStyle="{AppThemeBinding Dark=LightContent, Light=DarkContent}"/>
+    </ContentPage.Behaviors>
     <ContentPage.Content>
-        <!--This layout is intentionally identical to the GettingStartedPage, so that the transition from one to the other is invisible to the user-->
+        <!--This layout is intentionally similar to the GettingStartedPage, so that the transition from one to the other is not jarring to the user-->
         <Grid RowDefinitions="1*,2.5*,auto,auto,3*" >
             <!--#region Busy/Paused Indicator -->
-            <ActivityIndicator Color="Black"
+            <ActivityIndicator Color="{AppThemeBinding Dark=White, Light=Black}"
                                IsRunning="{Binding IsPaused, Converter={StaticResource Not}}"
                                Margin="10"/>
             <Label Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" VerticalOptions="End"/>

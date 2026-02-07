@@ -31,7 +31,7 @@ namespace DivisiBill.Services
             if (reference == null)
                 return null;
 
-            var target = (IProvideValueTarget?)serviceProvider.GetService(typeof(IProvideValueTarget));
+            var target = (IProvideValueTarget)serviceProvider.GetService(typeof(IProvideValueTarget));
             if (target is null)
                 return null;
 
