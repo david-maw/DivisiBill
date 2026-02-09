@@ -45,7 +45,7 @@
 
 	<!--Set EmitCompilerGeneratedFiles to true and CompilerGeneratedFilesOutputPath to an existing path to enable source-generated files to be visible in the IDE-->
 	<PropertyGroup>
-		<EmitCompilerGeneratedFiles  Condition="'$(Configuration)'=='Debug'">false</EmitCompilerGeneratedFiles>
+		<EmitCompilerGeneratedFiles Condition="'$(Configuration)'=='Debug'">false</EmitCompilerGeneratedFiles>
 		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
 	</PropertyGroup>
 
@@ -114,21 +114,21 @@
    <ItemGroup>
       <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
       <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
-      <PackageReference Include="CommunityToolkit.Maui.Camera" Version="5.0.0" />
+      <PackageReference Include="CommunityToolkit.Maui.Camera" Version="6.0.0" />
       <PackageReference Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
       <PackageReference Include="epj.RouteGenerator" Version="1.0.5" />
-      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
-      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.20" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.31" />
+      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.31" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
       <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
-      <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
+      <PackageReference Include="CommunityToolkit.Maui" Version="14.0.0" />
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-	  <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.20" />
+	  <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.31" />
       <PackageReference Include="Sentry.Maui" Version="6.0.0" />
       <!--Sentry.Profiling 4.10.0 is not supported on Android-->
       <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="6.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-      <PackageReference Include="SkiaSharp" Version="3.119.1" />
+      <PackageReference Include="SkiaSharp" Version="3.119.2" />
    </ItemGroup>
 
 	<!--Add In-App Billing package for Android-->
@@ -155,10 +155,7 @@
 
   <!--Note that the following targets require Pandoc to be installed and available in the system PATH and are run by VS any time and dotnet CLI during the build process.-->
   <!-- markdown -> Release Notes html generation in-place; only runs when Release Notes.md is newer than html or html is missing -->
-	<Target Name="GenerateReleaseNotesHtml"
-			BeforeTargets="PrepareForBuild"
-			Inputs="$(MSBuildProjectDirectory)\Release Notes.md"
-			Outputs="$(MSBuildProjectDirectory)\Release Notes.html">
+	<Target Name="GenerateReleaseNotesHtml" BeforeTargets="PrepareForBuild" Inputs="$(MSBuildProjectDirectory)\Release Notes.md" Outputs="$(MSBuildProjectDirectory)\Release Notes.html">
 		<Exec Command="pandoc -o &quot;Release Notes.html&quot; &quot;Release Notes.md&quot; -s --template=pandoc-template.html --wrap=none" />
 		<Message Text="Generating Release Notes.html from Release Notes.md" Importance="High" />
 	</Target>
