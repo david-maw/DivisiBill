@@ -18,6 +18,7 @@
                Text="{Binding Title, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"
                BackgroundColor="{Binding BackgroundColor, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"/>
     </Shell.TitleView>
+    <!-- Give the Android Status bar a red background and make the icon color match the text on the page so it blends in-->
     <ContentPage.Behaviors>
         <toolkit:StatusBarBehavior StatusBarColor="Red" StatusBarStyle="{AppThemeBinding Dark=LightContent, Light=DarkContent}"/>
     </ContentPage.Behaviors>

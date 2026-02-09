@@ -51,11 +51,6 @@ public partial class SplashPage : ContentPage
             DebugMsg("In SplashPage_Loaded, initialization not started, starting it now.");
             await Task.Delay(50); // Let Navigation settle down or Popup V2 will wait forever
             await InitializeApp();
-#if ANDROID
-            bool isDark = App.Current.UserAppTheme == AppTheme.Dark || (App.Current.UserAppTheme == AppTheme.Unspecified && Application.Current.RequestedTheme == AppTheme.Dark);
-            CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(isDark ? Colors.Black : Colors.White);
-            CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(isDark ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
-#endif
             RecordMsg("In SplashPage_Loaded, navigating away from Initialization");
             if (VersionTracking.IsFirstLaunchForCurrentVersion && !VersionTracking.IsFirstLaunchEver)
             {

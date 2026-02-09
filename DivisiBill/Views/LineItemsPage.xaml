@@ -14,6 +14,13 @@
     x:Name="Page"
     BindingContext="{DynamicResource MealViewModel}"
     Shell.FlyoutBehavior="Flyout">
+    <!--#region Android Status Bar -->
+    <!--This is the default for most of the app except help pages, which are always white-on-black.
+      We set it explicitly here just in case this is the first page we see after the splash page.-->
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="{AppThemeBinding Dark=Black, Light=White}" StatusBarStyle="{AppThemeBinding Dark=LightContent, Light=DarkContent}" />
+    </ContentPage.Behaviors>
+    <!--#endregion-->
     <!--#region ToolBar-->
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphFilterOn}" Command="{Binding FilterItemsFromLineItemCommand}"/>

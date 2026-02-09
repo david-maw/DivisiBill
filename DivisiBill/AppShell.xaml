@@ -8,10 +8,6 @@
        Title="DivisiBill"
        x:Class="DivisiBill.AppShell">
 
-    <Shell.Behaviors>
-        <toolkit:StatusBarBehavior StatusBarColor="Black" StatusBarStyle="LightContent" />
-    </Shell.Behaviors>
-
     <Shell.FlyoutHeaderTemplate>
         <DataTemplate>
             <ContentView BackgroundColor="Red" HeightRequest="100">

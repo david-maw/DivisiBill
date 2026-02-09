@@ -8,6 +8,14 @@ Whenever a numeric input field is tapped the number within it is selected and th
  
 To dismiss the on screen keyboard tap the return button; this may be labeled "done" or have a symbol on it, often a check mark (<u>&#xF012C;</u>).
 
+## Correct Android Status Bar
+
+The Android status bar is the top line of the screen containing small icons. It would often show up with a purple background, this has been corrected:
+
+- On the startup page it shows as red with icons matching text colors so as to be as unobtrusive as possible.
+- On the help page it shows as black with white icons to match the help text.
+- On other pages it matches the theme of the application (either black or white background with white or black icons).
+
 # Version 6.3.11
 
 ## Clarify Pro Subscription

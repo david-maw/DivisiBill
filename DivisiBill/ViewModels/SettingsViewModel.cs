@@ -348,13 +348,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
             if (value != Dark)
             {
                 currentApp.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
-#if ANDROID
-                currentApp.Dispatcher.DispatchDelayed(TimeSpan.Zero, () =>
+                if (OperatingSystem.IsAndroid())
                 {
                     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(value ? Colors.Black : Colors.White);
-                    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(value ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
-                });
-#endif
+                    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(value ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent); 
+                }
             }
         }
         get => currentApp.UserAppTheme == AppTheme.Dark || currentApp.RequestedTheme == AppTheme.Dark;

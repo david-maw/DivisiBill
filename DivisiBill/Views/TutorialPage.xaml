@@ -3,10 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              Title="Tutorial"
              xmlns:views="clr-namespace:DivisiBill.Views"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:TutorialPage}"
              x:DataType="views:TutorialPage"
              x:Class="DivisiBill.Views.TutorialPage"
              Shell.FlyoutBehavior="Disabled">
+    <!--#region Android Status Bar -->
+    <!--Set the Android status bar color just in case this is the first page we see after the splash page-->
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="{AppThemeBinding Dark=Black, Light=White}" StatusBarStyle="{AppThemeBinding Dark=LightContent, Light=DarkContent}" />
+    </ContentPage.Behaviors>
+    <!--#endregion-->
     <ScrollView>
         <VerticalStackLayout Margin="20,0">
 

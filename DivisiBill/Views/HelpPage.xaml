@@ -3,13 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DivisiBill.Views.HelpPage"
              xmlns:views="clr-namespace:DivisiBill.Views"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
              BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:HelpPage}"
              x:DataType="views:HelpPage"
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="true"
              Shell.TabBarIsVisible="False"
              Title="Help">
-    <!--We might be called from a page with a NavBar, so we turn it off above, just in case-->
+    <!--We might be called from a page with a TabBar, so we turn it off above, just in case-->
+    <!--#region Android Status Bar -->
+    <!--Because the help content is always white-on-black we set the Android status bar to match--> 
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="Black" StatusBarStyle="LightContent" />
+    </ContentPage.Behaviors>
+    <!--#endregion-->
     <ContentPage.ToolbarItems>
         <ToolbarItem Clicked="OnIndexIconClicked" IconImageSource="{StaticResource GlyphToc}"/>
         <ToolbarItem Clicked="OnExitIconClicked" IconImageSource="{StaticResource GlyphExit}"/>
