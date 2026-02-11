@@ -153,7 +153,6 @@
                             <Label Text="I understand this cannot be undone" VerticalOptions="Center"/>
                             <CheckBox x:Name="understood"/>
                         </HorizontalStackLayout>
-                        <!--TODO: Generates a spurious warning, see https://developercommunity.visualstudio.com/t/False-positive-error-in-XAML-code-editor/10965570-->
                         <Button
                             Command="{Binding ClearCloudCommand}"
                             IsEnabled="{Binding IsChecked, Source={x:Reference understood}, x:DataType=CheckBox}"
