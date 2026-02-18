@@ -1,3 +1,13 @@
+# Version 6.3.13
+
+## Status Bar Color
+
+The Android status bar could be colored red when automatically switching to the release notes during startup. This has been corrected, the release notes status bar now matches the notes.
+
+## Release Notes and Help Theme
+
+The release notes and help pages now follow the application theme, previously they always had a black background with white text.
+
 # Version 6.3.12
 
 ## Improve Properties Page UI

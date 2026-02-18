@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:appmodel ="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False"
@@ -10,12 +11,18 @@
              BackgroundColor="Red"
              x:Class="DivisiBill.Views.GettingStartedPage">
     <!--This layout is intentionally identical to an empty SplashPage, so that the user can see the DivisiBill logo and a message while the app is loading.-->
+    <!--#region Android Status Bar -->
+    <!--Ideally this page would be edge-to-edge and the page background would flow under the status bar, so make it transparent.
+        Alas this doesn't seem to work, so just use a red status bar and don't put anything under it-->
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="Red" StatusBarStyle="{AppThemeBinding Default=LightContent, Light=DarkContent}"/>
+    </ContentPage.Behaviors>
+     <!--#endregion-->
     <ContentPage.Content>
-        <Grid RowDefinitions="1*,2.5*,auto,auto,3*" >
+        <Grid RowDefinitions="1*,1.5*,auto,auto,3*" Margin="0,10,0,0">
             <!--#region Busy/Paused Indicator -->
             <ActivityIndicator Color="Black"
-                               IsRunning="true"
-                               Margin="10"/>
+                               IsRunning="true"/>
             <!--#endregion-->
             <!--#region DivisiBill Icon -->
             <Image Grid.Row="1" Source="divisibillfg.png" Margin="10"

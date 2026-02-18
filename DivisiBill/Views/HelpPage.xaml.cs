@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui.Core;
 using System.Windows.Input;
 
 namespace DivisiBill.Views;
@@ -48,16 +47,5 @@ public partial class HelpPage : ContentPage
     private async void OnIndexIconClicked(object sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages')");
     private void OnExitIconClicked(object sender, EventArgs e) => ReturnToApp();
 
-    private void ReturnToApp()
-    {
-        Shell.Current.Navigation.PopAsync();
-        // Set the status bar color and style to match the app theme
-        if (OperatingSystem.IsAndroid())
-        {
-            Task.Yield(); // Give the PopAsync time to work
-            bool isDark = App.Current.UserAppTheme == AppTheme.Dark || (App.Current.UserAppTheme == AppTheme.Unspecified && Application.Current.RequestedTheme == AppTheme.Dark);
-            CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(isDark ? Colors.Black : Colors.White);
-            CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(isDark ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
-        }
-    }
+    private void ReturnToApp() => Shell.Current.Navigation.PopAsync();
 }

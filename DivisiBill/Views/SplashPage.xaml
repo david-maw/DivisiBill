@@ -18,18 +18,20 @@
                Text="{Binding Title, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"
                BackgroundColor="{Binding BackgroundColor, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPage}}}"/>
     </Shell.TitleView>
-    <!-- Give the Android Status bar a red background and make the icon color match the text on the page so it blends in-->
+    <!--#region Android Status Bar -->
+    <!--Ideally this page would be edge-to-edge and the page background would flow under the status bar, so make it transparent.
+        Alas this doesn't seem to work, so just use a red status bar and don't put anything under it-->
     <ContentPage.Behaviors>
-        <toolkit:StatusBarBehavior StatusBarColor="Red" StatusBarStyle="{AppThemeBinding Dark=LightContent, Light=DarkContent}"/>
+        <toolkit:StatusBarBehavior StatusBarColor="Red" StatusBarStyle="{AppThemeBinding Default=LightContent, Light=DarkContent}"/>
     </ContentPage.Behaviors>
+    <!--#endregion-->
     <ContentPage.Content>
         <!--This layout is intentionally similar to the GettingStartedPage, so that the transition from one to the other is not jarring to the user-->
-        <Grid RowDefinitions="1*,2.5*,auto,auto,3*" >
+        <Grid RowDefinitions="1*,1.5*,auto,auto,3*" Margin="0,10,0,0">
             <!--#region Busy/Paused Indicator -->
-            <ActivityIndicator Color="{AppThemeBinding Dark=White, Light=Black}"
-                               IsRunning="{Binding IsPaused, Converter={StaticResource Not}}"
-                               Margin="10"/>
-            <Label Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" VerticalOptions="End"/>
+            <ActivityIndicator Color="Black"
+                               IsRunning="{Binding IsPaused, Converter={StaticResource Not}}"/>
+            <Label Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" VerticalOptions="Center"/>
             <!--#endregion-->
             <!--#region DivisiBill Icon -->
             <Image Grid.Row="1" Source="divisibillfg.png" Margin="10"

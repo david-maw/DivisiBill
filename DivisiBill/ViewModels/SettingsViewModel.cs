@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -348,11 +347,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
             if (value != Dark)
             {
                 currentApp.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
-                if (OperatingSystem.IsAndroid())
-                {
-                    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(value ? Colors.Black : Colors.White);
-                    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(value ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent); 
-                }
+                App.SetStatusBar();
             }
         }
         get => currentApp.UserAppTheme == AppTheme.Dark || currentApp.RequestedTheme == AppTheme.Dark;

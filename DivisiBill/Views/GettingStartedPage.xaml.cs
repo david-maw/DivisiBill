@@ -24,17 +24,24 @@ public partial class GettingStartedPage : ContentPage
                 // This is the first use of the app, so we show the help page and then rely on PreventPrematureNavigation to redirect the return to the splash page
                 DebugMsg("In GettingStartedPage_Loaded, about to invoke getting started Help Page");
                 await App.PushAsync(Routes.HelpPage + "?page=GettingStarted"); // The "Page" value is case-insensitive, we used mixed case here just to satisfy the spell checker
+                App.SetStatusBar(); // Set the status bar to match the theme before switching to the help page
             }
             else
             {
                 // This is the normal case where we simply jump to the startup code on the Splash page
                 DebugMsg("In GettingStartedPage_Loaded, about to call GotoAsync to \"//SplashPage\"");
                 Shell.Current.Navigating -= PreventPrematureNavigation; // We don't need to care anymore, from now on the app never returns to this page
+                // No need to change the StatusBar, by design it should be identical to the one we're already using
                 await App.GoToAsync(Routes.SplashPage);
             }
 
             DebugMsg($"Leave GettingStartedPage_Loaded");
         };
+    }
+
+    ~GettingStartedPage()
+    {
+        Shell.Current.Navigating -= PreventPrematureNavigation; // Just in case, we don't want to leave this handler attached if the page is destroyed for some reason
     }
 
     /// <summary>
@@ -83,7 +90,7 @@ public partial class GettingStartedPage : ContentPage
             else
             {
                 string errorMessage = $"""
-                    GettingStartedPage: Navigation canceled because it was not a permitted ShellNavigationSource orpush or pop
+                    GettingStartedPage: Navigation canceled because it was not a permitted ShellNavigationSource or push or pop
                     Original: {originalString}
                     Target: {targetString}
                     ShellNavigationSource: {e.Source}

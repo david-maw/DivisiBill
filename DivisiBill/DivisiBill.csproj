@@ -4,8 +4,6 @@
       <TargetFrameworks>net10.0-android</TargetFrameworks>
       <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
       <OutputType>Exe</OutputType>
-      <!--See https://github.com/dotnet/runtime/issues/109724-->
-      <_DefaultValueAttributeSupport>true</_DefaultValueAttributeSupport>
       <RootNamespace>DivisiBill</RootNamespace>
       <UseMaui>true</UseMaui>
       <SingleProject>true</SingleProject>
@@ -16,8 +14,8 @@
 	  <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies> <!--Because serialization assemblies do not play well with MAUI-->
      <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-     <NoWarn>NU1608;MVVMTK0045;CS1701</NoWarn>
-     <!--NU1608 Because DivisiBill.InAppBilling 8.x triggers it-->
+     <NoWarn>NU1608;CS1701</NoWarn>
+     <!--NU1608 Because Xamarin.Android.Google.BillingClient triggers it on a bunch of Android dependencies-->
      <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
 	 <!--CS1701 Because CommunityToolkit/Mvvm 8.4.0 is built against net prior to 10.0, causing this warning-->
 
@@ -48,15 +46,6 @@
 		<EmitCompilerGeneratedFiles Condition="'$(Configuration)'=='Debug'">false</EmitCompilerGeneratedFiles>
 		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
 	</PropertyGroup>
-
-	<!--Workaround until https://github.com/dotnet/roslyn/issues/81970 is fixed or I work around it by modifying XAML Label.FontSize size usage-->
-	<Target Name="EnsureCompilerGeneratedPath"
-		Condition="!Exists('$(CompilerGeneratedFilesOutputPath)')"
-        BeforeTargets="CoreCompile;CompileDesignTime">
-		<!-- Ensure the full compiler-generated path exists for all builds-->
-		<Message Text="Creating folder $(CompilerGeneratedFilesOutputPath)" Importance="high" />
-		<MakeDir Directories="$(CompilerGeneratedFilesOutputPath)" />
-	</Target>
 
 	<Target Name="DisplayCustomMessage" BeforeTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)'=='Debug'">
 		<Message Text="$(MSBuildProjectName) $(Configuration) build for $(TargetFramework), Web Service URI = $(DivisiBillWsUri)" Importance="high" />

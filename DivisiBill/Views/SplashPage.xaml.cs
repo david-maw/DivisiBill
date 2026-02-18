@@ -51,6 +51,7 @@ public partial class SplashPage : ContentPage
             DebugMsg("In SplashPage_Loaded, initialization not started, starting it now.");
             await Task.Delay(50); // Let Navigation settle down or Popup V2 will wait forever
             await InitializeApp();
+            App.SetStatusBar(); // Set the status bar to match the theme before switching to "normal" pages
             RecordMsg("In SplashPage_Loaded, navigating away from Initialization");
             if (VersionTracking.IsFirstLaunchForCurrentVersion && !VersionTracking.IsFirstLaunchEver)
             {
@@ -67,6 +68,7 @@ public partial class SplashPage : ContentPage
         }
         DebugMsg("Exit SplashPage_Loaded");
     }
+
     public static async Task InitializeApp()
     {
         await StatusMsgAsync("Commencing initialization, tap the icon above to pause");
