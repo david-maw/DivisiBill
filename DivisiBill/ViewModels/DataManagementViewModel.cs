@@ -18,6 +18,12 @@ internal partial class DataManagementViewModel : ObservableObject
             // Set dates based on the current list of local meals, which may have changed while we were away
             StartDate = EarliestStartDate = Meal.LocalMealList?.LastOrDefault()?.CreationTime ?? DateTime.Now;
             FinishDate = LatestFinishDate = Meal.LocalMealList?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
+            if (App.Settings.PreviousArchiveEndTime > StartDate && App.Settings.PreviousArchiveEndTime <= FinishDate)
+                StartDate = App.Settings.PreviousArchiveEndTime;
+            if (OnlySelectedMeals || StartDate > EarliestStartDate)
+                SelectMealsToArchive();
+            else
+                SelectedMealsCount = Meal.LocalMealList?.Count ?? 0; // the easy case, all meals are selected
         }
     }
 
@@ -29,9 +35,25 @@ internal partial class DataManagementViewModel : ObservableObject
 
     [ObservableProperty]
     public partial Archive? SelectedArchive { get; private set; }
+    partial void OnSelectedArchiveChanged(Archive? oldValue, Archive? newValue)
+    {
+        if ((oldValue is null) != (newValue is null))
+        {
+            ArchiveCommand.NotifyCanExecuteChanged();
+            RestoreArchiveCommand.NotifyCanExecuteChanged();
+        }
+    }
 
     [ObservableProperty]
     public partial int SelectedMealsCount { get; private set; } = 0;
+    partial void OnSelectedMealsCountChanged(int oldValue, int newValue)
+    {
+        if ((oldValue == 0) != (newValue == 0))
+        {
+            ArchiveCommand.NotifyCanExecuteChanged();
+            RestoreArchiveCommand.NotifyCanExecuteChanged();
+        }
+    }
 
     /// <summary>
     /// Selects all but the latest meal for each venue from local storage and navigates to the meal list page with specific query parameters.
@@ -101,11 +123,39 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
+    private List<Meal> toArchive = [];
+    private void SelectMealsToArchive()
+    {
+        if (SelectedArchive is null)
+        {
+            // Define DateTime values for the start of the first day and end of the last one. This makes it easier to
+            // compare with meal creation times, which are DateTime values, even though the user is selecting dates without times.
+            DateTime startDateTime = DateOnly.FromDateTime(StartDate).ToDateTime(TimeOnly.MinValue);
+            DateTime finishDateTime = DateOnly.FromDateTime(FinishDate).ToDateTime(TimeOnly.MaxValue);
+            // Make a list of meals by looping through list of local mealSummaries and creating a meal from selected ones
+            toArchive = [.. Meal.LocalMealList
+                .Where(ms => // A meal that is already selected (if we are selecting) and within date range if there is one
+                    (!OnlySelectedMeals || ms.FileSelected) &&
+                    ms.CreationTime >= startDateTime &&
+                    ms.CreationTime <= finishDateTime
+                )
+                .OrderByDescending(ms => ms.CreationTime)
+                .Select(ms => Meal.LoadFromFile(ms))];
+            SelectedMealsCount = toArchive.Count;
+        }
+        else if (Utilities.IsDebug)// an archive is selected, we should not have been called   
+            throw new InvalidOperationException("SelectMealsToArchive should not be called when an archive is selected");
+        else
+            SelectedMealsCount = 0;
+    }
+
+    private bool CanArchive() => SelectedArchive is null && SelectedMealsCount > 0;
+
     /// <summary>
     /// Writes an archive of the data to a file, either to disk or to a shared location (an app in Android), depending on the values 
     /// of <see cref="ArchiveShare"/> or <see cref="ArchiveToDisk"/>.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanArchive))]
     public async Task ArchiveAsync()
     {
         if (OnlySelectedMeals && !Meal.LocalMealList.Any(ms => ms.FileSelected))
@@ -113,15 +163,6 @@ internal partial class DataManagementViewModel : ObservableObject
             await Utilities.DisplayAlertAsync("Archiving Error", "No bills are selected");
             return;
         }
-        // Make a list of meals by looping through list of local mealSummaries and creating a meal from selected ones
-        List<Meal> toArchive = [.. Meal.LocalMealList
-            .Where(ms => // A meal that is already selected (if we are selecting) and within date range if there is one
-                (!OnlySelectedMeals || ms.FileSelected) &&
-                DateOnly.FromDateTime(ms.CreationTime) >= DateOnly.FromDateTime(StartDate) &&
-                DateOnly.FromDateTime(ms.CreationTime) <= DateOnly.FromDateTime(FinishDate)
-            )
-            .OrderByDescending(ms => ms.CreationTime)
-            .Select(ms => Meal.LoadFromFile(ms))];
         Archive archive = new(toArchive, OnlyRelated);
         archive.UserSettings.BillsFromDate = StartDate.ToShortDateString();
         archive.UserSettings.BillsToDate = FinishDate.ToShortDateString();
@@ -154,6 +195,9 @@ internal partial class DataManagementViewModel : ObservableObject
                     // but there's no easy way to tell when that is, so just leave it in the temp folder for now
                     // File.Delete(zipFilePath);
                     await Utilities.ShowAppSnackBarAsync("Archive Sharing Initiated");
+                    // We do not know for sure that the archive happened but assume it did and remember the date of the last meals that was archived
+                    App.Settings.PreviousArchiveEndTime = archive.AllMeals.First().CreationTime; // List is in descending date order
+                    StartDate = App.Settings.PreviousArchiveEndTime;
                 }
                 else
                     await Utilities.ShowAppSnackBarAsync("Archive Sharing Failed");
@@ -169,6 +213,7 @@ internal partial class DataManagementViewModel : ObservableObject
                 {
                     File.Delete(zipFullName);
                     await Utilities.ShowAppSnackBarAsync("Archive to disk completed successfully");
+                    App.Settings.PreviousArchiveEndTime = archive.AllMeals.Last().CreationTime;
                 }
                 else
                     await Utilities.ShowAppSnackBarAsync("Archive Failed");
@@ -256,6 +301,14 @@ internal partial class DataManagementViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Clears the currently selected archive.
+    /// </summary>
+    /// <remarks>Use this method to reset the selection when no archive should be selected. This is primarily
+    /// needed in Android where selecting nothing in the file select UI is not possible.</remarks>
+    [RelayCommand]
+    public void ClearSelectedArchive() => SelectedArchive = null;
+
+    /// <summary>
     /// Command to restore the previously selected archive (SelectedArchive). This restores archive items and selectively
     /// extracts images from the original zip only for the meals that were restored.
     /// </summary>
@@ -329,7 +382,7 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
-    private bool CanRestoreArchive() => SelectedMealsCount > 0;
+    private bool CanRestoreArchive() => SelectedArchive is not null && SelectedMealsCount > 0;
 
     /// <summary>
     /// Indicates whether an archive is shared (the other alternative is to store it to disk). The default value is true.
@@ -354,6 +407,11 @@ internal partial class DataManagementViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial bool OnlySelectedMeals { get; set; } = false;
+    partial void OnOnlySelectedMealsChanged(bool value)
+    {
+        if (SelectedArchive is null)
+            SelectMealsToArchive();
+    }
 
     /// <summary>
     /// Indicates whether only items referred to by meals being archived or restored should themselves be archived or restored.
@@ -396,7 +454,9 @@ internal partial class DataManagementViewModel : ObservableObject
     {
         if (StartDate > FinishDate)
             FinishDate = StartDate;
-        if (SelectedArchive is not null)
+        if (SelectedArchive is null)
+            SelectMealsToArchive();
+        else
             SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
     }
 
@@ -407,7 +467,9 @@ internal partial class DataManagementViewModel : ObservableObject
     {
         if (FinishDate < StartDate)
             StartDate = FinishDate;
-        if (SelectedArchive is not null)
+        if (SelectedArchive is null)
+            SelectMealsToArchive();
+        else
             SelectedMealsCount = SelectedArchive.SetDateRange(DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(FinishDate));
     }
 

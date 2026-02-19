@@ -37,4 +37,6 @@ internal class FakeAppSettings : ISettings
     public Rect InitialPosition { get; set; } = new Rect(0, 0, 0, 0);
     public bool BackupImages { get; set; } = false;
     public bool BackupImagesOnlyWiFi { get; set; } = true;
+    public DateTime PreviousArchiveEndTime { get; set; }
+
 }

@@ -281,4 +281,9 @@ public class AppSettings : ISettings
         get => Preferences.Get(nameof(BackupImagesOnlyWiFi), true);
         set => Preferences.Set(nameof(BackupImagesOnlyWiFi), value);
     }
+    public DateTime PreviousArchiveEndTime
+    {
+        get => Preferences.Get(nameof(PreviousArchiveEndTime), DateTime.MinValue);
+        set => TrySetPreference(nameof(PreviousArchiveEndTime), value);
+    }
 }

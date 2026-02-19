@@ -11,6 +11,11 @@
     x:DataType="vm:DataManagementViewModel"
     BindingContext="{vm:DataManagementViewModel}"
     Shell.FlyoutBehavior="Flyout">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <services:BillCountConverter x:Key="BillCount" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Grid>
         <!--#region Page Actions and Information-->
         <ScrollView>
@@ -67,10 +72,15 @@
                                 Command="{Binding SelectArchiveCommand}"
                                 Text="Select" />
                             <Button
+                                Grid.Row="2"
+                                Margin="5"
+                                IsVisible="{Binding SelectedArchive, Converter={StaticResource IsNotNull}}"
+                                Command="{Binding ClearSelectedArchiveCommand}"
+                                Text="Clear" />
+                            <Button
                                 Grid.Row="3"
                                 Margin="5"
                                 Command="{Binding RestoreArchiveCommand}"
-                                IsEnabled="{Binding SelectedMealsCount, Converter={StaticResource IsNonZero}}"
                                 Text="Restore"/>
 
                             <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
@@ -88,8 +98,7 @@
                         <!--#endregion-->
                         <!--#region Date Range -->
                         <!--One or other of the following labels shows-->
-                        <Label IsVisible="{Binding SelectedArchive, Converter={StaticResource IsNotNull}}" Text="{Binding SelectedMealsCount, StringFormat='Selected {0} Bills Between'}" FontAttributes="Bold" HorizontalOptions="Center"/>
-                        <Label IsVisible="{Binding SelectedArchive, Converter={StaticResource IsNull}}" Text="Local Bills Between" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Text="{Binding SelectedMealsCount, Converter={StaticResource BillCount}}" FontAttributes="Bold" HorizontalOptions="Center"/>
                         <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
                             <DatePicker
                                 Date="{Binding StartDate}"

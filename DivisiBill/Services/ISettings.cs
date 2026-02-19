@@ -59,6 +59,10 @@ public interface ISettings
     /// Indicates whether image backups should only occur when on WiFi.
     /// </summary>
     bool BackupImagesOnlyWiFi { get; set; }
+    /// <summary>
+    /// The creation time of the last <see cref="Models.Meal"/> in the most recent archive
+    /// </summary>
+    DateTime PreviousArchiveEndTime { get; set; }
     void EnableHints()
     {
         ShowLineItemsHint = true;

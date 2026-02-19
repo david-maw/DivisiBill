@@ -1,3 +1,14 @@
+# Version 6.3.14
+
+## Enhance Manage Data Page
+
+The bill count now shows either the number of bills that are archive candidates or the number that are restore candidates.
+
+It is possible to cancel an archive selection if you decide not to use it.
+
+When an archive is done we remember the newest file archived so that future archive runs can optionally start from the same day. This may occasionally lead to the same bill being archived twice but better that than not at all. 
+
+
 # Version 6.3.13
 
 ## Status Bar Color
