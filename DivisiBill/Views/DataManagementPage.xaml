@@ -23,6 +23,7 @@
                             FontSize="{StaticResource FontSizeMedium}"
                             HorizontalOptions="Center"
                             Text="Data Archive and Restore" />
+                        <!--#region Archive -->
                         <Grid
                             ColumnDefinitions="auto, auto"
                             ColumnSpacing="10"
@@ -53,6 +54,8 @@
                                 <Label Text="Store Bill Images" VerticalOptions="Center" />
                             </HorizontalStackLayout>
                         </Grid>
+                        <!--#endregion-->
+                        <!--#region Select and Restore -->
                         <Grid
                             ColumnDefinitions="auto, auto"
                             ColumnSpacing="10"
@@ -82,6 +85,8 @@
                                 <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" />
                             </HorizontalStackLayout>
                         </Grid>
+                        <!--#endregion-->
+                        <!--#region Date Range -->
                         <!--One or other of the following labels shows-->
                         <Label IsVisible="{Binding SelectedArchive, Converter={StaticResource IsNotNull}}" Text="{Binding SelectedMealsCount, StringFormat='Selected {0} Bills Between'}" FontAttributes="Bold" HorizontalOptions="Center"/>
                         <Label IsVisible="{Binding SelectedArchive, Converter={StaticResource IsNull}}" Text="Local Bills Between" FontAttributes="Bold" HorizontalOptions="Center"/>
@@ -96,10 +101,13 @@
                                 MaximumDate="{Binding LatestFinishDate}"
                                 MinimumDate="{Binding StartDate}" />
                         </HorizontalStackLayout>
+                        <!--#endregion-->
+                        <!--#region 'Only Related' Option-->
                         <HorizontalStackLayout HorizontalOptions="Center" Margin="0,-20,0,0">
                             <CheckBox IsChecked="{Binding OnlyRelated}" Margin="0,0,0,-10" />
                             <Label Text="Only Related People and Venues" VerticalOptions="Center" LineBreakMode="WordWrap" Margin="0,0,0,-10"/>
                         </HorizontalStackLayout>
+                        <!--#endregion-->
                     </VerticalStackLayout>
                 </Border>
                 <!--#endregion-->
