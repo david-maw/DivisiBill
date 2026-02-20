@@ -1,4 +1,4 @@
-namespace DivisiBill.ViewsPartial;
+namespace DivisiBill.Controls;
 
 public partial class AppSnackBarPage : CommunityToolkit.Maui.Views.Popup
 {

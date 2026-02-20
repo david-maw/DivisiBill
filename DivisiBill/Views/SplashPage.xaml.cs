@@ -2,7 +2,7 @@ using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Models;
 using DivisiBill.Services;
-using DivisiBill.ViewsPartial;
+using DivisiBill.Controls;
 using Sentry;
 using static DivisiBill.Services.Utilities;
 

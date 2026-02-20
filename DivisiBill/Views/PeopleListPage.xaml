@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:viewsPartial="clr-namespace:DivisiBill.ViewsPartial"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              x:Name="Page"
              x:Class="DivisiBill.Views.PeopleListPage"
              x:DataType="vm:PeopleListViewModel"
@@ -82,11 +82,11 @@
             ItemSizingStrategy="MeasureFirstItem"
             ItemsSource="{Binding AllPeople}"/>
         <!--#region Scroll Up/Down-->
-        <viewsPartial:ScrollButton
+        <controls:ScrollButton
             services:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeDownAllowed}"/>
-        <viewsPartial:ScrollButton
+        <controls:ScrollButton
             services:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"

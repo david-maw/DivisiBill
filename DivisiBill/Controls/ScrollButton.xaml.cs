@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 
-namespace DivisiBill.ViewsPartial;
+namespace DivisiBill.Controls;
 
 /// <summary>
 /// A custom control that provides list navigation functionality with visual feedback.

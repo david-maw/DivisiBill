@@ -7,7 +7,7 @@
     xmlns:services="clr-namespace:DivisiBill.Services"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:views="clr-namespace:DivisiBill.Views"
-    xmlns:viewsPartial="clr-namespace:DivisiBill.ViewsPartial"
+    xmlns:controls="clr-namespace:DivisiBill.Controls"
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     Title="{Binding ItemTypePlural, StringFormat='Backed Up {0}'}"
     x:DataType="vm:FileListViewModel"
@@ -221,11 +221,11 @@
             </CollectionView.Header>
         </CollectionView>
         <!--#region Scroll Up/Down-->
-        <viewsPartial:ScrollButton
+        <controls:ScrollButton
             services:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeDownAllowed}"/>
-        <viewsPartial:ScrollButton
+        <controls:ScrollButton
             services:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"

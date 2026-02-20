@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace DivisiBill.ViewsPartial;
+namespace DivisiBill.Controls;
 
 /// <summary>
 /// Popup window to check a web service call, returns true if the original call or a retry completed false 

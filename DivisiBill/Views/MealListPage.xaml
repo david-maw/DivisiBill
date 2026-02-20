@@ -6,7 +6,7 @@
     xmlns:models="clr-namespace:DivisiBill.Models"
     xmlns:services="clr-namespace:DivisiBill.Services"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:viewsPartial="clr-namespace:DivisiBill.ViewsPartial"
+    xmlns:controls="clr-namespace:DivisiBill.Controls"
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     x:Name="BrowseItemsPage"
     Title="Bills"
@@ -466,25 +466,25 @@
         </CollectionView>
         <!--#endregion-->
         <!--#region Scroll Up/Down-->
-        <viewsPartial:ScrollButton services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}">
-            <viewsPartial:ScrollButton.IsVisible>
+        <controls:ScrollButton services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}">
+            <controls:ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeDownAllowed" />
                     <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
-            </viewsPartial:ScrollButton.IsVisible>
-        </viewsPartial:ScrollButton>
-        <viewsPartial:ScrollButton
+            </controls:ScrollButton.IsVisible>
+        </controls:ScrollButton>
+        <controls:ScrollButton
             services:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             VerticalOptions="End">
-            <viewsPartial:ScrollButton.IsVisible>
+            <controls:ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeUpAllowed" />
                     <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
-            </viewsPartial:ScrollButton.IsVisible>
-        </viewsPartial:ScrollButton>
+            </controls:ScrollButton.IsVisible>
+        </controls:ScrollButton>
         <!--#endregion-->
         <!--#region Busy Indicator when Meals are Loading or Scrolling-->
         <Label

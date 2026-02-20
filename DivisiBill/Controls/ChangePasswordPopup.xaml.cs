@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace DivisiBill.ViewsPartial;
+namespace DivisiBill.Controls;
 
 public partial class ChangePasswordPopup : CommunityToolkit.Maui.Views.Popup<bool>
 {
