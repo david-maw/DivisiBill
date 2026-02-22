@@ -122,6 +122,8 @@ public partial class Meal
             // As there are no people to share amongst we've done all that is necessary, just zero out a few things and exit
             RoundedAmount = 0;
             RoundingErrorAmount = 0;
+            foreach (PersonCost pc in Costs)
+                pc.ClearAllAmounts();
             return;
         }
         #endregion
