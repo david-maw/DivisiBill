@@ -26,12 +26,17 @@ Deletes the selected item or items (you can Undo this if you do it by mistake). 
 
 Tap on the ellipsis to open a secondary menu containing a selection of commands.
 
-- Clear Filter: Stops filtering for a particular participant and shows all items.
-- Duplicate: Creates a copy of the selected item and places it before the item (delete and undelete it to move it somewhere else).  
-- Send Mail: will send mail containing information about the bill overall, not personalized to any specific participant.
-- Payments: Shows what the payment totals for the bill and the tip to add to round the total to an exact amount.
-- Sharing: Clear sharing on the selected item, share it evenly between item participants, or share proportionally according to what each participant spent on the rest of the bill (which can be handy for splitting discounts). The "Change Sharing" command cycles among these choices.
-- Swipe: for long item lists this lets you scroll around in them.
+- Clear Filter - Stops filtering for a particular participant and shows all items.
+- Duplicate - Creates a copy of the selected item and places it before the item (delete and undelete it to move it somewhere else).  
+- Send Mail - will send mail containing information about the bill overall, not personalized to any specific participant.
+- Payments - Shows what the payment totals for the bill and the tip to add to round the total to an exact amount.
+- Adjust Amount - Allows you to reconcile a bill amount with a specific number (from a credit card receipt, for example) by automatically adding an 'Adjustment' item to the end if the bill and sharing it proportionally between the participants. 
+- Clear Sharing - Clear sharing on the selected item.
+- Share Equally - Shares out the cost of the item amongst the participants.
+- Share Proportionally - Shares out the cost of the item  
+- Change Sharing - Toggle between no shares, equal shares and proportional shares
+- Go to End - Scroll to the end of the list
+- Go to Start - Scroll to the beginning of the list
  
 ## Venue Name
 

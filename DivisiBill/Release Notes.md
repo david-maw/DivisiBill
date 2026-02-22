@@ -8,6 +8,11 @@ It is possible to cancel an archive selection if you decide not to use it.
 
 When an archive is done we remember the newest file archived so that future archive runs can optionally start from the same day. This may occasionally lead to the same bill being archived twice but better that than not at all. 
 
+## Implement 'Adjust Total'
+
+The items and Totals page menus now both contain an 'Adjust Total' selection which allows you to add an adjustment to the bill to make the after-tax amount come to a value you specify. This can be useful when aligning an itemized bill with a credit card amount, for example.
+
+Selecting this menu item will open dialog to allow you to specify what your target number is. Tap 'Done' when you are satisfied, and a line item for 'Adjustment' will be added with its cost shared proportionally between participants.
 
 # Version 6.3.13
 

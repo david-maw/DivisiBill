@@ -1,3 +1,5 @@
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
@@ -719,6 +721,22 @@ public partial class MealViewModel : ObservableObjectPlus
 
     [RelayCommand]
     public async Task GoToTotals() => await App.GoToAsync(Routes.TotalsPage);
+
+    [RelayCommand]
+    public async Task Adjust()
+    {
+        IPopupResult<decimal> popupResult = await Shell.Current.ShowPopupAsync<decimal>
+            (new Controls.AdjustPopup(new AdjustViewModel(SubTotal, Meal.CurrentMeal.TaxRate, IsCouponAfterTax ? RawCouponAmount : 0)), Utilities.GetNullPopupOptions());
+        if (!popupResult.WasDismissedByTappingOutsideOfPopup && popupResult?.Result is decimal adjustmentAmount && adjustmentAmount != 0)
+        {
+            DistributeCostsIfNeeded(); // because sharing depends on accurate costs
+            var adjustmentLineItem = new LineItem() { ItemName = "Adjustment", Amount = adjustmentAmount };
+            Meal.CurrentMeal.LineItems.Add(adjustmentLineItem);
+            adjustmentLineItem.DistributeCouponValue(Meal.CurrentMeal);
+            SelectedLineItem = adjustmentLineItem;
+            DistributeCostsIfNeeded(); // to account for the adjustment amount
+        }
+    }
     #endregion
     #endregion
     #region Totals, meal amounts and properties
@@ -816,7 +834,7 @@ public partial class MealViewModel : ObservableObjectPlus
             AmountForSharerID = SelectedLineItem.GetNextSharer(AmountForSharerID);
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsFiltered))]
     public void ClearFiltering() => AmountForSharerID = LineItem.DinerID.none;
     #endregion
     #region Hints

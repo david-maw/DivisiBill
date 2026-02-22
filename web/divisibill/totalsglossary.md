@@ -33,7 +33,8 @@ Tap on the ellipsis to open a secondary menu containing additional commands:
 * Mail - Prepares a mail message containing information about the current bill for you to approve and send. The message is either specific to a particular participant or general depending on whether a participant is specified. 
 * Replace - Opens the people list so you can select a person to replace the selected participant. 
 * Payments - This duplicates the effect of a double tap and shows the breakdown of payments to reach a round number.
-* Person - Allows you to view or edit the information associated with a particular participant. 
+* Person - Allows you to view or edit the information associated with a particular participant.
+* Adjust Amount - Allows you to reconcile a bill amount with a specific number (from a credit card receipt, for example) by automatically adding an 'Adjustment' item to the end if the bill and sharing it proportionally between the participants. 
 
 ## Venue Name
 

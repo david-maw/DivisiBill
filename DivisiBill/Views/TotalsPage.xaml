@@ -13,12 +13,13 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphFilterOn}" Command="{Binding FilterItemsCommand}"     CommandParameter="{Binding SelectedCost}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}"      Clicked="OnAddItem"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphDel}"      Command="{Binding DeleteCostCommand}"      CommandParameter="{Binding SelectedCost}"/>
-        <ToolbarItem Text="Clear Filter" Order="Secondary"            Command="{Binding ClearFilteringCommand}"/>
-        <ToolbarItem Text ="Mail"        Order="Secondary"            Command="{Binding MailCommand}"            CommandParameter="{Binding SelectedCost}"/>
-        <ToolbarItem Text ="Replace"     Order="Secondary"            Clicked="OnReplaceItem"                    CommandParameter="{Binding SelectedCost}"/>
-        <ToolbarItem Text ="Payments"    Order="Secondary"            Command="{Binding DisplayPaymentsCommand}" CommandParameter="{Binding SelectedCost}"/>
-        <ToolbarItem Text ="Person"      Order="Secondary"            Command="{Binding ShowPersonCommand}"      CommandParameter="{Binding SelectedCost}"/>
-    </ContentPage.ToolbarItems>
+        <ToolbarItem Text = "Clear Filter"  Order="Secondary"          Command="{Binding ClearFilteringCommand}"/>
+        <ToolbarItem Text = "Mail"          Order="Secondary"          Command="{Binding MailCommand}"            CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text = "Replace"       Order="Secondary"          Clicked="OnReplaceItem"                    CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text = "Payments"      Order="Secondary"          Command="{Binding DisplayPaymentsCommand}" CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text = "Person"        Order="Secondary"          Command="{Binding ShowPersonCommand}"      CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text = "Adjust Amount" Order="Secondary"          Command="{Binding AdjustCommand}"/>
+    </ContentPage.ToolbarItems>             
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="labelStyle" TargetType="Label">

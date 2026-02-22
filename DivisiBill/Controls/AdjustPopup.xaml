@@ -1,0 +1,135 @@
+<toolkit:Popup
+    x:Class="DivisiBill.Controls.AdjustPopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:DivisiBill"
+    xmlns:services="clr-namespace:DivisiBill.Services"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:views="clr-namespace:DivisiBill.Controls"
+    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+    Padding="0"
+    x:DataType="vm:AdjustViewModel"
+    x:TypeArguments="x:Decimal"
+    BackgroundColor="Transparent">
+    <toolkit:Popup.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
+                <Setter Property="HorizontalOptions" Value="End" />
+            </Style>
+        </ResourceDictionary>
+    </toolkit:Popup.Resources>
+    <Border
+        Margin="0,0,0,300"
+        Padding="15"
+        BackgroundColor="{AppThemeBinding Light={StaticResource White},
+                                          Dark={StaticResource Gray900}}"
+        HorizontalOptions="Center"
+        StrokeShape="RoundRectangle 10"
+        StrokeThickness="2">
+        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+            <VerticalStackLayout.GestureRecognizers>
+                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="OnPopupTapped" />
+            </VerticalStackLayout.GestureRecognizers>
+            <Label
+                FontAttributes="Bold"
+                FontSize="{StaticResource FontSizeLarge}"
+                HorizontalOptions="Center"
+                Text="Adjust Amount"
+                TextDecorations="Underline" />
+
+            <Grid
+                ColumnDefinitions="*, auto"
+                ColumnSpacing="10"
+                HorizontalOptions="Center"
+                RowDefinitions="auto, auto, auto, auto, auto">
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Text="Adjustment"
+                    VerticalOptions="Center" />
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeLarge}"
+                    Text="{Binding AdjustmentAmount, StringFormat='{0:C}'}" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Text="+ Subtotal"
+                    VerticalOptions="Center" />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeLarge}"
+                    Text="{Binding SubTotal, StringFormat='{0:C}'}" />
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Text="+ Tax"
+                    VerticalOptions="Center" />
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeLarge}"
+                    Text="{Binding Tax, StringFormat='{0:C}'}" />
+                <Label
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    IsVisible="{Binding PostTaxDiscount, Converter={StaticResource IsNonZero}}"
+                    Text="- Discount"
+                    VerticalOptions="Center" />
+                <Label
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    IsVisible="{Binding PostTaxDiscount, Converter={StaticResource IsNonZero}}"
+                    FontAttributes="Bold"                    
+                    FontSize="{StaticResource FontSizeLarge}"
+                    TextColor="{StaticResource NegativeNumber}"
+                    Text="{Binding PostTaxDiscount, StringFormat='{0:C}'}" />
+                <!--#region Target Amount-->
+               <Label
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Text="Target"
+                    VerticalOptions="Center" />
+                <Entry
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Margin="0,0,-5,0"
+                    FontAttributes="Bold"
+                    FontSize="{StaticResource FontSizeLarge}"
+                    HorizontalOptions="End"
+                    Completed="OnCompleted"
+                    Unfocused="OnInputViewUnfocused"
+                    Keyboard="Numeric"
+                    ReturnCommand="{Binding UnloadTargetAmountStringCommand}"
+                    Text="{Binding TargetAmountString}">
+                    <Entry.Behaviors>
+                        <services:CurrencyValidationBehavior
+                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                            IsValid="{Binding TargetAmountStringIsValid}"
+                            MaximumValue="999.99"
+                            MinimumValue="0"
+                            ValidStyle="{StaticResource ValidEntryStyle}" />
+                        <services:UserStoppedTypingBehavior Command="{Binding UnloadTargetAmountStringCommand}" StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}" />
+                    </Entry.Behaviors>
+                </Entry>
+                <!--#endregion-->
+            </Grid>
+
+            <Border Margin="10" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}">
+                <Label
+                    Margin="3"
+                    HorizontalOptions="Center"
+                    Text="Done" />
+            </Border>
+        </VerticalStackLayout>
+    </Border>
+</toolkit:Popup>
