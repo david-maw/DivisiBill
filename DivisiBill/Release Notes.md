@@ -1,3 +1,9 @@
+# Version 6.3.15
+
+## 'Adjust Total' UI Improvements
+
+The 'Target' field gets focus when the popup is opened.
+
 # Version 6.3.14
 
 ## Enhance Manage Data Page

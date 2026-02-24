@@ -4,7 +4,7 @@ When you click the hamburger icon (<u>&#xF035C;</u>) at the top left corner of t
 
 <object type=image/svg+xml data="flyout.svg" height=600 style="width:90%"></object>
 
-You can click on one of the items to close the flyout and select the corresponding page or function.
+You can tap on one of the items to close the flyout and select the corresponding page or function.
 
 Click on a highlighted area above to see what it does. Also note:
 

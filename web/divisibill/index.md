@@ -2,13 +2,13 @@
 
 <img alt="Logo" src="divisibill_scalable_red.svg" style="width:20%"/>
 
-DivisiBill is simple in concept; it has two lists, Participants and Items. Each Item represents something purchased so it has
+DivisiBill is simple in concept; it has two lists, Participants and Items. Each Item represents something purchased, so it has
 a description and a cost which is divided (perhaps unevenly) between one or more Participants.
-The program does the rest, calculating tax and tip and dividing them fairly among the participants. For hints on getting started, see [Getting Started](gettingstarted.html).
+The program does the rest, calculating tax and tip, and dividing them fairly among the participants. For hints on getting started, see [Getting Started](gettingstarted.html).
 
-The Basic Edition of the program is free, does everything locally and Items must be entered manually.
-A Professional Edition subscription is available which adds cloud storage (see [licensing](licensing.html)).
-In addition, you can purchase the ability to scan a bill and enter the Items automatically, or you can continue to enter Items manually. Scanned Items can be edited manually after scanning.  
+The Basic Edition of the program is free and does everything locally but Items must be entered manually.
+An optional Professional Edition subscription is available which adds cloud storage (see [licensing](licensing.html)).
+In addition, you can purchase the ability to scan a bill and enter the Items automatically, or you can continue to enter Items manually. Scanned Items can be edited manually after scanning.
 
 Once a list of Items has been entered, you add a list of Participants for this bill and indicate the share of each item for each participant. Bills are saved so you can view old ones and/or use them as a basis for new ones (Divisibill can use GPS to load up the newest bill for wherever you happen to be).
 
@@ -57,4 +57,4 @@ Otherwise it connects only when you specifically request it to (for example, in 
 
 Professional Edition Subscribers may delete their cloud based data (bills and/or lists of people or venues) at any time through DivisiBill, by canceling their subscription, or by sending an email request to [DivisiBill Support](mailto:support@autopl.us) along with their Professional Subscription order number (DivisiBill will add this to the mail automatically, just don't delete it). Once a Professional Subscription ends (either by being canceled or not being renewed) the corresponding cloud based data will be removed. The source of this data is anonymous though the data itself may give some clues, especially to the users location.
 
-<p style="Text-align:center; font-size: 0.8em">Updated January 2026 for version 6.3.10</p>
+<p style="Text-align:center; font-size: 0.8em">Updated February 2026 for version 6.3.15</p>

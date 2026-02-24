@@ -1,6 +1,6 @@
 ﻿# Crash Popup
 
-This is a list of the less obvious areas on the Information and Problems pages. This focuses on the "About" page but "Release Notes" and "Report a Problem" are selectable from the list at the bottom of the page. 
+This appears rarely but can occur if a crash has previously occurred. 
 
 ## Crash Dialog
 

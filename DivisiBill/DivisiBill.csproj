@@ -143,8 +143,10 @@
   </PropertyGroup>
 
   <!--Note that the following targets require Pandoc to be installed and available in the system PATH and are run by VS any time and dotnet CLI during the build process.-->
+  <!--We only do this in debug builds because relying on dates is pointless when files are recreated from git during a release build-->
   <!-- markdown -> Release Notes html generation in-place; only runs when Release Notes.md is newer than html or html is missing -->
-	<Target Name="GenerateReleaseNotesHtml" BeforeTargets="PrepareForBuild" Inputs="$(MSBuildProjectDirectory)\Release Notes.md" Outputs="$(MSBuildProjectDirectory)\Release Notes.html">
+  <!--To run this manually just execute the following command in the project directory: dotnet build DivisiBill\DivisiBill.csproj  -t:GenerateReleaseNotesHtml -v:d-->
+	<Target Name="GenerateReleaseNotesHtml" Condition="'$(Configuration)' == 'Debug'" BeforeTargets="PrepareForBuild" Inputs="$(MSBuildProjectDirectory)\Release Notes.md" Outputs="$(MSBuildProjectDirectory)\Release Notes.html">
 		<Exec Command="pandoc -o &quot;Release Notes.html&quot; &quot;Release Notes.md&quot; -s --template=pandoc-template.html --wrap=none" />
 		<Message Text="Generating Release Notes.html from Release Notes.md" Importance="High" />
 	</Target>
@@ -161,10 +163,12 @@
   </ItemGroup>
 
   <!-- help file markdown -> html generation in web\DivisiBill folder; only runs when .md is newer than html or html is missing -->
-  <Target Name="GenerateDivisiBillHelpFile" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'..\web\divisibill\%(RecursiveDir)%(Filename).html')">
+  <!--To run this manually just execute the following command in the project directory: dotnet build DivisiBill\DivisiBill.csproj  -t:GenerateDivisiBillHelpFile -v:d-->
+  <Target Name="GenerateDivisiBillHelpFile" Condition="'$(Configuration)' == 'Debug'" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'..\web\divisibill\%(RecursiveDir)%(Filename).html')">
       <Exec Command="pandoc -o &quot;..\web\divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=pandoc-template.html --wrap=none" />
       <Message Text="Generating html file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
   </Target>
+  <!--End of pandoc generation targets-->
 
   <!--Generate the file holding the build secrets on every build-->
   <!--First get the secrets from environment variables-->
