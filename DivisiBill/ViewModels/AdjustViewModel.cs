@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace DivisiBill.ViewModels;
 
-public partial class AdjustViewModel(decimal subTotal, double taxRate, decimal postTaxDiscount) : ObservableObject
+public partial class AdjustViewModel(decimal subTotal, double taxRate, decimal taxDelta, decimal postTaxDiscount) : ObservableObject
 {
     [ObservableProperty]
     public partial decimal SubTotal { get; set; } = subTotal;
@@ -12,7 +12,7 @@ public partial class AdjustViewModel(decimal subTotal, double taxRate, decimal p
     public partial decimal AdjustmentAmount { get; set; } = 0;
 
     [ObservableProperty]
-    public partial decimal Tax { get; set; } = subTotal * (decimal)taxRate;
+    public partial decimal Tax { get; set; } = subTotal * (decimal)taxRate + taxDelta;
 
     public decimal PostTaxDiscount { get; } = postTaxDiscount;
 
@@ -22,9 +22,9 @@ public partial class AdjustViewModel(decimal subTotal, double taxRate, decimal p
     public partial decimal TargetAmount { get; set; }
     partial void OnTargetAmountChanged(decimal value)
     {
-        decimal pretax = (value + PostTaxDiscount) / (1 + (decimal)taxRate);
+        decimal pretax = (value - taxDelta + PostTaxDiscount) / (1 + (decimal)taxRate);
         AdjustmentAmount = pretax - SubTotal;
-        Tax = (SubTotal + AdjustmentAmount) * (decimal)taxRate;
+        Tax = (SubTotal + AdjustmentAmount) * (decimal)taxRate + taxDelta;
     }
     #region TargetAmountString
     private void LoadTargetAmountString() => TargetAmountString = string.Format("{0:0.00}", TargetAmount);
@@ -39,7 +39,7 @@ public partial class AdjustViewModel(decimal subTotal, double taxRate, decimal p
     }
 
     [ObservableProperty]
-    public partial string TargetAmountString { get; set; } = string.Format("{0:0.00}", subTotal * (1 + (decimal)taxRate) - postTaxDiscount);
+    public partial string TargetAmountString { get; set; } = string.Format("{0:0.00}", subTotal * (1 + (decimal)taxRate) +taxDelta - postTaxDiscount);
     public bool TargetAmountStringIsValid { get; set; }
     #endregion
 

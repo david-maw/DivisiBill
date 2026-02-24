@@ -726,7 +726,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public async Task Adjust()
     {
         IPopupResult<decimal> popupResult = await Shell.Current.ShowPopupAsync<decimal>
-            (new Controls.AdjustPopup(new AdjustViewModel(SubTotal, Meal.CurrentMeal.TaxRate, IsCouponAfterTax ? RawCouponAmount : 0)), Utilities.GetNullPopupOptions());
+            (new Controls.AdjustPopup(new AdjustViewModel(SubTotal, Meal.CurrentMeal.TaxRate, TaxDelta, IsCouponAfterTax ? RawCouponAmount : 0)), Utilities.GetNullPopupOptions());
         if (!popupResult.WasDismissedByTappingOutsideOfPopup && popupResult?.Result is decimal adjustmentAmount && adjustmentAmount != 0)
         {
             DistributeCostsIfNeeded(); // because sharing depends on accurate costs

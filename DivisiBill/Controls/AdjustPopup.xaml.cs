@@ -11,7 +11,7 @@ public partial class AdjustPopup : CommunityToolkit.Maui.Views.Popup<decimal>
 	{
 		InitializeComponent();
         BindingContext = this.vm = vm;
-	}
+	} 
 
     private async Task UpdateAndCloseAsync()
     {
@@ -30,5 +30,11 @@ public partial class AdjustPopup : CommunityToolkit.Maui.Views.Popup<decimal>
     {
         (sender as VisualElement)?.Unfocus();
         await UpdateAndCloseAsync();
+    }
+
+    private async void OnOpened(object? sender, EventArgs e)
+    {
+        targetAmountEntry.Focus();
+        await targetAmountEntry.ShowKeyboardAsync();
     }
 }
