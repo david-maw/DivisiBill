@@ -130,8 +130,6 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
                         count = Meal.LocalMealList.Count((ms) => ms.VenueName == Name);
                         if (count > 0)
                             await Utilities.ShowAppSnackBarAsync($"{count} local stored bills use \"{Name}\"");
-                        else
-                            await Utilities.ShowAppSnackBarAsync($"No local stored bills use \"{Name}\"");
                     }
                 }
                 else // name didn't change
