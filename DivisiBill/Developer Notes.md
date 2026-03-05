@@ -180,6 +180,11 @@ VS will run the code in the project file that uses pandoc to recreate the Releas
 Check in these changes (typically calling it "Release Notes for N.N.N").
 Do not forget to push these changes to the remote development stream.
 
+Sometimes VS doesn't regenerate the help files when you change the MarkDown sources, so you may have
+to trigger that manually. The easiest way is just enter this at a command prompt:
+```
+     dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d
+```
 Since this is mechanical stuff and unlikely to affect the 
 functioning of DivisiBill you can do it before or after testing the development
 branch build.

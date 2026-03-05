@@ -1,5 +1,15 @@
 # Version 6.3.15
 
+## New Venue Handling
+
+The handling of new venue creation has been improved in several ways.
+
+The "No Local Stored Bills" message is no longer shown for a new or renamed venue as it is the normal, expected case.
+
+Venue locations are set automatically and can be edited by double tapping on the location. Previously venue location changes could be made but they were not saved.
+
+Setting the venue location from the map after changing the venue name no longer reverts the name back to its original value.
+
 ## 'Adjust Total' UI Improvements
 
 The 'Target' field gets focus when the popup is opened.
