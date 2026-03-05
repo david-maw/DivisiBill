@@ -26,18 +26,9 @@ public partial class SettingsPage : ContentPage
         if (Application.Current.Resources.TryGetValue("MealViewModel", out object mvmObject))
             mvm = mvmObject as MealViewModel;
         MealSection.BindingContext = mvm;
-        mvm.LoadSettings();
         // establish the SettingsViewModel, only need to do this once
         svm ??= BindingContext as ViewModels.SettingsViewModel;
         svm.OnNavigatedTo();
         base.OnNavigatedTo(args);
-    }
-    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
-    {
-        if (IsEnabled)
-        {
-            mvm.UnloadSettings();
-            base.OnNavigatedFrom(args);
-        }
     }
 }

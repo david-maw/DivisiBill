@@ -20,24 +20,10 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #region Enter / Exit Page
     public void LoadProperties()
     {
-        LoadTaxString();
-        LoadTaxRateString();
-        LoadTipString();
-        LoadTipRateString();
-        LoadTipDeltaString();
-        LoadScannedSubTotal();
-        LoadScannedTax();
         LoadVenueNotes();
     }
     public void UnloadProperties()
     {
-        UnloadTaxString();
-        UnloadTaxRateString();
-        UnloadTipString();
-        UnloadTipRateString();
-        UnloadTipDeltaString();
-        UnloadScannedSubTotal();
-        UnloadScannedTax();
         Meal.RequestSnapshot();
         UnloadVenueNotes();
     }
@@ -48,16 +34,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         OnPropertyChanged(e.PropertyName);
         if (e.PropertyName.Equals(nameof(Meal.VenueName)))
             LoadVenueNotes();
-        else if (e.PropertyName.Equals(nameof(Meal.TipRate)))
-            LoadTipRateString();
-        else if (e.PropertyName.Equals(nameof(Meal.Tax)))
-            LoadTaxString();
-        else if (e.PropertyName.Equals(nameof(Meal.TaxDelta)))
-            OnPropertyChanged(nameof(TaxDeltaString));
-        else if (e.PropertyName.Equals(nameof(Meal.Tip)))
-            LoadTipString();
-        else if (e.PropertyName.Equals(nameof(Meal.TaxRate)))
-            LoadTaxRateString();
         else if (e.PropertyName.Equals(nameof(Meal.CreationTime)))
         {
             OnPropertyChanged(nameof(DefaultFileName));
@@ -81,34 +57,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     public string DefaultFileName => IsDefault ? null : Meal.CurrentMeal.FileName;
     #endregion
     #region Tip
-    #region TipRateString
-    private void LoadTipRateString() => TipRateString = string.Format("{0}", TipRate);
-
-    [RelayCommand]
-    private void UnloadTipRateString()
-    {
-        if (TipRateStringIsValid)
-            TipRate = int.Parse(TipRateString);
-    }
-    [ObservableProperty]
-    public partial string TipRateString { get; set; }
-    public bool TipRateStringIsValid { get; set; }
-    #endregion
-    #region TipString
-    private void LoadTipString() => TipString = string.Format("{0:0.00}", Tip);
-    [RelayCommand]
-    private void UnloadTipString()
-    {
-        if (TipStringIsValid)
-        {
-            Tip = decimal.Parse(TipString);
-            LoadTipString();
-        }
-    }
-
-    [ObservableProperty]
-    public partial string TipString { get; set; }
-    public bool TipStringIsValid { get; set; }
     public int TipRate
     {
         get => Convert.ToInt32(Meal.CurrentMeal.TipRate * 100);
@@ -121,127 +69,15 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     public decimal Tip
     {
         get => Meal.CurrentMeal.Tip;
-        set
-        {
-            Meal.CurrentMeal.SetRateFromTip(value);
-            LoadTipRateString();
-            LoadTipDeltaString();
-        }
+        set => Meal.CurrentMeal.SetRateFromTip(value);
     }
     public decimal TipDelta
     {
         get => Meal.CurrentMeal.TipDelta;
-        set
-        {
-            if (Meal.CurrentMeal.TipDelta != value)
-            {
-                Meal.CurrentMeal.TipDelta = value;
-                LoadTipDeltaString();
-            }
-        }
+        set => Meal.CurrentMeal.TipDelta = value;
     }
-    #region TipDeltaString
-    private void LoadTipDeltaString() =>
-        TipDeltaString = TipDelta == 0 ? "" : string.Format("{0:0.00}", TipDelta);
-
-    [RelayCommand]
-    private void UnloadTipDeltaString()
-    {
-        if (TipDeltaStringIsValid)
-        {
-            TipDelta = string.IsNullOrWhiteSpace(TipDeltaString) ? 0 : decimal.Parse(TipDeltaString);
-            LoadTipDeltaString();
-        }
-    }
-
-    [ObservableProperty]
-    public partial string TipDeltaString { get; set; }
-
-    partial void OnTipDeltaStringChanged(string value) => IsTipDeltaStringValid = string.IsNullOrEmpty(value);
-
-    [ObservableProperty]
-    public partial bool IsTipDeltaStringValid { get; set; }
-    public bool TipDeltaStringIsValid { get; set; }
-    #endregion
-    #endregion
     #endregion
     #region Tax
-    #region TaxRateString
-    private void LoadTaxRateString() => TaxRateString = string.Format("{0:0.00}", TaxRate);
-
-    [RelayCommand]
-    private void UnloadTaxRateString()
-    {
-        if (TaxRateStringIsValid)
-        {
-            TaxRate = double.Parse(TaxRateString);
-            LoadTaxRateString();
-        }
-    }
-
-    [ObservableProperty]
-    public partial string TaxRateString { get; set; }
-    public bool TaxRateStringIsValid { get; set; }
-    #endregion
-    #region TaxString
-    private void LoadTaxString() => TaxString = string.Format("{0:0.00}", Meal.CurrentMeal.Tax);
-    [RelayCommand]
-    private void UnloadTaxString()
-    {
-        if (TaxStringIsValid)
-        {
-            Tax = decimal.Parse(TaxString);
-            LoadTaxString();
-        }
-    }
-    [ObservableProperty]
-    public partial string TaxString { get; set; }
-    public bool TaxStringIsValid { get; set; }
-    #endregion
-    #region TaxDeltaString
-    // This is a readonly field, so it is much simpler
-    public string TaxDeltaString => (Meal.CurrentMeal.TaxDelta == 0) ? "" : string.Format("{0:0.00}", Meal.CurrentMeal.TaxDelta);
-    #endregion
-    #region Scanned Tax
-    [ObservableProperty]
-    public partial string ScannedTaxString { get; set; }
-
-    [ObservableProperty]
-    public partial bool ScannedTaxStringIsValid { get; set; }
-
-    private void LoadScannedTax() => ScannedTaxString = (ScannedTax == 0) ? "" : string.Format("{0:0.00}", ScannedTax);
-
-    [RelayCommand]
-    private void UnloadScannedTax()
-    {
-        if (ScannedTaxStringIsValid)
-        {
-            ScannedTax = string.IsNullOrEmpty(ScannedTaxString) ? 0 : decimal.Parse(ScannedTaxString);
-            LoadScannedTax();
-        }
-    }
-    #endregion
-    #endregion
-    #region Scanned Subtotal (capitalized as SubTotal)
-    [ObservableProperty]
-    public partial string ScannedSubTotalString { get; set; }
-
-    private void LoadScannedSubTotal() => ScannedSubTotalString = (ScannedSubTotal == 0) ? "" : string.Format("{0:0.00}", ScannedSubTotal);
-
-    [RelayCommand]
-    private void UnloadScannedSubTotal()
-    {
-        if (ScannedSubTotalStringIsValid)
-        {
-            ScannedSubTotal = string.IsNullOrEmpty(ScannedSubTotalString) ? 0 : decimal.Parse(ScannedSubTotalString);
-            LoadScannedSubTotal();
-        }
-    }
-
-    [ObservableProperty]
-    public partial bool ScannedSubTotalStringIsValid { get; set; }
-    #endregion
-    #region Meal Data
     /// <summary>
     /// The current meal tax rate as a percentage
     /// </summary>
@@ -271,14 +107,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     public decimal TaxDelta
     {
         get => Meal.CurrentMeal.TaxDelta;
-        set
-        {
-            if (Meal.CurrentMeal.TaxDelta != value)
-            {
-                Meal.CurrentMeal.TaxDelta = value;
-                OnPropertyChanged(nameof(TaxDeltaString));
-            }
-        }
+        set => Meal.CurrentMeal.TaxDelta = value;
     }
     public bool CouponAfterTax
     {
@@ -289,6 +118,8 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
             OnPropertyChanged(nameof(IsDefaultCouponAfterTax));
         }
     }
+    #endregion
+    #region Scans and Encryption
     public decimal ScannedSubTotal
     {
         get => Meal.CurrentMeal.ScannedSubTotal;

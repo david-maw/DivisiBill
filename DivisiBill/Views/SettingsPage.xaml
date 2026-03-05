@@ -3,12 +3,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              xmlns:DivisiBill="clr-namespace:DivisiBill"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              BindingContext="{vm:SettingsViewModel}"
              x:DataType="vm:SettingsViewModel"
              Title="Program Settings"
              x:Class="DivisiBill.Views.SettingsPage">
+
+    <ContentPage.Resources>
+        <Style TargetType="controls:AmountEntry">
+            <Setter Property="HorizontalOptions" Value="End" />
+            <Setter Property="VerticalOptions" Value="Center" />
+            <Setter Property="ValidStyle" Value="{StaticResource ValidEntryStyle}" />
+            <Setter Property="InvalidStyle" Value="{StaticResource InvalidEntryStyle}" />
+            <Setter Property="UnequalStyle" Value="{StaticResource UnequalEntryStyle}" />
+            <Style.Triggers>
+                <Trigger TargetType="controls:AmountEntry" Property="IsFocused" Value="True">
+                    <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
+                    <Setter Property="FontAttributes" Value="Bold" />
+                </Trigger>
+                <Trigger TargetType="controls:AmountEntry" Property="IsFocused" Value="False">
+                    <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+                    <Setter Property="FontAttributes" Value="None" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </ContentPage.Resources>
+
     <ScrollView Margin="20,0,10,0">
         <VerticalStackLayout>
             <!--#region Heading -->
@@ -28,37 +50,16 @@
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <!--Everything in this Grid is in the current meal data context although they are defaults that apply to all new meals-->
             <Grid ColumnDefinitions ="*, auto, *, auto, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto" ColumnSpacing="{OnPlatform 10, Android=0}" x:Name="MealSection"
-                  x:DataType="vm:MealViewModel" BindingContext="{StaticResource MealViewModel}">
+                    x:DataType="vm:MealViewModel" BindingContext="{StaticResource MealViewModel}">
                 <Label Grid.Row="1" Grid.Column="0" Text="Tip on Tax" VerticalOptions="Center" HorizontalOptions="End"/>
                 <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding DefaultTipOnTax}" HorizontalOptions="End"/>
                 <Label Grid.Row="1" Grid.Column="2" Text="Tip Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
-                <Entry Grid.Row="1" Grid.Column="3" Text="{Binding DefaultTipRate}" MaxLength="2" Keyboard="Numeric" HorizontalTextAlignment="End">
-                    <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior
-                            InvalidStyle="{StaticResource InvalidEntryStyle}"
-                            ValidStyle="{StaticResource ValidEntryStyle}"
-                            MinimumValue="0"
-                            MaximumValue="99" />
-                    </Entry.Behaviors>
-                </Entry>
+                <controls:AmountEntry Grid.Row="1" Grid.Column="3" Text="{Binding DefaultTipRatePercentage}" MaxLength="2" MinimumValue="0" MaximumValue="99" />
                 <Label Grid.Row="1" Grid.Column="4" Text="%" VerticalOptions="Center"/>
                 <Label Grid.Row="2" Text="Coupon After Tax" VerticalOptions="Center" HorizontalOptions="End"/>
                 <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding DefaultTaxOnCoupon}"/>
                 <Label Grid.Row="2" Grid.Column="2" Text="Tax Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
-                <Entry Grid.Row="2" Grid.Column="3" Text="{Binding DefaultTaxRateString}" ReturnCommand="{Binding UnloadDefaultTaxRateStringCommand}"
-                       Keyboard="Numeric" HorizontalTextAlignment="End" WidthRequest="80">
-                    <Entry.Behaviors>
-                        <services:CurrencyValidationBehavior
-                            InvalidStyle="{StaticResource InvalidEntryStyle}"
-                            ValidStyle="{StaticResource ValidEntryStyle}"
-                            IsValid="{Binding IsDefaultTaxRateStringValid}"
-                            MinimumValue="0"
-                            MaximumValue="99.99" />
-                        <services:UserStoppedTypingBehavior
-                            StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
-                            Command="{Binding UnloadDefaultTaxRateStringCommand}"/>
-                    </Entry.Behaviors>
-                </Entry>
+                <controls:AmountEntry Grid.Row="2" Grid.Column="3" Amount="{Binding DefaultTaxRatePercentage}" WidthRequest="80" MinimumValue="0" MaximumValue="99.99"/>
                 <Label Grid.Row="2" Grid.Column="4" Text="%" VerticalOptions="Center"/>
             </Grid>
             <!--#endregion-->

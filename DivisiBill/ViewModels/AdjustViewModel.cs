@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 
 namespace DivisiBill.ViewModels;
 
@@ -19,28 +18,11 @@ public partial class AdjustViewModel(decimal subTotal, double taxRate, decimal t
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Tax))]
     [NotifyPropertyChangedFor(nameof(AdjustmentAmount))]
-    public partial decimal TargetAmount { get; set; }
+    public partial decimal TargetAmount { get; set; } = subTotal * (1 + (decimal)taxRate) + taxDelta - postTaxDiscount;
     partial void OnTargetAmountChanged(decimal value)
     {
         decimal pretax = (value - taxDelta + PostTaxDiscount) / (1 + (decimal)taxRate);
         AdjustmentAmount = pretax - SubTotal;
         Tax = (SubTotal + AdjustmentAmount) * (decimal)taxRate + taxDelta;
     }
-    #region TargetAmountString
-    private void LoadTargetAmountString() => TargetAmountString = string.Format("{0:0.00}", TargetAmount);
-    [RelayCommand]
-    public void UnloadTargetAmountString()
-    {
-        if (TargetAmountStringIsValid)
-        {
-            TargetAmount = decimal.Parse(TargetAmountString);
-            LoadTargetAmountString();
-        }
-    }
-
-    [ObservableProperty]
-    public partial string TargetAmountString { get; set; } = string.Format("{0:0.00}", subTotal * (1 + (decimal)taxRate) +taxDelta - postTaxDiscount);
-    public bool TargetAmountStringIsValid { get; set; }
-    #endregion
-
 }

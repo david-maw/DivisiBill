@@ -469,26 +469,22 @@
                     <services:UserStoppedTypingBehavior Command="{Binding UnloadLineItemNameStringCommand}" StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}" />
                 </Entry.Behaviors>
             </Entry>
-            <Entry
+            <controls:AmountEntry
                 x:Name="SelectedAmountEntry"
                 Grid.Column="1"
                 FontSize="{StaticResource FontSizeTitle}"
-                HorizontalTextAlignment="End"
-                Keyboard="Numeric"
+                ValidStyle="{StaticResource ValidEntryStyle}"
+                InvalidStyle="{StaticResource InvalidEntryStyle}"
                 Placeholder="Value"
-                ReturnCommand="{Binding CompletedLineItemAmountStringCommand}"
+                StoppedTypingCommand="{Binding UnloadLineItemAmountCommand}"
+                StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
+                ReturnCommand="{Binding CompletedLineItemAmountCommand}"
+                IsValid="{Binding IsValidLineItemAmount}"
+                MaximumValue="999999.99"
+                MinimumValue="-999999.99" 
                 ReturnType="Done"
-                Text="{Binding LineItemAmountString}">
-                <Entry.Behaviors>
-                    <services:CurrencyValidationBehavior
-                        InvalidStyle="{StaticResource InvalidEntryStyle}"
-                        IsValid="{Binding IsValidLineItemAmountString}"
-                        MaximumValue="999999.99"
-                        MinimumValue="-999999.99"
-                        ValidStyle="{StaticResource ValidEntryStyle}" />
-                    <services:UserStoppedTypingBehavior Command="{Binding UnloadLineItemAmountStringCommand}" StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}" />
-                </Entry.Behaviors>
-            </Entry>
+                Amount="{Binding LineItemAmount}">
+            </controls:AmountEntry>
         </Grid>
         <!--#endregion-->
         <!--#endregion-->

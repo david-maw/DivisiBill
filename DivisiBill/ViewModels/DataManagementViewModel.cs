@@ -332,8 +332,8 @@ internal partial class DataManagementViewModel : ObservableObject
             {
                 if (App.Current.Resources["MealViewModel"] is MealViewModel mvm)
                 {
-                    mvm.DefaultTipRate = archive.UserSettings.DefaultTipRate;
-                    mvm.DefaultTaxRate = archive.UserSettings.DefaultTaxRate;
+                    mvm.DefaultTipRatePercentage = archive.UserSettings.DefaultTipRate;
+                    mvm.DefaultTaxRatePercentage = (decimal)archive.UserSettings.DefaultTaxRate * 100;
                     mvm.DefaultTipOnTax = archive.UserSettings.DefaultTipOnTax;
                     mvm.DefaultTaxOnCoupon = archive.UserSettings.DefaultTaxOnCoupon;
                 }

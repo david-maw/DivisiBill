@@ -6,7 +6,7 @@ namespace DivisiBill.Controls;
 
 public partial class AdjustPopup : CommunityToolkit.Maui.Views.Popup<decimal> 
 {
-    AdjustViewModel vm;
+    private readonly AdjustViewModel vm;
     public AdjustPopup(AdjustViewModel vm)
 	{
 		InitializeComponent();
@@ -15,7 +15,6 @@ public partial class AdjustPopup : CommunityToolkit.Maui.Views.Popup<decimal>
 
     private async Task UpdateAndCloseAsync()
     {
-        vm.UnloadTargetAmountString();
         vm.AdjustmentAmount = Math.Round(vm.AdjustmentAmount, 2);
         await CloseAsync(vm.AdjustmentAmount);
     }

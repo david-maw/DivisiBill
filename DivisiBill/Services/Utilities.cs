@@ -845,6 +845,18 @@ public static partial class Utilities // Partial for regex generator
     public static string NullIfWhiteSpace(this string value)
         => string.IsNullOrWhiteSpace(value) ? null : value;
 
+
+    /// <summary>
+    /// Return the at most the first N characters of a string
+    /// </summary>
+    /// <param name="s">The string to evaluate.</param>
+    /// <param name="count">The number of characters to return from the start of the string.</param>
+    /// <returns>The first characters of the string, or the whole string if it is shorter than the specified count.</returns>
+    public static string First(this string s, int count)
+        => s is null ? null :
+           s.Length <= count ? s :
+           s[..count];
+
     /// <summary>
     /// A string extension method to return a string which fits in a specified number of characters,
     /// adding an ellipsis if it is necessary to truncate it 

@@ -28,6 +28,8 @@ public partial class MealViewModel : ObservableObjectPlus
     {
         Meal.CurrentMeal.PropertyChanged += CurrentMeal_PropertyChanged;
         LineItems = GetLineItems();
+        DefaultTipRatePercentage = App.Settings.DefaultTipRate;
+        DefaultTaxRatePercentage = (decimal)(App.Settings.DefaultTaxRate * 100);
     }
     ~MealViewModel()
     {
@@ -35,16 +37,14 @@ public partial class MealViewModel : ObservableObjectPlus
     }
     public void LoadLineItem()
     {
-        LoadLineItemAmountString();
+        LoadLineItemAmount();
         LoadLineItemNameString();
     }
     public void UnloadLineItem()
     {
-        UnloadLineItemAmountString();
+        UnloadLineItemAmount();
         UnloadLineItemNameString();
     }
-    public void LoadSettings() => LoadDefaultTaxRateString();
-    public void UnloadSettings() => UnloadDefaultTaxRateString();
     #endregion
     #region Property Change Events
     public void CurrentMeal_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -389,7 +389,7 @@ public partial class MealViewModel : ObservableObjectPlus
 
     partial void OnSelectedLineItemChanging(LineItem oldValue, LineItem newValue)
     {
-        if (oldValue is not null && IsValidLineItemAmountString)
+        if (oldValue is not null && IsValidLineItemAmount)
             UnloadLineItem();
     }
     partial void OnSelectedLineItemChanged(LineItem value)
@@ -450,22 +450,22 @@ public partial class MealViewModel : ObservableObjectPlus
     private void NotifyLineItemAddCompleted(LineItem value) => LineItemAddCompletedInUi?.Invoke(value);
     #endregion
     #region Item Amount
-    private void LoadLineItemAmountString() => LineItemAmountString = string.Format("{0:0.00}", SelectedLineItem.Amount);
+    private void LoadLineItemAmount() => LineItemAmount = SelectedLineItem?.Amount ?? 0;
 
     [RelayCommand]
-    private void UnloadLineItemAmountString()
+    private void UnloadLineItemAmount()
     {
-        if (SelectedLineItem is not null && IsValidLineItemAmountString)
-            SelectedLineItem.Amount = decimal.Parse(LineItemAmountString);
+        if (SelectedLineItem is not null && IsValidLineItemAmount)
+            SelectedLineItem.Amount = LineItemAmount;
     }
     [RelayCommand]
-    private void CompletedLineItemAmountString()
+    private void CompletedLineItemAmount()
     {
         if (SelectedLineItem is null)
             return; // nothing to do
         // Store the value if it is valid
-        if (IsValidLineItemAmountString)
-            SelectedLineItem.Amount = decimal.Parse(LineItemAmountString);
+        if (IsValidLineItemAmount)
+            SelectedLineItem.Amount = LineItemAmount;
         // We only move to the next item on the desktop because the soft keyboard on a phone takes up so much space that it obscures the item list
         if (DeviceInfo.Current.Idiom == DeviceIdiom.Desktop)
         {
@@ -475,9 +475,9 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    public partial string LineItemAmountString { get; set; }
+    public partial decimal LineItemAmount { get; set; }
     #region ItemName
-    public bool IsValidLineItemAmountString { get; set; } = false;
+    public bool IsValidLineItemAmount { get; set; } = false;
     #endregion
     private void LoadLineItemNameString() => LineItemNameString = SelectedLineItem.ItemName;
 
@@ -874,52 +874,19 @@ public partial class MealViewModel : ObservableObjectPlus
     public bool IsDefaultCouponAfterTax => App.Settings.DefaultTaxOnCoupon == Meal.CurrentMeal.IsCouponAfterTax;
     public bool IsDefaultTip => IsDefaultTipOnTax && IsDefaultTipRate;
     public bool IsDefaultTax => IsDefaultTaxRate;
-    public int DefaultTipRate
-    {
-        get => App.Settings.DefaultTipRate;
-        set
-        {
-            if (App.Settings.DefaultTipRate != value)
-            {
-                App.Settings.DefaultTipRate = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsDefaultTipRate));
-                OnPropertyChanged(nameof(IsDefaultTip));
-            }
-        }
-    }
-    public double DefaultTaxRate
-    {
-        get => App.Settings.DefaultTaxRate;
-        set
-        {
-            if (App.Settings.DefaultTaxRate != value)
-            {
-                App.Settings.DefaultTaxRate = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsDefaultTaxRate));
-                OnPropertyChanged(nameof(IsDefaultTax));
-                OnPropertyChanged(nameof(DefaultTaxRateString));
-            }
-        }
-    }
 
     [ObservableProperty]
-    public partial bool IsDefaultTaxRateStringValid { get; set; }
+    [NotifyPropertyChangedFor(nameof(IsDefaultTipRate))]
+    [NotifyPropertyChangedFor(nameof(IsDefaultTip))]
+    public partial decimal DefaultTipRatePercentage { get; set; }
+    partial void OnDefaultTipRatePercentageChanged(decimal value) => App.Settings.DefaultTipRate = (int)value;
 
     [ObservableProperty]
-    public partial string DefaultTaxRateString { get; set; }
-    private void LoadDefaultTaxRateString() => DefaultTaxRateString = string.Format("{0:0.00}", DefaultTaxRate * 100);
+    [NotifyPropertyChangedFor(nameof(IsDefaultTaxRate))]
+    [NotifyPropertyChangedFor(nameof(IsDefaultTax))]
+    public partial decimal DefaultTaxRatePercentage { get; set; }
+    partial void OnDefaultTaxRatePercentageChanged(decimal value) => App.Settings.DefaultTaxRate = (double)value / 100;
 
-    [RelayCommand]
-    private void UnloadDefaultTaxRateString()
-    {
-        if (IsDefaultTaxRateStringValid)
-        {
-            DefaultTaxRate = double.Parse(DefaultTaxRateString) / 100;
-            LoadDefaultTaxRateString();
-        }
-    }
     public bool DefaultTipOnTax
     {
         get => App.Settings.DefaultTipOnTax;

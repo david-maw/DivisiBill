@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Core.Platform;
+using DivisiBill.Controls;
 using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
@@ -10,6 +11,14 @@ public partial class PropertiesPage : ContentPage
     {
         InitializeComponent();
         viewModel = (PropertiesViewModel)BindingContext;
+        var amountEntries = FindVisualChildren<AmountEntry>(this);
+
+        foreach (var entry in amountEntries.Where(en=>!en.IsReadOnly))
+        {
+            entry.Focused += OnFocused;
+            entry.Unfocused += OnInputViewUnfocused;
+            entry.Completed += OnCompleted;
+        }
     }
     protected override void OnAppearing()
     {
@@ -30,22 +39,13 @@ public partial class PropertiesPage : ContentPage
             : FlyoutBehavior.Flyout;
     }
 
-    // Manage keyboard visibility for InputViewss (Entry and Edit controls)
+    // Manage keyboard visibility for InputViews (Entry and Edit controls)
     InputView currentInputView = null;
     private async void OnFocused(object sender, FocusEventArgs e)
     {
         currentInputView = sender as InputView;
         if (currentInputView is not null)
-        {
             await currentInputView.ShowKeyboardAsync();
-
-            if (sender is Entry)
-            {
-                // Select all text so input replaces it
-                currentInputView.CursorPosition = 0;
-                currentInputView.SelectionLength = currentInputView.Text?.Length ?? 0; 
-            }
-        }
     }
     private async void OnInputViewUnfocused(object sender, FocusEventArgs e)
     {
@@ -55,4 +55,21 @@ public partial class PropertiesPage : ContentPage
             await inputView.HideKeyboardAsync();
     }
     private async void OnCompleted(object sender, EventArgs e) => (sender as VisualElement)?.Unfocus();
+    private static IEnumerable<T> FindVisualChildren<T>(Element parent) where T : Element
+    {
+        if (parent == null)
+            yield break;
+
+        if (parent is T match)
+            yield return match;
+
+        if (parent is IElementController controller)
+        {
+            foreach (var child in controller.LogicalChildren)
+            {
+                foreach (var descendant in FindVisualChildren<T>(child))
+                    yield return descendant;
+            }
+        }
+    }
 }
