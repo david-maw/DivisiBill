@@ -36,7 +36,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
             }
         }
     }
-    private static void LoadDefaultVenues()
+    private static void CreateFakeVenues()
     {
         List<Venue> initialVenues = [
             new() {Name = "Queasy Diner",             Latitude= 20.79, Longitude = -156.24, Accuracy = 700},
@@ -62,7 +62,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         if (!loaded && App.IsCloudAllowed)
             loaded = await LoadFromRemoteAsync(null, true); // Pass a null filename to just load the latest
         if (!loaded)
-            LoadDefaultVenues();
+            CreateFakeVenues();
         allVenues.CollectionChanged += (s, e) =>
         {
             UpdateTime = DateTime.Now;
@@ -452,7 +452,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
                 : new Location(Latitude, Longitude) { Accuracy = Accuracy };
         set
         {
-            if (value is null || !App.UseLocation || Accuracy is <= 0 or >= Distances.AccuracyLimit)
+            if (value is null || !App.UseLocation || value.Accuracy is <= 0 or >= Distances.AccuracyLimit)
             {
                 IsLocationValid = false;
                 UpdateTime = DateTime.Now;

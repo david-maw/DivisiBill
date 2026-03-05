@@ -616,21 +616,23 @@ public partial class Meal : ObservableObjectPlus
 
     public static void CreateFakeStoredBills()
     {
+        string venueName1 = Venue.AllVenues.FirstOrDefault()?.Name ?? "Queasy Diner";
+        string venueName2 = Venue.AllVenues.Skip(1).FirstOrDefault()?.Name ?? "Bad Pizza";
         // Note that they are added in order
         LocalMealList.Add(new MealSummary()
         {
-            VenueName = Venue.AllVenues[1].Name,
+            VenueName = venueName1,
             CreationTime = new DateTime(2021, 1, 2, 3, 4, 5),
         });
         LocalMealList.Add(new MealSummary()
         {
-            VenueName = Venue.AllVenues[2].Name,
+            VenueName = venueName2,
             CreationTime = new DateTime(2010, 11, 12, 14, 43, 20),
             FileSelected = true
         });
         LocalMealList.Add(new MealSummary()
         {
-            VenueName = Venue.AllVenues[1].Name,
+            VenueName = venueName1,
             CreationTime = new DateTime(2010, 11, 11, 11, 11, 11),
         });
     }
