@@ -18,11 +18,20 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
 
     public void Initialize()
     {
-        Name = OriginalName = ActiveVenue.Name;
-        Notes = ActiveVenue.Notes ?? string.Empty;
-        Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
-        if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
+        if (mapSettings is null)
+        {
+            // Initialization of the page with the current venue values but only if we are not coming back from the map page
+            Name = OriginalName = ActiveVenue.Name;
+            Notes = ActiveVenue.Notes ?? string.Empty;
+            Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
+        }
+        else if (mapSettings.VenueLocationHasChanged)
+        {
+            // We are coming back from the map page and the location has changed, so update the location of the venue with the new value from the map page
             Location = mapSettings.VenueLocation;
+            // Clear the map settings - if we navigate to the map page again we will initialize it with the current venue location
+            mapSettings = null;
+        }
     }
 
     ~VenueEditViewModel()
@@ -155,7 +164,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
             await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
             return;
         }
-        mapSettings = new(ActiveVenue.Name, ActiveVenue.Location);
+        mapSettings = new(Name, Location);
         await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
     }
     #endregion
