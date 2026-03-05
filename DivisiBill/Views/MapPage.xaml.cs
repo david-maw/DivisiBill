@@ -127,7 +127,7 @@ public partial class MapPage : ContentPage
         get => field;
         set
         {
-            if ((value is null && field is not null) || value.GetDistanceTo(field) > 0)
+            if ((value is null && field is not null) || (value is not null && value.GetDistanceTo(field) > 0))
             {
                 field = value;
                 VenueDistance = App.GetDistanceTo(field);
