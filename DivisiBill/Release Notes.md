@@ -1,3 +1,11 @@
+<!-- to regenerate the html file dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d -->
+
+# Version 6.3.16
+
+## List of nearby Venues
+
+A "search" button has been added to the venue edit page so that you can request a list of the names of nearby venues. This can save time, especially when adding a new venue. To use it, tap the search button, then tap the name closest to what you want, then edit it  as needed.
+
 # Version 6.3.15
 
 ## New Venue Handling

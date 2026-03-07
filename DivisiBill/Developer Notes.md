@@ -180,11 +180,15 @@ VS will run the code in the project file that uses pandoc to recreate the Releas
 Check in these changes (typically calling it "Release Notes for N.N.N").
 Do not forget to push these changes to the remote development stream.
 
-Sometimes VS doesn't regenerate the help files when you change the MarkDown sources, so you may have
+Sometimes VS doesn't regenerate the release notes html when you change the MarkDown sources, so you may have
 to trigger that manually. The easiest way is just enter this at a command prompt:
-```
-     dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d
-```
+
+>     dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d
+
+For the help md files you can just delete the corresponding html file and it will be regenerated
+(this works for the release notes html too BUT it loses its MauiAsset build action, so you have to add
+that back in the file properties which is why the dotnet command above is better).
+
 Since this is mechanical stuff and unlikely to affect the 
 functioning of DivisiBill you can do it before or after testing the development
 branch build.
@@ -196,21 +200,35 @@ but being large (100-200kB) they'll sometimes cause problems uploading to GitHub
 run into this problem, you can recognize it by an error on a `PUSH` operation that says
 something like
 ```
-           Error: RPC failed; HTTP 408 curl 22 The requested URL returned error: 408
-           send-pack: unexpected disconnect while reading sideband packet
-           Error encountered while pushing to the remote repository: Git failed with a fatal error.
+    Error: RPC failed; HTTP 408 curl 22 The requested URL returned error: 408
+    send-pack: unexpected disconnect while reading sideband packet
+    Error encountered while pushing to the remote repository: Git failed with a fatal error.
 ```
 The workaround is to temporarily enlarge the git buffer size by running the command
-```
-           git config --global http.postBuffer 524288000 
-```
+
+>   git config --global http.postBuffer 524288000 
+
 Later, you can restore the default using
-```
-           git config --global --unset http.postBuffer
-```
+
+>   git config --global --unset http.postBuffer
+
 Thanks to Google pointing me to
  [CyberITHub](https://www.cyberithub.com/solved-git-push-error-rpc-failed-http-500-curl-22-the-requested-url-returned-error/)
 for this hint.
+
+Help Files
+----------
+
+The help files are based on the DivisiBill folder from the Web project - the contents of the folder (except for the 
+*.md source files which are not used at run time) are copied as MAUI assets by these lines in the project file:
+
+      <!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
+      <MauiAsset Include="..\..\web\divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
+      <!-- Don't need the MD files -->
+      <MauiAsset Remove="..\..\web\divisibill\**\*.md" />
+
+The same web project goes to create a static web site so users can go take a look at 
+DivisiBill help without installing the app (see "AutoPlus Web Site" below).
 
 Release Instructions
 --------------------
@@ -573,20 +591,6 @@ For easier reuse individual icons are called out in the application resource dir
 If you want to examine all the Icons on a font file https://andreinitescu.github.io/IconFont2Code/ will let you see the glyphs and their encodings, so you can just drop the current font file into it and see what you need to in order to add new icons (hint: ctrl-F in the browser is your friend). You may get one or two "page not responding" errors when loading the font above, these are normal, just respond "wait" and it should load in under a minute.
 
 Another good source of free icons is FontAwsome at https://fontawesome.com/download.
-
-Help Text
----------
-
-The help text is based on the DivisiBill folder from the Web project - the contents of the folder all except for the 
-*.md source files which are not used at run time are copied as MAUI assets by these lines in the project file:
-
-      <!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
-      <MauiAsset Include="..\..\web\divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
-      <!-- Don't need the MD files -->
-      <MauiAsset Remove="..\..\web\divisibill\**\*.md" />
-
-The same web project goes to create a static web site so users can go take a look at 
-DivisiBill help without installing the app (see "AutoPlus Web Site" below).
 
 Licensing
 ---------
