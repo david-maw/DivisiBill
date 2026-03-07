@@ -72,6 +72,7 @@
             <FontImageSource x:Key="ListGlyphCurrentMeal"       Color="{AppThemeBinding Light={StaticResource ImageGlyphDark}, Dark={StaticResource ImageGlyphLight}}"  Glyph="&#xF1A7D;" FontFamily="mdicons"/> <!--text-box-edit-outline-->
 
             <FontImageSource x:Key="GlyphAdd"                   Color="White" Glyph="&#xF0419;" FontFamily="mdicons"/> <!--plus-circle-outline-->
+            <FontImageSource x:Key="GlyphBack"                  Color="White" Glyph="&#xF004D;" FontFamily="mdicons"/> <!--arrow-left-->
             <FontImageSource x:Key="GlyphCamera"                Color="White" Glyph="&#xF0D5D;" FontFamily="mdicons"/> <!--camera-outline-->
             <FontImageSource x:Key="GlyphCancel"                Color="White" Glyph="&#xF073A;" FontFamily="mdicons"/> <!--cancel-->
             <FontImageSource x:Key="GlyphCheck"                 Color="White" Glyph="&#xF012C;" FontFamily="mdicons"/> <!--check-->

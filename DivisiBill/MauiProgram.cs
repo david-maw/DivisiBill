@@ -79,6 +79,7 @@ public static class MauiProgram
                 essentials.UseVersionTracking();
             });
         builder.Services.AddTransient<Views.CameraPage>();
+        builder.Services.AddSingleton<PlacesService>();
 
         return builder.Build();
     }

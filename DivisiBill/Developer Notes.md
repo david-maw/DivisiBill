@@ -109,7 +109,7 @@ variables, ether per-user or per-machine (see the DOS SETX command). Here's a su
 | DIVISIBILL_WS_KEY_RELEASE    | The token to be used in a release build
 | DIVISIBILL_SENTRY_DSN        | The path to the Sentry application health service
 | SENTRY_AUTH_TOKEN            | The authentication token for the Sentry application health service
-| DIVISIBILL_BING_MAPS_SECRET  | The authentication token for Bing maps used in Windows Builds
+| DIVISIBILL_MAPS_KEY          | The authentication token for the Google reverse geolocation service
 | DIVISIBILL_TEST_PRO_JSON_B64 | A test pro license encoded in Base-64 
 | DIVISIBILL_TEST_OCR_JSON_B64 | A test OCR license encoded in Base-64
 
@@ -337,6 +337,7 @@ gh secret set DIVISIBILL_WS_URI     -b "%DIVISIBILL_WS_URI_RELEASE%%"
 gh secret set DIVISIBILL_WS_KEY     -b "%DIVISIBILL_WS_KEY_RELEASE%"
 gh secret set DIVISIBILL_SENTRY_DSN -b "%DIVISIBILL_SENTRY_DSN%"
 gh secret set SENTRY_AUTH_TOKEN     -b "%SENTRY_AUTH_TOKEN%"
+gh secret set DIVISIBILL_MAPS_KEY   -b "%DIVISIBILL_MAPS_KEY%"
 ```
 or, if you prefer PowerShell:
 ```
@@ -344,8 +345,12 @@ gh secret set DIVISIBILL_WS_URI     -b "$env:DIVISIBILL_WS_URI_RELEASE";
 gh secret set DIVISIBILL_WS_KEY     -b "$env:DIVISIBILL_WS_KEY_RELEASE";
 gh secret set DIVISIBILL_SENTRY_DSN -b "$env:DIVISIBILL_SENTRY_DSN";
 gh secret set SENTRY_AUTH_TOKEN     -b "$env:SENTRY_AUTH_TOKEN";
+gh secret set DIVISIBILL_MAPS_KEY   -b "$env:DIVISIBILL_MAPS_KEY"
 ```
-Secrets used for the build process are not in local environment variables so you'll need to 
+
+The quotes are not strictly necessary since none of these secrets contain spaces, but they don't hurt and they do make it clear where the secret value is.
+
+Secrets used only for the build process are not in local environment variables so you'll need to 
 set these explicitly:
 ```
 gh secret set KEYSTORE_PASSWORD -b "keystore password";
@@ -359,8 +364,8 @@ gh secret set KEYSTORE_B64 < keystorele.b64;
 ```
 or, in PowerShell:
 ```
-gh Get-Content service_account_file.json | secret set SERVICE_ACCOUNT_JSON
-gh Get-Content keystore.b64 | secret set KEYSTORE_B64
+gh Get-Content service_account_file.json -Raw | gh secret set SERVICE_ACCOUNT_JSON
+gh Get-Content keystore.b64 -Raw | gh secret set KEYSTORE_B64
 ```
 
 Using the DivisiBill Web Service

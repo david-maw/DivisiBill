@@ -55,6 +55,7 @@ jobs:
       env:
         DIVISIBILL_WS_URI: ${{ secrets.DIVISIBILL_WS_URI }}
         DIVISIBILL_WS_KEY: ${{ secrets.DIVISIBILL_WS_KEY }}
+        DIVISIBILL_MAPS_KEY: ${{ secrets.DIVISIBILL_MAPS_KEY }}
         DIVISIBILL_SENTRY_DSN: ${{ secrets.DIVISIBILL_SENTRY_DSN }}
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_UPLOAD: 'true'

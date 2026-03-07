@@ -12,15 +12,30 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
 {
     private MapSettings? mapSettings;
 
+    private readonly PlacesService places;
+
+    public VenueEditViewModel(PlacesService places)
+    {
+        this.places = places;
+        App.MyLocationChanged += App_MyLocationChanged;
+    }
+
+    public async Task<IEnumerable<string>?> FindRestaurantsAsync(Location? location)
+    {
+        if (string.IsNullOrEmpty(Generated.BuildInfo.DivisiBillMapsKey) || location == null)
+            return null; // Don't try to call the API if we don't have a maps key configured or location is null    
+        return await places.GetNearestRestaurantsAsync(
+            location.Latitude,
+            location.Longitude,
+            Generated.BuildInfo.DivisiBillMapsKey);
+    }
+
     [ObservableProperty]
     public partial Venue ActiveVenue { get; set; } = new();
-    public VenueEditViewModel() => App.MyLocationChanged += App_MyLocationChanged;
-
-    public void Initialize()
+    public async void Initialize()
     {
         if (mapSettings is null)
         {
-            // Initialization of the page with the current venue values but only if we are not coming back from the map page
             Name = OriginalName = ActiveVenue.Name;
             Notes = ActiveVenue.Notes ?? string.Empty;
             Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
@@ -53,6 +68,24 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     public partial string Notes { get; set; } = string.Empty;
 
     [ObservableProperty]
+    public partial List<string>? Possibles { get; set; } = null;
+
+    [ObservableProperty]
+    public partial string SelectedPossible { get; set; } = string.Empty;
+    partial void OnSelectedPossibleChanged(string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            Name = value;
+            PossiblesShowing = false;
+            SelectedPossible = string.Empty;
+        }
+    }
+
+    [ObservableProperty]
+    public partial bool PossiblesShowing { get; set; } = false;
+
+    [ObservableProperty]
     public partial Location? Location { get; set; } = null;
 
     partial void OnLocationChanged(Location? value) => Distance = App.GetDistanceTo(value);
@@ -61,7 +94,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     public partial int Distance { get; set; } = Distances.Unknown;
 
     public bool IsForCurrentMeal => ActiveVenue.IsForCurrentMeal;
-    public bool NoChanges => Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name)
+    public bool NoChanges() => Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name)
         && Utilities.StringFunctionallyEqual(Notes, ActiveVenue.Notes)
         && Equals(Location, ActiveVenue.Location);
     public bool IsNewNameInvalid => string.IsNullOrWhiteSpace(Name) || Venue.AllVenues.Any((v) => ActiveVenue != v && Name.Equals(v.Name, StringComparison.Ordinal));
@@ -97,6 +130,15 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     }
     #region Commands
     [RelayCommand]
+    private async Task ShowPossibles()
+    {
+        if (!Location.IsValid())
+            return;
+        Possibles = (await FindRestaurantsAsync(Location))?.ToList();
+        PossiblesShowing = true;
+    }
+
+    [RelayCommand]
     private async Task Delete()
     {
         if (!IsForCurrentMeal)
@@ -116,7 +158,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task ExitPageAsync()
     {
-        if (!NoChanges)
+        if (!NoChanges())
         {
             if (IsNewNameInvalid)
             {
@@ -139,6 +181,11 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
                         count = Meal.LocalMealList.Count((ms) => ms.VenueName == Name);
                         if (count > 0)
                             await Utilities.ShowAppSnackBarAsync($"{count} local stored bills use \"{Name}\"");
+                    }
+                    else // Said no to a name change
+                    {
+                        Name = OriginalName; // restore the original name
+                        return;
                     }
                 }
                 else // name didn't change
