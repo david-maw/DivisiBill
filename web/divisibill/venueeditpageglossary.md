@@ -21,3 +21,11 @@ This shows the current location of the venue, tap it to change the location, dou
 ## New Name
 
 Enter a name here to rename the venue, the name at the top of the page will stay the same but your change will be applied when you leave the page.
+
+## Search
+
+Tap this button to search for the names of nearby venues, this can save time, especially when entering a new name.
+
+## Notes
+
+This is a free-form text field where you can enter any notes about the venue, these are not used by the system but may be useful for your reference.
