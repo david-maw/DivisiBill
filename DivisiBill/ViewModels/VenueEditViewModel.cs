@@ -39,6 +39,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
             Name = OriginalName = ActiveVenue.Name;
             Notes = ActiveVenue.Notes ?? string.Empty;
             Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
+            OnPropertyChanged(nameof(IsForCurrentMeal)); // Make sure this gets evaluated
         }
         else if (mapSettings.VenueLocationHasChanged)
         {

@@ -45,6 +45,7 @@
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
                                 </MenuFlyout>
                             </FlyoutBase.ContextFlyout>
+                            <!--#endregion-->
                             <Label Text="{Binding Path=Name}" FontSize="{StaticResource FontSizeLarge}" LineBreakMode="TailTruncation"/>
                             <!--#region Icon indicating current Meal-->
                             <Image
@@ -70,6 +71,20 @@
                                               CommandParameter="{Binding}"
                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
                     </Rectangle.GestureRecognizers>
+                    <!--#region Context Menu to Replace Swipe (repeated so it works in center of line) -->
+                    <FlyoutBase.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem
+                                        Text="Use"
+                                        CommandParameter="{Binding}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
+                            <MenuFlyoutItem
+                                        Text="Delete"
+                                        CommandParameter="{Binding}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
+                        </MenuFlyout>
+                    </FlyoutBase.ContextFlyout>
+                    <!--#endregion-->
                 </Rectangle>
                 <BoxView Grid.Row="1" Grid.ColumnSpan="3" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
                 <!--#endregion-->
