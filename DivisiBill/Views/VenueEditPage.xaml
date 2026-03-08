@@ -52,7 +52,10 @@
                 EmptyView="No nearby venues found">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="x:String">
-                        <Label Text="{Binding .}"/>
+                        <Border Margin="0,3" StrokeThickness="0" Padding="2,2,2,4" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}">
+                            <Label Text="{Binding .}" FontSize="{StaticResource FontSizeMedium}" VerticalOptions="Center"
+                            TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
