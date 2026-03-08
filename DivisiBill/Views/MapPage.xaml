@@ -27,7 +27,7 @@
             <Label.FormattedText>
                 <FormattedString>
                     <FormattedString.Spans>
-                        <Span Text="{Binding VenueLocation, StringFormat='Location={0}',Converter={StaticResource Location}, TargetNullValue='Location Unknown'}"/>
+                        <Span Text="{Binding VenueLocation, StringFormat='Location={0}',Converter={StaticResource LocationToText}, TargetNullValue='Location Unknown'}"/>
                         <Span Text="{Binding VenueDistance, StringFormat=' ({0})',Converter={StaticResource Distance}, TargetNullValue=''}"/>
                     </FormattedString.Spans>
                 </FormattedString>

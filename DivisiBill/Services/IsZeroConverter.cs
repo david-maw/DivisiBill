@@ -5,7 +5,9 @@ namespace DivisiBill.Services;
 public class IsZeroConverter : IValueConverter
 {
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo) => value is null
+    public static bool IsZero(object value)
+    {
+        return (value is null)
             ? false
             : value switch
             {
@@ -20,8 +22,10 @@ public class IsZeroConverter : IValueConverter
                 float x => x == 0,
                 double x => x == 0,
                 decimal x => x == 0,
-                _ => (object)false,
+                _ => false,
             };
+    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo) => IsZero(value);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo) => throw new NotImplementedException();
 }

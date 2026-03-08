@@ -22,11 +22,12 @@
             <services:InvertBoolConverter x:Key="Not" />
             <services:DistanceConverter x:Key="Distance" />
             <services:ApproximateDateTimeConverter x:Key="ApproximateDateTime"/>
-            <services:LocationConverter x:Key="Location" />
+            <services:LocationConverter x:Key="LocationToText" />
             <services:IsNonZeroConverter x:Key="IsNonZero" />
             <services:IsZeroConverter x:Key="IsZero" />
             <services:IsNegativeConverter x:Key="IsNegative" />
             <services:IsPositiveConverter x:Key="IsPositive" />
+            <services:LocationIsValidConverter x:Key="IsLocationValid" />
             <services:AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" /> 
 
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All"/>
