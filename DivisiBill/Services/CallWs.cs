@@ -43,7 +43,7 @@ internal static class CallWs
     /// <param name="webCall">The function to call and timeout if necessary</param>
     /// 
     /// <returns></returns>
-    internal static async Task<HttpResponseMessage> CallUncertainWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
+    public static async Task<HttpResponseMessage> CallUncertainWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
     {
         var webStopwatch = Stopwatch.StartNew();
         Task<HttpResponseMessage> webCallTask = webCall();

@@ -23,22 +23,47 @@ public class PlacesService
             $"&type=restaurant" +
             $"&key={apiKey}";
 
-        var json = await httpClient.GetStringAsync(url);
-
-        var data = JsonSerializer.Deserialize<PlacesResponse>(json);
-
-        if (data is null || data?.Status != "OK")
+        try
         {
-            Utilities.RecordMsg($"Error fetching places: {data?.Status}");
-            return [];
-        }
-        if (data.Results is null)
-        {
-            Utilities.RecordMsg($"No results returned fetching places");
-            return [];
-        }
+            HttpResponseMessage WsVersionTask = await CallWs.CallUncertainWebServiceAsync(() => httpClient.GetAsync(url));
 
-        return data.Results.Where(r => !string.IsNullOrEmpty(r.Name))!;
+            if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
+            {
+                var json = await WsVersionTask.Content.ReadAsStringAsync();
+                // Detect the weird failure which just returns an OK result but no data
+                if (string.IsNullOrEmpty(json))
+                { // This is a failure, return a NotFound status
+                    Utilities.DebugMsg("GetNearestRestaurantsAsync returned OK but no data, returning empty list");
+                    return [];
+                }
+                else
+                {
+                    var data = JsonSerializer.Deserialize<PlacesResponse>(json);
+                    
+                    if (data is null || data?.Status != "OK")
+                    {
+                        Utilities.RecordMsg($"Error fetching places: {data?.Status}");
+                        return [];
+                    }
+                    if (data.Results is null)
+                    {
+                        Utilities.RecordMsg($"No results returned fetching places");
+                        return [];
+                    }
+
+                    return data.Results.Where(r => !string.IsNullOrEmpty(r.Name))!;
+                }
+            }
+            else if (WsVersionTask is null)
+                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, no task returned");
+            else
+                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, status code = " + WsVersionTask.StatusCode);
+        }
+        catch (Exception ex)
+        {
+            Utilities.DebugMsg("GetNearestRestaurantsAsync failed, exception = " + ex);
+        }
+        return [];
     }
 }
 
