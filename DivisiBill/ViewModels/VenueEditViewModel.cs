@@ -20,10 +20,10 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         App.MyLocationChanged += App_MyLocationChanged;
     }
 
-    public async Task<IEnumerable<string>?> FindRestaurantsAsync(Location? location)
+    public async Task<IEnumerable<PlaceResult>> FindRestaurantsAsync(Location? location)
     {
         if (string.IsNullOrEmpty(Generated.BuildInfo.DivisiBillMapsKey) || location == null)
-            return null; // Don't try to call the API if we don't have a maps key configured or location is null    
+            return []; // Don't try to call the API if we don't have a maps key configured or location is null    
         return await places.GetNearestRestaurantsAsync(
             location.Latitude,
             location.Longitude,
@@ -69,17 +69,17 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     public partial string Notes { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial List<string>? Possibles { get; set; } = null;
+    public partial List<PlaceResult> Possibles { get; set; } = [];
 
     [ObservableProperty]
-    public partial string SelectedPossible { get; set; } = string.Empty;
-    partial void OnSelectedPossibleChanged(string value)
+    public partial PlaceResult? SelectedPossible { get; set; } = null;
+    partial void OnSelectedPossibleChanged(PlaceResult? value)
     {
-        if (!string.IsNullOrEmpty(value))
+        if (!string.IsNullOrEmpty(value?.Name))
         {
-            Name = value;
+            Name = value.Name;
             PossiblesShowing = false;
-            SelectedPossible = string.Empty;
+            SelectedPossible = null;
         }
     }
 
@@ -135,7 +135,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     {
         if (!Location.IsValid())
             return;
-        Possibles = (await FindRestaurantsAsync(Location))?.ToList();
+        Possibles = (await FindRestaurantsAsync(Location)).ToList();
         PossiblesShowing = true;
     }
 
