@@ -43,17 +43,18 @@ internal static class CallWs
     /// <param name="webCall">The function to call and timeout if necessary</param>
     /// 
     /// <returns></returns>
-    public static async Task<HttpResponseMessage> CallUncertainWebServiceAsync(Func<Task<HttpResponseMessage>> webCall)
+    public static async Task<HttpResponseMessage> CallUncertainWebServiceAsync(Func<CancellationTokenSource, Task<HttpResponseMessage>> webCall)
     {
         var webStopwatch = Stopwatch.StartNew();
-        Task<HttpResponseMessage> webCallTask = webCall();
+        CancellationTokenSource tokenSource = new();
+        Task <HttpResponseMessage> webCallTask = webCall(tokenSource);
         await webCallTask.OrDelay(5000); // If it responds quickly, don't even bother to show a dialog
         // Call the web service and wait for a response or until the user gives up 
         if (webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode)
             return webCallTask.Result;
         else
-        { // The call did not complete successfully, so show a popup to let the user know and give them a chance to retry or abandon it}
-            IPopupResult<HttpResponseMessage> popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Controls.CheckWebPage(webCallTask, webCall, webStopwatch), Utilities.GetNullPopupOptions());
+        { // The call did not complete sucessfully in a timely manner, so show a popup to let the user know and give them a chance to abandon or retry it
+            IPopupResult<HttpResponseMessage> popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Controls.CheckWebPage(webCallTask, webCall, webStopwatch, tokenSource), Utilities.GetNullPopupOptions());
             return popupResult?.Result ?? new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout); // If the user closed the popup, return a timeout result
         }
     }
@@ -164,7 +165,7 @@ internal static class CallWs
         bool WsVersionChecked = false;
         try
         {
-            HttpResponseMessage WsVersionTask = await CallUncertainWebServiceAsync(() => client.GetAsync("version"));
+            HttpResponseMessage WsVersionTask = await CallUncertainWebServiceAsync((CancellationTokenSource cts) => client.GetAsync("version", cts.Token));
 
             if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
             {
@@ -241,7 +242,7 @@ internal static class CallWs
                 FormUrlEncodedContent content = new(formData);
                 Utilities.DebugMsg("In VerifyPurchase, awaiting VerifyAndroidPurchase");
                 // validate the license by calling a web service
-                HttpResponseMessage response = await CallUncertainWebServiceAsync(() => client.PostAsync("VerifyAndroidPurchase", content));
+                HttpResponseMessage response = await CallUncertainWebServiceAsync((CancellationTokenSource cts) => client.PostAsync("VerifyAndroidPurchase", content, cts.Token));
                 if (response.IsSuccessStatusCode)
                 {
                     string s = await response.Content.ReadAsStringAsync();

@@ -25,7 +25,7 @@ public class PlacesService
 
         try
         {
-            HttpResponseMessage WsVersionTask = await CallWs.CallUncertainWebServiceAsync(() => httpClient.GetAsync(url));
+            HttpResponseMessage WsVersionTask = await CallWs.CallUncertainWebServiceAsync((CancellationTokenSource cts) => httpClient.GetAsync(url, cts.Token));
 
             if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
             {

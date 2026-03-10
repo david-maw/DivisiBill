@@ -6,7 +6,8 @@ using System.Net;
 
 namespace DivisiBill.ViewModels;
 
-public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> ClosePopupAsync, Task<HttpResponseMessage> webCallTask, Func<Task<HttpResponseMessage>> webCall, Stopwatch webStopwatch) : ObservableObject
+public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> ClosePopupAsync, Task<HttpResponseMessage> webCallTask,
+    Func<CancellationTokenSource, Task<HttpResponseMessage>> webCall, Stopwatch webStopwatch, CancellationTokenSource tokenSource) : ObservableObject
 {
     /// <summary>
     /// Flag to indicate if we should keep trying to connect or not
@@ -18,13 +19,14 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
     /// <summary>
     /// Close the popup window and return the result
     /// </summary>
-    /// <param name="result">True if the web service call worked, false if the user elected to abandon it</param>
+    /// <param name="result">The value to return for the abandoned web service call</param>
     private async Task StopTrying(HttpResponseMessage result)
     {
         Utilities.DebugMsg($"In CheckWebPageViewModel.WaitForConnection.StopTrying passing an HttpResponseMessage with status code {(int)result.StatusCode} - {result.StatusCode}");
         keepTrying = false;
         try
         {
+            tokenSource.Cancel();
             await ClosePopupAsync?.Invoke(result);
         }
         catch (Exception ex)
@@ -144,6 +146,9 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
                         if (retryImmediately)
                         {
                             Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, user requested immediate retry");
+                            tokenSource.Cancel(); // Cancel any pending web call (if it is still running) so that we can start a new one immediately
+                            tokenSource.Dispose();
+                            tokenSource = new CancellationTokenSource(); // Create a new token source for the new web call
                             retryImmediately = false;
                             i = 0;
                         }
@@ -163,7 +168,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
                     if (keepTrying)
                     {
                         webStopwatch.Restart();
-                        webCallTask = webCall(); // Initiate the call but do not wait on it
+                        webCallTask = webCall(tokenSource); // Initiate the call but do not wait on it
                     }
                     else
                         IsCountingDown = false;
@@ -190,8 +195,12 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
                 }
                 catch (TaskCanceledException ex)
                 {
-                    // Connection timeouts on Windows seem to go here
-                    Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask was canceled, probably timed out. Exception message: " + ex.Message);
+                    if (tokenSource != null && tokenSource.IsCancellationRequested)
+                        // The user canceled the operation, so we can just ignore this and exit the loop
+                        Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask was canceled by user, exiting loop. Exception message: " + ex.Message);
+                    else
+                        // Connection timeouts on Windows seem to go here
+                        Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask was canceled, probably timed out. Exception message: " + ex.Message);
                 }
                 catch (WebException ex)
                 {
