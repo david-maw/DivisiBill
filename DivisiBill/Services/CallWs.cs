@@ -255,6 +255,11 @@ internal static class CallWs
                     }
                     return s;
                 }
+                else if (response.StatusCode == HttpStatusCode.RequestTimeout)
+                {
+                    Utilities.RecordMsg("In VerifyPurchase, verify returned timeout, so remote services are unavailable");
+                    return "-408"; // for 408-RequestTimeout, we return a string instead of null to indicate that the failure was due to remote services being unavailable instead of the purchase not being valid 
+                }
                 else
                     Utilities.RecordMsg("In VerifyPurchase, verify returned status " + (int)response.StatusCode + "-" + response.StatusCode + " and '" + await response.Content.ReadAsStringAsync() + "'");
             }

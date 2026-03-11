@@ -1,8 +1,8 @@
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Extensions;
+using DivisiBill.Controls;
 using DivisiBill.Models;
 using DivisiBill.Services;
-using DivisiBill.Controls;
 using Sentry;
 using static DivisiBill.Services.Utilities;
 
@@ -91,7 +91,11 @@ public partial class SplashPage : ContentPage
         if (Connectivity.NetworkAccess == NetworkAccess.Internet && App.WsUriDefined)
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
-            await App.CheckLicenses(true);
+            bool licensCheckWorked =  await App.CheckLicenses(true);
+            if (licensCheckWorked)
+                await StatusMsgAsync("License check completed without errors");
+            else
+                await StatusMsgAsync("License check failed, cloud access may not work");
             if (!App.IsLimited)
                 App.EvaluateCloudAccessible(); // Reevaluate values
         }

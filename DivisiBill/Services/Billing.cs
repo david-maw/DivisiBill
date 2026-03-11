@@ -103,26 +103,34 @@ internal static class Billing
             {
                 string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
                 string signatureB64 = Generated.BuildInfo.DivisiBillTestProSignatureB64;
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
-                ProPurchase = new InAppBillingPurchase()
+                (Billing.BillingStatusType billingResult, string resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
+                if (billingResult == BillingStatusType.ok)
                 {
-                    ProductId = OldProProductId, // temporary
-                    State = PurchaseState.Failed,
-                    Id = GetJsonFieldValue(json, "orderId"),
-                    ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
-                    Signature = signatureB64,
-                    OriginalJson = json
-                };
-                if (int.TryParse(resultString, out int scans) && scans >= 0)
-                {
-                    ProPurchase.State = PurchaseState.Purchased;
-                    HasOldProProductId = true;
-                    return BillingStatusType.ok; // No error
+                    ProPurchase = new InAppBillingPurchase()
+                    {
+                        ProductId = OldProProductId, // temporary
+                        State = PurchaseState.Failed,
+                        Id = GetJsonFieldValue(json, "orderId"),
+                        ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
+                        Signature = signatureB64,
+                        OriginalJson = json
+                    };
+                    if (int.TryParse(resultString, out int scans) && scans >= 0)
+                    {
+                        ProPurchase.State = PurchaseState.Purchased;
+                        HasOldProProductId = true;
+                        return BillingStatusType.ok; // No error
+                    }
+                    else
+                    {
+                        Utilities.DebugMsg("In GetHasProSubscriptionAsync, failed to parse scans from web service result: " + resultString);
+                        return BillingStatusType.notVerified;
+                    }
                 }
                 else
                 {
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, failed to parse scans from web service result: " + resultString);
-                    return BillingStatusType.notVerified;
+                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, GetInAppBillingPurchaseFakeAsync returned " + billingResult);
+                    return billingResult;
                 }
             }
         }
@@ -183,8 +191,13 @@ internal static class Billing
         else
         {
             string validationResult = await CallWs.VerifyPurchase(ProPurchase);
+
             if (validationResult is null)
                 Utilities.DebugMsg("In Billing.PurchaseProSubscriptionAsync, CallWs.VerifyPurchase returned null");
+            else if (!int.TryParse(validationResult, out int result))
+                Utilities.DebugMsg($"In Billing.PurchaseProSubscriptionAsync, CallWs.VerifyPurchase did not return an integer ({validationResult}), meaning error");
+            else if (result < 0)
+                Utilities.DebugMsg($"In Billing.PurchaseProSubscriptionAsync, CallWs.VerifyPurchase returned a negative number {result}, meaning error");
             else
                 return true;
         }
@@ -213,24 +226,29 @@ internal static class Billing
             {
                 string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
                 string signatureB64 = Generated.BuildInfo.DivisiBillTestProSignatureB64;
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
-                ProPurchase = new InAppBillingPurchase()
+                (Billing.BillingStatusType billingResult, string resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
+                if (billingResult == BillingStatusType.ok)
                 {
-                    ProductId = OldProProductId, // temporary
-                    State = PurchaseState.Failed,
-                    Id = GetJsonFieldValue(json, "orderId"),
-                    ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
-                    Signature = signatureB64,
-                    OriginalJson = json
-                };
-                if (resultString is null)
-                    return BillingStatusType.notVerified;
-                else if (int.TryParse(resultString, out int scans) && scans >= 0)
-                {
-                    ProPurchase.State = PurchaseState.Purchased;
-                    HasOldProProductId = true;
-                    return BillingStatusType.ok; // No error
+                    ProPurchase = new InAppBillingPurchase()
+                    {
+                        ProductId = OldProProductId, // temporary
+                        State = PurchaseState.Failed,
+                        Id = GetJsonFieldValue(json, "orderId"),
+                        ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
+                        Signature = signatureB64,
+                        OriginalJson = json
+                    };
+                    if (resultString is null)
+                        return BillingStatusType.notVerified;
+                    else if (int.TryParse(resultString, out int scans) && scans >= 0)
+                    {
+                        ProPurchase.State = PurchaseState.Purchased;
+                        HasOldProProductId = true;
+                        return BillingStatusType.ok; // No error
+                    }
                 }
+                else
+                    return billingResult;
             }
         }
         else
@@ -283,6 +301,10 @@ internal static class Billing
             string validationResult = await CallWs.VerifyPurchase(ProPurchase);
             if (validationResult is null)
                 Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase returned null");
+            else if (!int.TryParse(validationResult, out int result))
+                Utilities.DebugMsg($"In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase did not return an integer ({validationResult}), meaning error");
+            else if (result < 0)
+                Utilities.DebugMsg($"In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase returned a negative number {result}, meaning error");
             else
             {
                 HasOldProProductId = true;
@@ -336,22 +358,27 @@ internal static class Billing
             {
                 string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestOcrJsonB64));
                 string signatureB64 = Generated.BuildInfo.DivisiBillTestOcrSignatureB64;
-                string resultString = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
-                OcrPurchase = new InAppBillingPurchase() // Set regardless of whether verification works or fails
+                (Billing.BillingStatusType billingResult, string resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
+                if (billingResult == BillingStatusType.ok)
                 {
-                    ProductId = OcrLicenseProductId,
-                    State = PurchaseState.Failed,
-                    Id = GetJsonFieldValue(json, "orderId"),
-                    ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
-                    Signature = signatureB64,
-                    OriginalJson = json
-                };
-                if (resultString is not null && int.TryParse(resultString, out int scans))
-                {
-                    OcrPurchase.State = PurchaseState.Purchased;
-                    ScansLeft = scans;
-                    return scans;
+                    OcrPurchase = new InAppBillingPurchase() // Set regardless of whether verification works or fails
+                    {
+                        ProductId = OcrLicenseProductId,
+                        State = PurchaseState.Failed,
+                        Id = GetJsonFieldValue(json, "orderId"),
+                        ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
+                        Signature = signatureB64,
+                        OriginalJson = json
+                    };
+                    if (resultString is not null && int.TryParse(resultString, out int scans))
+                    {
+                        OcrPurchase.State = PurchaseState.Purchased;
+                        ScansLeft = scans;
+                        return scans;
+                    } 
                 }
+                else
+                    return -2; // Error
             }
         }
         else
@@ -359,8 +386,7 @@ internal static class Billing
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
                 Utilities.DebugMsg($"In GetHasOcrLicenseAsync, awaiting GetInAppBillingPurchaseAsync(\"{OcrLicenseProductId}\")");
-                Billing.BillingStatusType billingResult = BillingStatusType.notFound;
-                (billingResult, OcrPurchase) = await GetInAppBillingPurchaseAsync(OcrLicenseProductId);
+                (Billing.BillingStatusType billingResult, OcrPurchase) = await GetInAppBillingPurchaseAsync(OcrLicenseProductId);
                 if (billingResult == BillingStatusType.ok && OcrPurchase is not null && OcrPurchase.State == PurchaseState.Purchased)
                 {
                     ScansLeft = OcrPurchase.Quantity;
@@ -387,6 +413,8 @@ internal static class Billing
         string validationResult = await CallWs.VerifyPurchase(OcrPurchase);
         if (validationResult is null || !int.TryParse(validationResult, out int ocrLicenseScans))
             return -2;
+        if (validationResult == "-408")
+            return -3; // No Internet
         ScansLeft = ocrLicenseScans;
         Utilities.DebugMsg($"In PurchaseOcrLicenseAsync, OCR scans purchased = {ocrLicenseScans}, scans left = {ScansLeft}");
         return ocrLicenseScans;
@@ -606,30 +634,30 @@ internal static class Billing
     /// </summary>
     /// <param name="androidJson">JSON representation of a license</param>
     /// <returns></returns>
-    private static async Task<string> GetInAppBillingPurchaseFakeAsync(string androidJson, string signatureB64)
+    private static async Task<(BillingStatusType, string)> GetInAppBillingPurchaseFakeAsync(string androidJson, string signatureB64)
     {
         Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync");
         var androidJsonObject = JsonNode.Parse(androidJson);
         if (androidJsonObject is null)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, androidJsonObject was null, returning null");
-            return null;
+            return (BillingStatusType.notFound, null);
         }
         JsonNode productIdNode = androidJsonObject["productId"];
         if (productIdNode is null || productIdNode.GetValue<string>() is not string productId)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, productIdNode was not a string, returning null");
-            return null;
+            return (BillingStatusType.notFound, null);          
         }
         if (!VerifyDivisiBillPurchaseSignature(androidJson, signatureB64))
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, purchase signature was invalid, returning null");
-            return null;
+            return (BillingStatusType.notVerified, null);
         }
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, no Internet, returning null");
-            return null;
+            return (BillingStatusType.noInternet, null);
         }
         try
         {
@@ -640,18 +668,23 @@ internal static class Billing
             if (validationResult is null)
             {
                 Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, VerifyPurchase returned null, returning null");
-                return null;
+                return (BillingStatusType.notVerified, null);
+            }
+            else if (validationResult == "-408")
+            {
+                Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, VerifyPurchase returned timeout, returning noInternet");
+                return (BillingStatusType.noInternet, null);
             }
 
             Utilities.DebugMsg($"Exiting GetInAppBillingPurchaseFakeAsync, returning \"{validationResult}\"");
 
-            return validationResult;
+            return (BillingStatusType.ok, validationResult);
         }
         catch (Exception ex)
         {
             ex.ReportCrash();
         }
-        return null;
+        return (BillingStatusType.notFound, null);
     }
 #endif
 
@@ -703,6 +736,11 @@ internal static class Billing
                 Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, VerifyPurchase did not return an int, returning failed purchase");
                 purchase.State = PurchaseState.Failed;
                 return (BillingStatusType.notVerified, purchase);
+            }
+            else if (validationResult == "-408")
+            {
+                Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, VerifyPurchase returned timeout, returning noInternet");
+                return (BillingStatusType.noInternet, null);
             }
 
             purchase.Quantity = scans;

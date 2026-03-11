@@ -509,17 +509,18 @@ public partial class App : Application, INotifyPropertyChanged
     /// <summary>
     /// Check for the presence of licenses and subscriptions. This is called during startup an on entering the Settings page.
     /// </summary>
-    internal static async Task CheckLicenses(bool mandatory = false)
+    internal static async Task<bool> CheckLicenses(bool mandatory = false)
     {
+        #region Validate Initial Conditions
         if (!WsUriDefined)
-            return; // Web services are disabled, perhaps this is a new build environment, do nothing at all
+            return false; // Web services are disabled, perhaps this is a new build environment, do nothing at all
 
         bool wasLimited = App.IsLimited; // This will always be false for the call during initialization but later It may change
 
         if (!mandatory && !wasLimited && DateTime.Now < NextLicenseCheckTime) // Don't check for a subscription expiring yet
         {
             Utilities.DebugMsg("App.CheckLicenses early exit - no check needed yet");
-            return;
+            return false;
         }
 
         Utilities.DebugMsg("Entered App.CheckLicenses proper, no early exit was taken");
@@ -532,16 +533,16 @@ public partial class App : Application, INotifyPropertyChanged
             if (Connectivity.NetworkAccess != NetworkAccess.Internet)
             {
                 Utilities.DebugMsg("App.CheckLicenses early exit - no Internet");
-                return; // Nothing useful can be done
+                return false; // Nothing useful can be done
             }
         }
         catch (Exception ex)
         {
             Utilities.DebugMsg("App.CheckLicenses faulted checking Internet - no Internet");
             ex.ReportCrash();
-            return;
-        }
-
+            return false;
+        } 
+        #endregion
         #region Try to reach the web service until the user tells us to give up
         bool WsVersionChecked = await CallWs.GetVersionAsync();
         #endregion
@@ -621,9 +622,9 @@ public partial class App : Application, INotifyPropertyChanged
             if (await Billing.GetHasOcrLicenseAsync() == 0)
                 await Billing.ConsumeDepletedOcrLicense();
             #endregion
-
+            #region Validate and (if necessary update) the AccountId
             static string NullIfEmpty(string s) => string.IsNullOrEmpty(s) ? null : s; // Local helper function to simplify expressions below
-           
+
             string storedAccountId = NullIfEmpty(App.Settings.UserKey);
             string proAccountId = NullIfEmpty(Billing.ProPurchase?.ObfuscatedAccountId);
             string ocrAccountId = NullIfEmpty(Billing.OcrPurchase?.ObfuscatedAccountId);
@@ -661,12 +662,15 @@ public partial class App : Application, INotifyPropertyChanged
                     Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license matches and there is no Pro AccountId");
                 else
                     Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license does not match, it will be ignored");
-            }
+            } 
+            #endregion
 
             Utilities.DebugMsg("Exiting CheckLicenses, found Pro Subscription = " + FoundProSubscription + ", scans left = " + Billing.ScansLeft);
+            return true;
         }
         else
             Utilities.DebugMsg("Exiting CheckLicenses, license check DID NOT COMPLETE");
+        return false;
     }
     #endregion
     #region Navigation
