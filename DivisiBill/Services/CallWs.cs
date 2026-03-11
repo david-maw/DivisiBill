@@ -53,7 +53,7 @@ internal static class CallWs
         if (webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode)
             return webCallTask.Result;
         else
-        { // The call did not complete sucessfully in a timely manner, so show a popup to let the user know and give them a chance to abandon or retry it
+        { // The call did not complete successfully in a timely manner, so show a popup to let the user know and give them a chance to abandon or retry it
             IPopupResult<HttpResponseMessage> popupResult = await Shell.Current.ShowPopupAsync<HttpResponseMessage>(new Controls.CheckWebPage(webCallTask, webCall, webStopwatch, tokenSource), Utilities.GetNullPopupOptions());
             return popupResult?.Result ?? new HttpResponseMessage(System.Net.HttpStatusCode.RequestTimeout); // If the user closed the popup, return a timeout result
         }

@@ -27,7 +27,8 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
         return await places.GetNearestRestaurantsAsync(
             location.Latitude,
             location.Longitude,
-            Generated.BuildInfo.DivisiBillMapsKey);
+            Generated.BuildInfo.DivisiBillMapsKey,
+            20);
     }
 
     [ObservableProperty]

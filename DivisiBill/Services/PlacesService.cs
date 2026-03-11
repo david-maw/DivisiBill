@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -7,29 +8,45 @@ namespace DivisiBill.Services;
 
 public class PlacesService
 {
-    private readonly HttpClient httpClient;
+    private HttpClient httpClient;
 
     public PlacesService()
     {
         httpClient = new HttpClient();
     }
 
-    public async Task<IEnumerable<PlaceResult>> GetNearestRestaurantsAsync(double lat, double lon, string apiKey)
+    public async Task<IEnumerable<PlaceResult>> GetNearestRestaurantsAsync(double lat, double lon, string apiKey, int maxResults = 20)
     {
-        string url =
-            $"https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
-            $"?location={lat},{lon}" +
-            $"&rankby=distance" +
-            $"&type=restaurant" +
-            $"&key={apiKey}";
+        maxResults = Math.Clamp(maxResults, 1, 20); // API has limits on max results, adjust as needed
+        string url = "https://places.googleapis.com/v1/places:searchNearby";
+        httpClient.DefaultRequestHeaders.Add("X-Goog-Api-Key", apiKey);
+        httpClient.DefaultRequestHeaders.Add("X-Goog-FieldMask", "places.displayName,places.location");
+
+        var request = new
+        {
+            includedTypes = new[] { "restaurant" },   // or any place type(s)
+            maxResultCount = maxResults,
+            locationRestriction = new
+            {
+                circle = new
+                {
+                    center = new { latitude = lat, longitude = lon },
+                    radius = 200.0                    // search radius in meters
+                }
+            }
+        };
 
         try
         {
-            HttpResponseMessage WsVersionTask = await CallWs.CallUncertainWebServiceAsync((CancellationTokenSource cts) => httpClient.GetAsync(url, cts.Token));
+            HttpResponseMessage placesResponse = await CallWs.CallUncertainWebServiceAsync((CancellationTokenSource cts) => httpClient.PostAsJsonAsync(url, request, cts.Token));
+            // Need a new HttpClient for the next call, otherwise we get a "Bad Request" error on the next call to PostAsJsonAsync.
+            httpClient.Dispose();
+            httpClient = new HttpClient();
 
-            if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
+
+            if (placesResponse is not null && placesResponse.IsSuccessStatusCode)
             {
-                var json = await WsVersionTask.Content.ReadAsStringAsync();
+                var json = await placesResponse.Content.ReadAsStringAsync();
                 // Detect the weird failure which just returns an OK result but no data
                 if (string.IsNullOrEmpty(json))
                 { // This is a failure, return a NotFound status
@@ -38,26 +55,26 @@ public class PlacesService
                 }
                 else
                 {
-                    var data = JsonSerializer.Deserialize<PlacesResponse>(json);
+                    var data = JsonSerializer.Deserialize<PlacesResult>(json);
                     
-                    if (data is null || data?.Status != "OK")
+                    if (data is null)
                     {
-                        Utilities.RecordMsg($"Error fetching places: {data?.Status}");
+                        Utilities.RecordMsg("No data returned fetching places");
                         return [];
                     }
-                    if (data.Results is null)
+                    if (data.Places is null)
                     {
                         Utilities.RecordMsg($"No results returned fetching places");
                         return [];
                     }
 
-                    return data.Results.Where(r => !string.IsNullOrEmpty(r.Name))!;
+                    return data.Places.Where(r => !string.IsNullOrEmpty(r.DisplayName?.Text))!;
                 }
             }
-            else if (WsVersionTask is null)
+            else if (placesResponse is null)
                 Utilities.DebugMsg("GetNearestRestaurantsAsync failed, no task returned");
             else
-                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, status code = " + WsVersionTask.StatusCode);
+                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, status code = " + placesResponse.StatusCode);
         }
         catch (Exception ex)
         {
@@ -67,127 +84,37 @@ public class PlacesService
     }
 }
 
-public class PlacesResponse
+public class PlacesResult
 {
-    [JsonPropertyName("html_attributions")]
-    public List<string>? HtmlAttributions { get; set; }
-
-    [JsonPropertyName("results")]
-    public List<PlaceResult>? Results { get; set; }
-
-    [JsonPropertyName("status")]
-    public string? Status { get; set; }
+    [JsonPropertyName("places")]
+    public List<PlaceResult>? Places { get; set; }
 }
 
 public class PlaceResult
 {
-    [JsonPropertyName("business_status")]
-    public string? BusinessStatus { get; set; }
-
-    [JsonPropertyName("geometry")]
-    public Geometry? Geometry { get; set; }
-
-    [JsonPropertyName("icon")]
-    public string? Icon { get; set; }
-
-    [JsonPropertyName("icon_background_color")]
-    public string? IconBackgroundColor { get; set; }
-
-    [JsonPropertyName("icon_mask_base_uri")]
-    public string? IconMaskBaseUri { get; set; }
-
-    [JsonPropertyName("international_phone_number")]
-    public string? InternationalPhoneNumber { get; set; }
-
-    [JsonPropertyName("name")]
-    public string? Name { get; set; }
-
-    [JsonPropertyName("opening_hours")]
-    public OpeningHours? OpeningHours { get; set; }
-
-    [JsonPropertyName("photos")]
-    public List<Photo>? Photos { get; set; }
-
-    [JsonPropertyName("place_id")]
-    public string? PlaceId { get; set; }
-
-    [JsonPropertyName("plus_code")]
-    public PlusCode? PlusCode { get; set; }
-
-    [JsonPropertyName("price_level")]
-    public int? PriceLevel { get; set; }
-
-    [JsonPropertyName("rating")]
-    public double? Rating { get; set; }
-
-    [JsonPropertyName("reference")]
-    public string? Reference { get; set; }
-
-    [JsonPropertyName("scope")]
-    public string? Scope { get; set; }
-
-    [JsonPropertyName("types")]
-    public List<string>? Types { get; set; }
-
-    [JsonPropertyName("user_ratings_total")]
-    public int? UserRatingsTotal { get; set; }
-
-    [JsonPropertyName("vicinity")]
-    public string? Vicinity { get; set; }
-}
-public class Geometry
-{
     [JsonPropertyName("location")]
-    public LatLng? Location { get; set; }
+    public GoogleLocation? GoogleLocation { get; set; }
 
-    [JsonPropertyName("viewport")]
-    public Viewport? Viewport { get; set; }
+    [JsonPropertyName("displayName")]
+    public DisplayName? DisplayName { get; set; }
+
+    public string? Name => DisplayName?.Text;
 }
 
-public class LatLng
+public class GoogleLocation
 {
-    [JsonPropertyName("lat")]
-    public double Lat { get; set; }
+    [JsonPropertyName("latitude")]
+    public double Latitude { get; set; }
 
-    [JsonPropertyName("lng")]
-    public double Long { get; set; }
+    [JsonPropertyName("longitude")]
+    public double Longitude { get; set; }
 }
 
-public class Viewport
+public class DisplayName
 {
-    [JsonPropertyName("northeast")]
-    public LatLng? Northeast { get; set; }
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
 
-    [JsonPropertyName("southwest")]
-    public LatLng? Southwest { get; set; }
-}
-
-public class OpeningHours
-{
-    [JsonPropertyName("open_now")]
-    public bool? OpenNow { get; set; }
-}
-
-public class Photo
-{
-    [JsonPropertyName("height")]
-    public int? Height { get; set; }
-
-    [JsonPropertyName("html_attributions")]
-    public List<string>? HtmlAttributions { get; set; }
-
-    [JsonPropertyName("photo_reference")]
-    public string? PhotoReference { get; set; }
-
-    [JsonPropertyName("width")]
-    public int? Width { get; set; }
-}
-
-public class PlusCode
-{
-    [JsonPropertyName("compound_code")]
-    public string? CompoundCode { get; set; }
-
-    [JsonPropertyName("global_code")]
-    public string? GlobalCode { get; set; }
+    [JsonPropertyName("languageCode")]
+    public string? LanguageCode { get; set; }
 }
