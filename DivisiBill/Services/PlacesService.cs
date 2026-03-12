@@ -18,6 +18,7 @@ public class PlacesService
     public async Task<IEnumerable<PlaceResult>> GetNearestRestaurantsAsync(double lat, double lon, string apiKey, int maxResults = 20)
     {
         maxResults = Math.Clamp(maxResults, 1, 20); // API has limits on max results, adjust as needed
+        Location venueLocation = new(lat, lon) { Accuracy = 1.0 };
         string url = "https://places.googleapis.com/v1/places:searchNearby";
         httpClient.DefaultRequestHeaders.Add("X-Goog-Api-Key", apiKey);
         httpClient.DefaultRequestHeaders.Add("X-Goog-FieldMask", "places.displayName,places.location");
@@ -25,13 +26,14 @@ public class PlacesService
         var request = new
         {
             includedTypes = new[] { "restaurant" },   // or any place type(s)
+            rankPreference = "DISTANCE",
             maxResultCount = maxResults,
             locationRestriction = new
             {
                 circle = new
                 {
                     center = new { latitude = lat, longitude = lon },
-                    radius = 200.0                    // search radius in meters
+                    radius = 200.0 // search radius in meters
                 }
             }
         };
@@ -68,7 +70,13 @@ public class PlacesService
                         return [];
                     }
 
-                    return data.Places.Where(r => !string.IsNullOrEmpty(r.DisplayName?.Text))!;
+                    var placeList = data.Places.Where(r => !string.IsNullOrEmpty(r.Name));
+                    foreach (var place in placeList)
+                    {
+                        if (place.GoogleLocation is not null)
+                            place.Distance = venueLocation.GetDistanceTo(new Location(place.GoogleLocation.Latitude, place.GoogleLocation.Longitude) { Accuracy = 1.0 });
+                    }
+                    return placeList;
                 }
             }
             else if (placesResponse is null)
@@ -99,6 +107,12 @@ public class PlaceResult
     public DisplayName? DisplayName { get; set; }
 
     public string? Name => DisplayName?.Text;
+
+    /// <summary>
+    /// Distance in meters, calculated on the client side based on the location of the place and the user's current location
+    /// </summary>
+    public int Distance { get; set; } = Distances.Inaccurate; 
+ 
 }
 
 public class GoogleLocation
