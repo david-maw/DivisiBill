@@ -1,4 +1,10 @@
 <!-- to regenerate the html file dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d -->
+# Version 6.3.18
+
+## Improved Venue Search
+
+The search for nearby venues on the venue edit page has been improved to show the distance to each possible venue.
+
 # Version 6.3.17
 
 ## Improved Search Behavior
