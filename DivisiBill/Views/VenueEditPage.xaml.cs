@@ -14,7 +14,7 @@ public partial class VenueEditPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        venueEditViewModel.Initialize();
+        venueEditViewModel.OnNavigatedTo();
     }
 
     protected override void OnNavigatedFrom(NavigatedFromEventArgs args)

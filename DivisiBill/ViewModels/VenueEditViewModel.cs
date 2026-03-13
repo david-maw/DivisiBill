@@ -33,13 +33,24 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     public partial Venue ActiveVenue { get; set; } = new();
-    public async void Initialize()
+
+    /// <summary>
+    /// Initializes the Name, Notes, and Location properties based on the current ActiveVenue.
+    /// </summary>
+    /// <remarks>This method sets the Notes property to an empty string if the ActiveVenue does not provide a
+    /// value, and sets the Location property to null if the ActiveVenue's location is not valid. The inverse
+    /// of this is the <see cref="SaveActive"/> method.</remarks>
+    private void LoadProperties()
+    {
+        Name = ActiveVenue.Name;
+        Notes = ActiveVenue.Notes ?? string.Empty;
+        Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
+    }
+    public async void OnNavigatedTo()
     {
         if (mapSettings is null)
         {
-            Name = OriginalName = ActiveVenue.Name;
-            Notes = ActiveVenue.Notes ?? string.Empty;
-            Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
+            LoadProperties();
             OnPropertyChanged(nameof(IsForCurrentMeal)); // Make sure this gets evaluated
         }
         else if (mapSettings.VenueLocationHasChanged)
@@ -62,9 +73,6 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsNewNameInvalid))]
     public partial string Name { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial string OriginalName { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string Notes { get; set; } = string.Empty;
@@ -186,7 +194,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
                     }
                     else // Said no to a name change
                     {
-                        Name = OriginalName; // restore the original name
+                        Name = ActiveVenue.Name; // restore the original name
                         return;
                     }
                 }
@@ -200,7 +208,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
-    private void Restore() => Initialize();
+    private void Restore() => LoadProperties();
 
     [RelayCommand]
     private void ClearLocation() => Location = null;
