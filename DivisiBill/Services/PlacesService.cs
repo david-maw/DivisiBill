@@ -40,15 +40,15 @@ public class PlacesService
 
         try
         {
-            HttpResponseMessage placesResponse = await CallWs.CallUncertainWebServiceAsync((CancellationTokenSource cts) => httpClient.PostAsJsonAsync(url, request, cts.Token));
+            HttpResponseMessage response = await CallWs.CallUncertainWebServiceAsync((CancellationTokenSource cts) => httpClient.PostAsJsonAsync(url, request, cts.Token));
             // Need a new HttpClient for the next call, otherwise we get a "Bad Request" error on the next call to PostAsJsonAsync.
             httpClient.Dispose();
             httpClient = new HttpClient();
 
 
-            if (placesResponse is not null && placesResponse.IsSuccessStatusCode)
+            if (response is not null && response.IsSuccessStatusCode)
             {
-                var json = await placesResponse.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync();
                 // Detect the weird failure which just returns an OK result but no data
                 if (string.IsNullOrEmpty(json))
                 { // This is a failure, return a NotFound status
@@ -79,10 +79,10 @@ public class PlacesService
                     return placeList;
                 }
             }
-            else if (placesResponse is null)
+            else if (response is null)
                 Utilities.DebugMsg("GetNearestRestaurantsAsync failed, no task returned");
             else
-                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, status code = " + placesResponse.StatusCode);
+                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, status code = " + response.StatusCode);
         }
         catch (Exception ex)
         {

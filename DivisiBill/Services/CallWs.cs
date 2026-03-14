@@ -165,11 +165,11 @@ internal static class CallWs
         bool WsVersionChecked = false;
         try
         {
-            HttpResponseMessage WsVersionTask = await CallUncertainWebServiceAsync((CancellationTokenSource cts) => client.GetAsync("version", cts.Token));
+            HttpResponseMessage response = await CallUncertainWebServiceAsync((CancellationTokenSource cts) => client.GetAsync("version", cts.Token));
 
-            if (WsVersionTask is not null && WsVersionTask.IsSuccessStatusCode)
+            if (response is not null && response.IsSuccessStatusCode)
             {
-                MostRecentVersionInfo = await WsVersionTask.Content.ReadAsStringAsync();
+                MostRecentVersionInfo = await response.Content.ReadAsStringAsync();
                 // Detect the weird failure which just returns an OK result but no data
                 if (string.IsNullOrEmpty(MostRecentVersionInfo))
                 { // This is a failure, return a NotFound status
@@ -178,10 +178,10 @@ internal static class CallWs
                 else
                     WsVersionChecked = true;
             }
-            else if (WsVersionTask is null)
+            else if (response is null)
                 Utilities.DebugMsg("GetVersion failed, no task returned");
             else
-                Utilities.DebugMsg("GetVersion failed, status code = " + WsVersionTask.StatusCode);
+                Utilities.DebugMsg("GetVersion failed, status code = " + response.StatusCode);
         }
         catch (Exception ex)
         {
