@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:DivisiBill.Models"
@@ -69,7 +69,7 @@
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>
-    <services:ColumnLayout>
+    <controls:ColumnLayout>
         <!--#region People List -->
         <BoxView HeightRequest="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" VerticalOptions="Start"/>
         <CollectionView
@@ -83,11 +83,11 @@
             ItemsSource="{Binding AllPeople}"/>
         <!--#region Scroll Up/Down-->
         <controls:ScrollButton
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeDownAllowed}"/>
         <controls:ScrollButton
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"
             VerticalOptions="End"/>
@@ -112,5 +112,5 @@
             <Button Text="UnDelete All" Command="{Binding UnDeleteAllPeopleCommand}" IsVisible="{Binding IsManyDeletedPeople}"/>
         </HorizontalStackLayout>
         <!--#endregion-->
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>

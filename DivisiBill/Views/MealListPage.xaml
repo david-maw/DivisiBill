@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="DivisiBill.Views.MealListPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -300,7 +300,7 @@
                      Command="{Binding ShowCurrentCommand}"
                      Order="Secondary" />
     </ContentPage.ToolbarItems>
-    <services:ColumnLayout Margin="0,0,0,10">
+    <controls:ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading-->
         <Label
             FontSize="{StaticResource FontSizeMedium}"
@@ -353,7 +353,7 @@
         <!--#region Simple List of Meals-->
         <CollectionView
             x:Name="CurrentCollectionView"
-            services:ColumnLayout.Fill="True"
+            controls:ColumnLayout.Fill="True"
             EmptyView="No bills found"
             ItemSizingStrategy="MeasureAllItems"
             ItemTemplate="{StaticResource WithSwipe}"
@@ -373,8 +373,8 @@
         <!--#region List of Meals Grouped by Venue-->
         <CollectionView
             x:Name="CurrentGroupView"
-            services:ColumnLayout.Fill="True"
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.Fill="True"
+            controls:ColumnLayout.SameRow="True"
             EmptyView="No bill groups found"
             services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
             ItemSizingStrategy="MeasureAllItems"
@@ -466,7 +466,7 @@
         </CollectionView>
         <!--#endregion-->
         <!--#region Scroll Up/Down-->
-        <controls:ScrollButton services:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}">
+        <controls:ScrollButton controls:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}">
             <controls:ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeDownAllowed" />
@@ -475,7 +475,7 @@
             </controls:ScrollButton.IsVisible>
         </controls:ScrollButton>
         <controls:ScrollButton
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             VerticalOptions="End">
             <controls:ScrollButton.IsVisible>
@@ -488,7 +488,7 @@
         <!--#endregion-->
         <!--#region Busy Indicator when Meals are Loading or Scrolling-->
         <Label
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Padding="2,10"
             FontSize="{StaticResource FontSizeTitle}"
             HorizontalOptions="Center"
@@ -496,7 +496,7 @@
             IsVisible="{Binding IsMealListLoading}"
             VerticalOptions="Center"/>
         <ActivityIndicator
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Margin="-1"
             WidthRequest="240"
             HeightRequest="240"
@@ -524,5 +524,5 @@
                 Text="Undo All Deletions" />
         </HorizontalStackLayout>
         <!--#endregion-->
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>

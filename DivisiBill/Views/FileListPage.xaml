@@ -185,7 +185,7 @@
         <!--#endregion-->
     </ContentPage.Resources>
 
-    <services:ColumnLayout>
+    <controls:ColumnLayout>
         <CollectionView
             x:Name="ItemsCollectionView"
             ItemsSource="{Binding FileList}"
@@ -222,14 +222,14 @@
         </CollectionView>
         <!--#region Scroll Up/Down-->
         <controls:ScrollButton
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeDownAllowed}"/>
         <controls:ScrollButton
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"
             VerticalOptions="End"/>
         <!--#endregion-->
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>

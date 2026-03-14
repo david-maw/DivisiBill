@@ -1,8 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:DivisiBill.ViewModels"
              xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              Shell.FlyoutBehavior="Disabled"
              Title="Venue Details"
              x:DataType="viewmodels:VenueEditViewModel"
@@ -17,7 +18,7 @@
         <ToolbarItem Command="{Binding ExitPageCommand}" IconImageSource="{StaticResource GlyphBack}"/>
     </ContentPage.ToolbarItems>
     <!--This is a column layout (a single column grid), rather than a VerticalStackLayout, in order to allow the Notes field to occupy all the available space-->
-    <services:ColumnLayout Margin="10,0,10,10">
+    <controls:ColumnLayout Margin="10,0,10,10">
         <Label Text="{Binding Path=Name}"
                HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
         <Label Text="(in use)" IsVisible="{Binding IsForCurrentMeal}" HorizontalOptions="Center"/>
@@ -44,7 +45,7 @@
         </Grid>
         <Label Text="Nearby Venue Names" HorizontalOptions="Center" FontAttributes="Bold" IsVisible="{Binding PossiblesShowing}"/>
         <Border Padding="10" IsVisible="{Binding PossiblesShowing}">
-            <CollectionView services:ColumnLayout.Fill="false"
+            <CollectionView controls:ColumnLayout.Fill="false"
                 MaximumHeightRequest="200"
                 ItemsSource="{Binding Possibles}" 
                 SelectionMode="Single" 
@@ -64,8 +65,8 @@
         </Border>
         <Label Text="New name is invalid, will remain unchanged" HorizontalOptions="Center" IsVisible="{Binding IsNewNameInvalid}"/>
         <Label Text="Notes" FontAttributes="Bold" HorizontalOptions="Center"/>
-        <Border services:ColumnLayout.Fill="True">
+        <Border controls:ColumnLayout.Fill="True">
             <Editor Text="{Binding Notes}"/>
         </Border>
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>

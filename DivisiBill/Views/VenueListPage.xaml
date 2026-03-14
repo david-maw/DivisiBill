@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
@@ -99,7 +99,7 @@
         <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"        Order="Secondary"/>
         <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}" Order="Secondary"/>
     </ContentPage.ToolbarItems>
-    <services:ColumnLayout>
+    <controls:ColumnLayout>
         <!--#region List of Venues -->
         <CollectionView x:Name="CurrentCollectionView"
                         x:DataType="vm:VenueListViewModel"
@@ -129,11 +129,11 @@
         <!--#endregion-->
         <!--#region Scroll Up/Down-->
         <controls:ScrollButton
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeDownAllowed}"/>
         <controls:ScrollButton
-            services:ColumnLayout.SameRow="True"
+            controls:ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"
             VerticalOptions="End"/>
@@ -157,5 +157,5 @@
             <Button Text="UnDelete All" Command="{Binding UndeleteAllVenuesCommand}" IsVisible="{Binding IsManyDeletedVenues}"/>
         </HorizontalStackLayout>
         <!--#endregion-->
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>

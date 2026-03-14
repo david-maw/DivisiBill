@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:DivisiBill.Models"
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              xmlns:DivisiBill="clr-namespace:DivisiBill"
              BindingContext="{vm:MealSummaryViewModel}"
              x:DataType="vm:MealSummaryViewModel"
@@ -15,7 +16,7 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteMealCommand}"/>
     </ContentPage.ToolbarItems>
 
-    <services:ColumnLayout Spacing="2" Padding="5">
+    <controls:ColumnLayout Spacing="2" Padding="5">
         <!--#region Venue -->
         <Label Text="{Binding VenueName}" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
@@ -96,5 +97,5 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
         <!--#endregion-->
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>

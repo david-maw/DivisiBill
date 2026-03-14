@@ -1,10 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:services = "clr-namespace:DivisiBill.Services"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              xmlns:views="clr-namespace:DivisiBill.Views"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:MapPage}"
              Shell.FlyoutBehavior="Disabled"
              x:DataType="views:MapPage"
@@ -18,7 +19,7 @@
     <ContentPage.Resources>
         <maps:Circle x:Name="AccuracyCircle" x:Key="AccuracyCircle" FillColor="{StaticResource TransparentRed}" StrokeWidth="0"/>
     </ContentPage.Resources>
-    <services:ColumnLayout>
+    <controls:ColumnLayout>
         <Label
             Text="{Binding VenueName,Mode=OneWay}"
             VerticalOptions="Center"
@@ -33,8 +34,8 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <maps:Map x:Name="map" services:ColumnLayout.Fill="True"
+        <maps:Map x:Name="map" controls:ColumnLayout.Fill="True"
                   MapClicked="OnMapClicked"
                   IsShowingUser="{Binding MapIsShowingUser, Mode=OneTime}"/>
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>

@@ -1,7 +1,7 @@
-﻿//From https://github.com/hartez/CustomLayoutExamples#single-column-layout 
+//From https://github.com/hartez/CustomLayoutExamples#single-column-layout 
 using Microsoft.Maui.Layouts;
 
-namespace DivisiBill.Services;
+namespace DivisiBill.Controls;
 
 public class ColumnLayoutManager(ColumnLayout layout) : ILayoutManager
 {

@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:DivisiBill.Views"
              xmlns:models="clr-namespace:DivisiBill.Models"
              xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:ScanPage}"
              Shell.FlyoutBehavior="Disabled"
              x:Class="DivisiBill.Views.ScanPage"
@@ -13,7 +14,7 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Clicked="OnAddItemList"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <services:ColumnLayout Margin="10" x:DataType="views:ScanPage">
+        <controls:ColumnLayout Margin="10" x:DataType="views:ScanPage">
             <VerticalStackLayout x:Name="loading" IsVisible="False">
                 <ActivityIndicator IsRunning="True" HeightRequest="50"/>
                 <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}"/>
@@ -40,6 +41,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </services:ColumnLayout>
+        </controls:ColumnLayout>
     </ContentPage.Content>
 </ContentPage>

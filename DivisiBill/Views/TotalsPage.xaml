@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              xmlns:models="clr-namespace:DivisiBill.Models"
              xmlns:services="clr-namespace:DivisiBill.Services"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              Title="Totals"
              x:Class="DivisiBill.Views.TotalsPage"
              x:DataType="vm:MealViewModel"
@@ -19,7 +20,7 @@
         <ToolbarItem Text = "Payments"      Order="Secondary"          Command="{Binding DisplayPaymentsCommand}" CommandParameter="{Binding SelectedCost}"/>
         <ToolbarItem Text = "Person"        Order="Secondary"          Command="{Binding ShowPersonCommand}"      CommandParameter="{Binding SelectedCost}"/>
         <ToolbarItem Text = "Adjust Amount" Order="Secondary"          Command="{Binding AdjustCommand}"/>
-    </ContentPage.ToolbarItems>             
+    </ContentPage.ToolbarItems>
     <ContentPage.Resources>
         <ResourceDictionary>
             <Style x:Key="labelStyle" TargetType="Label">
@@ -108,12 +109,12 @@
         </DataTemplate>
     </ContentPage.Resources>
 
-    <services:ColumnLayout Margin="10">
-        <services:ColumnLayout.GestureRecognizers>
+    <controls:ColumnLayout Margin="10">
+        <controls:ColumnLayout.GestureRecognizers>
             <!--Swipes are intercepted by the CollectionView below, so these take effect only outside that view-->
             <!--In practice swipes pass through to this on Windows but not on Android-->
             <SwipeGestureRecognizer Direction="Right" Command="{Binding GoToItemsCommand}"/>
-        </services:ColumnLayout.GestureRecognizers>
+        </controls:ColumnLayout.GestureRecognizers>
         <!--#region Heading -->
         <!--This is the heading for the page-->
         <Border Margin="5" Padding="5"
@@ -281,5 +282,5 @@
             </Grid>
         </Border>
         <!--#endregion-->
-    </services:ColumnLayout>
+    </controls:ColumnLayout>
 </ContentPage>
