@@ -1,4 +1,14 @@
 <!-- to regenerate the html file dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d -->
+# Version 6.3.19
+
+## Improve Venue Edit 'Undo' Command
+
+The command now reliably restores the location (or lack of it) and notes as well as the name.
+
+## Improve Venue Help
+
+Various improvements have been made to venue related help, some clarifications but mostly adding links to other pages where appropriate. Also, the venue list help page is now located correctly by the 'Help' command.
+
 # Version 6.3.18
 
 ## Improved Venue Search
