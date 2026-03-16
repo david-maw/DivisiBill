@@ -24,7 +24,7 @@ Deletes the selected venue. You can also swipe left on a venue to delete it.
 
 ### Ellipsis (<u>&#xF01D9;</u>)
 
-Tap on the ellipsis to open a secondary menu containing commands to show the venue on a map, show the venue details or download a list of venues.
+Tap on the ellipsis to open a secondary menu containing commands to show the venue on a [map page](mappage.html), show the [venue details](venueeditpage.html) or download a list of venues from automated cloud backup (if you have enabled that).
 
 ## Heading
 

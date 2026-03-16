@@ -26,7 +26,7 @@ page. The main pages are:
 - [Bill Properties](propertiespage.html)
 - [List of saved bills](meallistpage.html) sorted by age, name, or distance
 - [Manage Data](datamanagementpage.html)
-- [List of venues](venuelistviewpage.html) sorted by name or distance
+- [List of venues](venuelistpage.html) sorted by name or distance
 - [List of People](peoplelistpage.html) sorted by name
 - [Basic Program Settings](settingspagebasic.html) including [licensing](licensing.html)
 - [Professional Program Settings](settingspage.html) including [licensing](licensing.html)

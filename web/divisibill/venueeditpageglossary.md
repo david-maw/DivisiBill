@@ -16,7 +16,7 @@ Tap here to remove the current venue (if it is in use you cannot remove it).
 
 ## Location
 
-This shows the current location of the venue, tap it to change the location, double-tap to clear it.
+This shows the current location of the venue, tap it to change the location using a [map page](mappage.html), double-tap to clear it.
 
 ## New Name
 

@@ -8,7 +8,7 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
-   sodipodi:docname="venuelistviewpage.svg"
+   sodipodi:docname="venuelistpage.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -51,14 +51,14 @@
        height="169.06876"
        preserveAspectRatio="none"
        style="image-rendering:optimizeQuality"
-       xlink:href="venuelistviewpage.png"
+       xlink:href="venuelistpage.png"
        id="image832"
        x="-39.536346"
        y="49.56921"
        inkscape:label="Bills Image" />
     <a
        id="a1292"
-       xlink:href="venuelistviewglossary.html#flyout"
+       xlink:href="venuelistglossary.html#flyout"
        target="_parent"
        xlink:title="Open/Close Flyout"
        transform="matrix(0.26829332,0,0,0.26080057,-39.21879,67.673498)">
@@ -72,7 +72,7 @@
     </a>
     <a
        id="a1348"
-       xlink:href="venuelistviewglossary.html#use"
+       xlink:href="venuelistglossary.html#use"
        target="_parent"
        xlink:title="Use the selected venue"
        transform="matrix(0.26728168,0,0,0.28688996,-71.903893,64.891337)">
@@ -86,7 +86,7 @@
     </a>
     <a
        id="a1351"
-       xlink:href="venuelistviewglossary.html#add"
+       xlink:href="venuelistglossary.html#add"
        target="_parent"
        xlink:title="Add a Venue"
        transform="matrix(0.30761053,0,0,0.28688996,-114.06094,64.891337)">
@@ -100,7 +100,7 @@
     </a>
     <a
        id="a1354"
-       xlink:href="venuelistviewglossary.html#delete"
+       xlink:href="venuelistglossary.html#delete"
        target="_parent"
        xlink:title="Delete Selected or All Venues"
        transform="matrix(0.30761053,0,0,0.28688996,-113.66652,64.891337)">
@@ -114,7 +114,7 @@
     </a>
     <a
        id="a1404"
-       xlink:href="venuelistviewglossary.html#ellipsis"
+       xlink:href="venuelistglossary.html#ellipsis"
        target="_parent"
        xlink:title="Open secondary menu"
        transform="matrix(0.19328136,0,0,0.28688996,31.193073,64.891337)">
@@ -128,7 +128,7 @@
     </a>
     <a
        id="a1185"
-       xlink:href="venuelistviewglossary.html#venue"
+       xlink:href="venuelistglossary.html#venue"
        target="_Parent"
        xlink:title="Individual Venue"
        transform="translate(0,13.758336)">
@@ -142,7 +142,7 @@
     </a>
     <a
        id="a1182"
-       xlink:href="venuelistviewglossary.html#heading"
+       xlink:href="venuelistglossary.html#heading"
        target="_parent"
        xlink:title="Venue List Title"
        transform="translate(0,17.991672)">
