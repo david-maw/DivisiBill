@@ -18,7 +18,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     public static event EventHandler<VenueDistanceChangedEventArgs> DistanceChanged;
 
     private static readonly string VenueFullName = Path.Combine(App.BaseFolderPath, VenueFolderName, VenueFileName);
-    private readonly Location MiddleOfNowhere = new(20, 170); // Middle of the Pacific, not close to anything
+    public static readonly Location MiddleOfNowhere = new(20, 170); // Middle of the Pacific, not close to anything
 
     private static readonly ObservableCollection<Venue> allVenues = [];
     private static readonly ObservableCollection<Venue> allVenuesByDistance = [];
@@ -448,7 +448,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     public Location Location
     {
         get => (Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid
-                ? MiddleOfNowhere
+                ? null
                 : new Location(Latitude, Longitude) { Accuracy = Accuracy };
         set
         {

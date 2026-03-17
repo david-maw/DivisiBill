@@ -214,15 +214,6 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     private void ClearLocation() => Location = null;
 
     [RelayCommand]
-    private async Task ShowMap()
-    {
-        if (Utilities.IsWinUI)
-        {
-            await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
-            return;
-        }
-        mapSettings = new(Name, Location);
-        await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
-    }
+    private async Task ShowMap() => await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings = new(Name, Location));
     #endregion
 }

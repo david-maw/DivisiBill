@@ -71,11 +71,6 @@ public partial class VenueListPage : ContentPage
 
     private async void OnShowMap(object? sender, EventArgs e)
     {
-        if (Utilities.IsWinUI)
-        {
-            await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
-            return;
-        }
         Venue? v = (sender is BindableObject b && b.BindingContext is Venue venue) ? venue : context.CurrentItem;
         if (v is not null)
         {

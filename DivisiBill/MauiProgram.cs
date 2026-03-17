@@ -2,7 +2,6 @@
 using DivisiBill.Services;
 using Microsoft.Extensions.DependencyInjection;
 #if WINDOWS
-using CommunityToolkit.Maui.Maps;
 using Sentry.Profiling;
 #endif
 

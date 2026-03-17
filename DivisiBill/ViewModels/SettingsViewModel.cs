@@ -40,8 +40,8 @@ public partial class SettingsViewModel : ObservableObjectPlus
                 else
                 {
                     IsSwitchingToFakeLocation = true;
-                    await Utilities.ShowAppSnackBarAsync("Will use fake location in 10s"); // Message shows for about 3 seconds
-                    await Task.Delay(7_000);
+                    await Utilities.ShowAppSnackBarAsync("Will use fake location in 20s"); // Message shows for about 3 seconds
+                    await Task.Delay(17_000);
                     App.UseFakeLocation = true; // Start using the fake location
                     await App.RefreshLocationAsync();
                     await Utilities.ShowAppSnackBarAsync("Fake location in use");
@@ -358,11 +358,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task SetFakeLocation()
     {
-        if (Utilities.IsWinUI)
-        {
-            await Utilities.ShowAppSnackBarAsync("Map is not available on Windows");
-            return;
-        }
         FakeLocationMapSettings.VenueLocation = FakeLocation ?? App.MyLocation;
         await App.PushAsync(Routes.MapPage, "MapSettings", FakeLocationMapSettings);
     }

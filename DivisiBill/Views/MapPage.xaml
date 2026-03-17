@@ -19,7 +19,7 @@
     <ContentPage.Resources>
         <maps:Circle x:Name="AccuracyCircle" x:Key="AccuracyCircle" FillColor="{StaticResource TransparentRed}" StrokeWidth="0"/>
     </ContentPage.Resources>
-    <controls:ColumnLayout>
+    <controls:ColumnLayout x:Name="rootLayout">
         <Label
             Text="{Binding VenueName,Mode=OneWay}"
             VerticalOptions="Center"
@@ -34,8 +34,8 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <maps:Map x:Name="map" controls:ColumnLayout.Fill="True"
-                  MapClicked="OnMapClicked"
-                  IsShowingUser="{Binding MapIsShowingUser, Mode=OneTime}"/>
+
+        <WebView x:Name="googleMapsWebView" controls:ColumnLayout.Fill="True"
+                  IsVisible="{OnPlatform false, WinUI=true}"/>
     </controls:ColumnLayout>
 </ContentPage>
