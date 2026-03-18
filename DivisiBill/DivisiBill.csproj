@@ -16,8 +16,10 @@
      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
      <NoWarn>NU1608;CS1701</NoWarn>
      <!--NU1608 Because Xamarin.Android.Google.BillingClient triggers it on a bunch of Android dependencies-->
-     <!--MVVMTK0045 because building tests triggers it and it's unnecessary-->
 	 <!--CS1701 Because CommunityToolkit/Mvvm 8.4.0 is built against net prior to 10.0, causing this warning-->
+
+	   <!--Set packable false to eliminate a NU1105 warning since we never need to put this in a nuget package-->
+	   <IsPackable>false</IsPackable>
 
 	   <!-- Display name -->
       <ApplicationTitle>DivisiBill</ApplicationTitle>
