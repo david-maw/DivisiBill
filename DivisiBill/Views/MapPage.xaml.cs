@@ -87,11 +87,14 @@ public partial class MapPage : ContentPage
         Location mapCenter = VenueLocation ?? (App.UseLocation ? App.MyLocation : null) ?? Venue.MiddleOfNowhere;
 
         if (googleMapsWebView.IsVisible)
-        { 
+        {
+#if WINDOWS
+            if (googleMapsWebView.Handler?.PlatformView is WebView2 wv2)
+                await wv2.EnsureCoreWebView2Async();
+#endif
             await LoadGoogleMap(mapCenter, zoom: 15);
             if (App.UseLocation && App.MyLocation != null)
             {
-                await Task.Delay(500); // Wait for the map to load
                 await googleMapsWebView.EvaluateJavaScriptAsync(
                     $"showCurrentLocation({App.MyLocation.Latitude:F5}, {App.MyLocation.Longitude:F5});");
             }
@@ -141,9 +144,9 @@ public partial class MapPage : ContentPage
     {
         VenueDistance = App.GetDistanceTo(VenueLocation);
         if (googleMapsWebView.IsVisible && App.UseLocation)
-                await googleMapsWebView.EvaluateJavaScriptAsync(App.MyLocation is null 
-                    ? "clearCurrentLocation();"
-                    : $"showCurrentLocation({App.MyLocation.Latitude:F5}, {App.MyLocation.Longitude:F5});");
+            await googleMapsWebView.EvaluateJavaScriptAsync(App.MyLocation is null
+                ? "clearCurrentLocation();"
+                : $"showCurrentLocation({App.MyLocation.Latitude:F5}, {App.MyLocation.Longitude:F5});");
     }
 
     /// <summary>
@@ -436,7 +439,7 @@ public partial class MapPage : ContentPage
         VenueLocation = originalVenueLocation;
         VenueLocationHasChanged = false;
         if (googleMapsWebView.IsVisible)
-            await googleMapsWebView.EvaluateJavaScriptAsync("mapRestore()"); 
+            await googleMapsWebView.EvaluateJavaScriptAsync("mapRestore()");
         else if (VenueLocation is not null)
         {
             MapSpan mapSpan = new(VenueLocation, 0.01, 0.01);
@@ -444,8 +447,8 @@ public partial class MapPage : ContentPage
             {
                 await Task.Delay(200); // Without this the MoveToRegion is ignored 
                 map.MoveToRegion(mapSpan);
-            } 
-	    }
+            }
+        }
     });
     public ICommand MapTypeCommand => new Command(async () =>
     {
