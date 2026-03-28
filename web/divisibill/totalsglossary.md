@@ -50,9 +50,9 @@ Swiping right or tapping in the open area below the list of participants switche
 
 If there are items not yet allocated, the total value of those items is shown here. Tap on it to switch focus to the first unallocated item.
 
-## Rounded Total
+## Total of Rounded
 
-The amount calculated if you round all the individual totals and add the rounded amounts together. Tap on this to see the overall cost breakdown for the whole bill.
+The amount calculated if you round each participant's total and add the rounded amounts together. For example, if there were two participants each with a total of $10.60, the total of rounded amounts would be $22, not the $21 you would get by simply rounding the total. Tap on this to see the overall cost breakdown for the whole bill.
 
 ## Summary
 
