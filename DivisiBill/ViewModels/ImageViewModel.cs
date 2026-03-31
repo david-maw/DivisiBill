@@ -190,6 +190,47 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             OnPropertyChanged(nameof(HasPreviewImage));
         }
     }
+
+    /// <summary>
+    /// Rotate the current image clockwise by 90 degrees
+    /// </summary>
+    [RelayCommand]
+    private async Task RotateRight()
+    {
+        if (!HasPreviewImage)
+            return;
+
+        try
+        {
+            IsBusy = true;
+            ResetImageView();
+
+            string sourcePath = imageChanged ? Meal.TempImageFilePath : Meal.CurrentMeal.ImagePath;
+            string tempPath = Path.Combine(Path.GetTempPath(), $"rotate_{Guid.NewGuid()}.jpg");
+
+            using (FileStream outputStream = File.Create(tempPath))
+            {
+                if (Microsoft.Maui.Devices.DeviceInfo.Platform == DevicePlatform.Android)
+                    SkiaSharpRotate(sourcePath, outputStream, 90);
+                else
+                    await ImageSharpRotate(sourcePath, outputStream, 90);
+            }
+
+            File.Copy(tempPath, Meal.TempImageFilePath, true);
+            File.Delete(tempPath);
+
+            PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.TempImageFilePath));
+            imageChanged = true;
+        }
+        catch (Exception ex)
+        {
+            await Utilities.DisplayAlertAsync("Rotate", "Could not rotate image: " + ex.Message, "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
     #region Controlling the Camera Flash
     /// <summary>
     /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
@@ -300,18 +341,13 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         IsBusy = false;
     }
     #endregion
-    #region Image Processing (grayscale and scaling)
+    #region Image Shrinking (gray scale and scaling)
     /// <summary>
     /// Convert an image to a smaller, gray scale version of itself to save space, this code runs very slowly (20s+) on Android
     /// in .NET 8 RC2 at least, so there we use the SkiaSharp version for now. It doesn't compress as well, but it's close enough.
     /// </summary>
-    /// <param name="imagePath">Path to a file containing the original image data (either from and image picker or camera)</param>
+    /// <param name="stream">Stream containing the original image data (either from and image picker or camera)</param>
     /// <param name="newStream">The stream to put the new (reduced size, gray scale) data in</param>
-    private static async Task ImageSharpConvert(string imagePath, FileStream newStream)
-    {
-        using Stream stream = File.OpenRead(imagePath);
-        await ImageSharpConvert(stream, newStream);
-    }
     private static async Task ImageSharpConvert(Stream stream, FileStream newStream)
     {
         using SixLabors.ImageSharp.Image image = await SixLabors.ImageSharp.Image.LoadAsync(stream);
@@ -343,13 +379,8 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// typically) on Android in .NET 8 RC2 at least, so we use it i place of the ImageSharp version for now. It doesn't compress as well,
     /// but it's close enough.
     /// </summary>
-    /// <param name="imagePath">Path to a file containing the original image data (either from and image picker or camera)</param>
+    /// <param name="stream">Stream containing the original image data (either from and image picker or camera)</param>
     /// <param name="newStream">The stream to put the new (reduced size, gray scale) data in</param>
-    private void SkiaConvert(string imagePath, FileStream newStream)
-    {
-        using Stream stream = File.OpenRead(imagePath);
-        SkiaConvert(stream, newStream);
-    }
     private void SkiaConvert(Stream stream, FileStream newStream)
     {
         var v = SKImage.FromEncodedData(stream);
@@ -369,6 +400,54 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         byte[] bytes = data.ToArray();
         File.WriteAllBytes(@"c:\temp\divisibilltest.jpg", bytes);
 #endif
+    }
+    #endregion
+    #region Image Rotation
+    /// <summary>
+    /// Rotate an image using ImageSharp (fast on Windows, slow on Android)
+    /// </summary>
+    /// <param name="imagePath">Path to a file containing the original image data</param>
+    /// <param name="outputStream">The stream to put the rotated image data in</param>
+    /// <param name="degrees">The degrees to rotate (e.g., -90 for counter-clockwise, 90 for clockwise)</param>
+    private static async Task ImageSharpRotate(string imagePath, FileStream outputStream, float degrees)
+    {
+        using FileStream inputStream = File.OpenRead(imagePath);
+        using SixLabors.ImageSharp.Image image = await SixLabors.ImageSharp.Image.LoadAsync(inputStream);
+        image.Mutate(x => x.Rotate(degrees));
+        await image.SaveAsync(outputStream, new JpegEncoder() { ColorType = JpegEncodingColor.Luminance });
+    }
+
+    /// <summary>
+    /// Rotate an image using SkiaSharp (fast on Android, slow on Windows)
+    /// </summary>
+    /// <param name="imagePath">Path to a file containing the original image data</param>
+    /// <param name="outputStream">The stream to put the rotated image data in</param>
+    /// <param name="degrees">The degrees to rotate (e.g., -90 for counter-clockwise, 90 for clockwise)</param>
+    private void SkiaSharpRotate(string imagePath, FileStream outputStream, float degrees)
+    {
+        using FileStream inputStream = File.OpenRead(imagePath);
+        var sourceImage = SKImage.FromEncodedData(inputStream);
+        var sourceBitmap = SKBitmap.FromImage(sourceImage);
+
+        degrees = degrees % 360;
+        if (degrees < 0)
+            degrees += 360;
+
+        SKBitmap rotatedBitmap;
+        if (degrees != 0)
+        {
+            rotatedBitmap = new SKBitmap(sourceBitmap.Height, sourceBitmap.Width, SKColorType.Gray8, SKAlphaType.Opaque);
+            using var canvas = new SKCanvas(rotatedBitmap);
+            canvas.Translate(rotatedBitmap.Width, 0);
+            canvas.RotateDegrees(degrees);
+            canvas.DrawBitmap(sourceBitmap, 0, 0);
+        }
+        else
+            rotatedBitmap = sourceBitmap;
+
+        using var image = SKImage.FromBitmap(rotatedBitmap);
+        using SKData data = image.Encode(SKEncodedImageFormat.Jpeg, 100);
+        data.SaveTo(outputStream);
     }
     #endregion
     #region IQueryAttributable Implementation

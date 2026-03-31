@@ -14,9 +14,9 @@ This icon, in the top left corner of the screen, allows you to show or collapse 
 
 Turns the flashlight on or off (it will turn off when you use the camera).
 
-### Camera (<u>&#xF0D5d;</u>)
+### Rotate (<u>&#xF1A3E;</u>)
 
-Opens the [camera page](camerapage.html) so you can take a picture of the bill.
+Rotates the image 90 degrees clockwise. This is useful if you took the picture in landscape mode and want to rotate it to portrait mode for better OCR results.
 
 ### OCR (<u>&#xF113A;</u>)
 
@@ -27,7 +27,7 @@ If you have the Professional Edition version of DivisiBill, this uses a cloud we
 Tap on the ellipsis to open a secondary menu containing commands to delete the current image, take a picture of a replacement image or browse for a picture.
 
 - Delete - Remove the image from the current bill.
-- Camera - Take a picture of a bill.
+- Camera - Opens the [camera page](camerapage.html) so you can take a picture of the bill.
 - Browse - Browse and select from current images.
 
 ## Image Area

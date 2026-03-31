@@ -13,7 +13,7 @@
              x:DataType="vm:ImageViewModel">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{Binding LightGlyph}" Command="{Binding ChangeLightModeCommand}" x:Name="FlashlightTbi"/>
-        <ToolbarItem IconImageSource="{StaticResource GlyphCamera}" Command="{Binding TakePictureCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphRotate90}" Command="{Binding RotateRightCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphOCR}" Command="{Binding OcrCommand}"/>
         <ToolbarItem Text = "Delete"   Command="{Binding DeleteCommand}" Order="Secondary"/>
         <ToolbarItem Text = "Undelete" Command="{Binding UndeleteCommand}" Order="Secondary"/>

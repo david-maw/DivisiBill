@@ -8,7 +8,7 @@
    height="430"
    viewBox="0 0 1080 430"
    sodipodi:docname="imagepage.svg"
-   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -26,13 +26,13 @@
      inkscape:pagecheckerboard="1"
      showgrid="false"
      inkscape:zoom="0.55"
-     inkscape:cx="540"
-     inkscape:cy="217.27273"
-     inkscape:window-width="1054"
-     inkscape:window-height="575"
-     inkscape:window-x="59"
-     inkscape:window-y="294"
-     inkscape:window-maximized="0"
+     inkscape:cx="539.09091"
+     inkscape:cy="218.18182"
+     inkscape:window-width="1440"
+     inkscape:window-height="878"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
      inkscape:current-layer="g8"
      inkscape:showpageshadow="2"
      inkscape:deskcolor="#d1d1d1" />
@@ -64,14 +64,14 @@
     </a>
     <a
        id="a1345"
-       xlink:href="imageglossary.html#camera"
+       xlink:href="imageglossary.html#rotate"
        target="_parent"
-       xlink:title="Take a picture of the bill"
+       xlink:title="Rotate the image"
        transform="matrix(1.0093203,0,0,1.0630454,121.16259,59.128839)">
       <rect
-         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
+         style="display:inline;fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
          id="rect938"
-         width="141.44522"
+         width="140.13887"
          height="90.708664"
          x="546.80652"
          y="31.04895" />

@@ -108,6 +108,7 @@
             <FontImageSource x:Key="GlyphOCR"                   Color="White" Glyph="&#xF113A;" FontFamily="mdicons"/> <!--ocr-->
             <FontImageSource x:Key="GlyphPersonEdit"            Color="White" Glyph="&#xF0FFB;" FontFamily="mdicons"/> <!--account-edit-outline-->
             <FontImageSource x:Key="GlyphReplace"               Color="White" Glyph="&#xF0B33;" FontFamily="mdicons"/> <!--file-replace-outline-->
+            <FontImageSource x:Key="GlyphRotate90"              Color="White" Glyph="&#xF1A3E;" FontFamily="mdicons"/> <!--file-rotate-clockwise-->
             <FontImageSource x:Key="GlyphMapMarker"             Color="White" Glyph="&#xF07D9;" FontFamily="mdicons"/> <!--map-marker-outline-->
             <FontImageSource x:Key="GlyphMapMarkerRemove"       Color="White" Glyph="&#xF12FA;" FontFamily="mdicons"/> <!--map-marker-remove-outline-->
             <FontImageSource x:Key="GlyphRestore"               Color="White" Glyph="&#xF099B;" FontFamily="mdicons"/> <!--restore-->
