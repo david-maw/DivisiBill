@@ -2,26 +2,26 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:services = "clr-namespace:DivisiBill.Services"
+             xmlns:viewmodels="clr-namespace:DivisiBill.ViewModels"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              xmlns:views="clr-namespace:DivisiBill.Views"
              xmlns:controls="clr-namespace:DivisiBill.Controls"
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:MapPage}"
              Shell.FlyoutBehavior="Disabled"
-             x:DataType="views:MapPage"
+             x:DataType="viewmodels:MapViewModel"
              x:Class="DivisiBill.Views.MapPage"
              Title="MapPage">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding MapTypeCommand}" IconImageSource="{StaticResource GlyphMap}"/>
+        <ToolbarItem Command="{Binding ChangeMapTypeCommand}" IconImageSource="{StaticResource GlyphMap}"/>
         <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>
         <ToolbarItem Command="{Binding ClearLocationCommand}" IconImageSource="{StaticResource GlyphMapMarkerRemove}"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Resources>
-        <maps:Circle x:Name="AccuracyCircle" x:Key="AccuracyCircle" FillColor="{StaticResource TransparentRed}" StrokeWidth="0"/>
+        <maps:Circle x:Name="nativeAccuracyCircle" x:Key="nativeAccuracyCircle" FillColor="{StaticResource TransparentRed}" StrokeWidth="0"/>
     </ContentPage.Resources>
     <controls:ColumnLayout x:Name="rootLayout">
         <Label
-            Text="{Binding VenueName,Mode=OneWay}"
+            Text="{Binding VenueName, Mode=OneWay}"
             VerticalOptions="Center"
             HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
         <Label VerticalOptions="Center" HorizontalOptions="Center">
@@ -36,6 +36,8 @@
         </Label>
 
         <WebView x:Name="googleMapsWebView" controls:ColumnLayout.Fill="True"
-                  IsVisible="{OnPlatform false, WinUI=true}"/>
+                 Source="{Binding GoogleMapSource}"
+                 IsEnabled="{OnPlatform false, WinUI=true}"
+                 IsVisible="{OnPlatform false, WinUI=true}"/>
     </controls:ColumnLayout>
 </ContentPage>

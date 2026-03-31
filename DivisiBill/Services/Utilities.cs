@@ -905,6 +905,23 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="s2">other string to compare</param>
     /// <returns>true if the strings are functionally equal, false if they differ</returns>
     internal static bool StringFunctionallyEqual(string s1, string s2) => string.Equals(s1, s2) || (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2));
+
+    /// <summary>
+    /// Takes a number and returns the nearest 'simpler' one. A simpler number has all zeros, except the first digit
+    /// </summary>
+    /// <param name="d"></param>
+    /// <returns>Simpler number</returns>
+    public static double Simplified(double d)
+    {
+        if (d <= 0)
+            return d;
+
+        double digits = Math.Floor(Math.Log10(d));
+        double exponent = Math.Pow(10, digits);
+        double mantissa = d / exponent;
+        mantissa = Math.Round(mantissa);
+        return mantissa * exponent;
+    }
     public static async Task HapticNotify()
     {
         try
