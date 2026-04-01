@@ -1,4 +1,14 @@
-<!-- to regenerate the html file dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d -->
+<!-- to regenerate the HTML file dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d -->
+# Version 6.3.20
+
+## Image Rotation
+
+The image page now has an icon to allow an image to be rotated if it happens to be oriented incorrectly.
+
+## Improve Help
+
+The "Total of Rounded" help text has been enhanced to better explain the value.
+
 # Version 6.3.19
 
 ## Improve Venue Edit 'Undo' Command
