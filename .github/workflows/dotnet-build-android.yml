@@ -37,10 +37,6 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore DivisiBill/DivisiBill.csproj
     
-    # Install pandoc 
-    - name: Install Pandoc
-      run: choco install pandoc --no-progress -y
-
     # Test the release
     - name: Test
       run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net10.0-windows10.0.19041.0
