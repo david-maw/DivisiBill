@@ -8,7 +8,7 @@ Tap this to return to the previous page, retaining any changes you may have made
 
 ## Undo
 
-Tap this to discard the current set of changes and return to the initial values.
+Tap this to discard the current set of changes and return to the initial values for the venue name, location and notes.
 
 ## Delete
 
@@ -24,7 +24,7 @@ Enter a name here to rename the venue, the name at the top of the page will stay
 
 ## Search
 
-Tap this button to search for the names of nearby venues, this can save time, especially when entering a new name.
+Tap this button to search for the names of nearby venues, this can save time, especially when entering a new name. The names of nearby venues will be shown in a list, along with their distance from your current location, and you can tap one to use that name and location for this venue.
 
 ## Notes
 
