@@ -38,21 +38,19 @@ public partial class HelpPage : ContentPage
 
         webView.Source = new HtmlWebViewSource
         {
-            Html = $@"<html>
+            Html = $"""
+                    <html>
                     <head>
-                    <style>
-                    html, body {{
-                        color: white;
-                        background-color: black;
-                    }}
-                    a {{color: mediumspringgreen;}}
-                    </style>
-                    <meta http-equiv=""Refresh"" content=""0; url='help/{PageName.ToLower()}.html{Fragment}'""/>
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>Preparing Help</title>
+                      <link rel="stylesheet" href="styles.css">
+                    <meta http-equiv="Refresh" content="0; url='help/{PageName.ToLower()}.html{Fragment}'"/>
                     </head>
                     <body>
                     <center><h1>Please Wait...Preparing Help</h1></center>
                     </body>
-                    </html>"
+                    </html>
+                    """
         };
     }
     public string PageName { get; set; }
