@@ -1,6 +1,7 @@
 namespace web;
 
 [QueryProperty(nameof(PageName), "page")]
+[QueryProperty(nameof(Fragment), "fragment")]
 public partial class HelpPage : ContentPage
 {
     public HelpPage()
@@ -14,31 +15,42 @@ public partial class HelpPage : ContentPage
         });
         InitializeComponent();
     }
-    protected override void OnAppearing()
+    protected override async void OnNavigatedTo(NavigatedToEventArgs e)
     {
-        base.OnAppearing();
-        if (string.IsNullOrEmpty(PageName))
-            PageName = "index";
+        base.OnNavigatedTo(e);
+#if WINDOWS
+        if (webView.Handler?.PlatformView is Microsoft.UI.Xaml.Controls.WebView2 wv)
+        {
+            bool isDark = App.Current?.RequestedTheme == AppTheme.Dark;
+            await wv.EnsureCoreWebView2Async();
+            wv.CoreWebView2.Profile.PreferredColorScheme =
+                isDark
+                ? Microsoft.Web.WebView2.Core.CoreWebView2PreferredColorScheme.Dark
+                : Microsoft.Web.WebView2.Core.CoreWebView2PreferredColorScheme.Light;
+        }
+#endif
+        if (!string.IsNullOrEmpty(Fragment))
+            Fragment = "#" + Fragment.ToLower();
+
         webView.Source = new HtmlWebViewSource
         {
-            Html = $@"<html>
+            Html = $"""
+                    <html>
                     <head>
-                    <style>
-                    html, body {{
-                        color: white;
-                        background-color: black;
-                    }}
-                    a {{color: mediumspringgreen;}}
-                    </style>
-                    <meta http-equiv=""Refresh"" content=""0; url='help/{PageName.ToLower()}.html'""/>
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>Preparing Help</title>
+                      <link rel="stylesheet" href="styles.css">
+                    <meta http-equiv="Refresh" content="0; url='help/{PageName.ToLower()}.html{Fragment}'"/>
                     </head>
                     <body>
                     <center><h1>Please Wait...Preparing Help</h1></center>
                     </body>
-                    </html>"
+                    </html>
+                    """
         };
     }
-    public string PageName { get; set; } = "";
+    public string PageName { get; set; } = "index";
+    public string Fragment { get; set; } = string.Empty;
 
     public System.Windows.Input.ICommand BackCommand { get; }
 

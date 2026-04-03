@@ -24,6 +24,6 @@ public partial class MainPage : ContentPage
         }
 #endif
         Shell.Current.FlyoutIsPresented = false;
-        await Shell.Current.GoToAsync($"{nameof(HelpPage)}?page=index");
+        await Shell.Current.GoToAsync($"{nameof(HelpPage)}?page=index&fragment=pages");
     }
 }
