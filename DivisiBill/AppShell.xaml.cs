@@ -73,7 +73,7 @@ public partial class AppShell : Shell
     private async void OnHelpIndexClicked(object sender, EventArgs e)
     {
         Shell.Current.FlyoutIsPresented = false;
-        await App.PushAsync($"{Routes.HelpPage}?page=index");
+        await App.PushAsync($"{Routes.HelpPage}?page=index&fragment=pages");
     }
     private void OnHelpClicked(object sender, EventArgs e)
     {

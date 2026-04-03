@@ -3,6 +3,7 @@ using System.Windows.Input;
 namespace DivisiBill.Views;
 
 [QueryProperty(nameof(PageName), "page")]
+[QueryProperty(nameof(Fragment), "fragment")]
 public partial class HelpPage : ContentPage
 {
     public HelpPage()
@@ -21,6 +22,9 @@ public partial class HelpPage : ContentPage
         base.OnAppearing();
         if (string.IsNullOrEmpty(PageName))
             PageName = "index";
+        if (!string.IsNullOrEmpty(Fragment))
+            Fragment = "#" + Fragment.ToLower();
+
         webView.Source = new HtmlWebViewSource
         {
             Html = $@"<html>
@@ -32,7 +36,7 @@ public partial class HelpPage : ContentPage
                     }}
                     a {{color: mediumspringgreen;}}
                     </style>
-                    <meta http-equiv=""Refresh"" content=""0; url='help/{PageName.ToLower()}.html'""/>
+                    <meta http-equiv=""Refresh"" content=""0; url='help/{PageName.ToLower()}.html{Fragment}'""/>
                     </head>
                     <body>
                     <center><h1>Please Wait...Preparing Help</h1></center>
@@ -41,6 +45,7 @@ public partial class HelpPage : ContentPage
         };
     }
     public string PageName { get; set; }
+    public string Fragment { get; set; }
 
     public ICommand BackCommand { get; }
 
