@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:web"
+             BindingContext="{Binding Source={RelativeSource Self}}"
+             x:DataType="local:MainPage"   
              Title="Divisibill Help Simulator"
              x:Class="web.MainPage">
 
@@ -14,7 +17,10 @@
                 Style="{StaticResource SubHeadline}" />
 
             <Button Text="Help Index" Clicked="OnHelpIndexClicked"/>
-
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Label Text="Dark Mode" VerticalOptions="Center"/>
+                <Switch IsToggled="{Binding Dark}"/>
+            </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 

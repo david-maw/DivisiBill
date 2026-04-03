@@ -26,4 +26,17 @@ public partial class MainPage : ContentPage
         Shell.Current.FlyoutIsPresented = false;
         await Shell.Current.GoToAsync($"{nameof(HelpPage)}?page=index&fragment=pages");
     }
+
+    public bool Dark
+    {
+        set
+        {
+            if (value != Dark)
+            {
+                Application.Current?.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
+            }
+        }
+        get => Application.Current?.UserAppTheme == AppTheme.Dark || Application.Current?.RequestedTheme == AppTheme.Dark;
+    }
+
 }
