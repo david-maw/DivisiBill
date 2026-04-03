@@ -11,6 +11,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<!-- Display name -->
 		<ApplicationTitle>web</ApplicationTitle>
 
