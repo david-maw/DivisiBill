@@ -17,9 +17,20 @@ public partial class HelpPage : ContentPage
         });
         InitializeComponent();
     }
-    protected override void OnAppearing()
+    protected override async void OnNavigatedTo(NavigatedToEventArgs e)
     {
-        base.OnAppearing();
+        base.OnNavigatedTo(e);
+#if WINDOWS
+        if (webView.Handler?.PlatformView is Microsoft.UI.Xaml.Controls.WebView2 wv)
+        {
+            bool isDark = App.Current?.RequestedTheme == AppTheme.Dark;
+            await wv.EnsureCoreWebView2Async();
+            wv.CoreWebView2.Profile.PreferredColorScheme =
+                isDark
+                ? Microsoft.Web.WebView2.Core.CoreWebView2PreferredColorScheme.Dark
+                : Microsoft.Web.WebView2.Core.CoreWebView2PreferredColorScheme.Light;
+        }
+#endif
         if (string.IsNullOrEmpty(PageName))
             PageName = "index";
         if (!string.IsNullOrEmpty(Fragment))
