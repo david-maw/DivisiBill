@@ -75,7 +75,6 @@ public partial class SplashPage : ContentPage
         Shell.Current.Navigating += PreventPrematureNavigation;
         App.Settings ??= new AppSettings(); // allowed to be null for testing
         Meal.InitializeFolders();
-        await InitializeUtilitiesAsync();
         if (App.SentryAllowed && App.Settings.SendCrashAsk)
         {
             IPopupResult<QuestionResponse> d = await Shell.Current.ShowPopupAsync<QuestionResponse>(

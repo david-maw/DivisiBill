@@ -32,6 +32,12 @@ public partial class HelpPage : ContentPage
         if (!string.IsNullOrEmpty(Fragment))
             Fragment = "#" + Fragment.ToLower();
 
+        // This seems unnecessarily complex, but it allows us to have a whole virtual web site of help files
+        // embedded as resources in the app, and we can navigate between them with links in the HTML. The
+        // initial page is just a redirect that shows a "Preparing Help" message while the WebView loads
+        // the actual content. This is necessary because the WebView can be slow to load the first page,
+        // especially on Windows, and without this, users would just see a blank page for a few seconds
+        // which looks like a bug.
         webView.Source = new HtmlWebViewSource
         {
             Html = $"""

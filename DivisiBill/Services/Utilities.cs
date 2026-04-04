@@ -952,13 +952,6 @@ public static partial class Utilities // Partial for regex generator
         }
     }
 
-    // From stack overflow discussion at https://stackoverflow.com/questions/1600962/displaying-the-build-date
-    public static async Task InitializeUtilitiesAsync()
-    {
-        using Stream notesStream = await FileSystem.OpenAppPackageFileAsync("Release Notes.html");
-        using StreamReader reader = new(notesStream);
-        ReleaseNotes = new HtmlWebViewSource { Html = reader.ReadToEnd() };
-    }
     internal static string CurrencySymbol = System.Globalization.NumberFormatInfo.CurrentInfo.CurrencySymbol;
     internal static string EditionName => App.IsLimited ? "Basic" : "Professional";
     private static readonly Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -966,14 +959,6 @@ public static partial class Utilities // Partial for regex generator
     internal static string DebugString { get; } = IsDebug ? "DEBUG" : null;
     internal static string Revision { get; } = assemblyVersion.Revision.ToString();
     internal static string BuildTime { get; } = DateTime.Parse(BuildEnvironment.BuildTimeString, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind).ToLocalTime().ToString();
-    private static HtmlWebViewSource GetReleaseNotes()
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        Stream stream = assembly.GetManifestResourceStream("DivisiBill.Release Notes.html");
-        using StreamReader reader = new(stream);
-        return new HtmlWebViewSource { Html = reader.ReadToEnd() };
-    }
-    public static HtmlWebViewSource ReleaseNotes { get; private set; }
     public static async Task<string> CopyStreamToTempFileAsync(Stream input)
     {
         // Create a unique temp file path

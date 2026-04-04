@@ -5,5 +5,5 @@
              x:Class="DivisiBill.Views.ReleaseNotesPage"
              Title="Release Notes"
              Shell.FlyoutBehavior="Flyout">
-    <WebView Source="{x:Static services:Utilities.ReleaseNotes}"/>
+    <WebView x:Name="webView"/>
 </ContentPage>

@@ -98,7 +98,7 @@
    </ItemGroup>
 
    <ItemGroup>
-     <MauiAsset Include="Release Notes.html" />
+     <MauiAsset Include="Release Notes.html" LogicalName="help\Release Notes.html" />
      <MauiAsset Include="styles.css" />
    </ItemGroup>
 
