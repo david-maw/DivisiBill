@@ -20,7 +20,9 @@ public partial class HelpPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs e)
     {
         base.OnNavigatedTo(e);
-#if WINDOWS
+        #if WINDOWS
+        // WebView2 doesn't automatically apply the application theme, so we have to do it ourselves
+        // until https://github.com/dotnet/maui/issues/34823 is fixed.
         if (webView.Handler?.PlatformView is Microsoft.UI.Xaml.Controls.WebView2 wv)
         {
             bool isDark = App.Current?.RequestedTheme == AppTheme.Dark;
@@ -30,24 +32,48 @@ public partial class HelpPage : ContentPage
                 ? Microsoft.Web.WebView2.Core.CoreWebView2PreferredColorScheme.Dark
                 : Microsoft.Web.WebView2.Core.CoreWebView2PreferredColorScheme.Light;
         }
-#endif
+        #endif
         if (string.IsNullOrEmpty(PageName))
             PageName = "index";
         if (!string.IsNullOrEmpty(Fragment))
             Fragment = "#" + Fragment.ToLower();
 
+        // This seems unnecessarily complex, but it allows us to have a whole virtual web site of help files
+        // embedded as resources in the app, and we can navigate between them with links in the HTML. The
+        // initial page is just a redirect that shows a "Preparing Help" message while the WebView loads
+        // the actual content. This is necessary because the WebView can be slow to load the first page,
+        // especially on Windows, and without this, users would just see a blank page for a few seconds
+        // which looks like a bug.
         webView.Source = new HtmlWebViewSource
         {
-            Html = $"""
+            Html = $$"""
                     <html>
                     <head>
                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
                       <title>Preparing Help</title>
-                      <link rel="stylesheet" href="styles.css">
-                    <meta http-equiv="Refresh" content="0; url='help/{PageName.ToLower()}.html{Fragment}'"/>
+                      <style>
+                        * {
+                            font-family: Arial, Helvetica, sans-serif;
+                          }
+                        @media (prefers-color-scheme: dark) {
+                            html, body {
+                                color: white;
+                                background-color: black;
+                            }
+                        }
+                        
+                        @media (prefers-color-scheme: light) {
+                            html, body {
+                                color: black;
+                                background-color: white;
+                            }
+                        }
+                      </style>
+                      <meta http-equiv="Refresh" content="0; url='help/{{PageName.ToLower()}}.html{{Fragment}}'"/>
                     </head>
                     <body>
-                    <center><h1>Please Wait...Preparing Help</h1></center>
+                      <center><h1>Please Wait...</h1></center>
+                      <center><h1>Preparing Help</h1></center>
                     </body>
                     </html>
                     """

@@ -40,16 +40,34 @@ public partial class HelpPage : ContentPage
         // which looks like a bug.
         webView.Source = new HtmlWebViewSource
         {
-            Html = $"""
+            Html = $$"""
                     <html>
                     <head>
                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
                       <title>Preparing Help</title>
-                      <link rel="stylesheet" href="styles.css">
-                    <meta http-equiv="Refresh" content="0; url='help/{PageName.ToLower()}.html{Fragment}'"/>
+                      <style>
+                        * {
+                            font-family: Arial, Helvetica, sans-serif;
+                          }
+                        @media (prefers-color-scheme: dark) {
+                            html, body {
+                                color: white;
+                                background-color: black;
+                            }
+                        }
+                        
+                        @media (prefers-color-scheme: light) {
+                            html, body {
+                                color: black;
+                                background-color: white;
+                            }
+                        }
+                      </style>
+                      <meta http-equiv="Refresh" content="0; url='help/{{PageName.ToLower()}}.html{{Fragment}}'"/>
                     </head>
                     <body>
-                    <center><h1>Please Wait...Preparing Help</h1></center>
+                      <center><h1>Please Wait...</h1></center>
+                      <center><h1>Preparing Help</h1></center>
                     </body>
                     </html>
                     """
