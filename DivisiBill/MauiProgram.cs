@@ -60,7 +60,7 @@ public static class MauiProgram
                 ));
 #endif
             })
-#if !WINDOWS
+#if !WINDOWS // needed until the fix for https://github.com/dotnet/maui/issues/34483 is released (.NET10 SR6)
             .UseMauiMaps()
 #endif
             .UseMauiCommunityToolkit()
