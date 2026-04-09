@@ -31,7 +31,6 @@ table, th, td, object {
 }
 
 /* Dark mode colors */
-@media (prefers-color-scheme: dark) {
     html, body {
         color: white;
         background-color: black;
@@ -44,23 +43,6 @@ table, th, td, object {
     a:link, a:visited {
         color: mediumspringgreen;
     }
-}
-
-/* Light mode colors */
-@media (prefers-color-scheme: light) {
-    html, body {
-        color: black;
-        background-color: white;
-    }
-
-    table, th, td, object {
-        border-color: black;
-    }
-
-    a:link, a:visited {
-        color: darkgreen;
-    }
-}
 
 /* Light/Dark Mode independent styles */
 .highlight {

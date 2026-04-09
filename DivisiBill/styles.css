@@ -1,64 +1,19 @@
-* {
+/* Global layout properties - apply to all color schemes */
+html, body {
     font-family: Arial, Helvetica, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-    html, body {
-        max-width: 500px;
-        margin: 0 auto;
-        border: 0;
-        padding: 0;
-        color: white;
-        background-color: black;
-    }
-
-    table, th, td {
-        border: 1px solid white;
-        border-collapse: collapse;
-        padding: 10px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    a:link {
-        color: mediumspringgreen;
-    }
-
-    a:visited {
-        color: mediumspringgreen;
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    html, body {
-        max-width: 500px;
-        margin: 0 auto;
-        border: 0;
-        padding: 0;
-        color: black;
-        background-color: white;
-    }
-
-    table, th, td {
-        border: 1px solid white;
-        border-collapse: collapse;
-        padding: 10px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    a:link {
-        color: darkgreen;
-    }
-
-    a:visited {
-        color: darkgreen;
-    }
-}
-
-body {
     width: 90%;
     padding: 10px;
+    max-width: 500px;
+    margin: 0 auto;
+    border: 0;
+    padding: 0;
+}
+
+table, th, td {
+    border-collapse: collapse;
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 img {
@@ -70,13 +25,52 @@ img {
     margin-right: auto;
 }
 
+table, th, td, object {
+    border-style: solid;
+    border-width: 2px;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+    html, body {
+        color: white;
+        background-color: black;
+    }
+
+    table, th, td, object {
+        border-color: white;
+    }
+
+    a:link, a:visited {
+        color: mediumspringgreen;
+    }
+}
+
+/* Light mode colors */
+@media (prefers-color-scheme: light) {
+    html, body {
+        color: black;
+        background-color: white;
+    }
+
+    table, th, td, object {
+        border-color: black;
+    }
+
+    a:link, a:visited {
+        color: darkgreen;
+    }
+}
+
+/* Light/Dark Mode independent styles */
 .highlight {
     color: orangered;
 }
 
+/* Redefine underline use for alternate font */
 u {
     font-family: icons;
-    text-decoration-line: none;
+    text-decoration: none;
 }
 
 @font-face {
