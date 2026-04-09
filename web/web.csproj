@@ -51,8 +51,12 @@
 
 		<!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
 		<MauiAsset Include="divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
+		
 		<!-- Don't need the MD files -->
 		<MauiAsset Remove="divisibill\**\*.md" />
+		
+		<!-- Don't need the CSS file used for markdown preview -->
+		<MauiAsset Remove="divisibill\md-styles.css" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -67,22 +71,37 @@
 	</ItemGroup>
 
   <ItemGroup>
-	<!-- DivisiBill MarkDown files: defined at project level so targets can use them for Inputs/Outputs -->
-    <DivisiBillMarkdownFiles Include="divisibill\**\*.md" />
     <MauiAsset Remove="divisibill\md-styles.css" />
-    <!-- Specific autoplus MarkDown files -->
-    <AutoPlusMarkdownFiles Include="index.md;policy.md" />
   </ItemGroup>
 
-  <!-- Per-file markdown -> html generation in-place; only runs when .md is newer than html or html is missing -->
-  <Target Name="GenerateDivisiBillHelpFiles" BeforeTargets="PrepareForBuild" Inputs="@(DivisiBillMarkdownFiles)" Outputs="@(DivisiBillMarkdownFiles->'divisibill\%(RecursiveDir)%(Filename).html')">
-    <Exec Command="pandoc -o &quot;divisibill\%(DivisiBillMarkdownFiles.RecursiveDir)%(DivisiBillMarkdownFiles.Filename).html&quot; &quot;%(DivisiBillMarkdownFiles.Identity)&quot; -s --template=pandoc-template.html --wrap=none" />
-    <Message Text="Generating html help file from %(DivisiBillMarkdownFiles.Identity)" Importance="High" />
-  </Target>
+  <ItemGroup>
+	<!--This ItemGroup defines the layout of the help files which are usually in markdown format and are converted to HTML 
+	for display in a WebView. The dependencies ensure that when a markdown file is updated, the corresponding HTML file is also
+	recognized as needing an update.--> 
 
-  <!-- Generate html from autoplus markdown files (index.md and policy.md) -->
-  <Target Name="GenerateAutoPlusHelpFiles" BeforeTargets="PrepareForBuild" Inputs="@(AutoPlusMarkdownFiles)" Outputs="@(AutoPlusMarkdownFiles->'%(RecursiveDir)%(Filename).html')">
-    <Exec Command="pandoc -o &quot;%(AutoPlusMarkdownFiles.RecursiveDir)%(AutoPlusMarkdownFiles.Filename).html&quot; &quot;%(AutoPlusMarkdownFiles.Identity)&quot; -s --template=pandoc-template.html --wrap=none" />
-    <Message Text="Generating autoplus html file from %(AutoPlusMarkdownFiles.Identity)" Importance="High" />
-  </Target>
+	<!-- DivisiBill HTML files with corresponding markdown dependencies -->
+    <MauiAsset Update="divisibill\*.html">
+      <DependentUpon>%(Filename).md</DependentUpon>
+    </MauiAsset>
+
+	<!--Also ensure that any images (SVG or PNG) that are used in the HTML files are also recognized as dependencies of the
+	markdown files. This way, when you edit a markdown file, all related assets are correctly associated with it in the 
+	project structure you see in the Solution Explorer.-->
+	<!-- DivisiBill SVG files with corresponding markdown dependencies -->
+	<MauiAsset Update="divisibill\*.svg">
+		<DependentUpon>%(Filename).md</DependentUpon>
+	</MauiAsset>
+	<!-- DivisiBill PNG files with corresponding svg dependencies -->
+	<MauiAsset Update="divisibill\*.png">
+		<DependentUpon>%(Filename).svg</DependentUpon>
+	</MauiAsset>
+
+	<!-- AutoPlus HTML files with corresponding markdown dependencies -->
+    <None Update="index.html">
+      <DependentUpon>index.md</DependentUpon>
+    </None>
+    <None Update="policy.html">
+      <DependentUpon>policy.md</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

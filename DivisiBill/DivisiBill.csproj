@@ -84,7 +84,9 @@
       <MauiAsset Include="..\web\divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
       <!-- Don't need the MD files -->
       <MauiAsset Remove="..\web\divisibill\**\*.md" />
-   </ItemGroup>
+	  <!-- Don't need the CSS file used for markdown preview -->
+	  <MauiAsset Remove="..\web\divisibill\md-styles.css" />
+  </ItemGroup>
 
    <ItemGroup>
      <MauiAsset Remove="Resources\Raw\md-template.html" />
@@ -148,6 +150,10 @@
     <MauiAsset Include="script.js">
       <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
     </MauiAsset>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\david\Documents\Develop\Phone\DivisiBill\web\md-template.html" Link="md-template.html" />
   </ItemGroup>
 
   <!--Generate the file holding the build secrets on every build-->
