@@ -1,6 +1,16 @@
 # Version 6.3.21
 
-No features yet, just some minor bug fixes and improvements to the release notes and help pages.
+## Help Index Improvement
+
+Selecting the 'Help Index' choice from the flyout now opens the help text at the list of pages.
+
+## Follow Application Theme
+
+The release notes and help pages now follow the application theme, previously they always had a black background with white text.
+
+## Improve Release Notes Page
+
+The release notes are now visible within the help system as well as on their own page and are consistently formatted in both places.
 
 # Version 6.3.20
 
