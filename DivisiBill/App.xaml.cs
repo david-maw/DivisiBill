@@ -331,7 +331,7 @@ public partial class App : Application, INotifyPropertyChanged
     public static void SetStatusBar()
     {
         bool isDark = App.Current.UserAppTheme == AppTheme.Dark || (App.Current.UserAppTheme == AppTheme.Unspecified && Application.Current.RequestedTheme == AppTheme.Dark);
-        SetStatusBar(isDark ? Colors.Black : Colors.White, darkIcons: isDark);
+        SetStatusBar(isDark ? Colors.Black : Colors.White, darkIcons: !isDark);
     }
     /// <summary>
     /// Sets the status bar background color and icon style for the application.
@@ -349,8 +349,8 @@ public partial class App : Application, INotifyPropertyChanged
         MainThread.BeginInvokeOnMainThread(() =>
         {
             CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(backgroundColor);
-            if (darkIcons is not null) 
-                CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(darkIcons.Value ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
+            if (darkIcons is not null)
+                CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(darkIcons.Value ? StatusBarStyle.DarkContent : StatusBarStyle.LightContent);
         });
 #endif
     }
@@ -541,7 +541,7 @@ public partial class App : Application, INotifyPropertyChanged
             Utilities.DebugMsg("App.CheckLicenses faulted checking Internet - no Internet");
             ex.ReportCrash();
             return false;
-        } 
+        }
         #endregion
         #region Try to reach the web service until the user tells us to give up
         bool WsVersionChecked = await CallWs.GetVersionAsync();
@@ -662,7 +662,7 @@ public partial class App : Application, INotifyPropertyChanged
                     Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license matches and there is no Pro AccountId");
                 else
                     Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license does not match, it will be ignored");
-            } 
+            }
             #endregion
 
             Utilities.DebugMsg("Exiting CheckLicenses, found Pro Subscription = " + FoundProSubscription + ", scans left = " + Billing.ScansLeft);
