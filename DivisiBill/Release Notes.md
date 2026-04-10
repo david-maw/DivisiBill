@@ -1,4 +1,7 @@
-<!-- to regenerate the HTML file dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d -->
+# Version 6.3.21
+
+No features yet, just some minor bug fixes and improvements to the release notes and help pages.
+
 # Version 6.3.20
 
 ## Image Rotation

@@ -57,7 +57,13 @@
 		
 		<!-- Don't need the CSS file used for markdown preview -->
 		<MauiAsset Remove="divisibill\md-styles.css" />
-	</ItemGroup>
+
+    <!--The release notes are in a different folder so we'll just use fake ones to go along with the other help files at run time-->
+    <MauiAsset Include="Fake Notes.html" LogicalName="help\releasenotes.html" />
+    <MauiAsset Update="Fake Notes.html">
+      <DependentUpon>Fake Notes.md</DependentUpon>
+    </MauiAsset>
+  </ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />

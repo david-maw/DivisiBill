@@ -1,61 +1,134 @@
-<!DOCTYPE html>
-<!-- GENERATED FILE - DO NOT EDIT -->
+﻿<!DOCTYPE html>
+<!-- GENERATED STANDALONE FILE - DO NOT EDIT -->
 <html>
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="VsMarkdownV2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Release Notes</title>
-  <link rel="stylesheet" href="styles.css">
+  <style>
+      /*This is a copy of style.css except for the icon font placed inline because this page is standalone*/
+      /* Global layout properties - apply to all color schemes */
+      html, body {
+          font-family: Arial, Helvetica, sans-serif;
+          width: 90%;
+          padding: 10px;
+          max-width: 500px;
+          margin: 0 auto;
+          border: 0;
+          padding: 0;
+      }
+
+      table, th, td {
+          border-collapse: collapse;
+          padding: 10px;
+          margin-left: auto;
+          margin-right: auto;
+      }
+
+      img {
+          max-width: 100%;
+          width: 300px;
+          height: auto;
+          display: block;
+          margin-left: auto;
+          margin-right: auto;
+      }
+
+      table, th, td, object {
+          border-style: solid;
+          border-width: 2px;
+      }
+
+      /* Dark mode colors */
+      @media (prefers-color-scheme: dark) {
+          html, body {
+              color: white;
+              background-color: black;
+          }
+
+          table, th, td, object {
+              border-color: white;
+          }
+
+          a:link, a:visited {
+              color: mediumspringgreen;
+          }
+      }
+
+      /* Light mode colors */
+      @media (prefers-color-scheme: light) {
+          html, body {
+              color: black;
+              background-color: white;
+          }
+
+          table, th, td, object {
+              border-color: black;
+          }
+
+          a:link, a:visited {
+              color: darkgreen;
+          }
+      }
+
+      /* Light/Dark Mode independent styles */
+      .highlight {
+          color: orangered;
+      }
+
+      /* Redefine underline use for alternate font */
+      /*Not done because we don't have the font file*/
+  </style>
 </head>
 <body>
-<!-- to regenerate the HTML file dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d -->
-<h1 id="version-6.3.20">Version 6.3.20</h1>
+<h1 id="version-6321">Version 6.3.21</h1>
+<p>No features yet, just some minor bug fixes and improvements to the release notes and help pages.</p>
+<h1 id="version-6320">Version 6.3.20</h1>
 <h2 id="image-rotation">Image Rotation</h2>
 <p>The image page now has an icon to allow an image to be rotated if it happens to be oriented incorrectly.</p>
 <h2 id="improve-help">Improve Help</h2>
-<p>The “Total of Rounded” help text has been enhanced to better explain the value.</p>
-<h1 id="version-6.3.19">Version 6.3.19</h1>
-<h2 id="improve-venue-edit-undo-command">Improve Venue Edit ‘Undo’ Command</h2>
+<p>The &quot;Total of Rounded&quot; help text has been enhanced to better explain the value.</p>
+<h1 id="version-6319">Version 6.3.19</h1>
+<h2 id="improve-venue-edit-undo-command">Improve Venue Edit 'Undo' Command</h2>
 <p>The command now reliably restores the location (or lack of it) and notes as well as the name.</p>
 <h2 id="improve-venue-help">Improve Venue Help</h2>
-<p>Various improvements have been made to venue related help, some clarifications but mostly adding links to other pages where appropriate. Also, the venue list help page is now located correctly by the ‘Help’ command.</p>
-<h1 id="version-6.3.18">Version 6.3.18</h1>
+<p>Various improvements have been made to venue related help, some clarifications but mostly adding links to other pages where appropriate. Also, the venue list help page is now located correctly by the 'Help' command.</p>
+<h1 id="version-6318">Version 6.3.18</h1>
 <h2 id="improved-venue-search">Improved Venue Search</h2>
 <p>The search for nearby venues on the venue edit page has been improved to show the distance to each possible venue.</p>
-<h1 id="version-6.3.17">Version 6.3.17</h1>
+<h1 id="version-6317">Version 6.3.17</h1>
 <h2 id="improved-search-behavior">Improved Search Behavior</h2>
-<p>The ‘Search’ button on the venue edit page now returns the closest restaurants in order of distance, which has a better chance of returning the one you want at the start of the list.</p>
+<p>The 'Search' button on the venue edit page now returns the closest restaurants in order of distance, which has a better chance of returning the one you want at the start of the list.</p>
 <p>Also, if the response to an attempt to search for nearby venues is slow, you now have an opportunity to cancel the query.</p>
-<h1 id="version-6.3.16">Version 6.3.16</h1>
+<h1 id="version-6316">Version 6.3.16</h1>
 <h2 id="list-of-nearby-venues">List of nearby Venues</h2>
-<p>A “search” button has been added to the venue edit page so that you can request a list of the names of nearby venues. This can save time, especially when adding a new venue. To use it, tap the search button, then tap the name closest to what you want and edit it as needed.</p>
-<h1 id="version-6.3.15">Version 6.3.15</h1>
+<p>A &quot;search&quot; button has been added to the venue edit page so that you can request a list of the names of nearby venues. This can save time, especially when adding a new venue. To use it, tap the search button, then tap the name closest to what you want and edit it  as needed.</p>
+<h1 id="version-6315">Version 6.3.15</h1>
 <h2 id="new-venue-handling">New Venue Handling</h2>
 <p>The handling of new venue creation has been improved in several ways.</p>
-<p>The “No Local Stored Bills” message is no longer shown for a new or renamed venue as it is the normal, expected case.</p>
+<p>The &quot;No Local Stored Bills&quot; message is no longer shown for a new or renamed venue as it is the normal, expected case.</p>
 <p>Venue locations are set automatically and can be edited by double tapping on the location. Previously venue location changes could be made but they were not saved.</p>
 <p>Setting the venue location from the map after changing the venue name no longer reverts the name back to its original value.</p>
-<h2 id="adjust-total-ui-improvements">‘Adjust Total’ UI Improvements</h2>
-<p>The ‘Target’ field gets focus when the popup is opened.</p>
-<h1 id="version-6.3.14">Version 6.3.14</h1>
+<h2 id="adjust-total-ui-improvements">'Adjust Total' UI Improvements</h2>
+<p>The 'Target' field gets focus when the popup is opened.</p>
+<h1 id="version-6314">Version 6.3.14</h1>
 <h2 id="enhance-manage-data-page">Enhance Manage Data Page</h2>
 <p>The bill count now shows either the number of bills that are archive candidates or the number that are restore candidates.</p>
 <p>It is possible to cancel an archive selection if you decide not to use it.</p>
 <p>When an archive is done we remember the newest file archived so that future archive runs can optionally start from the same day. This may occasionally lead to the same bill being archived twice but better that than not at all.</p>
-<h2 id="implement-adjust-total">Implement ‘Adjust Total’</h2>
-<p>The items and Totals page menus now both contain an ‘Adjust Total’ selection which allows you to add an adjustment to the bill to make the after-tax amount come to a value you specify. This can be useful when aligning an itemized bill with a credit card amount, for example.</p>
-<p>Selecting this menu item will open dialog to allow you to specify what your target number is. Tap ‘Done’ when you are satisfied, and a line item for ‘Adjustment’ will be added with its cost shared proportionally between participants.</p>
-<h1 id="version-6.3.13">Version 6.3.13</h1>
+<h2 id="implement-adjust-total">Implement 'Adjust Total'</h2>
+<p>The items and Totals page menus now both contain an 'Adjust Total' selection which allows you to add an adjustment to the bill to make the after-tax amount come to a value you specify. This can be useful when aligning an itemized bill with a credit card amount, for example.</p>
+<p>Selecting this menu item will open dialog to allow you to specify what your target number is. Tap 'Done' when you are satisfied, and a line item for 'Adjustment' will be added with its cost shared proportionally between participants.</p>
+<h1 id="version-6313">Version 6.3.13</h1>
 <h2 id="status-bar-color">Status Bar Color</h2>
 <p>The Android status bar could be colored red when automatically switching to the release notes during startup. This has been corrected, the release notes status bar now matches the notes.</p>
 <h2 id="release-notes-and-help-theme">Release Notes and Help Theme</h2>
 <p>The release notes and help pages now follow the application theme, previously they always had a black background with white text.</p>
-<h1 id="version-6.3.12">Version 6.3.12</h1>
+<h1 id="version-6312">Version 6.3.12</h1>
 <h2 id="improve-properties-page-ui">Improve Properties Page UI</h2>
 <p>The line corresponding to the item being edited is now bold as well as being enlarged slightly.</p>
 <p>Whenever a numeric input field is tapped the number within it is selected and the on screen keyboard is shown so you can simply type a new number without having to delete the existing one first.</p>
-<p>To dismiss the on screen keyboard tap the return button; this may be labeled “done” or have a symbol on it, often a check mark (<u>󰄬</u>).</p>
+<p>To dismiss the on screen keyboard tap the return button; this may be labeled &quot;done&quot; or have a symbol on it, often a check mark (<u>󰄬</u>).</p>
 <h2 id="correct-android-status-bar">Correct Android Status Bar</h2>
 <p>The Android status bar is the top line of the screen containing small icons. It would often show up with a purple background, this has been corrected:</p>
 <ul>
@@ -63,54 +136,54 @@
 <li>On the help page it shows as black with white icons to match the help text.</li>
 <li>On other pages it matches the theme of the application (either black or white background with white or black icons).</li>
 </ul>
-<h1 id="version-6.3.11">Version 6.3.11</h1>
+<h1 id="version-6311">Version 6.3.11</h1>
 <h2 id="clarify-pro-subscription">Clarify Pro Subscription</h2>
 <p>The help for the subscription feature on the Settings page has been reworded to make it clearer that it is an optional annual subscription and to emphasize its benefits.</p>
 <h2 id="handle-user-changing">Handle User Changing</h2>
-<p>Occasionally a user will change the Play Store identity used on their device, this is a very rare situation, but it is allowed. When this happens most of the locally persisted data will not change, but the user identity stored with any license should override the one stored with the app so that the new user’s cloud storage is accessible.</p>
+<p>Occasionally a user will change the Play Store identity used on their device, this is a very rare situation, but it is allowed. When this happens most of the locally persisted data will not change, but the user identity stored with any license should override the one stored with the app so that the new user's cloud storage is accessible.</p>
 <h2 id="improve-items-page-layout">Improve Items Page Layout</h2>
 <p>There is more space around the individual shares count buttons (the ones that show up when you long-press a participant button).</p>
 <h2 id="disable-restore-button">Disable Restore Button</h2>
-<p>Sometimes the archive Restore button on the “Manage Data” page would remain enabled even after the selected archive was “forgotten”.</p>
+<p>Sometimes the archive Restore button on the &quot;Manage Data&quot; page would remain enabled even after the selected archive was &quot;forgotten&quot;.</p>
 <h2 id="current-venue-settings">Current Venue Settings</h2>
 <p>The current venue was not always being identified in the list of venues. This has been corrected. Also, venue renaming (especially of the current venue) has been made more reliable.</p>
-<h1 id="section">6.3.10</h1>
+<h1 id="6310">6.3.10</h1>
 <h2 id="allow-clear-to-be-undone">Allow Clear to be Undone</h2>
-<p>The report page clear button now saves the cleared text so it can be restored using the “UnClear” button (which appends the cleared text to the end of whatever is there).</p>
-<h1 id="section-1">6.3.9</h1>
+<p>The report page clear button now saves the cleared text so it can be restored using the &quot;UnClear&quot; button (which appends the cleared text to the end of whatever is there).</p>
+<h1 id="639">6.3.9</h1>
 <h2 id="show-simple-coupon-amount">Show Simple Coupon Amount</h2>
 <p>A bill with coupons applied after tax would show an incorrect value for the sum of the coupons (it was actually showing what the coupon would be worth before tax). The sum of any coupons is once again shown.</p>
-<h2 id="android-send-to-and-open-with">Android ‘Send To’ and ‘Open With’</h2>
+<h2 id="android-send-to-and-open-with">Android 'Send To' and 'Open With'</h2>
 <p>You can now send or open zip or xml files to DivisiBill, if they are archived DivisiBill data it will open them and permit them to be restored much as the restore from the Data Management page does.</p>
-<h1 id="section-2">6.3.8</h1>
+<h1 id="638">6.3.8</h1>
 <h2 id="archive-restore-of-old-archives">Archive Restore of Old Archives</h2>
 <p>Restoring an archive created before 6.3.7 would fail to restore bills (people and venues were fine). This has been corrected but any archives created with 6.3.7 will need to be re-created using 6.3.8 or later in order to restore bills correctly.</p>
-<h1 id="section-3">6.3.7</h1>
-<h2 id="allow-retry-option">Allow “Retry” Option</h2>
-<p>The initial web request waits for 30s between failed calls, it is now possible to retry the call without waiting by tapping the “Retry” button. The existing “Give Up” button is unchanged.</p>
-<h1 id="section-4">6.3.6</h1>
+<h1 id="637">6.3.7</h1>
+<h2 id="allow-retry-option">Allow &quot;Retry&quot; Option</h2>
+<p>The initial web request waits for 30s between failed calls, it is now possible to retry the call without waiting by tapping the &quot;Retry&quot; button. The existing &quot;Give Up&quot; button is unchanged.</p>
+<h1 id="636">6.3.6</h1>
 <h2 id="mail-a-bill-archive">Mail a Bill Archive</h2>
 <p>Instead of a bill explanation and a bill image (if there was one) being attached to an email message, we now attach an explanation and a bill archive. The archive is a zip file holding any bill image and also an xml representation of the bill, its participants and its venue. The attached archive can be used with the restore function on the data management page to load the bill and any image to another instance of DivisiBill.</p>
-<h1 id="section-5">6.3.5</h1>
+<h1 id="635">6.3.5</h1>
 <h2 id="item-insert-changes">Item Insert Changes</h2>
 <p>When inserting an item on the items page it will now be inserted after the selected item (it was previously inserted before the selected item). If no item is currently selected the new item will be added at the end of the list. The new item will be selected once it has been added.</p>
-<p>If you want to insert an item before the first one, select the first one, insert the new item, then delete the first one. The selection will switch to the new item and tapping “Undelete” will restore the former first item after the new one.</p>
+<p>If you want to insert an item before the first one, select the first one, insert the new item, then delete the first one. The selection will switch to the new item and tapping &quot;Undelete&quot; will restore the former first item after the new one.</p>
 <h2 id="handle-obscure-coupon-scenario">Handle Obscure Coupon Scenario</h2>
 <p>The process of calculating fair shares of a bill was failing when the total amount of an after-tax coupon exceeded the bill amount (which has never been seen in practice) and the user was tipping on tax.</p>
-<p>In general, the idea is to distribute costs based on the amount a participant purchased and to tip on the amount that was ordered, regardless of any coupon which might be used to reduce the final total. However, there’s an exception to that rule when tipping on tax. Because a coupon causes the taxable amount to go down it causes the tax, and thus the tip, to go down.</p>
-<h1 id="section-6">6.3.4</h1>
+<p>In general, the idea is to distribute costs based on the amount a participant purchased and to tip on the amount that was ordered, regardless of any coupon which might be used to reduce the final total. However, there's an exception to that rule when tipping on tax. Because a coupon causes the taxable amount to go down it causes the tax, and thus the tip, to go down.</p>
+<h1 id="634">6.3.4</h1>
 <h2 id="correct-error-browsing-to-image">Correct Error Browsing to Image</h2>
 <p>The Image browse command was not working, this has been corrected.</p>
-<h1 id="section-7">6.3.3</h1>
+<h1 id="633">6.3.3</h1>
 <h2 id="pan-the-screen-when-performing-data-entry">Pan the Screen When Performing Data Entry</h2>
 <p>Sometime, the on screen keyboard would cover the data input fields, this change corrects that.</p>
 <h2 id="speed-up-page-loading">Speed Up Page Loading</h2>
-<p>Several pages (Totals, People, Items, People Lists and venue Lists) have been optimized to speed them up a little. The only functional changes are minor formatting enhancements.</p>
+<p>Several pages (Totals, People, Items, People Lists and venue Lists) have been optimized to speed them up a little. The only functional changes are minor  formatting enhancements.</p>
 <h2 id="handle-requests-to-display-payments-on-an-item">Handle Requests to Display Payments on an Item</h2>
 <p>Requesting a payment summary from a specific item now presumes you intend it for the first sharer of that item unless you are filtering for a particular participant in which case they are assumed to be the target.</p>
-<h1 id="section-8">6.3.2</h1>
+<h1 id="632">6.3.2</h1>
 <h2 id="correct-swipe-behavior">Correct Swipe Behavior</h2>
-<p>Swipe on Lists of Bills, People, Venues, Venue Lists, People lists and Totals were not working,due to a bug in .NET 10, this has been corrected.</p>
+<p>Swipe on Lists of Bills, People, Venues, Venue Lists, People lists  and Totals were not working,due to a bug in .NET 10,  this has been corrected.</p>
 <h2 id="make-status-bar-visible">Make Status Bar Visible</h2>
 <p>The status bar (the purple area at the top of each page) is currently always visible in .NET 10. Since it is there, this change shows the status bar icons in it all the time rather than requiring a swipe down to show them.</p>
 <h2 id="handle-empty-item-lists-cleanly">Handle Empty Item lists Cleanly</h2>
@@ -120,126 +193,131 @@
 <p>Restoring an archive and requesting existing items be deleted first could crash on a new install because it would attempt to use a bills folder that did not exist yet. This has been corrected.</p>
 <h2 id="bill-list-remote-images">Bill List Remote Images</h2>
 <p>The bill list no longer shows the status of remote images if remote access is not allowed.</p>
-<h1 id="section-9">6.3.1</h1>
-<h2 id="upgrade-to-.net-10">Upgrade to .NET 10</h2>
+<h1 id="631">6.3.1</h1>
+<h2 id="upgrade-to-net-10">Upgrade to .NET 10</h2>
 <p>The application infrastructure has been upgraded to .NET 10. This should make no functional difference except that a few actions will be slightly faster.</p>
-<h1 id="section-10">6.2.45</h1>
+<h1 id="6245">6.2.45</h1>
 <p>Improvements to Archive and Restore</p>
 <p>Various minor improvements and corrections have been made to the archive and restore experience and to the user interface on the Manage Data page:</p>
 <ul>
 <li>To cancel the current archive selection without using it, simply tap the Select button and cancel out of the resulting dialog.</li>
 <li>The dates are prefilled with, and limited to, either the range for local bills or the range for the currently selected archive file.</li>
-<li>The current bill is only changed if that bill is removed by a restore operation using “Delete Everything First”.</li>
-<li>The meaning of “Delete Everything First” and “Overwrite Duplicate Items” was swapped, this has been corrected.</li>
+<li>The current bill is only changed if that bill is removed by a restore operation using &quot;Delete Everything First&quot;.</li>
+<li>The meaning of &quot;Delete Everything First&quot; and &quot;Overwrite Duplicate Items&quot; was swapped, this has been corrected.</li>
 </ul>
-<h1 id="section-11">6.2.44</h1>
+<h1 id="6244">6.2.44</h1>
 <h2 id="improved-archive-restoration">Improved Archive restoration</h2>
-<p>The “Restore” button on the data management page has been split into two buttons. A “Select” button to allow an archive to be selected and a “Restore” button to actually perform the restore of the most recently selected archive. Once an archive is selected the display shows the range of dates it contains and the number of bills in that range. If you change the dates the count of bills will be adjusted accordingly and if you tap restore only the bills within that date range will be restored.</p>
+<p>The &quot;Restore&quot; button on the data management page has been split into two buttons. A &quot;Select&quot; button to allow an archive to be selected and a &quot;Restore&quot; button to actually perform the restore of the most recently selected archive. Once an archive is selected the display shows the range of dates it contains and the number of bills in that range. If you change the dates the count of bills will be adjusted accordingly and if you tap restore only the bills within that date range will be restored.</p>
 <h2 id="minor-improvements-and-bug-fixes">Minor Improvements and bug fixes</h2>
-<p>A number of improvements have been made that would not normally be visible, including: - Tighter security of licenses and subscriptions by checking their digital signature - Improved messages in the “Slow Web Response” pop up</p>
-<h1 id="section-12">6.2.43</h1>
+<p>A number of improvements have been made that would not normally be visible, including:</p>
+<ul>
+<li>Tighter security of licenses and subscriptions by checking their digital signature</li>
+<li>Improved messages in the &quot;Slow Web Response&quot; pop up</li>
+</ul>
+<h1 id="6243">6.2.43</h1>
 <h2 id="cloud-data-removal">Cloud Data Removal</h2>
-<p>This change adds a “Permanently Remove All My Cloud Data” button on the Data Management page. It is enabled by checking the “I understand this cannot be undone” check box. Once enabled, tapping it will remove any bills, bill images, lists of venues, or lists of people that have been saved to the cloud for you.</p>
-<h1 id="section-13">6.2.42</h1>
+<p>This change adds a &quot;Permanently Remove All My Cloud Data&quot; button on the Data Management page. It is enabled by checking the &quot;I understand this cannot be undone&quot; check box. Once enabled, tapping it will remove any bills, bill images, lists of venues, or lists of people that have been saved to the cloud for you.</p>
+<h1 id="6242">6.2.42</h1>
 <h2 id="fix-minor-upload-bug">Fix Minor Upload Bug</h2>
-<p>Occasionally the same image file was being uploaded twice. Because it’s the same it did no harm but it did consume bandwidth unnecessarily so it has been corrected.</p>
-<h1 id="section-14">6.2.41</h1>
+<p>Occasionally the same image file was being uploaded twice. Because it's the same it did no harm but it did consume bandwidth unnecessarily so it has been corrected.</p>
+<h1 id="6241">6.2.41</h1>
 <h2 id="add-encryption-capability-for-remote-data">Add Encryption Capability For Remote Data</h2>
 <p>You can now request that remote data be encrypted by adding a password in the cloud settings. This password is used to derive a key that is used to encrypt data before it is sent to the cloud and decrypt it after it is received from the cloud. If you forget your password you will still be able to read your remote data on the system where the password was entered, but forgotten passwords cannot be recovered.</p>
 <p>If you change the password, subsequent bills (or images) sent to the cloud will be encrypted with the new password. Previously backed up bills will still be readable (they continue to use the old password but all the encryption keys you use are stored in order to permit recovery).</p>
 <p>Your encryption keys are stored only on your device but can be archived and restored if you wish. If you uninstall DivisiBill, or lose access to your device you will lose access to any bills encrypted with a key derived from any password you do not remember.</p>
-<h1 id="section-15">6.2.40</h1>
-<h2 id="check-licenses-should-ignore-only-on-wifi">Check Licenses Should Ignore “Only on WiFi”</h2>
-<p>The license check would not be attempted if “Only on WiFi” was set and WiFi was not available. This has been corrected, the license check is done as long as there is any Internet connection, even just a metered phone one.</p>
+<h1 id="6240">6.2.40</h1>
+<h2 id="check-licenses-should-ignore-only-on-wifi">Check Licenses Should Ignore &quot;Only on WiFi&quot;</h2>
+<p>The license check would not be attempted if &quot;Only on WiFi&quot; was set and WiFi was not available. This has been corrected, the license check is done as long as there is any Internet connection, even just a metered phone one.</p>
 <h2 id="improve-evaluation-of-backup-options">Improve Evaluation of Backup Options</h2>
-<p>If “Allow Cloud Backup” is off the rest of the cloud options are ignored and if “Only With WiFi” is turned on, then “Images only With WiFi” is turned on as well.</p>
-<h1 id="section-16">6.2.39</h1>
+<p>If &quot;Allow Cloud Backup&quot; is off the rest of the cloud options are ignored and if &quot;Only With WiFi&quot; is turned on, then &quot;Images only With WiFi&quot; is turned on as well.</p>
+<h1 id="6239">6.2.39</h1>
 <h2 id="add-local-bills-to-remote-list">Add Local Bills to Remote List</h2>
 <p>Bills that were stored both locally and remotely were not being added to the remote list so if the user chose to hide local meals and show remote ones the bills that were both local and remote did not show up, this has been corrected.</p>
 <h2 id="download-required-remote-image-when-opening-a-remote-bill">Download Required Remote Image When Opening a Remote Bill</h2>
 <p>If a remote bill is made the current one and it has only a remotely stored image both the bill and the image will be downloaded.</p>
-<h1 id="section-17">6.2.38</h1>
+<h1 id="6238">6.2.38</h1>
 <h2 id="option-to-upload-images-with-bills">Option to Upload Images with Bills</h2>
-<p>A new option on the “Settings” page allows bill images to be uploaded to the cloud along with bills. This is off by default because it can use a lot of bandwidth and storage. When this option is on, any bill that has an image and is uploaded to the cloud will have its image uploaded as well. If a bill is downloaded from the cloud and it has an image stored in the cloud that image will be downloaded along with the bill.</p>
-<p>Images are typically much larger than bills (a few hundred kB vs. a few kB) so there is an option to only upload images when WiFi is available. Actual costs vary, but as an example uploading using the Google Fi phone network costs $10 per GB, so you could typically upload hundreds of bills for a penny but only a few images.</p>
+<p>A new option on the &quot;Settings&quot; page allows bill images to be uploaded to the cloud along with bills. This is off by default because it can use a lot of bandwidth and storage.
+When this option is on, any bill that has an image and is uploaded to the cloud will have its image uploaded as well. If a bill is downloaded from the cloud and it has an image stored in the cloud that image will be downloaded along with the bill.</p>
+<p>Images are typically much larger than bills (a few hundred kB vs. a few kB) so there is an option to only upload images when WiFi is available. Actual costs vary, but as an example uploading using the Google Fi phone network costs $10 per GB, so you could typically upload hundreds of bills for a penny but only a few images.</p>
 <h2 id="only-scroll-to-the-current-bill-if-it-has-changed">Only Scroll to The Current Bill if it has Changed</h2>
 <p>After selecting a different current bill, a bill list will scroll to keep the current bill in view. The scrolling used to be done always.</p>
 <h2 id="improve-venue-edit-page">Improve Venue Edit Page</h2>
 <p>The app displays a message showing a count of bills using the venue only if the venue name has been changed.</p>
 <h2 id="update-bill-list-when-location-changes">Update Bill List When Location Changes</h2>
 <p>When the app location changes by a significant amount (more than 20m currently) the distances to venues reported in the bill list are updated. This was being done in the list sorted by distance, but not otherwise, that has been corrected and now all bill lists are updated, regardless of how they are sorted.</p>
-<h1 id="section-18">6.2.37</h1>
+<h1 id="6237">6.2.37</h1>
 <h2 id="show-release-notes-at-startup">Show Release Notes at Startup</h2>
 <p>If this is the first use of a new version of DivisiBill the release notes page will be shown after startup instead of the items page.</p>
-<h1 id="section-19">6.2.36</h1>
+<h1 id="6236">6.2.36</h1>
 <h2 id="show-full-page">Show Full Page</h2>
 <p>DivisiBill once again covers the entire page, including the device status bar at the top of the page. You can swipe down from the top margin to see the device status bar temporarily.</p>
 <h2 id="enhanced-archive-files">Enhanced Archive Files</h2>
 <p>All bill archives are now created within zip compressed containers which typically reduces their size by a factor of 10.</p>
-<p>There’s now an option on the “Manage Data” page to allow bill images to be archived along with bills.</p>
+<p>There's now an option on the &quot;Manage Data&quot; page to allow bill images to be archived along with bills.</p>
 <p>Archive restore from a zip container will now restore the first XML file and search the container for JPG images of any bills restored from that XML file.</p>
-<h2 id="show-a-current-icon-in-venue-list">Show a “Current” Icon in Venue List</h2>
+<h2 id="show-a-current-icon-in-venue-list">Show a &quot;Current&quot; Icon in Venue List</h2>
 <p>The venue for the current bill is now indicated by an icon in a venue list.</p>
 <h2 id="make-properties-shell-selection-navigable">Make properties Shell Selection Navigable</h2>
-<p>The “Properties” selection now allows use of the hamburger menu to navigate away from it. The Properties page shown by tapping the venue name on the “Items” or “Totals” pages returns only to those pages, as before.</p>
+<p>The &quot;Properties&quot; selection now allows use of the hamburger menu to navigate away from it. The Properties page shown by tapping the venue name on the &quot;Items&quot; or &quot;Totals&quot; pages returns only to those pages, as before.</p>
 <h2 id="always-allow-appropriate-page-navigation">Always Allow Appropriate Page Navigation</h2>
 <p>Occasionally, the hamburger icon would be hidden when it should be present. This has been corrected so that the hamburger icon is always shown when it is appropriate to navigate to another page.</p>
-<h1 id="section-20">6.2.35</h1>
+<h1 id="6235">6.2.35</h1>
 <h2 id="update-meal-group-venue-location-when-it-changes">Update Meal Group Venue Location When It Changes</h2>
 <p>If a venue location was updated and meals grouped by venue were being shown the location shown with the venue would not be updated, it is now.</p>
-<h2 id="correct-save-action-on-properties-page">Correct ‘Save’ Action on Properties Page</h2>
-<p>Previously tapping the ‘Save’ icon was not correctly saving any image file associated with the bill, or entering the newly saved bill into the bill list. These errors have been corrected.</p>
-<h1 id="section-21">6.2.34</h1>
+<h2 id="correct-save-action-on-properties-page">Correct 'Save' Action on Properties Page</h2>
+<p>Previously tapping the 'Save' icon was not correctly saving any image file associated with the bill, or entering the newly saved bill into the bill list. These errors have been corrected.</p>
+<h1 id="6234">6.2.34</h1>
 <h2 id="double-tap-to-edit-venue">Double Tap To Edit Venue</h2>
 <p>In a bill list that is grouped by venue, double tapping on a venue name will open the venue edit page for that venue.</p>
-<h1 id="section-22">6.2.33</h1>
+<h1 id="6233">6.2.33</h1>
 <h2 id="add-confirmation-for-renaming-in-use-venues">Add confirmation for renaming in-use venues</h2>
 <p>You are prompted for confirmation before renaming a venue that is currently in use.</p>
 <h2 id="reorder-affected-lists-when-a-venue-location-changes">Reorder Affected Lists When a Venue Location Changes</h2>
 <p>When a venue location changes, the list of bills by distance was not being updated; this has been corrected.</p>
 <h2 id="always-allow-diner-undelete">Always Allow Diner Undelete</h2>
 <p>Rarely, a stored bill would have non-contiguous DinerIDs, for example 1 and 6. In this case, the dinerID would be shown on the assignment button, which was unnecessary and confusing. If deleted, the diner could not be undeleted. These problems have been corrected.</p>
-<h1 id="section-23">6.2.32</h1>
+<h1 id="6232">6.2.32</h1>
 <h2 id="make-current-bill-visible">Make Current Bill Visible</h2>
 <p>When you navigate to a list of bills we scroll the current bill into view (or the current venue if bills are grouped by venue).</p>
 <h2 id="allow-bill-groups-to-be-deselected">Allow Bill Groups to be Deselected</h2>
 <p>Tapping a selected bill in the center already deselected it, the same action now works when bills are grouped by venue.</p>
-<h2 id="add-a-scroll-to-current-bill-command">Add a “Scroll to Current” Bill Command</h2>
+<h2 id="add-a-scroll-to-current-bill-command">Add a &quot;Scroll to Current&quot; Bill Command</h2>
 <p>The bill list pages now have a command to scroll the current bill into view (or the current venue if bills are grouped by venue).</p>
-<h1 id="section-24">6.2.31</h1>
+<h1 id="6231">6.2.31</h1>
 <h2 id="improve-meal-list-user-interface-responsiveness">Improve meal List User Interface Responsiveness</h2>
 <p>You can tap in the center of a bill list item to select or deselect it but for the past couple of releases that tap would be mistaken for a swipe initiation. This no longer happens, swipe actions may only be initiated from right or left of center.</p>
-<h1 id="section-25">6.2.30</h1>
+<h1 id="6230">6.2.30</h1>
 <h2 id="indicate-the-current-meal">Indicate the Current Meal</h2>
 <p>The bill list now shows an icon to denote the current bill.</p>
 <h2 id="enhance-meal-selection-button-logic">Enhance meal selection Button logic</h2>
 <p>On Android tapping in the center of a different meal list item would just clear the current selection. This has been corrected and now also selects the new bill.</p>
 <h2 id="use-explicit-scaling-in-scroll-buttons">Use Explicit Scaling in Scroll Buttons</h2>
 <p>The scroll button size change when tapped is now more obvious.</p>
-<h1 id="section-26">6.2.29</h1>
+<h1 id="6229">6.2.29</h1>
 <h2 id="use-consistent-scroll-buttons">Use Consistent Scroll Buttons</h2>
 <p>Any list that could get longer than a single page (items, bills, people, venues, people lists and venue lists) is scrollable and has indicators (an up or down arrow in a circle) showing the direction in which there are unseen elements. The indicators also act as buttons and can be tapped or long pressed to scroll up or down a page or move to the ends of the list.</p>
 <p>These buttons used to be different on some lists, now they look and work identically across all lists and provide visual feedback when used.</p>
-<h1 id="section-27">6.2.28</h1>
+<h1 id="6228">6.2.28</h1>
 <h2 id="show-a-few-bills-per-group">Show a Few Bills Per Group</h2>
 <p>When grouping bills by venue on a bill list page only the first few bills for each venue are shown.</p>
-<p>To see all the bills for a venue you can tap to expand the venue heading to see the most recent bills. If there are too many to show conveniently there will be an “all bills” button at the end of the short list that you can tap to open a new page containing all the bills for that venue in creation order (newest first).</p>
+<p>To see all the bills for a venue you can tap to expand the venue heading to see the most recent bills. If there are too many to show conveniently there will be an &quot;all bills&quot; button at the end of the short list that you can tap to open a new page containing all the bills for that venue in creation order (newest first).</p>
 <h2 id="improved-bill-list-layout">Improved Bill List Layout</h2>
 <p>The individual entries in a bill list are laid out slightly more neatly, especially when the list is grouped by venue name so there is no venue name on individual entries.</p>
-<h1 id="section-28">6.2.27</h1>
+<h1 id="6227">6.2.27</h1>
 <h2 id="improve-scrolling-bill-list">Improve Scrolling Bill List</h2>
 <p>When scrolling the list of bills using the scroll buttons they are hidden and no scrolling animation is used. When the scroll completes the appropriate button or buttons reappear. Scrolling to the beginning or end of the list using a long press on one of the buttons is now much quicker. Scrolling using swipe up or down is unchanged.</p>
 <p>The scroll buttons themselves are larger and surrounded by a semi-transparent area.</p>
-<h1 id="section-29">6.2.26</h1>
-<h2 id="redefine-distances-that-are-close">Redefine Distances that are ‘Close’</h2>
-<p>When showing distances smaller ones are simply shown as ‘close’. The threshold for ‘close’ was 100m, now it is 10m because GPS can be quite accurate and manual entry even more so.</p>
+<h1 id="6226">6.2.26</h1>
+<h2 id="redefine-distances-that-are-close">Redefine Distances that are 'Close'</h2>
+<p>When showing distances smaller ones are simply shown as 'close'. The threshold for 'close' was 100m, now it is 10m because GPS can be quite accurate and manual entry even more so.</p>
 <h2 id="allow-long-press-to-scroll-to-beginningend">Allow Long press to Scroll to Beginning/End</h2>
 <p>A long press to scroll to the beginning or end of a list was already allowed on the Bill list pages, now it is allowed for the people list and venue list too.</p>
 <h2 id="ask-before-creating-a-venue">Ask Before Creating a Venue</h2>
-<p>If you double tap the venue name on a bill properties page it takes you to the venue definition. The application used to create a venue record of there wasn’t one, now it asks first and if it does create one for the venue it has no default location.</p>
+<p>If you double tap the venue name on a bill properties page it takes you to the venue definition. The application used to create a venue record of there wasn't one, now it asks first and if it does create one for the venue it has no default location.</p>
 <h2 id="show-meal-list-download-icons">Show Meal List Download Icons</h2>
 <p>When cloud access was turned on as a result of a request to show remote bills the remote/local status icons on each bill were not shown. This has been corrected.</p>
-<h1 id="section-30">6.2.25</h1>
+<h1 id="6225">6.2.25</h1>
 <h2 id="change-scroll-to-startend-of-bill-list">Change Scroll to Start/End of Bill List</h2>
 <p>Because a double tap did not work wall, scrolling to the start or end of the list is now triggered by a long press of the scroll buttons.</p>
 <h2 id="scroll-to-moved-meal-group">Scroll to Moved Meal Group</h2>
@@ -247,22 +325,22 @@
 <h2 id="collapse-bill-group-when-another-is-selected">Collapse Bill Group When Another is Selected</h2>
 <p>When you are viewing a list of bills grouped together by venue and you click to expand a group the currently expanded group will be collapsed automatically</p>
 <h2 id="change-sharing-now-includes-even-sharing">Change Sharing now includes even Sharing</h2>
-<p>On the items page you may change the current sharing of an item by tapping in the left margin or by selecting the item, using the menu for the page and selecting ‘Change’. It used to alternate between no sharing and sharing proportionally, now it includes sharing equally as well.</p>
+<p>On the items page you may change the current sharing of an item by tapping in the left margin or by selecting the item, using the menu for the page and selecting 'Change'. It used to alternate between no sharing and sharing proportionally, now it includes sharing equally as well.</p>
 <h2 id="go-to-page-after-restore-completion">Go to Page after restore completion</h2>
 <p>The notification for restore completion is replaced with automatic navigation to the Bill List by Age Page.</p>
 <h2 id="count-deleted-bills-correctly">Count Deleted Bills Correctly</h2>
 <p>If multiple bills are selected for deletion but one of them is the current bill it will not be deleted. It was incorrectly being counted as having been deleted.</p>
-<h1 id="section-31">6.2.24</h1>
+<h1 id="6224">6.2.24</h1>
 <h2 id="improvements-to-handling-lists-of-bills">Improvements to Handling Lists of Bills</h2>
-<p>When ‘Show Venues’ is selected on a list of bills, the list changes to a list of Venues. Tap on a venue to see a list of bills for that venue.</p>
+<p>When 'Show Venues' is selected on a list of bills, the list changes to a list of Venues. Tap on a venue to see a list of bills for that venue.</p>
 <h2 id="allow-scroll-to-beginning-or-end-of-bill-list">Allow Scroll to Beginning or End of Bill List</h2>
 <p>The Scroll Up/Down buttons on the list of bills now accept a double tap to scroll to the beginning or end of the list respectively.</p>
 <h2 id="handle-empty-venue-name-in-stored-bills">Handle Empty Venue Name in Stored Bills</h2>
-<p>Some older versions of DivisiBill could create bills with no stored venue name, These now show up as “Unknown Venue”.</p>
-<h1 id="section-32">6.2.23</h1>
+<p>Some older versions of DivisiBill could create bills with no stored venue name, These now show up as &quot;Unknown Venue&quot;.</p>
+<h1 id="6223">6.2.23</h1>
 <h2 id="warn-the-user-if-no-bills-are-to-be-archived">Warn The user if No Bills are to Be Archived</h2>
 <p>An attempt to archive with no bills selected now produces an error message rather than just creating an archive with no bills in it.</p>
-<h1 id="section-33">6.2.22</h1>
+<h1 id="6222">6.2.22</h1>
 <h2 id="check-for-image-file-presence">Check for Image File Presence</h2>
 <p>When restoring a bill from an archive or downloading it from the cloud the application now checks for the presence of an image or a deleted image.</p>
 <h2 id="always-send-user-feedback">Always Send user Feedback</h2>
@@ -270,69 +348,69 @@
 <h2 id="handle-retrying-web-service-call">Handle Retrying Web Service Call</h2>
 <p>After a web service call failed but a retry succeeded the app would behave as if the call had failed. This has been corrected.</p>
 <h2 id="archive-selected-bills">Archive Selected Bills</h2>
-<p>It is now possible to select a set of bills on a “Bill List” page and then go to the “Manage Data” page and request that only the selected bills be archived.</p>
-<h1 id="section-34">6.2.21</h1>
+<p>It is now possible to select a set of bills on a &quot;Bill List&quot; page and then go to the &quot;Manage Data&quot; page and request that only the selected bills be archived.</p>
+<h1 id="6221">6.2.21</h1>
 <h2 id="restoring-an-archive-checks-remote">Restoring an Archive Checks Remote</h2>
 <p>Restoring an archive now checks whether restored bills are backed up to the cloud and either marks them as being available remotely or initiates a backup of those which are not.</p>
 <h2 id="correct-remote-bill-access">Correct Remote Bill Access</h2>
 <p>Bills stored in the cloud were inaccessible in 6.2.20, this has been corrected.</p>
-<h1 id="section-35">6.2.20</h1>
+<h1 id="6220">6.2.20</h1>
 <h2 id="slow-web-service-calls">Slow Web Service Calls</h2>
 <p>A progress bar has been added to the popup used to report slow web service calls. The progress bar shows how much time remains before abandoning the current request and trying again.</p>
 <p>An intermittent problem where the timeout on a call was ignored has been corrected.</p>
 <h2 id="improve-people-list-help">Improve People List Help</h2>
 <p>The image truncation was confusing - it has been made more obvious that the image is truncated.</p>
-<h1 id="section-36">6.2.19</h1>
+<h1 id="6219">6.2.19</h1>
 <h2 id="improved-ui-on-settings-and-properties">Improved UI on Settings and Properties</h2>
 <p>Most occurrences of a switch have been replaced by a checkbox and some minor reformatting has been done on the Settings and Properties pages.</p>
-<h1 id="section-37">6.2.18</h1>
+<h1 id="6218">6.2.18</h1>
 <h2 id="change-cloud-timeout-to-30s">Change Cloud Timeout to 30s</h2>
 <p>If the web service is not responsive the app waits 30s before giving up instead of waiting 100s as it did before.</p>
 <h2 id="counting-improvements">Counting Improvements</h2>
 <p>The dialog that pops up when waiting for a result or to retry a call to a a web service has a countdown to retry and a count of seconds since the last try. With this change the visible count is not updated when the app is in the background (although the timer remains active and will resume at the correct time). Timing accuracy has also been improved.</p>
-<h1 id="section-38">6.2.17</h1>
+<h1 id="6217">6.2.17</h1>
 <h2 id="enhance-archiving-with-explicit-related-item-filtering">Enhance Archiving with Explicit Related Item Filtering</h2>
-<p>A new “Only Related People and Venues” checkbox is added to the data management page. It allows you to limit archived or restored people and venues to just those relating to the bills to be archived or restored.</p>
+<p>A new &quot;Only Related People and Venues&quot; checkbox is added to the data management page. It allows you to limit archived or restored people and venues to just those relating to the bills to be archived or restored.</p>
 <h2 id="enhance-app-lifecycle-handling-and-web-service-retry-logic">Enhance app lifecycle handling and web service retry logic</h2>
 <p>If you switch away from the app while it is trying to connect to the web service it will now pause the connection attempt and resume it when you return to the app. If the connection attempt fails it will retry it after a short delay.</p>
-<h2 id="improve-format-of-telemetry-popup">Improve Format of “Telemetry” Popup</h2>
+<h2 id="improve-format-of-telemetry-popup">Improve Format of &quot;Telemetry&quot; Popup</h2>
 <p>During initialization DivisiBill may ask the user whether they wish to send telemetry in the event of a failure. The appearance of this dialog has been improved.</p>
-<h1 id="section-39">6.2.16</h1>
+<h1 id="6216">6.2.16</h1>
 <h2 id="initial-popup-for-license-check">Initial Popup For license Check</h2>
 <p>When DivisiBill starts it checks a web service for licensing, if this check did not quickly succeed it would display a series of questions. Now it shows a popup while it retries errors and/or waits for responses. the popup closes automatically if a good response is received or you elect to continue without waiting for licenses.</p>
-<h1 id="section-40">6.2.15</h1>
+<h1 id="6215">6.2.15</h1>
 <h2 id="correct-ocr-license-purchase-message">Correct OCR License Purchase Message</h2>
 <p>When purchasing additional scans the message showed an incorrect number remaining, this has been corrected.</p>
 <h2 id="remove-extra-message-buying-a-subscription">Remove Extra message Buying a Subscription</h2>
-<p>Purchasing a subscription showed two messages after switching back from the “purchase a subscription” UI. Now only one is shown.</p>
+<p>Purchasing a subscription showed two messages after switching back from the &quot;purchase a subscription&quot; UI. Now only one is shown.</p>
 <h2 id="update-ocr-scan-messages-for-clarity">Update OCR Scan Messages for Clarity</h2>
-<p>Replaced “OCR license” with “scan” in user alerts to better reflect the functionality for consistency and clarity.</p>
-<h1 id="section-41">6.2.14</h1>
+<p>Replaced &quot;OCR license&quot; with &quot;scan&quot; in user alerts to better reflect the functionality for consistency and clarity.</p>
+<h1 id="6214">6.2.14</h1>
 <h2 id="change-licensing-help-to-a-hyperlinked-text">Change Licensing Help to a Hyperlinked Text</h2>
 <p>The Settings page now has text to tap to open up the help text licensing page and the licensing user interface has been simplified.</p>
 <h2 id="reference-to-default-coupon-after-tax">Reference to Default Coupon After Tax</h2>
 <p>The Settings page was referring to the Coupon After Tax setting for the current bill rather than the default value for all new bills. this has been corrected.</p>
-<h1 id="section-42">6.2.13</h1>
+<h1 id="6213">6.2.13</h1>
 <h2 id="add-licensing-help-button">Add Licensing Help Button</h2>
 <p>The Settings page now has a button to open up the help text licensing page so you can get more information on licensing before purchasing a license or subscription.</p>
-<h1 id="section-43">6.2.12</h1>
+<h1 id="6212">6.2.12</h1>
 <h2 id="camera-availability-checks">Camera Availability Checks</h2>
 <p>The app now explicitly handles the case where no camera is present (or where the camera permission has been denied by the user).</p>
-<h1 id="section-44">6.2.11</h1>
+<h1 id="6211">6.2.11</h1>
 <h2 id="implement-scroll-updown-indicator-buttons-for-long-lists">Implement Scroll Up/Down Indicator Buttons for Long Lists</h2>
 <p>Wherever a list is longer than a page an indicator button shows at the top and/or bottom of the visible items to indicate that there are more items off-screen in that direction. Either scroll the list or click the button to see more items. This applies to all but the totals list (which is too short to need it).</p>
-<h2 id="clarify-continue-choice">Clarify ‘Continue’ Choice</h2>
-<p>Make it clear that if there’s a problem accessing the web service the ‘continue’ option always means ‘continue without a license’.</p>
-<h1 id="section-45">6.2.10</h1>
+<h2 id="clarify-continue-choice">Clarify 'Continue' Choice</h2>
+<p>Make it clear that if there's a problem accessing the web service the 'continue' option always means 'continue without a license'.</p>
+<h1 id="6210">6.2.10</h1>
 <h2 id="load-rounded-amount-in-existing-bill">Load Rounded Amount in Existing Bill</h2>
 <p>The Rounded Amount for a newly loaded bill could show up a zero instead of its actual value. This also distorted calculations of the payment amount. This has been corrected.</p>
-<h1 id="section-46">6.2.9</h1>
+<h1 id="629">6.2.9</h1>
 <h2 id="increase-the-data-entry-wait-time">Increase the Data Entry Wait Time</h2>
-<p>DivisiBill waits for the user to stop providing input during data entry before attempting to format the text (if it is a number) or update other items based on what’s entered. This happens on the properties, items and settings pages. This delay has been increased, it is possible to signal ‘done’ immediately by pressing the ‘enter’ key (which may be labeled ‘done’ or simply have a symbol on it) if you do not wish to wait.</p>
-<h1 id="section-47">6.2.8</h1>
+<p>DivisiBill waits for the user to stop providing input during data entry before attempting to format the text (if it is a number) or update other items based on what's entered. This happens on the properties, items and settings pages.  This delay has been increased, it is possible to signal 'done' immediately by pressing the 'enter' key (which may be labeled 'done' or simply have a symbol on it) if you do not wish to wait.</p>
+<h1 id="628">6.2.8</h1>
 <h2 id="handle-tip-delta-correctly">Handle Tip Delta Correctly</h2>
-<p>A tip delta is used generally because you want a specific tip amount and it’s not an exact 1/4 percent multiple of the bill subtotal. If one was in use Divisibill did not correctly divide it among participants and reported an error “Oops, rounding error…”. This has been corrected.</p>
-<h2 id="rounded-amount-0-in-error">Rounded Amount = $0 in Error</h2>
+<p>A tip delta is used generally because you want a specific tip amount and it's not an exact 1/4 percent multiple of the bill subtotal. If one was in use Divisibill did not correctly divide it among participants and reported an error &quot;Oops, rounding error...&quot;. This has been corrected.</p>
+<h2 id="rounded-amount--0-in-error">Rounded Amount = $0 in Error</h2>
 <p>Occasionally a change to the rounded amount was not noticed and it showed as $0, this has been corrected.</p>
 <h2 id="give-a-newly-created-venue-a-location">Give a Newly Created Venue a Location</h2>
 <p>A newly created venue now gets the current location by default. The location can be cleared by double tapping on it, or changed by single tapping.</p>
@@ -341,8 +419,8 @@
 <h2 id="improve-properties-page-user-interface">Improve Properties Page User Interface</h2>
 <p>The font size has been increased slightly and when an entry field is selected it is enlarged further to make data entry easier.</p>
 <p>If you press enter after typing a value on an on-screen-keyboard the keyboard will be dismissed and focus will be removed from the field.</p>
-<p>The Tip Delta amount is the difference between the calculated tip percentage and the actual tip amount. It is now recalculated along with the tip rate whenever the tip amount is changed, and zeroed when the tip rate is changed. It is shown with a ‘non default’ notation if it is set.</p>
-<h1 id="section-48">6.2.7</h1>
+<p>The Tip Delta amount is the difference between the calculated tip percentage and the actual tip amount. It is now recalculated along with the tip rate whenever the tip amount is changed, and zeroed when the tip rate is changed. It is shown with a 'non default' notation if it is set.</p>
+<h1 id="627">6.2.7</h1>
 <h2 id="improved-handling-of-long-lists-of-items">Improved Handling of Long Lists of Items</h2>
 <p>Lists longer than a page now show up/down buttons to notify off-screen items and allow easy scrolling to them.</p>
 <h2 id="item-count-on-bill-summaries">Item Count on Bill Summaries</h2>
@@ -351,23 +429,23 @@
 <p>When deleting a bill the image for the current bill was being deleted instead of the image corresponding to the bill being deleted. This has been corrected.</p>
 <h2 id="help-updated">Help Updated</h2>
 <p>The help files have been updated to be consistent with version 6.2.7.</p>
-<h1 id="section-49">6.2.6</h1>
+<h1 id="626">6.2.6</h1>
 <h2 id="allow-multiple-bill-deletion-on-dummy-bills">Allow Multiple Bill Deletion on Dummy Bills</h2>
 <p>A brand new install creates dummy bills and because they were not stored locally the multi-bill select did not delete them. This has been corrected.</p>
 <h2 id="retain-current-image-during-undelete">Retain Current Image During Undelete</h2>
 <p>An undelete image operation on a bill with a current image as well as a deleted one just swaps the two images, so that a second undelete puts back the original one. Note that an image you just selected or created on the image page does not count as a new one until you exit the page.</p>
 <h2 id="always-permit-item-add-while-filtering">Always Permit Item Add While Filtering</h2>
 <p>The app would fault if you attempted to add an item while the selected item was not visible because it was filtered out.</p>
-<h1 id="section-50">6.2.5</h1>
-<h2 id="show-a-has-image-indication-in-bill-list">Show a ‘Has Image’ Indication in Bill List</h2>
+<h1 id="625">6.2.5</h1>
+<h2 id="show-a-has-image-indication-in-bill-list">Show a 'Has Image' Indication in Bill List</h2>
 <p>Lists of bills now include an indication whether or not each bill has a stored image associated with it. If the bill has a stored image ten at the end of each entry (by the cloud/local icons) is a new icon.</p>
 <h2 id="undelete-image-permitted">Undelete Image Permitted</h2>
-<p>The details page shown when you double tap a bill in the list now shows whether a bill has a recoverable image. If such a bill is selected the Image page now permits its deleted image to be recovered by using the “Undelete” menu selection (or using the Undelete button shown if there is no current image).</p>
+<p>The details page shown when you double tap a bill in the list now shows whether a bill has a recoverable image. If such a bill is selected the Image page now permits its deleted image to be recovered by using the &quot;Undelete&quot; menu selection (or using the Undelete button shown if there is no current image).</p>
 <h2 id="deleting-an-image-creates-a-new-bill">Deleting an Image Creates a New Bill</h2>
 <p>Deleting an image from an old bill should have created a new one but instead it was simply deleting the image from the existing bill. This has been corrected and a new bill is now created rather than modifying the existing one.</p>
-<h1 id="section-51">6.2.4</h1>
+<h1 id="624">6.2.4</h1>
 <h2 id="speed-up-initial-bill-evaluation">Speed Up Initial Bill Evaluation</h2>
-<p>In parallel with initialization the app evaluates whether each local bill is stored in the cloud in order to show this status. To do this it downloads names for all the cloud bills. It used to do this 100 at a time, now it does 1000 at a time which can be considerably faster (1s vs. 6s for 3000 bills in testing, likely faster in production depending on your Internet speed).</p>
+<p>In parallel with initialization the app evaluates whether each local bill is stored in the cloud in order to show this status. To do this it downloads names for all the cloud bills. It used to do this 100 at a time, now it does 1000 at a time which can be considerably faster (1s vs. 6s for 3000 bills in testing, likely faster in production depending on your Internet speed).</p>
 <p>Once the evaluation described above completes (typically in a few seconds), the status of individual bills is accurately displayed.</p>
 <h2 id="hide-cloudlocal-icons-in-bill-list">Hide Cloud/Local Icons in Bill List</h2>
 <p>The local/remote icons in the bill list are not useful if cloud access is not available, so we hide them in that case. For example, when the user does not permit cloud access or cloud access is not available.</p>
@@ -382,25 +460,24 @@
 <p>When undeleting bills into a list sorted by name or distance the undeleted bill could be inserted in the wrong place in the list.</p>
 <p>When undeleting venues into a list sorted by distance the undeleted venue could be inserted in the wrong place in the list.</p>
 <p>These problems have been corrected.</p>
-<h1 id="section-52">6.2.3</h1>
+<h1 id="623">6.2.3</h1>
 <h2 id="notify-user-if-archive-to-disk-fails">Notify User if Archive to Disk Fails</h2>
 <p>Previously it would fail silently, now it displays a message.</p>
 <h2 id="do-not-wait-after-reporting-pro-license">Do Not Wait After Reporting Pro License</h2>
 <p>When a pro license is discovered where previously there had been none a message is displayed. We no longer wait solely for the user to acknowledge that message before continuing, it disappears on its own after a few seconds.</p>
-<h2 id="upgrade-to-.net-9">Upgrade to .NET 9</h2>
+<h2 id="upgrade-to-net-9">Upgrade to .NET 9</h2>
 <p>The build and various dependent libraries are upgraded to .NET 9. This should make no functional difference except that a few actions will be faster.</p>
-<h1 id="section-53">6.2.2</h1>
+<h1 id="622">6.2.2</h1>
 <p>Experimental upgrade to .NET 9. No user visible changes.</p>
-<h1 id="section-54">6.2.1</h1>
+<h1 id="621">6.2.1</h1>
 <h2 id="add-an-option-to-show-web-service-information">Add an Option to Show Web Service Information</h2>
-<p>The “About” page (a tab on the “Information and Problems” page) now has a “Show Web Service Information” checkbox.</p>
+<p>The &quot;About&quot; page (a tab on the &quot;Information and Problems&quot; page) now has a &quot;Show Web Service Information&quot; checkbox.</p>
 <p>If checked it shows the base URL used to reach the web service and details about the service itself if they are available.</p>
 <h2 id="add-swipe-menu-choices-to-items-page">Add Swipe Menu Choices to Items Page</h2>
 <p>Swipe up and down through a long list of items is unreliable so this introduces command menu alternatives.</p>
-<h1 id="section-55">6.2.0</h1>
+<h1 id="620">6.2.0</h1>
 <h2 id="first-open-source-release">First Open Source Release</h2>
 <p>Prior to this release (November 2024) the DivisiBill sources were private, this moves them into open source on GitHub <a href="https://github.com/david-maw/DivisiBill">here</a>. To build the released code you need to define a variety of secrets but the app runs without them. Without the defined secrets OCR and cloud storage are not available but all other features work.</p>
 
-<script src="script.js"></script>
 </body>
 </html>

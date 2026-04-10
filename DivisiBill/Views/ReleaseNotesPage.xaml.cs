@@ -21,7 +21,7 @@ public partial class ReleaseNotesPage : ContentPage
         // The release notes are stored as a single embedded resource with no links, so we can just read
         // it as a stream and then convert it to a string before displaying it in the WebView. This initializes
         // faster than the technique used for the help files, but that one handles a whole virtual web site. 
-        using Stream notesStream = await FileSystem.OpenAppPackageFileAsync("help/Release Notes.html");
+        using Stream notesStream = await FileSystem.OpenAppPackageFileAsync("help/releasenotes.html");
         using StreamReader reader = new(notesStream);
         string html = await reader.ReadToEndAsync();
 

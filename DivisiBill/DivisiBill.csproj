@@ -29,7 +29,7 @@
       <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
  
       <!-- Versions -->
-      <ApplicationDisplayVersion>6.3.20</ApplicationDisplayVersion>
+      <ApplicationDisplayVersion>6.3.21</ApplicationDisplayVersion>
       <ApplicationVersion>300</ApplicationVersion>
 
       <ApplicationVersion Condition="'$(DIVISIBILL_VERSION_INCREMENT)' != ''">$([MSBuild]::Add($(ApplicationVersion), $(DIVISIBILL_VERSION_INCREMENT)))</ApplicationVersion>
@@ -82,47 +82,42 @@
       <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
       <!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
       <MauiAsset Include="..\web\divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
-      <!-- Don't need the MD files -->
+      <!-- Don't need the MD source files -->
       <MauiAsset Remove="..\web\divisibill\**\*.md" />
-	  <!-- Don't need the CSS file used for markdown preview -->
-	  <MauiAsset Remove="..\web\divisibill\md-styles.css" />
   </ItemGroup>
 
-   <ItemGroup>
-     <MauiAsset Remove="Resources\Raw\md-template.html" />
-     <MauiCss Remove="Resources\Raw\md-styles.css" />
-     <MauiCss Remove="styles.css" />
-   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\Images\dotnet.svg" />
+    <None Remove="Resources\Splash\appiconfg.svg" />
+  </ItemGroup>
 
-   <ItemGroup>
-     <None Remove="Resources\Images\dotnet.svg" />
-     <None Remove="Resources\Splash\appiconfg.svg" />
-   </ItemGroup>
+  <ItemGroup>
+    <!--The release notes are in a different folder but go along with the other help files at run time-->
+    <MauiAsset Include="Release Notes.html" LogicalName="help\releasenotes.html" />
+    <MauiAsset Update="Release Notes.html">
+    <DependentUpon>Release Notes.md</DependentUpon>
+    </MauiAsset>
+  </ItemGroup>
 
-   <ItemGroup>
-     <MauiAsset Include="Release Notes.html" LogicalName="help\Release Notes.html" />
-     <MauiAsset Include="styles.css" />
-   </ItemGroup>
-
-   <ItemGroup>
-      <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
-      <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.2" />
-      <PackageReference Include="CommunityToolkit.Maui.Camera" Version="6.0.0" />
-      <PackageReference Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
-      <PackageReference Include="epj.RouteGenerator" Version="1.0.5" />
-      <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
-      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.51" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.5" />
-      <PackageReference Include="CommunityToolkit.Common" Version="8.4.2" />
-      <PackageReference Include="CommunityToolkit.Maui" Version="14.1.0" />
-	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-	  <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.51" />
-      <PackageReference Include="Sentry.Maui" Version="6.3.0" />
-      <!--Sentry.Profiling 4.10.0 is not supported on Android-->
-      <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="6.3.0" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-      <PackageReference Include="SkiaSharp" Version="3.119.2" />
-   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.2" />
+    <PackageReference Include="CommunityToolkit.Maui.Camera" Version="6.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
+    <PackageReference Include="epj.RouteGenerator" Version="1.0.5" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.51" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.5" />
+    <PackageReference Include="CommunityToolkit.Common" Version="8.4.2" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="14.1.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.51" />
+    <PackageReference Include="Sentry.Maui" Version="6.3.0" />
+    <!--Sentry.Profiling 4.10.0 is not supported on Android-->
+    <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="6.3.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    <PackageReference Include="SkiaSharp" Version="3.119.2" />
+  </ItemGroup>
 
 	<!--Add In-App Billing package for Android-->
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
@@ -146,17 +141,7 @@
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <MauiAsset Include="script.js">
-      <LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
-    </MauiAsset>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="C:\Users\david\Documents\Develop\Phone\DivisiBill\web\md-template.html" Link="md-template.html" />
-  </ItemGroup>
-
-  <!--Generate the file holding the build secrets on every build-->
+   <!--Generate the file holding the build secrets on every build-->
   <!--First get the secrets from environment variables-->
   <PropertyGroup>
     <!--Set DivisiBillWsUri based on the build configuration-->

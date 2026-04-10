@@ -10,7 +10,7 @@ This is a collection of useful capabilities. They can be selected using the tab 
 
 The other two pages are:
 
-- [Release Notes](Release%20Notes.html)
+- [Release Notes](releasenotes.html)
 
     This contains a list of highlights of the changes in the current and previous releases.
 
