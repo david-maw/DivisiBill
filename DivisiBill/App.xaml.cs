@@ -328,6 +328,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <remarks>This method determines whether the application is using a dark or light theme and updates the
     /// status bar accordingly. It is typically used to ensure the status bar matches the overall app appearance for
     /// better user experience.</remarks>
+    [Conditional("ANDROID")]
     public static void SetStatusBar()
     {
         bool isDark = App.Current.UserAppTheme == AppTheme.Dark || (App.Current.UserAppTheme == AppTheme.Unspecified && Application.Current.RequestedTheme == AppTheme.Dark);
@@ -341,7 +342,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <param name="backgroundColor">The color to apply to the status bar background. Cannot be null.</param>
     /// <param name="darkIcons">A value indicating whether to use dark icons on the status bar. Set to <see langword="true"/> for dark icons;
     /// otherwise, <see langword="false"/> for light icons.</param>
-    public static void SetStatusBar(Color backgroundColor, bool? darkIcons = null)
+    private static void SetStatusBar(Color backgroundColor, bool? darkIcons = null)
     {
         if (backgroundColor == null)
             return;
