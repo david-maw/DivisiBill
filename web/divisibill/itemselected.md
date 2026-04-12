@@ -4,7 +4,7 @@ This shows how the page looks with an item selected. That item is highlighted, a
 
 Tap on a highlighted area to see what it does (on a desktop browser you can also hover over an area to see its name).
 
-<object type=image/svg+xml data="itemselected.svg" height=600 style="width:90%"></object>
+<object type=image/svg+xml data="itemselected.svg"></object>
 
 ## Summary of Items
 

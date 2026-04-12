@@ -6,7 +6,7 @@ This is a collection of useful capabilities. They can be selected using the tab 
 
     The About Page is the most complex. In the image below, tap on a highlighted area to see what it does (on a desktop browser, you can also hover over an area to see its name).
 
-<object type=image/svg+xml data="aboutpage.svg" height=600 style="width:90%"></object>
+<object type=image/svg+xml data="aboutpage.svg"></object>
 
 The other two pages are:
 

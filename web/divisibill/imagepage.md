@@ -4,4 +4,4 @@ This is where you go to take a picture of a bill, or to load a bill image from a
 
 Tap on a highlighted area to see what it does (on a desktop browser you can also hover over an area to see its name).
 
-<object type=image/svg+xml data="imagepage.svg" height=200 style="width:90%"></object>
+<object type=image/svg+xml data="imagepage.svg"></object>

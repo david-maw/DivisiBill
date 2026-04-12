@@ -4,4 +4,4 @@ The Venues List page is where the list of venues is shown. The list is stored lo
 
 Tap on a highlighted area to see what it does (on a desktop browser you can also hover over an area to see its name).
 
-<object type=image/svg+xml data="venuelistpage.svg" height=400 style="width:90%"></object>
+<object type=image/svg+xml data="venuelistpage.svg" style="border-bottom:none"></object>

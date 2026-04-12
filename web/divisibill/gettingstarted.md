@@ -10,12 +10,12 @@ Next, DivisiBill will show a pop-up asking for permission to access to your loca
 
 After the permission dialogs, you will see the whole startup screen, which looks like this:
 
-<center><object type=image/svg+xml data="startup.svg" Height=300 style="width:50%"></object></center>
+<center><object type=image/svg+xml data="startup.svg" style="width:50%"></object></center>
 
 The Progress indicator will spin and the Status information will be updated as initialization proceeds (you can tap on the icon to pause initialization, tap again to resume it).
 Once initialization has been completed (typically in a few seconds) the next page you see may be the tutorial page which guides you through a few basic steps:
 
-<center><object type=image/svg+xml data="tutorialpage.svg" Height=300 style="width:50%"></object></center>
+<center><object type=image/svg+xml data="tutorialpage.svg" style="width:50%"></object></center>
 
 As you gain experience you can elect not to use the tutorial page and just go directly to the 
  [Items](lineitemspage.html) page, which will contain a bill. If no existing bill is suitable, DivisiBill loads up a sample one for "Queasy Diner" with a half dozen typical items you might find on a restaurant bill. 

@@ -2,7 +2,7 @@
 
 When you click the hamburger icon (<u>&#xF035C;</u>) at the top left corner of the page, or pull out from the left margin, a "flyout" appears with a number of selections on it. It looks like this:
 
-<object type=image/svg+xml data="flyout.svg" height=600 style="width:90%"></object>
+<object type=image/svg+xml data="flyout.svg"></object>
 
 You can tap on one of the items to close the flyout and select the corresponding page or function.
 
