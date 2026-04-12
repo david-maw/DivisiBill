@@ -1,3 +1,10 @@
+# Version 6.3.22
+
+## Improved Help Formatting
+
+The boxes surrounding page images are now consistent in shape and stroke width and fit the images exactly (previously they could have space between them and the image).
+
+
 # Version 6.3.21
 
 ## Help Index Improvement
