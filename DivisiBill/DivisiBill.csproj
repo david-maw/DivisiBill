@@ -81,6 +81,8 @@
 
     <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- No need to store the explanatory text file in the app package since it is only used for development purposes, so remove it from the MauiAssets and it won't be included in the app bundle -->
+    <MauiAsset Remove="Resources\Raw\AboutAssets.txt" />
     <!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
     <MauiAsset Include="..\web\divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
     <!-- Don't need the MD source files -->

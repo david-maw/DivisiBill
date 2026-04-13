@@ -1,4 +1,8 @@
-﻿# Get the URI currently in use
+﻿# A sample set of tests to run against the Divisibill Web Service, this is intended to be run in the context of the local development environment,
+# and will not run against a production instance of the web service because it laks a key and these licenses are no longer current.
+# All this predates the use of digital signatures, so they need to be added too before this kind of test will work.
+
+# Get the URI currently in use
 @wsUri={{$processEnv DIVISIBILL_WS_URI}} 
 
 # The simplest call, and the only one not requiring a license in a header or the body 
