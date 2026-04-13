@@ -1,62 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-   <PropertyGroup>
-      <TargetFrameworks>net10.0-android</TargetFrameworks>
-      <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
-      <OutputType>Exe</OutputType>
-      <RootNamespace>DivisiBill</RootNamespace>
-      <UseMaui>true</UseMaui>
-      <SingleProject>true</SingleProject>
-      <ImplicitUsings>disable</ImplicitUsings>
-      <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
-      <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
-	  <MauiXamlInflator>SourceGen</MauiXamlInflator>
-	  <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies> <!--Because serialization assemblies do not play well with MAUI-->
-     <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
-     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-     <NoWarn>NU1608;CS1701</NoWarn>
-     <!--NU1608 Because Xamarin.Android.Google.BillingClient triggers it on a bunch of Android dependencies-->
-	 <!--CS1701 Because CommunityToolkit/Mvvm 8.4.0 is built against net prior to 10.0, causing this warning-->
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DivisiBill</RootNamespace>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
+    <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies> <!--Because serialization assemblies do not play well with MAUI-->
+    <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--Suppress NU1608 warnings for AndroidX package version mismatches - these are resolved correctly by NuGet-->
+    <NoWarn>$(NoWarn);NU1608</NoWarn>
 
-	   <!--Set packable false to eliminate a NU1105 warning since we never need to put this in a nuget package-->
-	   <IsPackable>false</IsPackable>
+    <!--Set packable false to eliminate a NU1105 warning since we never need to put this in a nuget package-->
+    <IsPackable>false</IsPackable>
 
-	   <!-- Display name -->
-      <ApplicationTitle>DivisiBill</ApplicationTitle>
- 
-      <!-- App Identifier -->
-      <ApplicationId>com.autoplus.divisibill</ApplicationId>
-      <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
- 
-      <!-- Versions -->
-      <ApplicationDisplayVersion>6.3.22</ApplicationDisplayVersion>
-      <ApplicationVersion>300</ApplicationVersion>
+    <!-- Display name -->
+    <ApplicationTitle>DivisiBill</ApplicationTitle>
 
-      <ApplicationVersion Condition="'$(DIVISIBILL_VERSION_INCREMENT)' != ''">$([MSBuild]::Add($(ApplicationVersion), $(DIVISIBILL_VERSION_INCREMENT)))</ApplicationVersion>
+    <!-- App Identifier -->
+    <ApplicationId>com.autoplus.divisibill</ApplicationId>
+    <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
 
-      <AssemblyVersion>$(ApplicationDisplayVersion).$(ApplicationVersion)</AssemblyVersion>
- 
-      <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
-      <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-      <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-      <DefaultLanguage>en-us</DefaultLanguage>
-      <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
-   </PropertyGroup>
+    <!-- Versions -->
+    <ApplicationDisplayVersion>6.3.22</ApplicationDisplayVersion>
+    <ApplicationVersion>300</ApplicationVersion>
 
-	<!--Set EmitCompilerGeneratedFiles to true and CompilerGeneratedFilesOutputPath to an existing path to enable source-generated files to be visible in the IDE-->
-	<PropertyGroup>
-		<EmitCompilerGeneratedFiles Condition="'$(Configuration)'=='Debug'">false</EmitCompilerGeneratedFiles>
-		<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
-	</PropertyGroup>
+    <ApplicationVersion Condition="'$(DIVISIBILL_VERSION_INCREMENT)' != ''">$([MSBuild]::Add($(ApplicationVersion), $(DIVISIBILL_VERSION_INCREMENT)))</ApplicationVersion>
 
-	<Target Name="DisplayCustomMessage" BeforeTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)'=='Debug'">
-		<Message Text="$(MSBuildProjectName) $(Configuration) build for $(TargetFramework), Web Service URI = $(DivisiBillWsUri)" Importance="high" />
-	</Target>
+    <AssemblyVersion>$(ApplicationDisplayVersion).$(ApplicationVersion)</AssemblyVersion>
 
-	<PropertyGroup>
-     <!--Enables 'dotnet run' (along with "commandName": "Project" in launchsettings.json)-->
-     <WindowsPackageType>None</WindowsPackageType>
-   </PropertyGroup>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    <DefaultLanguage>en-us</DefaultLanguage>
+    <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
+  </PropertyGroup>
+
+  <!--Set EmitCompilerGeneratedFiles to true and CompilerGeneratedFilesOutputPath to an existing path to enable source-generated files to be visible in the IDE-->
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles Condition="'$(Configuration)'=='Debug'">false</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+  <Target Name="DisplayCustomMessage" BeforeTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)'=='Debug'">
+    <Message Text="$(MSBuildProjectName) $(Configuration) build for $(TargetFramework), Web Service URI = $(DivisiBillWsUri)" Importance="high" />
+  </Target>
+
+  <PropertyGroup>
+    <!--Enables 'dotnet run' (along with "commandName": "Project" in launchsettings.json)-->
+    <WindowsPackageType>None</WindowsPackageType>
+  </PropertyGroup>
 
   <!--Turn on Android AOT compilation to Speed Up initialization-->
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
@@ -64,38 +63,35 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <!-- App Icon, see https://learn.microsoft.com/en-us/dotnet/core/tools/sdk-errors/netsdk1005 -->
-     <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Update="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
-     <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
+    <!-- App Icon, see https://learn.microsoft.com/en-us/dotnet/core/tools/sdk-errors/netsdk1005 -->
+    <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Update="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
+    <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
 
-     <!-- Splash Screen -->
-      <MauiSplashScreen Include="Resources\Splash\appiconfg.svg" Color="Red" />
-
-      <!-- Images -->
-      <MauiImage Include="Resources\Images\*" />
-      <MauiImage Update="Resources\Images\dotnet.svg" BaseSize="200,200" />
-
-      <!-- Custom Fonts -->
-      <MauiFont Include="Resources\Fonts\*" />
-
-      <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-      <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-      <!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
-      <MauiAsset Include="..\web\divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
-      <!-- Don't need the MD source files -->
-      <MauiAsset Remove="..\web\divisibill\**\*.md" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Resources\Images\dotnet.svg" />
+    <!-- Splash Screen -->
+    <MauiSplashScreen Include="Resources\Splash\appiconfg.svg" Color="Red" />
     <None Remove="Resources\Splash\appiconfg.svg" />
+
+    <!-- Images -->
+    <MauiImage Include="Resources\Images\*" />
+    <MauiImage Update="Resources\Images\dotnet.svg" BaseSize="200,200" />
+    <None Remove="Resources\Images\dotnet.svg" />
+
+    <!-- Custom Fonts -->
+    <MauiFont Include="Resources\Fonts\*" />
+
+    <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+    <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- Raw Web site Assets for DivisiBill with a "help" prefix to prevent name collisions with any other raw resources -->
+    <MauiAsset Include="..\web\divisibill\**" LogicalName="help\%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- Don't need the MD source files -->
+    <MauiAsset Remove="..\web\divisibill\**\*.md" />
   </ItemGroup>
 
   <ItemGroup>
     <!--The release notes are in a different folder but go along with the other help files at run time-->
     <MauiAsset Include="Release Notes.html" LogicalName="help\releasenotes.html" />
     <MauiAsset Update="Release Notes.html">
-    <DependentUpon>Release Notes.md</DependentUpon>
+      <DependentUpon>Release Notes.md</DependentUpon>
     </MauiAsset>
   </ItemGroup>
 
@@ -119,9 +115,9 @@
     <PackageReference Include="SkiaSharp" Version="3.119.2" />
   </ItemGroup>
 
-	<!--Add In-App Billing package for Android-->
+  <!--Add In-App Billing package for Android-->
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
-    <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.1.0" />
+    <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.3.0.2" />
   </ItemGroup>
 
   <!-- Sentry setup for PDB Upload -->
@@ -141,7 +137,7 @@
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
   </PropertyGroup>
 
-   <!--Generate the file holding the build secrets on every build-->
+  <!--Generate the file holding the build secrets on every build-->
   <!--First get the secrets from environment variables-->
   <PropertyGroup>
     <!--Set DivisiBillWsUri based on the build configuration-->
@@ -154,7 +150,7 @@
     <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI)</DivisiBillWsUri>
     <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_WS_KEY)</DivisiBillWsKey>
     <BuildInfoText>
-<![CDATA[
+      <![CDATA[
 // <auto-generated/>
 // THIS FILE IS GENERATED BY EACH BUILD - DO NOT EDIT IT
 namespace DivisiBill.Generated
@@ -192,7 +188,7 @@ namespace DivisiBill.Generated
   <PropertyGroup>
     <Today>$([System.DateTime]::UtcNow.ToString("O"))</Today>
     <BuildEnvironmentText>
-<![CDATA[
+      <![CDATA[
 // <auto-generated/>
 // THIS FILE IS GENERATED BY EACH BUILD - DO NOT EDIT IT
 namespace DivisiBill.Generated
