@@ -6,10 +6,6 @@ This is a list of the less obvious areas on the Information and Problems pages. 
 
 This area describes the version of the app, whether it is the Professional or Basic Edition, and when it was built.
 
-## Save Icon
-
-Select this icon to save a snapshot of the current bill immediately without altering the bill itself.
-
 ## About AutoPlus
 
 This button takes you to an external web site to learn more about AutoPlus. That site also has a copy of this help text if you would rather view it in a web browser.

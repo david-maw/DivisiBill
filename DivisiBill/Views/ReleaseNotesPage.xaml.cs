@@ -18,13 +18,8 @@ public partial class ReleaseNotesPage : ContentPage
                 : Microsoft.Web.WebView2.Core.CoreWebView2PreferredColorScheme.Light;
         }
 #endif
-        // The release notes are stored as a single embedded resource with no links, so we can just read
-        // it as a stream and then convert it to a string before displaying it in the WebView. This initializes
-        // faster than the technique used for the help files, but that one handles a whole virtual web site. 
-        using Stream notesStream = await FileSystem.OpenAppPackageFileAsync("help/releasenotes.html");
-        using StreamReader reader = new(notesStream);
-        string html = await reader.ReadToEndAsync();
+        // The release notes are stored as a single HTML resource, so we can just use it.
 
-        webView.Source = new HtmlWebViewSource { Html = html };
+        webView.Source = "help/releasenotes.html";
     }
 }

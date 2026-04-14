@@ -15,6 +15,7 @@
     <File Path=".github/workflows/dotnet-build-android.yml" />
     <File Path="LICENSE.txt" />
     <File Path="md-styles.css" />
+    <File Path="md-template.html" />
     <File Path="README.md" />
   </Folder>
   <Project Path="DivisiBill.Tests/DivisiBill.Tests.csproj">
