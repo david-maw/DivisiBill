@@ -19,7 +19,7 @@
         <!--Headline-->
         <Label Text="Starting DivisiBill, please wait..." FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
         <!--#region Busy/Paused Indicator-->
-        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsPaused, Converter={StaticResource Not}}" Color="Black" />
+        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsPaused, Converter={StaticResource Not}}" Color="Black" WidthRequest="100"  HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=ActivityIndicator}"/>
         <Label Grid.Row="1" Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" VerticalOptions="Center"/>
         <!--#endregion-->
         <!--#region DivisiBill Icon -->
