@@ -173,21 +173,9 @@ Release Notes and Help
 
 Once the set of features for a release is complete, add a description of
 the changes to the "Release Notes.md" file (usually in a separate stream with a
-pull request). Also, do not forget to update the help files with any new page images and 
+pull request). The Markdown V2 VS extension will create an updated HTML file when you save 
+the changed MD file. Also, do not forget to update the help files with any new page images and 
 explanatory text. 
-
-VS will run the code in the project file that uses pandoc to recreate the Release Notes.html file.
-Check in these changes (typically calling it "Release Notes for N.N.N").
-Do not forget to push these changes to the remote development stream.
-
-Sometimes VS doesn't regenerate the release notes html when you change the MarkDown sources, so you may have
-to trigger that manually. The easiest way is just enter this at a command prompt:
-
->     dotnet build DivisiBill\DivisiBill.csproj -t:GenerateReleaseNotesHtml -v:d
-
-For the help md files you can just delete the corresponding html file and it will be regenerated
-(this works for the release notes html too BUT it loses its MauiAsset build action, so you have to add
-that back in the file properties which is why the dotnet command above is better).
 
 Since this is mechanical stuff and unlikely to affect the 
 functioning of DivisiBill you can do it before or after testing the development
@@ -463,9 +451,9 @@ The project file also deploys the PDB file for a release build to Sentry using a
 
 A local debug build on Windows is helpful (see "Windows Debug Environment"$pwd below) but it uses some secrets that are not needed elsewhere so they are just stored as environment variables on the development system:
 
-DIVISIBILL_BING_MAPS_SECRET - the former key to use bing maps in the Community Toolkit because MAUI doesn't do maps on Windows, unfortunately bing maps itself is no longer supported.
-DIVISIBILL_TEST_PRO_JSON_B64 - A base-64 encoded JSON representation of a Pro License on Android
-DIVISIBILL_TEST_OCR_JSON_B64 - A base-64 encoded JSON representation of an OCR License on Android
+- DIVISIBILL_BING_MAPS_SECRET - the former key to use bing maps in the Community Toolkit because MAUI doesn't do maps on Windows, unfortunately bing maps itself is no longer supported.
+- DIVISIBILL_TEST_PRO_JSON_B64 - A base-64 encoded JSON representation of a Pro License on Android
+- DIVISIBILL_TEST_OCR_JSON_B64 - A base-64 encoded JSON representation of an OCR License on Android
 
 The DIVISIBILL_TEST_xxx_JSON_B64 environment variables are used to test licensing on a Windows system because the Android play API isn't readily usable there. They are created by capturing the JSON from an android app, storing it in a file and then using PowerShell to create an environment variable from it. A PowerShell script to create an appropriate environment variable looks like this:
 
