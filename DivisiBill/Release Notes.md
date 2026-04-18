@@ -1,8 +1,8 @@
 # Version 6.3.23
 
-## Help Improvements
+## Correct Purchase OCR
 
-Some minor fixes.
+It was not possible to purchase OCR scans, that has been corrected.
 
 # Version 6.3.22
 
