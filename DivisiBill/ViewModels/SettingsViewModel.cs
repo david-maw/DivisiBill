@@ -19,43 +19,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
         ScanOption = 2;
         App.MyLocationChanged += App_MyLocationChanged;
         Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
-        PropertyChanged += SettingsViewModel_PropertyChanged;
     }
-
-    private async void SettingsViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(UseFakeLocation))
-        {
-            if (UseFakeLocation)
-            {
-                if (App.UseFakeLocation)
-                {
-                    // Nothing to do we're already using fake location
-                }
-                else if (FakeLocation is null)
-                {
-                    await Utilities.ShowAppSnackBarAsync("Please set a fake location first");
-                    UseFakeLocation = false;
-                }
-                else
-                {
-                    IsSwitchingToFakeLocation = true;
-                    await Utilities.ShowAppSnackBarAsync("Will use fake location in 20s"); // Message shows for about 3 seconds
-                    await Task.Delay(17_000);
-                    App.UseFakeLocation = true; // Start using the fake location
-                    await App.RefreshLocationAsync();
-                    await Utilities.ShowAppSnackBarAsync("Fake location in use");
-                    IsSwitchingToFakeLocation = false;
-                }
-            }
-            else
-            {
-                App.UseFakeLocation = false; // Stop using the fake location
-                await App.RefreshLocationAsync();
-            }
-        }
-    }
-
     ~SettingsViewModel()
     {
         App.ProEditionVerified -= App_ProEditionVerified;
@@ -247,6 +211,9 @@ public partial class SettingsViewModel : ObservableObjectPlus
             }
         }
     }
+
+    [ObservableProperty]
+    public partial bool NeedsSubscriptionHelp { get; set; }
     #endregion
     #region Persistent Properties
     [ObservableProperty]
@@ -369,6 +336,36 @@ public partial class SettingsViewModel : ObservableObjectPlus
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsFakeLocationChangeable))]
     public partial bool UseFakeLocation { get; set; }
+    async partial void OnUseFakeLocationChanged(bool value)
+    {
+        if (value)
+        {
+            if (App.UseFakeLocation)
+            {
+                // Nothing to do we're already using fake location
+            }
+            else if (FakeLocation is null)
+            {
+                await Utilities.ShowAppSnackBarAsync("Please set a fake location first");
+                UseFakeLocation = false;
+            }
+            else
+            {
+                IsSwitchingToFakeLocation = true;
+                await Utilities.ShowAppSnackBarAsync("Will use fake location in 20s"); // Message shows for about 3 seconds
+                await Task.Delay(17_000);
+                App.UseFakeLocation = true; // Start using the fake location
+                await App.RefreshLocationAsync();
+                await Utilities.ShowAppSnackBarAsync("Fake location in use");
+                IsSwitchingToFakeLocation = false;
+            }
+        }
+        else
+        {
+            App.UseFakeLocation = false; // Stop using the fake location
+            await App.RefreshLocationAsync();
+        }
+    }
 
     [ObservableProperty]
     public partial bool IsSwitchingToFakeLocation { get; set; }
