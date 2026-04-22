@@ -1,3 +1,9 @@
+# Version 6.3.24
+
+## Licensing Explanations
+
+Until you have viewed the licensing information the "Purchase Pro Subscription" button is replaced by a "Pro Subscription Information" button.
+
 # Version 6.3.23
 
 ## Correct Purchase OCR
