@@ -1,8 +1,38 @@
-Developer Notes for DivisiBill
-==============================
+# Developer Notes for DivisiBill
 
 These are comments on topics of interest to DivisiBill 
 developers with the most important ones for initial development at the start.
+
+<!-- TOC-->
+  - [Basic Build Instructions](#basic-build-instructions)
+  - [Overall Solution Structure](#overall-solution-structure)
+    - [1) DivisiBill](#1-divisibill)
+    - [2) DivisiBill.Tests](#2-divisibilltests)
+    - [3) web](#3-web)
+  - [Useful Visual Studio Extensions](#useful-visual-studio-extensions)
+  - [Handy Additional Tools](#handy-additional-tools)
+  - [Building the Solution](#building-the-solution)
+  - [Branching strategy](#branching-strategy)
+  - [Building A Single Platform](#building-a-single-platform)
+  - [Release Notes and Help](#release-notes-and-help)
+    - [Help Files](#help-files)
+  - [Release Instructions](#release-instructions)
+    - [Automated Build and Deployment](#automated-build-and-deployment)
+    - [Secrets Using GitHub CLI](#secrets-using-github-cli)
+  - [Using the DivisiBill Web Service](#using-the-divisibill-web-service)
+  - [Google Service Account](#google-service-account)
+  - [Run Time Monitoring](#run-time-monitoring)
+  - [Build Information and Secrets](#build-information-and-secrets)
+    - [Build Time](#build-time)
+  - [Play Store](#play-store)
+  - [Images](#images)
+    - [Icon Images](#icon-images)
+  - [Licensing](#licensing)
+  - [Android Emulator](#android-emulator)
+  - [Windows Debug Environment](#windows-debug-environment)
+<!-- TOC -->
+
+## Basic Build Instructions
 
 To build a (somewhat limited) version of the app to run on Windows, clone the repository on a 
 Windows machine and:
@@ -10,20 +40,19 @@ Windows machine and:
  1. Use `dotnet restore` at a command prompt (use view -> terminal) to restore the 
     NuGet packages for the solution.
  2. Use Visual Studio to debug it, or
- 3. use `dotnet run -f:net8.0-windows10.0.19041.0` at a command prompt to run it
+ 3. use `dotnet run -f:net10.0-windows10.0.19041.0` at a command prompt to run it
 
 There are several Git branches available but the only well-behaved one is "main". The "alpha" branch is used as part of the release CI/CD process and hops around somewhat randomly and others may come and go but should be considered experimental at best. 
 
 Read on for more information.
 
-Overall Solution Structure
-==========================
+## Overall Solution Structure
 
 The DivisiBill solution is primarily targeted at Android phones though it runs
 on Windows too, mostly to simplify debugging and development but also to run tests. The only released 
 version is for Android. The solution is composed of 3 parts:
 
-## 1) DivisiBill
+### 1) DivisiBill
 
 The is the main program source. It is a .NET MAUI application which was originally
 a Windows phone app, migrated to Xamarin, then .NET MAUI. Because of all that 
@@ -34,7 +63,7 @@ It contains comprehensive embedded help which comes from the 'web' project
 described below and uses a web service implemented on Azure Functions to provide optional 
 storage and OCR services.
 
-## 2) DivisiBill.Tests
+### 2) DivisiBill.Tests
 
 This is a set of MsTest tests for some of the more critical functions in DivisiBill. The 
 coverage is minimal, but some of the most complex and fragile code is the code to share out
@@ -43,7 +72,7 @@ costs so this tries to exercise it thoroughly.
 This allows more focused unit testing than running the whole program does. It runs on Windows as part
 of the CI/CD release process. There aren't many unit tests.
 
-## 3) web
+### 3) web
 
 This is a set of files making up a static web site for [AutoPlus](https://www.autopl.us), 
 the bulk of which are DivisiBill help files.
@@ -52,22 +81,20 @@ Along with these is a small MAUI app called web which creates and displays just 
 so you can easily get a sense of how they'll look in an Android app, for example. 
 
 The HTML files are generated from MarkDown sources with the HTML being auto-generated
-by [pandoc]([Pandoc - index](https://pandoc.org/index.html)), which is run as part of the build of web or of DivisiBill itself.
+by the MarkDown Visual Studio extension.
 
 Some of the files are svg files used to create overlays of page images with clickable hot spots.
 You can hand edit these (svg files are XML files) but it's easier to use an editor like Inkscape.
 
 There's also a small amount of javaScript.
 
-Useful Visual Studio Extensions
--------------------------------
+## Useful Visual Studio Extensions
 
 The Release Notes.html file is generated automatically from Release Notes.md
-by pandoc so you'll need to install that (it is already present on github windows build servers).
-This note is here because it used to use the old MarkDown extension to generate HTML files.
+by the MarkDown Visual Studio extension.
 
 The AutoPlus web site files in the web project (which include DivisiBill help files) 
-are also generated from MarkDown files which use pandoc to automatically
+are also generated from MarkDown files which use the MarkDown Visual Studio extension to automatically
 generate HTML when saved. 
 
 Not required, but very helpful is the Microsoft spell checking extension. It can occasionally be
@@ -79,17 +106,14 @@ because they caused too much disruption by making changes when I was just trying
 
 The Bright XAML extension has some handy features and is less intrusive.
 
-Handy Additional Tools
-----------------------
+## Handy Additional Tools
 
 Some useful tools in this environment are:
 
-- Pandoc - for converting MarkDown files to HTML for help and release notes.
 - Inkscape - a graphical SVG editor, for help project interactive screen images.
 - GitHub CLI - especially useful for managing secrets.
 
-Building the Solution
----------------------
+## Building the Solution
 
 You should be able to clone the repository and simply restore, build, and run the solution. Most functionality will
 work but you'll be missing licensing, cloud storage and OCR functionality because that is provided by the
@@ -115,15 +139,15 @@ variables, ether per-user or per-machine (see the DOS SETX command). Here's a su
 
 The easiest way to set these is probably using the SETX program. You can also set them using the Windows UI. 
 Just search for "environment" and select "Edit the system environment variables". This will allow you to set 
-values either for the current user or the local machine. Don't forget these will not take effect until you start 
-a new program, so you may need to restart Visual Studio.
+values either for the current user or the local machine. Don't forget these will probably not take effect until
+you restart Visual Studio.
 
-Read through the section on "Build Information and Secrets" and "Automated Build and Deployment" 
+Read through the section on [Build Information and Secrets](#build-information-and-secrets)
+and [Automated Build and Deployment](#automated-build-and-deployment)
 below for more information, especially on how and why we use Base-64 encoding and the mechanism 
 by which the contents of environment variables is made available at runtime.
 
-Branching strategy
-------------------
+## Branching strategy
 
 There are two branches in GitHub and occasionally there are local 
 feature branches for in-process stuff.
@@ -155,8 +179,7 @@ the owner can enter:
 > git branch -f alpha main
 > git push origin alpha   
 
-Building A Single Platform
---------------------------
+## Building A Single Platform
 
 Sometimes it is handy to build just one platform to check that something compiles.
 You can do this by firing up the terminal (view -> terminal) and entering (for example):
@@ -168,8 +191,7 @@ or
 >   dotnet build .\DivisiBill\DivisiBill.csproj -c:Debug -f: net8.0-Android -t:run
 
 
-Release Notes and Help
-----------------------
+## Release Notes and Help
 
 Once the set of features for a release is complete, add a description of
 the changes to the "Release Notes.md" file (usually in a separate stream with a
@@ -204,8 +226,7 @@ Thanks to Google pointing me to
  [CyberITHub](https://www.cyberithub.com/solved-git-push-error-rpc-failed-http-500-curl-22-the-requested-url-returned-error/)
 for this hint.
 
-Help Files
-----------
+### Help Files
 
 The help files are based on the DivisiBill folder from the Web project - the contents of the folder (except for the 
 *.md source files which are not used at run time) are copied as MAUI assets by these lines in the project file:
@@ -218,8 +239,7 @@ The help files are based on the DivisiBill folder from the Web project - the con
 The same web project goes to create a static web site so users can go take a look at 
 DivisiBill help without installing the app (see "AutoPlus Web Site" below).
 
-Release Instructions
---------------------
+## Release Instructions
 
 The version should already be correct, but check that it is as you expect
 then push changes to the development branch on GitHub.
@@ -248,8 +268,7 @@ Don't forget to push the tag, you can do this using
 Now is probably a good time to bump the version in the development branch
 and perhaps rebase any ongoing feature branch so you don't forget later.
 
-Automated Build and Deployment
-------------------------------
+### Automated Build and Deployment
 
 Generally a push to GitHub on the Alpha branch initiates a build and deploy to Play store closed testing
 using GitHub actions. The chief complexity in the build is dealing
@@ -333,8 +352,7 @@ changesNotSentForReview](https://github.com/marketplace/actions/upload-android-a
 in the GitHub actions marketplace. The source is on github as [lozdan/upload-google-play](https://github.com/lozdan/upload-google-play)
 It also looked good though I didn't try it.
 
-Secrets Using GitHub CLI
-------------------------
+### Secrets Using GitHub CLI
 
 You can set up many of the secrets using the environment variables you already set, a git command prompt, and the gitHub 
 CLI, for example:
@@ -374,15 +392,13 @@ gh Get-Content service_account_file.json -Raw | gh secret set SERVICE_ACCOUNT_JS
 gh Get-Content keystore.b64 -Raw | gh secret set KEYSTORE_B64
 ```
 
-Using the DivisiBill Web Service
---------------------------------
+## Using the DivisiBill Web Service
 
 The Azure alternate web service can be tested using the DivisiBill app by using the "alternate" build. This will trigger
 the use of a URL for the web service from DIVISIBILL_ALTERNATE_WS_URI and a key from (DIVISIBILL_ALTERNATE_WS_KEY.
 The default release build of the web service deploys to this Azure Functions.
 
-Google Service Account
-----------------------
+## Google Service Account
 
 Part of setting up release automation is coming up with a Google service account that has permission to push the compiled app
 (in the form of an AAB file) to the Play Store and start the release process (automated testing followed by making it
@@ -397,16 +413,14 @@ action can use it. The secret used is
 
 Because the secret data is JSON and need not be manipulated by DOS commands that might be confused by the multiple lines or special characters (especially the double quote character used to delimit strings) it can be stored directly in an Azure Secret and moved from there to SERVICE_ACCOUNTJSON by the YAML file (dotnet-build-android.yaml) describing the build.
 
-Run Time Monitoring
--------------------
+## Run Time Monitoring
 
 For MAUI the solution is [Sentry](https://sentry.io). The release build pushes PDB files to Sentry so that problems
 can be analyzed symbolically. At present Sentry is only used for crash reporting and user problem reporting, not
 performance monitoring. The bulk of problems turn up in Play Store testing which causes faults never 
 seen in production (perhaps it sends input fast enough to fall into a few timing holes).
 
-Build Information and Secrets
------------------------------
+## Build Information and Secrets
 
 There's information that belongs in the build process, not in the source. There's also some 
 secret information (like the web service key) that doesn't belong in source control. 
@@ -489,8 +503,7 @@ If you wish you can verify the variable contains the right thing by running a sc
 
 If you set environment variables, don't forget to restart Visual Studio before rebuilding the app so it uses the new values. 
 
-Build Time
-----------
+### Build Time
 
 The build time displayed by the app is generated by a similar mechanism but it generates a class called 
 BuildEnvironment (it could use the same class but this seemed cleaner).
@@ -499,8 +512,7 @@ When you load the project into Visual Studio it will generate both files so you 
 
 In  theory the files ought to be recognized as generated files by Visual Studio as their names end with `.g.cs` but as of 2024 at least, they do not seem to be.
 
-Play Store
-----------
+## Play Store
 
 As well as GitHub actions to release updates to the Play Store you can also do it manually.
 
@@ -547,8 +559,7 @@ if you want to see a summary of what's in a keystore:
     keytool -list -keystore uploadplay.keystore" -storepass ChangeMe
 for more detail add "-v".
 
-Images
-------
+## Images
 
 For historical reasons Android stored images in various different sizes so 
 as to deal with screens with different resolutions. With the advent of scalable
@@ -563,8 +574,7 @@ If you want to edit SVG files you can do it by hand (they are just XML files) bu
 for larger changes try "inkscape", it's free, flexible and comprehensive; a
 bit of a steep learning curve, but well worth it.
 
-Icon Images
------------
+### Icon Images
 
 Tool bar icons used to be stored as per-platform images in multiple sizes, then the use
 of icon fonts made it easier by allowing the use of font based icons, which are scalable.
@@ -580,8 +590,7 @@ If you want to examine all the Icons on a font file https://andreinitescu.github
 
 Another good source of free icons is FontAwsome at https://fontawesome.com/download.
 
-Licensing
----------
+## Licensing
 
 The web service calls into a license provider (the Google Play store) to get either a 
 "Professional" subscription or an "OCR" license. These exist because using web capabilities (storage and bill 
@@ -596,16 +605,14 @@ In order for Google to support in App Licenses it has to have a certain amount o
 based on testing, an app in the store (just in the Alpha or Beta the test streams does not seem to work).
 See the web service project documentation for more details.
 
-Android Emulator
-----------------
+## Android Emulator
 
 The android emulator is pretty fragile, if it shuts down badly it seems to run very slowly hang on restart and 
 once this starts
 happening the only fix seems to be reboot the system. Even after that it sometimes does not recover, although
 creating a new emulator and starting it sometimes seems to fix the others. Weird, fragile code.
 
-Windows Debug Environment
--------------------------
+## Windows Debug Environment
 
 It's easier to debug on Windows than in Android because:
 
