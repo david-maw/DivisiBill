@@ -40,7 +40,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
     {
         // These are the values which are held externally and might change while we're on another page
         // This first set are just readonly views of App or billing values 
-        OnPropertyChanged(nameof(IsLimited));
         OnPropertyChanged(nameof(IsCloudAccessAllowed));
         OnPropertyChanged(nameof(InternetEnabledAndLicensed));
         OnPropertyChanged(nameof(LicenseChecked));
@@ -56,6 +55,8 @@ public partial class SettingsViewModel : ObservableObjectPlus
         FakeLocation = App.FakeLocation;
         UseFakeLocation = App.UseFakeLocation;
         HasPassword = CryptManager.HasStoredPassword;
+        // Ones where side effects are needed when they change
+        IsLimited = App.IsLimited;
     }
 
     public void OnNavigatedTo()
@@ -106,7 +107,11 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
-    private async Task LicensingHelp() => await App.PushAsync($"{Routes.HelpPage}?page=licensing");
+    private async Task LicensingHelp()
+    {
+        NeedsSubscriptionHelp = false; // Only once the user has looked at it once are they allowed to actually get one
+        await App.PushAsync($"{Routes.HelpPage}?page=licensing");
+    }
 
     [RelayCommand]
     private async Task PurchaseUpgradeAsync()
@@ -186,18 +191,15 @@ public partial class SettingsViewModel : ObservableObjectPlus
     private void ResetCheckBoxes() => App.Settings.ResetCheckboxes();
     #endregion
     #region Transient Properties
-    public bool IsLimited
+    [ObservableProperty]
+    public partial bool IsLimited { get; set; } = true; // Be sure to react to it being set false
+    partial void OnIsLimitedChanged(bool value)
     {
-        get => App.IsLimited;
-        set
-        {
-            if (App.IsLimited != value)
-            {
-                App.IsLimited = value;
-                OnPropertyChanged();
-            }
-        }
+        App.IsLimited = value;
+        if (!value)
+            NeedsSubscriptionHelp = false;
     }
+
     public bool IsOcrPurchaseAllowed => ScansLeft < Billing.ScansWarningLevel; // Includes the case where the user has purchased no scans yet
     public int ScanOption
     {
@@ -213,7 +215,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    public partial bool NeedsSubscriptionHelp { get; set; }
+    public partial bool NeedsSubscriptionHelp { get; set; } = true;
     #endregion
     #region Persistent Properties
     [ObservableProperty]

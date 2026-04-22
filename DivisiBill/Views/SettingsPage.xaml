@@ -94,11 +94,12 @@
                     <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding BackupImagesOnlyWiFi}" IsEnabled="{Binding WiFiOnly,Converter={StaticResource Not}}" />
                 </Grid>
             </VerticalStackLayout>
-            <!--#region Password Control -->
-            <HorizontalStackLayout HorizontalOptions="Center">
+            <!--#region Cloud Password Control -->
+            <HorizontalStackLayout IsVisible="{Binding Path=HasProSubscription}" HorizontalOptions="Center">
                 <!--Only show one of the two following buttons-->
                 <Button Text="Set Password" Command="{Binding ChangePasswordCommand}" Margin="5" IsVisible="{Binding HasPassword,Converter={StaticResource Not}}"/>
                 <Button Text="Change Password" Command="{Binding ChangePasswordCommand}" Margin="5" IsVisible="{Binding HasPassword}"/>
+                <!--Always show this one-->
                 <Button Text="Clear Password" Command="{Binding ClearPasswordCommand}" Margin="5" IsVisible="{Binding HasPassword}"/>
                 <!--#endregion-->
             </HorizontalStackLayout>
@@ -118,17 +119,21 @@
                             <FormattedString>
                                 <Span Text="Tap " FontSize="{StaticResource FontSizeLarge}"/>
                                 <Span Text="here" TextDecorations="Underline" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{StaticResource MediumSpringGreen}"/>
-                                <Span Text=" for licensing help" FontSize="{StaticResource FontSizeLarge}"/>
+                                <Span Text=" for subscription help" FontSize="{StaticResource FontSizeLarge}"/>
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
                     <!--#region Pro Subscription -->
-                    <Button Text="Purchase Pro Subscription" Command="{Binding PurchaseUpgradeCommand}" HorizontalOptions="Center" IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}"/>
-                    <Button Text="Modify Pro Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{Binding Path=HasProSubscription}"/>
-                    <!--The following button is used for testing pro licenses only and is not normally shown-->
-                    <Button Text="*Purchase Pro License*" Command="{Binding PurchaseProLicenseCommand}" HorizontalOptions="Center" IsVisible="False"/>
-                    <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
-                    <Label Text="{Binding ProSubscriptionId, StringFormat='Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
+                    <!--Either gives help on the subscription or lets you manipulate it-->
+                    <Button Text="Pro Subscription Information" Command="{Binding LicensingHelpCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{Binding Path=NeedsSubscriptionHelp}"/>
+                    <VerticalStackLayout IsVisible="{Binding NeedsSubscriptionHelp, Converter={StaticResource Not}}">
+                        <Button Text="Purchase Pro Subscription" Command="{Binding PurchaseUpgradeCommand}" HorizontalOptions="Center" IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}"/>
+                        <Button Text="Modify Pro Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{Binding Path=HasProSubscription}"/>
+                        <!--The following button is used for testing pro licenses only and is not normally shown-->
+                        <Button Text="*Purchase Pro License*" Command="{Binding PurchaseProLicenseCommand}" HorizontalOptions="Center" IsVisible="False"/>
+                        <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
+                        <Label Text="{Binding ProSubscriptionId, StringFormat='Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
                     <!--#endregion-->
                     <!--#region OCR Scan License -->
                     <BoxView HeightRequest="2" HorizontalOptions="Fill" Margin="0, 5, 0, 0" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
