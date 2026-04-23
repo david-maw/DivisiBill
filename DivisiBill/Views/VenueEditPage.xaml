@@ -9,13 +9,11 @@
              x:DataType="viewmodels:VenueEditViewModel"
              x:Class="DivisiBill.Views.VenueEditPage">
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior Command="{Binding ExitPageCommand}" IsVisible="False"/>
+        <BackButtonBehavior Command="{Binding ExitPageCommand}"/>
     </Shell.BackButtonBehavior>
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>
         <ToolbarItem Command="{Binding DeleteCommand}" IconImageSource="{StaticResource GlyphDel}"/>
-        <!--Add an 'exit' glyph as a temporary workaround for issue https://github.com/dotnet/maui/issues/33139-->
-        <ToolbarItem Command="{Binding ExitPageCommand}" IconImageSource="{StaticResource GlyphBack}"/>
     </ContentPage.ToolbarItems>
     <!--This is a column layout (a single column grid), rather than a VerticalStackLayout, in order to allow the Notes field to occupy all the available space-->
     <controls:ColumnLayout Margin="10,0,10,10">
@@ -63,7 +61,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </Border>
-        <Label Text="New name is invalid, will remain unchanged" HorizontalOptions="Center" IsVisible="{Binding IsNewNameInvalid}"/>
+        <Label Text="{Binding VenueNameError}" HorizontalOptions="Center" IsVisible="{Binding VenueNameError, Converter={StaticResource IsStringNotNullOrWhiteSpace}}" TextColor="Red"/>
         <Label Text="Notes" FontAttributes="Bold" HorizontalOptions="Center"/>
         <Border controls:ColumnLayout.Fill="True">
             <Editor Text="{Binding Notes}"/>

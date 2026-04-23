@@ -71,8 +71,14 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     #region Properties
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsNewNameInvalid))]
     public partial string Name { get; set; } = string.Empty;
+
+    partial void OnNameChanged(string value)
+    {
+        VenueNameError = string.IsNullOrWhiteSpace(Name) ? "A venue name is required"
+            : Venue.AllVenues.Any((v) => ActiveVenue != v && Name.Equals(v.Name, StringComparison.Ordinal)) ? "That venue name is already in use"
+            : string.Empty;
+    }
 
     [ObservableProperty]
     public partial string Notes { get; set; } = string.Empty;
@@ -107,7 +113,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     public bool NoChanges() => Utilities.StringFunctionallyEqual(Name, ActiveVenue.Name)
         && Utilities.StringFunctionallyEqual(Notes, ActiveVenue.Notes)
         && Equals(Location, ActiveVenue.Location);
-    public bool IsNewNameInvalid => string.IsNullOrWhiteSpace(Name) || Venue.AllVenues.Any((v) => ActiveVenue != v && Name.Equals(v.Name, StringComparison.Ordinal));
+
+    [ObservableProperty]
+    public partial string VenueNameError { get; set; } = string.Empty;
     #endregion
     /// <summary>
     /// Persists changes made to the active venue, including its name, notes, and location, and updates related meal and
@@ -129,14 +137,14 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
                 Venue.SetCurrentByName(null); // we have renamed the current venue, so there will not be a current venue until one is created
             else if (Venue.Current == null && Meal.CurrentMeal.VenueName == Name)
                 updateCurrentVenue = true; // There wasn't previously a current venue but this is now it
-            ActiveVenue.Name = Name; 
+            ActiveVenue.Name = Name;
         }
         ActiveVenue.Notes = Notes;
         ActiveVenue.Location = Location;
         // Make sure any changes are persisted
         await Venue.SaveSettingsAsync();
         if (updateCurrentVenue) // Now that the list of venues has been updated we can try and select the new venue name we just stored
-            Venue.SetCurrentByName(Name); 
+            Venue.SetCurrentByName(Name);
     }
     #region Commands
     [RelayCommand]
@@ -170,7 +178,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     {
         if (!NoChanges())
         {
-            if (IsNewNameInvalid)
+            if (!string.IsNullOrEmpty(VenueNameError))
             {
                 // Just restore the original name
                 Name = ActiveVenue.Name;
