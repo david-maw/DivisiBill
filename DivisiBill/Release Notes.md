@@ -1,3 +1,19 @@
+# Version 6.3.25
+
+## Correct Status Bar Color
+
+The status bar at the top of each page was showing up red instead of matching the in-use theme (dark or light). This has been corrected.
+
+## Prevent Crash With Back Button
+
+Pressing the back button during initialization could cause a fault. It now correctly just requests another press to end the program.
+
+## Improve Venue Name Error Reporting
+
+When a new Venue is being created or an existing one edited the error message makes it clear when a duplicate name is proposed.
+
+This change also eliminates the "fake" back button on the right of the page in favor of the real one on the left.
+
 # Version 6.3.24
 
 ## Licensing Explanations
