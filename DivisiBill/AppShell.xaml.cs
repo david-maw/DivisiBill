@@ -43,6 +43,8 @@ public partial class AppShell : Shell
     /// <returns>true if the request has been handled, false if the caller should handle it</returns>
     public bool HandleBackRequest()
     {
+        if (!App.InitializationComplete.Task.IsCompleted)
+            return false; // Just ignore the back button until initialization is complete, otherwise it can cause crashes if the user tries to back out of the app before it's ready
         if (FlyoutIsPresented)
         {
             FlyoutIsPresented = false;
