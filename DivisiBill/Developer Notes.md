@@ -420,6 +420,13 @@ can be analyzed symbolically. At present Sentry is only used for crash reporting
 performance monitoring. The bulk of problems turn up in Play Store testing which causes faults never 
 seen in production (perhaps it sends input fast enough to fall into a few timing holes).
 
+For debug builds on Android test systems the app also routes debug messages to the log if there's no debugger attached, so you can see what's going on in the Android log (logcat) using the Android Debug Bridge (ADB) in Visual Studio (Tools -> Android -> Android ADB Command Prompt). A handy command line is:
+```
+cls & adb -s emulator-5554 logcat -c & adb -s emulator-5554 logcat -s MAUI
+```
+
+It clears the condole screen, clears the logcat buffer and then starts showing only messages tagged "MAUI" which is what the app uses for its logging. You can change the tag if you want to see other messages but this is usually enough to see what's going on in the app. It can be especially helpful when debugging start up and shutdown scenarios where it can be hard, or impossible, to attach a debugger.
+
 ## Build Information and Secrets
 
 There's information that belongs in the build process, not in the source. There's also some 
