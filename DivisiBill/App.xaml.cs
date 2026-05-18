@@ -50,7 +50,7 @@ public partial class App : Application, INotifyPropertyChanged
     private static Task LocationMonitorTask;
     private static CancellationTokenSource LocationMonitorCancellationTokenSource = new();
     internal static CancellationTokenSource SaveProcessCancellationTokenSource = new();
-    public static readonly TaskCompletionSource<bool> InitializationComplete = new();
+    public static TaskCompletionSource<bool> InitializationComplete { get; set; } = new();// Allows processes to wait for initialization to complete before doing things that might interfere with it, such as persistence during shutdown
     public static readonly PauseTokenSource IsRunningSource = new();
     public static readonly PauseTokenSource CloudAllowedSource = new();
     internal static CancellationTokenSource RequestBackupLoopStop;
@@ -65,6 +65,7 @@ public partial class App : Application, INotifyPropertyChanged
     #region Initialization
     public App()
     {
+        Utilities.DebugMsg("App constructor entered");
         InitializeComponent();
         DebugInitialize();
 #if WINDOWS
@@ -257,6 +258,7 @@ public partial class App : Application, INotifyPropertyChanged
         App.Settings = new AppSettings();
         window.Created += (s, e) =>
         {
+            InitializationComplete = new(); // Flag initialization as incomplete until we finish it
             if (!IsRepeated("Created"))
                 HandleActivityChanges(false);
         };
