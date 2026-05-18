@@ -116,7 +116,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         return false;
     }
 
-    private static bool LoadFromLocal()
+    public static bool LoadFromLocal()
     {
         Stream allPeopleStream = new FileStream(PersonPathName, FileMode.Open, FileAccess.Read);
         if (allPeopleStream is not null)

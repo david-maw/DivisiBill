@@ -184,10 +184,16 @@ public partial class App : Application, INotifyPropertyChanged
             }
             else // Do the minimum required initialization
             {
+                App.IsCloudAllowed = false; // We don't want to do anything that might involve the cloud
+                App.Settings = new AppSettings(); // App Settings access
                 // Create all the required folders, in case the app has never run before
                 Meal.InitializeFolders();
                 Person.InitializeFolders();
                 Venue.InitializeFolders();
+                // Load up the existing lists of people and venues, so they are available when we process the stream
+                // Don't worry about meals because each is in its own file so there's no list to load
+                Person.LoadFromLocal();
+                await Venue.LoadFromLocal();
             }
         }
         catch (Exception ex)
