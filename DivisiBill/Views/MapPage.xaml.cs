@@ -145,7 +145,7 @@ public partial class MapPage : ContentPage
             if (googleMapsWebView.Handler?.PlatformView is WebView2 wv2)
                 await wv2.EnsureCoreWebView2Async();
 #endif
-            viewModel.IntializeGoogleMap();
+            viewModel.InitializeGoogleMap();
         }
         else
         {

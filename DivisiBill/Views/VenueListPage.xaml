@@ -92,11 +92,11 @@
         </DataTemplate>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding AssignCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding AssignCommand}" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Command="{Binding AddCommand}"/>
-        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}"/>
-        <ToolbarItem Text="Map"       Clicked="OnShowMap"                           Order="Secondary"/>
-        <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"        Order="Secondary"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
+        <ToolbarItem Text="Map"       Clicked="OnShowMap"                           Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
+        <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"        Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}" Order="Secondary"/>
     </ContentPage.ToolbarItems>
     <controls:ColumnLayout>

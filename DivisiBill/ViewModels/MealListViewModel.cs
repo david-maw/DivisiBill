@@ -367,10 +367,10 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     private async Task InvokeUseMeal(MealSummary ms) => await UseMealParam?.Invoke(BestMealSummary(ms));
 
     #region Delete / Undelete
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(ShowLocalMeals))]
     private async Task DeleteLocalMeals() => await DeleteAnyMeal(true, false);
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(ShowRemoteMeals))]
     private async Task DeleteRemoteMeals() => await DeleteAnyMeal(false, true);
 
     [RelayCommand]
@@ -966,6 +966,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     #region Show/Hide Local/Remote
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(WhereText))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteLocalMealsCommand))]
     public partial bool ShowLocalMeals { get; set; } = true;
 
     partial void OnShowLocalMealsChanged(bool value)
@@ -977,6 +978,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(WhereText))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteRemoteMealsCommand))]
     public partial bool ShowRemoteMeals { get; set; } = false;
 
     partial void OnShowRemoteMealsChanged(bool value)

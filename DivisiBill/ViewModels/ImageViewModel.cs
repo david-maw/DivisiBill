@@ -89,7 +89,12 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         switch (e.PropertyName)
         {
             case "HasDeletedImage":
+                UndeleteCommand.NotifyCanExecuteChanged();
+                OnPropertyChanged(e.PropertyName); break;
             case "HasImage":
+                DeleteCommand.NotifyCanExecuteChanged();
+                OcrCommand.NotifyCanExecuteChanged();
+                RotateRightCommand.NotifyCanExecuteChanged();
                 OnPropertyChanged(e.PropertyName); break;
             default:
                 break;
@@ -136,10 +141,10 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     }
 
     /// <summary>
-    /// Run character recognition on the current image iff the user has a license.
+    /// Run character recognition on the current image if the user has a license. Alert them if they do not.
     /// </summary>
     /// <returns></returns>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(HasPreviewImage))]
     private async Task Ocr()
     {
         if (Services.Billing.ScansLeft <= 0)
@@ -162,7 +167,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// <summary>
     /// Delete the current image and clear the current bill image
     /// </summary>
-    [RelayCommand] // If it was working yet this should be [RelayCommand(CanExecute = nameof(HasImage))]
+    [RelayCommand(CanExecute = nameof(HasPreviewImage))]
     private void Delete()
     {
         if (Meal.CurrentMeal.HasImage)
@@ -173,13 +178,12 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         }
         PreviewImageSource = null;
         browsedPictureName = null;
-        OnPropertyChanged(nameof(HasPreviewImage));
     }
 
     /// <summary>
     /// UnDelete the current image - beware this is one of the only functions that changes a Meal in place rather than creating a new one.
     /// </summary>
-    [RelayCommand] // If it was working yet this should be [RelayCommand(CanExecute = nameof(HasDeletedImage))]
+    [RelayCommand(CanExecute = nameof(HasDeletedImage))]
     private void Undelete()
     {
         if (HasDeletedImage)
@@ -187,14 +191,13 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             Meal.CurrentMeal.TryUndeleteImage();
             PreviewImageSource = ImageSource.FromStream(() => File.OpenRead(Meal.CurrentMeal.ImagePath));
             browsedPictureName = null;
-            OnPropertyChanged(nameof(HasPreviewImage));
         }
     }
 
     /// <summary>
     /// Rotate the current image clockwise by 90 degrees
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(HasPreviewImage))]
     private async Task RotateRight()
     {
         if (!HasPreviewImage)
@@ -278,6 +281,10 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasPreviewImage))]
+    [NotifyCanExecuteChangedFor(nameof(OcrCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteCommand))]
+    [NotifyCanExecuteChangedFor(nameof(UndeleteCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RotateRightCommand))]
     public partial ImageSource PreviewImageSource { get; set; } = null;
 
     [ObservableProperty]

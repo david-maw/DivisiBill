@@ -63,7 +63,20 @@ public partial class MapViewModel : ObservableObject
     // If it has, then when we navigate away from the map page, we need to update the MapSettings
     // with the new location so it can be returned to the caller. If it hasn't, then we can leave
     // the MapSettings unchanged to avoid unnecessary updates and potential side effects.
-    private bool VenueLocationHasChanged { get; set; }
+    private bool VenueLocationHasChanged
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                ClearLocationCommand.NotifyCanExecuteChanged();
+                RestoreCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
 
     // The name of the venue is displayed in the UI but does not affect any map functionality,
     // so it does not need to be updated when the location changes.
@@ -107,7 +120,7 @@ public partial class MapViewModel : ObservableObject
     /// </summary>
     /// <remarks>This method also raises the RestoreRequested event to notify the view that a restore
     /// operation has occurred.</remarks>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(VenueLocationHasChanged))]
     private void Restore()
     {
         VenueLocation = originalVenueLocation;
@@ -124,13 +137,15 @@ public partial class MapViewModel : ObservableObject
         CurrentMapType = CurrentMapType == MapType.Street ? MapType.Satellite : MapType.Street;
     }
 
+    bool CanClearLocation() => VenueLocation != null;
+
     /// <summary>
     /// Clears the current venue location and raises a request to notify the view of the change.
     /// </summary>
     /// <remarks>This method sets the VenueLocation property to null and triggers the ClearLocationRequested
     /// event. Use this method to reset the location state and notify the view (and theoretically any subscribers)
     /// that the location has been cleared.</remarks>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanClearLocation))]
     private void ClearLocation()
     {
         VenueLocation = null;
@@ -145,7 +160,7 @@ public partial class MapViewModel : ObservableObject
 
     // Initializes the Google Map by generating the HTML+JavaScript with the correct initial center,
     // zoom, and marker based on the venue location.
-    public void IntializeGoogleMap()
+    public void InitializeGoogleMap()
     {
         if (Utilities.IsWinUI && MapSettings != null)
         {

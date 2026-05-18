@@ -72,8 +72,12 @@ public partial class FileListViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial RemoteItemInfo SelectedItem { get; set; }
 
+    partial void OnSelectedItemChanged(RemoteItemInfo value) => DeleteCommand.NotifyCanExecuteChanged();
+
     [ObservableProperty]
     public partial List<RemoteItemInfo> SelectedItems { get; set; } = [];
+
+    partial void OnSelectedItemsChanged(List<RemoteItemInfo> value) => DeleteCommand.NotifyCanExecuteChanged();
 
     [RelayCommand]
     private void Select(RemoteItemInfo remoteItemInfo)
@@ -84,6 +88,7 @@ public partial class FileListViewModel : ObservableObjectPlus
                 SelectedItems.Remove(remoteItemInfo);
             else
                 SelectedItems.Add(remoteItemInfo);
+            DeleteCommand.NotifyCanExecuteChanged();
         }
         else // Selecting a single item
         {
@@ -99,7 +104,9 @@ public partial class FileListViewModel : ObservableObjectPlus
         remoteItemInfo.Selected = !remoteItemInfo.Selected;
     }
 
-    [RelayCommand]
+    private bool CanDelete() => ShowAsSelectableList ? SelectedItems.FirstOrDefault() is not null : SelectedItem is not null;
+
+    [RelayCommand(CanExecute = nameof(CanDelete))]
     private async Task DeleteAsync()
     {
         if (ShowAsSelectableList)
@@ -127,6 +134,8 @@ public partial class FileListViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     public partial bool ShowAsSelectableList { get; set; } = false;
+
+    partial void OnShowAsSelectableListChanged(bool value) => DeleteCommand.NotifyCanExecuteChanged();
 
     [RelayCommand]
     private void ChangeList()

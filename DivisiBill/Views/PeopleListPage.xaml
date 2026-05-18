@@ -12,10 +12,10 @@
              Title="People List">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding UseCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding UseCommand}" IsEnabled="{Binding SelectedPerson, Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Command="{Binding AddCommand}"/>
-        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}"/>
-        <ToolbarItem Text="Details" Command="{Binding ShowDetailsCommand}" Order="Secondary"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}" IsEnabled="{Binding SelectedPerson, Converter={StaticResource IsNotNull}}"/>
+        <ToolbarItem Text="Details" Command="{Binding ShowDetailsCommand}" Order="Secondary" IsEnabled="{Binding SelectedPerson, Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem Text="Download" Command="{Binding GetRemotePeopleListCommand}" Order="Secondary"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Resources>

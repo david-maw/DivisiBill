@@ -396,6 +396,9 @@ public partial class MealViewModel : ObservableObjectPlus
     {
         if (value is not null)
             LoadLineItem();
+        FilterItemsFromLineItemCommand.NotifyCanExecuteChanged();
+        DuplicateLineItemCommand.NotifyCanExecuteChanged();
+        ChangeSharingCommand.NotifyCanExecuteChanged();
     }
     public LineItem SelectedOrFirstLineItem => SelectedLineItem ?? LineItems.FirstOrDefault();
 
@@ -435,7 +438,9 @@ public partial class MealViewModel : ObservableObjectPlus
         NotifyLineItemAddCompleted(li);
     }
 
-    [RelayCommand]
+    bool CanDuplicateLineItem() => SelectedLineItem is not null || LineItems.FirstOrDefault() is not null;
+
+    [RelayCommand(CanExecute = nameof(CanDuplicateLineItem))]
     public void DuplicateLineItem()
     {
         LineItem li = SelectedLineItem ?? LineItems.LastOrDefault();
@@ -520,7 +525,7 @@ public partial class MealViewModel : ObservableObjectPlus
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanDeleteLineItem))]
     public void DeleteLineItem(LineItem li)
     {
         li ??= SelectedLineItem;
@@ -531,13 +536,16 @@ public partial class MealViewModel : ObservableObjectPlus
             nextItem = DeleteItem(li);
         SelectedLineItem = nextItem;
     }
+    public bool CanDeleteLineItem(LineItem li) => li is not null || LineItems.Count > 0;
     public void LineItemDeselected(LineItem li)
     {
         if (IsFiltered && li.GetShares(AmountForSharerID) < 1)
             LineItems.Remove(li);
     }
 
-    [RelayCommand]
+    public bool CanUndeleteLineItem() => IsAnyDeletedLineItem;
+
+    [RelayCommand(CanExecute = nameof(CanUndeleteLineItem))]
     private void UndeleteLineItem()
     {
         if (IsAnyDeletedLineItem)
@@ -548,7 +556,9 @@ public partial class MealViewModel : ObservableObjectPlus
         }
     }
 
-    [RelayCommand]
+    public bool CanUndeleteAllLineItems() => IsManyDeletedLineItems;
+
+    [RelayCommand(CanExecute = nameof(CanUndeleteAllLineItems))]
     private void UndeleteAllLineItems()
     {
         if (IsAnyDeletedLineItem)
@@ -577,6 +587,8 @@ public partial class MealViewModel : ObservableObjectPlus
             }
             // Always recheck IsManyDeletedLineItems because for it transitions between {0,1} and {2+} are what count 
             OnPropertyChanged(nameof(IsManyDeletedLineItems));
+            UndeleteAllLineItemsCommand.NotifyCanExecuteChanged();
+            UndeleteLineItemCommand.NotifyCanExecuteChanged();
         }
     }
     public bool IsManyDeletedLineItems => deletedLineItems.Count > 1;
@@ -649,6 +661,26 @@ public partial class MealViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial ObservableCollection<LineItem> LineItems { get; set; } = null;
 
+    partial void OnLineItemsChanged(ObservableCollection<LineItem> oldValue, ObservableCollection<LineItem> newValue)
+    {
+        // Unsubscribe from old collection
+        if (oldValue is not null)
+            oldValue.CollectionChanged -= LineItems_CollectionChanged;
+
+        // Subscribe to new collection
+        if (newValue is not null)
+            newValue.CollectionChanged += LineItems_CollectionChanged;
+
+        DeleteLineItemCommand.NotifyCanExecuteChanged();
+    }
+
+    private void LineItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        DeleteLineItemCommand.NotifyCanExecuteChanged();
+        FilterItemsFromLineItemCommand.NotifyCanExecuteChanged();
+        DuplicateLineItemCommand.NotifyCanExecuteChanged();
+    }
+
     public void ChangeShares(LineItem li)
     {
         if (li.TotalSharers == 0)
@@ -709,7 +741,9 @@ public partial class MealViewModel : ObservableObjectPlus
         }
     }
 
-    [RelayCommand]
+    bool SelectedLineItemIsNotNull() => SelectedLineItem is not null;
+
+    [RelayCommand(CanExecute = nameof(SelectedLineItemIsNotNull))]
     public void ChangeSharing(object param)
     {
         if (param is string changeTypeString && Enum.TryParse(changeTypeString, out ChangeType changeType))
@@ -816,7 +850,10 @@ public partial class MealViewModel : ObservableObjectPlus
     private PersonCost FilteredSharer => IsFiltered ? Costs.Where((pc) => pc.DinerID == AmountForSharerID).FirstOrDefault() : null;
 
     private LineItem previousFilteredLineItem = null;
-    [RelayCommand]
+
+    bool CanFilterFromLineItems => LineItems.Count > 0;
+
+    [RelayCommand(CanExecute = nameof(CanFilterFromLineItems))]
     public void FilterItemsFromLineItem()
     {
         if (SelectedLineItem is null)

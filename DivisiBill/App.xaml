@@ -6,6 +6,7 @@
     xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
     xmlns:local="clr-namespace:DivisiBill"
     xmlns:services="clr-namespace:DivisiBill.Services"
+    xmlns:controls="clr-namespace:DivisiBill.Controls"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewModels="clr-namespace:DivisiBill.ViewModels"
     android:Application.WindowSoftInputModeAdjust="Resize">
@@ -55,11 +56,11 @@
             <Color x:Key="NegativeNumber">Red</Color>
             <Color x:Key="SelectedBackGroundColor">#f17b01</Color> <!-- Same color that Android uses by default -->
             <Color x:Key="MediumSpringGreen">#FF00FA9A</Color> <!--Same as corresponding CSS color-->
-            
-            <!--  Icon names  -->
 
-            <x:String x:Key="TextArrowDown">&#xF0CDC;</x:String>
-            <x:String x:Key="TextArrowUp">&#xF0CE2;</x:String>
+            <!--Icon names from "mdicons" Material Design Icons (https://materialdesignicons.com/), the names of the icons are included in comments for reference.-->
+
+            <x:String x:Key="TextArrowDown">&#xF0CDC;</x:String> <!--arrow-down-circle-outline-->
+            <x:String x:Key="TextArrowUp">&#xF0CE2;</x:String> <!--arrow-up-circle-outline-->
 
             <FontImageSource x:Key="FileGlyphLocalOutline"       Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-home-outline-->
             <FontImageSource x:Key="FileGlyphRemoteOutline"      Color="{AppThemeBinding Light={StaticResource FileGlyphDark}, Dark={StaticResource FileGlyphLight}}"  Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
@@ -71,52 +72,53 @@
             <FontImageSource x:Key="ListGlyphSelected"          Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0134;" FontFamily="mdicons"/> <!--checkbox-marked-circle-outline-->
             <FontImageSource x:Key="ListGlyphCurrentMeal"       Color="{AppThemeBinding Light={StaticResource ImageGlyphDark}, Dark={StaticResource ImageGlyphLight}}"  Glyph="&#xF1A7D;" FontFamily="mdicons"/> <!--text-box-edit-outline-->
 
-            <FontImageSource x:Key="GlyphAdd"                   Color="White" Glyph="&#xF0419;" FontFamily="mdicons"/> <!--plus-circle-outline-->
-            <FontImageSource x:Key="GlyphBack"                  Color="White" Glyph="&#xF004D;" FontFamily="mdicons"/> <!--arrow-left-->
-            <FontImageSource x:Key="GlyphCamera"                Color="White" Glyph="&#xF0D5D;" FontFamily="mdicons"/> <!--camera-outline-->
-            <FontImageSource x:Key="GlyphCancel"                Color="White" Glyph="&#xF073A;" FontFamily="mdicons"/> <!--cancel-->
-            <FontImageSource x:Key="GlyphCheck"                 Color="White" Glyph="&#xF012C;" FontFamily="mdicons"/> <!--check-->
-            <FontImageSource x:Key="GlyphClose"                 Color="White" Glyph="&#xF0156;" FontFamily="mdicons"/> <!--close-->
-            <FontImageSource x:Key="GlyphCloud"                 Color="White" Glyph="&#xF015F;" FontFamily="mdicons"/> <!--cloud-->
-            <FontImageSource x:Key="GlyphCloudDownload"         Color="White" Glyph="&#xF0162;" FontFamily="mdicons"/> <!--cloud-download-->
-            <FontImageSource x:Key="GlyphCloudDownloadOutline"  Color="White" Glyph="&#xF0B7D;" FontFamily="mdicons"/> <!--cloud-download-outline-->
-            <FontImageSource x:Key="GlyphCloudOffOutline"       Color="White" Glyph="&#xF0164;" FontFamily="mdicons"/> <!--cloud-off-outline-->
-            <FontImageSource x:Key="GlyphCloudOutline"          Color="White" Glyph="&#xF0163;" FontFamily="mdicons"/> <!--cloud-outline-->
-            <FontImageSource x:Key="GlyphCrop"                  Color="White" Glyph="&#xF019E;" FontFamily="mdicons"/> <!--crop-->
-            <FontImageSource x:Key="GlyphDecrement"             Color="White" Glyph="&#xF0377;" FontFamily="mdicons"/> <!--minus-circle-outline-->
-            <FontImageSource x:Key="GlyphDel"                   Color="White" Glyph="&#xF0A7A;" FontFamily="mdicons"/> <!--trash-can-->
-            <FontImageSource x:Key="GlyphEdit"                  Color="White" Glyph="&#xF1A7D;" FontFamily="mdicons"/> <!--text-box-edit-outline-->
-            <FontImageSource x:Key="GlyphExit"                  Color="White" Glyph="&#xF0206;" FontFamily="mdicons"/> <!--exit-to-app-->
-            <FontImageSource x:Key="GlyphFile"                  Color="White" Glyph="&#xF0224;" FontFamily="mdicons"/> <!--file-outline-->
-            <FontImageSource x:Key="GlyphFileEdit"              Color="White" Glyph="&#xF11E8;" FontFamily="mdicons"/> <!--file-edit-outline-->
-            <FontImageSource x:Key="GlyphFilterOff"             Color="White" Glyph="&#xF14F0;" FontFamily="mdicons"/> <!--filter-off-outline-->
-            <FontImageSource x:Key="GlyphFilterOn"              Color="White" Glyph="&#xF0233;" FontFamily="mdicons"/> <!--filter-outline-->
-            <FontImageSource x:Key="GlyphFlashOff"              Color="White" Glyph="&#xF0243;" FontFamily="mdicons"/> <!--flash-off-->
-            <FontImageSource x:Key="GlyphFlashOn"               Color="White" Glyph="&#xF0241;" FontFamily="mdicons"/> <!--flash-->
-            <FontImageSource x:Key="GlyphFlashlightOff"         Color="White" Glyph="&#xF0245;" FontFamily="mdicons"/> <!--flashlight-off-->
-            <FontImageSource x:Key="GlyphFlashlightOn"          Color="White" Glyph="&#xF0244;" FontFamily="mdicons"/> <!--flashlight-->
-            <FontImageSource x:Key="GlyphFolder"                Color="White" Glyph="&#xF0256;" FontFamily="mdicons"/> <!--folder-outline-->
-            <FontImageSource x:Key="GlyphFolderOff"             Color="White" Glyph="&#xF19F9;" FontFamily="mdicons"/> <!--folder-off-outline-->
-            <FontImageSource x:Key="GlyphImages"                Color="White" Glyph="&#xF0978;" FontFamily="mdicons"/> <!--image-search-outline-->
-            <FontImageSource x:Key="GlyphImport"                Color="White" Glyph="&#xF02FA;" FontFamily="mdicons"/> <!--import-->
-            <FontImageSource x:Key="GlyphIncrement"             Color="White" Glyph="&#xF0419;" FontFamily="mdicons"/> <!--plus-circle-outline-->
-            <FontImageSource x:Key="GlyphList"                  Color="White" Glyph="&#xF0279;" FontFamily="mdicons"/> <!--format-list-bulleted-->
-            <FontImageSource x:Key="GlyphLoad"                  Color="White" Glyph="&#xF02FA;" FontFamily="mdicons"/> <!--import-->
-            <FontImageSource x:Key="GlyphMail"                  Color="White" Glyph="&#xF01F0;" FontFamily="mdicons"/> <!--email-outline-->
-            <FontImageSource x:Key="GlyphMap"                   Color="White" Glyph="&#xF0982;" FontFamily="mdicons"/> <!--map-outline-->
-            <FontImageSource x:Key="GlyphNull"                  Color="White" Glyph="&#xF07E2;" FontFamily="mdicons"/> <!--null-->
-            <FontImageSource x:Key="GlyphOCR"                   Color="White" Glyph="&#xF113A;" FontFamily="mdicons"/> <!--ocr-->
-            <FontImageSource x:Key="GlyphPersonEdit"            Color="White" Glyph="&#xF0FFB;" FontFamily="mdicons"/> <!--account-edit-outline-->
-            <FontImageSource x:Key="GlyphReplace"               Color="White" Glyph="&#xF0B33;" FontFamily="mdicons"/> <!--file-replace-outline-->
-            <FontImageSource x:Key="GlyphRotate90"              Color="White" Glyph="&#xF1A3E;" FontFamily="mdicons"/> <!--file-rotate-clockwise-->
-            <FontImageSource x:Key="GlyphMapMarker"             Color="White" Glyph="&#xF07D9;" FontFamily="mdicons"/> <!--map-marker-outline-->
-            <FontImageSource x:Key="GlyphMapMarkerRemove"       Color="White" Glyph="&#xF12FA;" FontFamily="mdicons"/> <!--map-marker-remove-outline-->
-            <FontImageSource x:Key="GlyphRestore"               Color="White" Glyph="&#xF099B;" FontFamily="mdicons"/> <!--restore-->
-            <FontImageSource x:Key="GlyphSave"                  Color="White" Glyph="&#xF0818;" FontFamily="mdicons"/> <!--content-save-outline-->
-            <FontImageSource x:Key="GlyphShare"                 Color="White" Glyph="&#xF0041;" FontFamily="mdicons"/> <!--arrow-all-->
-            <FontImageSource x:Key="GlyphSort"                  Color="White" Glyph="&#xF04BA;" FontFamily="mdicons"/> <!--sort-->
-            <FontImageSource x:Key="GlyphToc"                   Color="White" Glyph="&#xF0836;" FontFamily="mdicons"/> <!--table-of-contents-->
-            <FontImageSource x:Key="GlyphUndo"                  Color="White" Glyph="&#xF054C;" FontFamily="mdicons"/> <!--undo-->
+            <!--The following icons are used in ToolbarItem objects in various pages, always against a background of TitleBarColor.-->
+            <FontImageSource x:Key="GlyphAdd"                   Color="White" Glyph="&#xF0419;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--plus-circle-outline-->
+            <FontImageSource x:Key="GlyphBack"                  Color="White" Glyph="&#xF004D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--arrow-left-->
+            <FontImageSource x:Key="GlyphCamera"                Color="White" Glyph="&#xF0D5D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--camera-outline-->
+            <FontImageSource x:Key="GlyphCancel"                Color="White" Glyph="&#xF073A;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--cancel-->
+            <FontImageSource x:Key="GlyphCheck"                 Color="White" Glyph="&#xF012C;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--check-->
+            <FontImageSource x:Key="GlyphClose"                 Color="White" Glyph="&#xF0156;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--close-->
+            <FontImageSource x:Key="GlyphCloud"                 Color="White" Glyph="&#xF015F;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--cloud-->
+            <FontImageSource x:Key="GlyphCloudDownload"         Color="White" Glyph="&#xF0162;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--cloud-download-->
+            <FontImageSource x:Key="GlyphCloudDownloadOutline"  Color="White" Glyph="&#xF0B7D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--cloud-download-outline-->
+            <FontImageSource x:Key="GlyphCloudOffOutline"       Color="White" Glyph="&#xF0164;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--cloud-off-outline-->
+            <FontImageSource x:Key="GlyphCloudOutline"          Color="White" Glyph="&#xF0163;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--cloud-outline-->
+            <FontImageSource x:Key="GlyphCrop"                  Color="White" Glyph="&#xF019E;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--crop-->
+            <FontImageSource x:Key="GlyphDecrement"             Color="White" Glyph="&#xF0377;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--minus-circle-outline-->
+            <FontImageSource x:Key="GlyphDel"                   Color="White" Glyph="&#xF0A7A;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--trash-can-->
+            <FontImageSource x:Key="GlyphEdit"                  Color="White" Glyph="&#xF1A7D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--text-box-edit-outline-->
+            <FontImageSource x:Key="GlyphExit"                  Color="White" Glyph="&#xF0206;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--exit-to-app-->
+            <FontImageSource x:Key="GlyphFile"                  Color="White" Glyph="&#xF0224;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--file-outline-->
+            <FontImageSource x:Key="GlyphFileEdit"              Color="White" Glyph="&#xF11E8;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--file-edit-outline-->
+            <FontImageSource x:Key="GlyphFilterOff"             Color="White" Glyph="&#xF14F0;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--filter-off-outline-->
+            <FontImageSource x:Key="GlyphFilterOn"              Color="White" Glyph="&#xF0233;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--filter-outline-->
+            <FontImageSource x:Key="GlyphFlashOff"              Color="White" Glyph="&#xF0243;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--flash-off-->
+            <FontImageSource x:Key="GlyphFlashOn"               Color="White" Glyph="&#xF0241;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--flash-->
+            <FontImageSource x:Key="GlyphFlashlightOff"         Color="White" Glyph="&#xF0245;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--flashlight-off-->
+            <FontImageSource x:Key="GlyphFlashlightOn"          Color="White" Glyph="&#xF0244;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--flashlight-->
+            <FontImageSource x:Key="GlyphFolder"                Color="White" Glyph="&#xF0256;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--folder-outline-->
+            <FontImageSource x:Key="GlyphFolderOff"             Color="White" Glyph="&#xF19F9;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--folder-off-outline-->
+            <FontImageSource x:Key="GlyphImages"                Color="White" Glyph="&#xF0978;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--image-search-outline-->
+            <FontImageSource x:Key="GlyphImport"                Color="White" Glyph="&#xF02FA;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--import-->
+            <FontImageSource x:Key="GlyphIncrement"             Color="White" Glyph="&#xF0419;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--plus-circle-outline-->
+            <FontImageSource x:Key="GlyphList"                  Color="White" Glyph="&#xF0279;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--format-list-bulleted-->
+            <FontImageSource x:Key="GlyphLoad"                  Color="White" Glyph="&#xF02FA;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--import-->
+            <FontImageSource x:Key="GlyphMail"                  Color="White" Glyph="&#xF01F0;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--email-outline-->
+            <FontImageSource x:Key="GlyphMap"                   Color="White" Glyph="&#xF0982;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--map-outline-->
+            <FontImageSource x:Key="GlyphNull"                  Color="White" Glyph="&#xF07E2;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--null-->
+            <FontImageSource x:Key="GlyphOCR"                   Color="White" Glyph="&#xF113A;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--ocr-->
+            <FontImageSource x:Key="GlyphPersonEdit"            Color="White" Glyph="&#xF0FFB;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--account-edit-outline-->
+            <FontImageSource x:Key="GlyphReplace"               Color="White" Glyph="&#xF0B33;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--file-replace-outline-->
+            <FontImageSource x:Key="GlyphRotate90"              Color="White" Glyph="&#xF1A3E;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--file-rotate-clockwise-->
+            <FontImageSource x:Key="GlyphMapMarker"             Color="White" Glyph="&#xF07D9;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--map-marker-outline-->
+            <FontImageSource x:Key="GlyphMapMarkerRemove"       Color="White" Glyph="&#xF12FA;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--map-marker-remove-outline-->
+            <FontImageSource x:Key="GlyphRestore"               Color="White" Glyph="&#xF099B;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--restore-->
+            <FontImageSource x:Key="GlyphSave"                  Color="White" Glyph="&#xF0818;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--content-save-outline-->
+            <FontImageSource x:Key="GlyphShare"                 Color="White" Glyph="&#xF0041;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--arrow-all-->
+            <FontImageSource x:Key="GlyphSort"                  Color="White" Glyph="&#xF04BA;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--sort-->
+            <FontImageSource x:Key="GlyphToc"                   Color="White" Glyph="&#xF0836;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--table-of-contents-->
+            <FontImageSource x:Key="GlyphUndo"                  Color="White" Glyph="&#xF054C;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--undo-->
 
             <!-- Font sizes -->
             <x:Double x:Key="FontSizeMicro">   10</x:Double>

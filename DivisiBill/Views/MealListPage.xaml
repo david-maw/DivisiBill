@@ -15,14 +15,16 @@
     Shell.FlyoutBehavior="Flyout">
 
     <ContentPage.Resources>
-        <toolkit:BoolToObjectConverter x:Key="RemoteIconConverter"
+        <toolkit:BoolToObjectConverter
+            x:Key="RemoteIconConverter"
                                        FalseObject="{StaticResource FileGlyphRemoteOutline}"
                                        TrueObject="{StaticResource FileGlyphRemote}" />
-        <toolkit:BoolToObjectConverter x:Key="LocalIconConverter"
+        <toolkit:BoolToObjectConverter
+            x:Key="LocalIconConverter"
                                        FalseObject="{StaticResource FileGlyphLocalOutline}"
                                        TrueObject="{StaticResource FileGlyphLocal}" />
         <DataTemplate x:Key="WithSwipe" x:DataType="models:MealSummary">
-            <!--#region Bill Summary Info Surrounded by SwipeView which is surrounded by a Grid -->
+            <!--#region Bill Summary Info Surrounded by SwipeView which is surrounded by a Grid-->
             <Grid>
                 <!--#region Bill Summary Info Surrounded by SwipeView-->
                 <!--#region SwipeView Start-->
@@ -138,9 +140,9 @@
                                 IsVisible="{Binding IsForCurrentMeal}"
                                 HorizontalOptions="End"
                                 WidthRequest="25"
-                                Source="{StaticResource ListGlyphCurrentMeal}"/>
+                                Source="{StaticResource ListGlyphCurrentMeal}" />
                             <!--#endregion-->
-                            <!--#region Icons Indicating local or remote image -->
+                            <!--#region Icons Indicating local or remote image-->
                             <Image
                                 Grid.Row="0"
                                 Grid.Column="1"
@@ -158,18 +160,18 @@
                                 IsVisible="{Binding HasImage}"
                                 Source="{StaticResource FileGlyphImage}" />
                             <!--#endregion-->
-                            <!--#region Icons showing whether files are resident locally, remotely, or both -->
+                            <!--#region Icons showing whether files are resident locally, remotely, or both-->
                             <!--  Only show these if cloud access is allowed, otherwise they do not tell the user anything  -->
                             <Image
                                 Grid.Row="0"
                                 Grid.Column="2"
                                 IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                                Source="{Binding IsRemote, Converter={StaticResource RemoteIconConverter}}"/>
+                                Source="{Binding IsRemote, Converter={StaticResource RemoteIconConverter}}" />
                             <Image
                                 Grid.Row="1"
                                 Grid.Column="2"
                                 IsVisible="{Binding IsCloudAllowed, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
-                                Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}"/>
+                                Source="{Binding IsLocal, Converter={StaticResource LocalIconConverter}}" />
                         </Grid>
                         <!--#endregion-->
                         <!--#region Overlaid Buttons-->
@@ -226,8 +228,8 @@
                 </SwipeView>
                 <!--#endregion-->
                 <!--#endregion-->
-                <!--#region Select/Deselect/Details Button -->
-                <!--This button is in the center on top of the SwipeView to allow simple tap/double tap without unintentional swipe-->
+                <!--#region Select/Deselect/Details Button-->
+                <!--  This button is in the center on top of the SwipeView to allow simple tap/double tap without unintentional swipe  -->
                 <ImageButton
                     HorizontalOptions="Center"
                     WidthRequest="80"
@@ -247,58 +249,41 @@
             </Grid>
             <!--#endregion-->
         </DataTemplate>
-        <toolkit:BoolToObjectConverter x:Key="IsGroupedConverter"
+        <toolkit:BoolToObjectConverter
+            x:Key="IsGroupedConverter"
                                        FalseObject=" bills"
                                        TrueObject=" bills in groups" />
-        <toolkit:BoolToObjectConverter x:Key="ShowBillsText"
+        <toolkit:BoolToObjectConverter
+            x:Key="ShowBillsText"
                                        FalseObject="Show Venues"
                                        TrueObject="Show Bills" />
-        <toolkit:BoolToObjectConverter x:Key="ShowLocalText"
+        <toolkit:BoolToObjectConverter
+            x:Key="ShowLocalText"
                                        FalseObject="Show Local"
                                        TrueObject="Hide Local" />
-        <toolkit:BoolToObjectConverter x:Key="ShowRemoteText"
+        <toolkit:BoolToObjectConverter
+            x:Key="ShowRemoteText"
                                        FalseObject="Show Remote"
                                        TrueObject="Hide Remote" />
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding ChangeListCommand}" IconImageSource="{StaticResource GlyphList}" />
-        <ToolbarItem Command="{Binding DeleteMealCommand}" IconImageSource="{StaticResource GlyphDel}" />
-        <ToolbarItem Text="Use"
-                     Command="{Binding InvokeUseMealCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Show Details"
-                     Command="{Binding InvokeShowDetailsCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Download"
-                     Command="{Binding DownloadCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Delete Local"
-                     Command="{Binding DeleteLocalMealsCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Delete Remote"
-                     Command="{Binding DeleteRemoteMealsCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Select None"
-                     Command="{Binding SelectNoneCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Select All"
-                     Command="{Binding SelectAllCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Invert Selection"
-                     Command="{Binding InvertSelectionCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="{Binding IsGrouped, Converter={StaticResource ShowBillsText}}"
-                     Command="{Binding ChangeFilterCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="{Binding ShowLocalMeals, Converter={StaticResource ShowLocalText}}"
-                     Command="{Binding ChangeShowLocalMealsCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}"
-                     Command="{Binding ChangeShowRemoteMealsCommand}"
-                     Order="Secondary" />
-        <ToolbarItem Text="Scroll To Current"
-                     Command="{Binding ShowCurrentCommand}"
-                     Order="Secondary" />
+        <ToolbarItem IconImageSource="{StaticResource GlyphList}"                                    Command="{Binding ChangeListCommand}" />
+        <ToolbarItem IconImageSource="{StaticResource GlyphDel}"                                     Command="{Binding DeleteMealCommand}"
+                     IsEnabled="{Binding SelectedMealSummary, Converter={StaticResource IsNotNull}}" />
+        <ToolbarItem Text="Use"                                                                      Command="{Binding InvokeUseMealCommand}"          Order="Secondary"
+                     IsEnabled="{Binding SelectedMealSummary, Converter={StaticResource IsNotNull}}" />
+        <ToolbarItem Text="Show Details"                                                             Command="{Binding InvokeShowDetailsCommand}"      Order="Secondary"
+                     IsEnabled="{Binding SelectedMealSummary, Converter={StaticResource IsNotNull}}" />
+        <ToolbarItem Text="Download"                                                                 Command="{Binding DownloadCommand}"               Order="Secondary" />
+        <ToolbarItem Text="Delete Local"                                                             Command="{Binding DeleteLocalMealsCommand}"       Order="Secondary" />
+        <ToolbarItem Text="Delete Remote"                                                            Command="{Binding DeleteRemoteMealsCommand}"      Order="Secondary" />
+        <ToolbarItem Text="Select None"                                                              Command="{Binding SelectNoneCommand}"             Order="Secondary" />
+        <ToolbarItem Text="Select All"                                                               Command="{Binding SelectAllCommand}"              Order="Secondary" />
+        <ToolbarItem Text="Invert Selection"                                                         Command="{Binding InvertSelectionCommand}"        Order="Secondary" />
+        <ToolbarItem Text="{Binding IsGrouped, Converter={StaticResource ShowBillsText}}"            Command="{Binding ChangeFilterCommand}"           Order="Secondary" />
+        <ToolbarItem Text="{Binding ShowLocalMeals, Converter={StaticResource ShowLocalText}}"       Command="{Binding ChangeShowLocalMealsCommand}"   Order="Secondary" />
+        <ToolbarItem Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}"     Command="{Binding ChangeShowRemoteMealsCommand}"  Order="Secondary" />
+        <ToolbarItem Text="Scroll To Current"                                                        Command="{Binding ShowCurrentCommand}"            Order="Secondary" />
     </ContentPage.ToolbarItems>
     <controls:ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading-->
@@ -419,7 +404,7 @@
                                     IsVisible="{Binding IsForCurrentMeal}"
                                     HorizontalOptions="End"
                                     WidthRequest="25"
-                                    Source="{StaticResource ListGlyphCurrentMeal}"/>
+                                    Source="{StaticResource ListGlyphCurrentMeal}" />
                                 <!--#endregion-->
                                 <BoxView
                                     Grid.Row="1"
@@ -428,7 +413,7 @@
                                     VerticalOptions="End"
                                     Color="{AppThemeBinding Light={StaticResource Gray900},
                                     Dark={StaticResource White}}" />
-                                <!--#region Select/Deselect/Details Button -->
+                                <!--#region Select/Deselect/Details Button-->
                                 <!--This button is in the center on top of the SwipeView to allow simple tap/double tap without unintentional swipe-->
                                 <ImageButton
                                     Grid.RowSpan="2"
@@ -494,7 +479,7 @@
             HorizontalOptions="Center"
             Text="Loading Bills..."
             IsVisible="{Binding IsMealListLoading}"
-            VerticalOptions="Center"/>
+            VerticalOptions="Center" />
         <ActivityIndicator
             controls:ColumnLayout.SameRow="True"
             Margin="-1"
