@@ -11,11 +11,6 @@
     x:DataType="vm:DataManagementViewModel"
     BindingContext="{vm:DataManagementViewModel}"
     Shell.FlyoutBehavior="Flyout">
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <services:BillCountConverter x:Key="BillCount" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
     <Grid>
         <!--#region Page Actions and Information-->
         <ScrollView>
@@ -83,22 +78,25 @@
                                 Command="{Binding RestoreArchiveCommand}"
                                 Text="Restore"/>
 
-                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
-                                <CheckBox IsChecked="{Binding DeleteBeforeRestore}" />
-                                <Label Text="Delete Everything First" VerticalOptions="Center" />
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout
-                                Grid.Row="3"
-                                Grid.Column="1"
-                                IsEnabled="{Binding DeleteBeforeRestore, Converter={StaticResource Not}}">
-                                <CheckBox IsChecked="{Binding OverwriteDuplicates}" />
-                                <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" />
-                            </HorizontalStackLayout>
+                            <VerticalStackLayout Grid.Row="2" Grid.RowSpan="2"  Grid.Column="1">
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding RestoreSettings}" />
+                                    <Label Text="Restore Program Settings" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout>
+                                    <CheckBox IsChecked="{Binding DeleteBeforeRestore}" />
+                                    <Label Text="Delete Everything First" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout IsEnabled="{Binding DeleteBeforeRestore, Converter={StaticResource Not}}">
+                                    <CheckBox IsChecked="{Binding OverwriteDuplicates}" />
+                                    <Label Text="Overwrite Duplicate Items" VerticalOptions="Center" LineBreakMode="WordWrap" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
                         </Grid>
                         <!--#endregion-->
                         <!--#region Date Range -->
                         <!--One or other of the following labels shows-->
-                        <Label Text="{Binding SelectedMealsCount, Converter={StaticResource BillCount}}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Text="{Binding MealsText}" FontAttributes="Bold" HorizontalOptions="Center"/>
                         <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
                             <DatePicker
                                 Date="{Binding StartDate}"

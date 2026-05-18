@@ -34,26 +34,29 @@ internal partial class DataManagementViewModel : ObservableObject
     private readonly DateTime nextTime = DateTime.MinValue;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedMealsCount))]
+    [NotifyPropertyChangedFor(nameof(MealsText))]
+    [NotifyCanExecuteChangedFor(nameof(ArchiveCommand), nameof(RestoreArchiveCommand))]
     public partial Archive? SelectedArchive { get; private set; }
-    partial void OnSelectedArchiveChanged(Archive? oldValue, Archive? newValue)
-    {
-        if ((oldValue is null) != (newValue is null))
+
+    public string MealsText => SelectedArchive is null
+        ? (SelectedMealsCount switch
         {
-            ArchiveCommand.NotifyCanExecuteChanged();
-            RestoreArchiveCommand.NotifyCanExecuteChanged();
-        }
-    }
+            0 => "No bills selected for archiving",
+            1 => "One bill selected for archiving",
+            _ => $"{SelectedMealsCount} bills selected for archiving"
+        })
+        : (SelectedMealsCount switch
+        {
+            0 => "No bills match the selected date range",
+            1 => $"One bill (for \"{SelectedArchive.SelectedMeals[0].VenueName}\") matches",
+            _ => $"{SelectedMealsCount} bills match the selected date range"
+        });
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MealsText))]
+    [NotifyCanExecuteChangedFor(nameof(ArchiveCommand), nameof(RestoreArchiveCommand))]
     public partial int SelectedMealsCount { get; private set; } = 0;
-    partial void OnSelectedMealsCountChanged(int oldValue, int newValue)
-    {
-        if ((oldValue == 0) != (newValue == 0))
-        {
-            ArchiveCommand.NotifyCanExecuteChanged();
-            RestoreArchiveCommand.NotifyCanExecuteChanged();
-        }
-    }
 
     /// <summary>
     /// Selects all but the latest meal for each venue from local storage and navigates to the meal list page with specific query parameters.
@@ -328,7 +331,7 @@ internal partial class DataManagementViewModel : ObservableObject
             Archive archive = SelectedArchive;
 
             // Apply user settings from the archive (if present)
-            if (archive.UserSettings is not null)
+            if (RestoreSettings && archive.UserSettings is not null)
             {
                 if (App.Current.Resources["MealViewModel"] is MealViewModel mvm)
                 {
@@ -428,6 +431,9 @@ internal partial class DataManagementViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool OverwriteDuplicates { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool RestoreSettings { get; set; } = false;
 
     /// There's some strangeness below of DateOnly vs. DateTime, FinishDate and StartDate ought to be type DateOnly but 
     /// DatePicker controls do not work with the DateOnly type. See https://github.com/dotnet/maui/issues/20438 and

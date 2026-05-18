@@ -46,6 +46,7 @@ public partial class RestoreViewModel : ObservableObject
     public partial bool IsBusy { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MealsText))]
     public partial Archive? SelectedArchive { get; set; } = null;
 
     /// <summary>
@@ -68,7 +69,13 @@ public partial class RestoreViewModel : ObservableObject
 
             if (restoreWorked)
             {
-                IntentDescription = $"Restored {SelectedMealsCount} bills";
+                Services.Utilities.DebugMsg($"RestoreArchiveAsync: Restore successful, restored {SelectedMealsCount} meals");
+                IntentDescription = SelectedMealsCount switch
+                {
+                    0 => "No bills restored",
+                    1 => $"One bill restored",
+                    _ => $"{SelectedMealsCount} bills restored"
+                };
                 await Task.Delay(1000); // Give user a moment to see the success message
                 ExitAction();
             }
@@ -88,8 +95,15 @@ public partial class RestoreViewModel : ObservableObject
             IsBusy = false;
         }
     }
+    public string MealsText => SelectedMealsCount switch
+    {
+        0 => "No bills match between",
+        1 => $"One bill (for \"{SelectedArchive?.SelectedMeals[0].VenueName}\") between",
+        _ => $"{SelectedMealsCount} bills match between"
+    };
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MealsText))]
     public partial int SelectedMealsCount { get; private set; } = 0;
 
     [RelayCommand]
