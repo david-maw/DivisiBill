@@ -184,6 +184,7 @@ public partial class App : Application, INotifyPropertyChanged
             }
             else // Do the minimum required initialization
             {
+                Utilities.DebugMsg("App is not currently running, so we must do some initialization");
                 App.IsCloudAllowed = false; // We don't want to do anything that might involve the cloud
                 App.Settings = new AppSettings(); // App Settings access
                 // Create all the required folders, in case the app has never run before
@@ -225,6 +226,7 @@ public partial class App : Application, INotifyPropertyChanged
 #if ANDROID
         IsIntentLaunch = Platforms.Android.MainActivity.IsIntentLaunch;
 #endif
+        Utilities.DebugMsg($"In CreateWindow, IsIntentLaunch = {IsIntentLaunch}");
         return IsIntentLaunch
             ? new Window(new Views.RestorePage())
             : CreateMainWindow();

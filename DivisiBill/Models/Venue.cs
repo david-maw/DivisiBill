@@ -254,6 +254,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         listByDistance.Sort((v1, v2) => v1.CompareDistanceTo(v2));
         foreach (Venue v in listByDistance)
             allVenuesByDistance.Add(v);
+        Utilities.DebugMsg($"Venue list merged, {allVenues.Count} venues in the list");
     }
 
     public bool InsertInVenueLists() => InsertInAllVenues() && InsertInAllVenuesByDistance();
@@ -417,7 +418,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     internal static bool IsDefaultList => UpdateTime == DateTime.MinValue;
 
     public static Guid Updater { get; set; }
-    
+
     /// <summary>
     /// Use a new location if it is more accurate than the old one and within the same area
     /// </summary>

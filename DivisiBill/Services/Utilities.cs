@@ -558,19 +558,16 @@ public static partial class Utilities // Partial for regex generator
         }
     }
     /// <summary>
-    /// Standardized format diagnostic messages for the programmer, if a debugger is not attached don't bother with the messages
+    /// Standardized format diagnostic messages for the programmer
     /// </summary>
     /// <param name="msg">the message we want</param>
     [Conditional("DEBUG")]
     public static void DebugMsg(string msg)
     {
-        if (Debugger.IsAttached)
-        {
-            double secondsNow = (DateTime.Now - startTime).TotalMilliseconds / 1000;
-            double secondsSinceLastTime = secondsNow - lastSeconds;
-            lastSeconds = secondsNow;
-            Debug.WriteLine($"{Environment.CurrentManagedThreadId:D2} {secondsNow,6:F3}(+{secondsSinceLastTime,4:F3})>>> " + msg);
-        }
+        double secondsNow = (DateTime.Now - startTime).TotalMilliseconds / 1000;
+        double secondsSinceLastTime = secondsNow - lastSeconds;
+        lastSeconds = secondsNow;
+        Debug.WriteLine($"{Environment.CurrentManagedThreadId:D2} {secondsNow,6:F3}(+{secondsSinceLastTime,4:F3})>>> " + msg);
     }
 
     /// <summary>

@@ -616,11 +616,14 @@ public class Archive
             }
             if (Venues is not null)
             {
+                Utilities.DebugMsg($"In RestoreXmlAsync, restoring {Venues.Count} venues");
                 if (DeleteBeforeRestore)
                     Venue.ForgetAllVenues();
                 Venue.MergeVenues(Venues, replace: OverwriteDuplicates);
                 await Venue.SaveSettingsAsync();
             }
+            else
+                Utilities.DebugMsg($"In RestoreXmlAsync, no venues to restore");
             if (Persons is not null)
             {
                 if (DeleteBeforeRestore)
@@ -695,6 +698,7 @@ public class Archive
     /// restore only related items; otherwise, all items in the archive are restored.</param>
     /// 
     ///<returns>A tuple containing a boolean indicating success or failure, and a string message with details about any failure.</returns>
+    /// 
     public async Task<(bool, string)> RestoreAnyAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated)
     {
         try

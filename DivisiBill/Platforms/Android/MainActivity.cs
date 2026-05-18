@@ -5,7 +5,6 @@ using global::Android.App;
 using global::Android.Content;
 using global::Android.Content.PM;
 using global::Android.OS;
-using global::Android.Util;
 using global::Android.Views;
 using global::Android.Widget;
 
@@ -52,7 +51,7 @@ public class MainActivity : MauiAppCompatActivity
     {
         if (!System.Diagnostics.Debugger.IsAttached) // log the messages only if there's no debugger listening
             System.Diagnostics.Trace.Listeners.Add(new AndroidLogTraceListener());
-        Log.Debug("OnCreate", $">>> MainActivity created: Intent = {Intent?.Action}");
+        Services.Utilities.DebugMsg($"MainActivity.OnCreate: MainActivity created: Intent = {Intent?.Action}");
 
         // Evaluate before base.OnCreate so MAUI can query this very early
         IsIntentLaunch = IsFileIntent(Intent);

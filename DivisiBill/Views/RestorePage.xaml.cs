@@ -1,3 +1,4 @@
+using DivisiBill.Services;
 using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
@@ -11,6 +12,7 @@ public partial class RestorePage : ContentPage
         BindingContext = new RestoreViewModel() { ExitPage = ExitPage };
         Loaded += async (_, _) =>
         {
+            Utilities.DebugMsg("RestorePage.Loaded: Starting to wait for intent updates");
             // Start waiting for intent triggered updates
             await (BindingContext as RestoreViewModel)?.WaitForUpdatesAsync();
         };
@@ -20,10 +22,14 @@ public partial class RestorePage : ContentPage
         if (App.Current.IsIntentLaunch)
         {
 #if ANDROID
-            Platform.CurrentActivity.Finish();
+            Utilities.DebugMsg("RestorePage.ExitPage: Exiting using FinishAndRemoveTask");
+            Platform.CurrentActivity.FinishAndRemoveTask();
 #endif
         }
         else
+        {
+            Utilities.DebugMsg("RestorePage.ExitPage: Exiting using PopModalAsync");
             await Navigation.PopModalAsync();
+        }
     }
 }
