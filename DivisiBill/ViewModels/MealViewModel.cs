@@ -681,6 +681,67 @@ public partial class MealViewModel : ObservableObjectPlus
         DuplicateLineItemCommand.NotifyCanExecuteChanged();
     }
 
+    public void MoveLineItem(int oldIndex, int newIndex)
+    {
+        if (oldIndex < 0 || oldIndex >= LineItems.Count || newIndex < 0 || newIndex >= LineItems.Count)
+            return;
+
+        if (oldIndex == newIndex)
+            return;
+
+        LineItems.Move(oldIndex, newIndex);
+    }
+
+    #region Drag and Drop Commands
+    private LineItem draggedLineItem;
+
+    [RelayCommand]
+    private void DragStarting(LineItem lineItem)
+    {
+        if (lineItem != null)
+        {
+            draggedLineItem = lineItem;
+        }
+    }
+
+    [RelayCommand]
+    private void DragOver(LineItem targetItem)
+    {
+        if (draggedLineItem != null && targetItem != null && draggedLineItem != targetItem)
+        {
+            // Set visual feedback
+            targetItem.IsDragTarget = true;
+
+            int draggedIndex = LineItems.IndexOf(draggedLineItem);
+            int targetIndex = LineItems.IndexOf(targetItem);
+
+            if (draggedIndex != -1 && targetIndex != -1 && draggedIndex != targetIndex)
+            {
+                MoveLineItem(draggedIndex, targetIndex);
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void DragLeave(LineItem targetItem)
+    {
+        if (targetItem != null)
+        {
+            targetItem.IsDragTarget = false;
+        }
+    }
+
+    [RelayCommand]
+    private void Drop(LineItem targetItem)
+    {
+        if (targetItem != null)
+        {
+            targetItem.IsDragTarget = false;
+        }
+        draggedLineItem = null;
+    }
+    #endregion
+
     public void ChangeShares(LineItem li)
     {
         if (li.TotalSharers == 0)

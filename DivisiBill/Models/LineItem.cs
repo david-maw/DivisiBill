@@ -405,6 +405,20 @@ public partial class LineItem : ObservableObject
     public partial byte[] ExtraShares { get; set; } = new byte[maxSharers];
 
     /// <summary>
+    /// Indicates whether this line item is currently a drag target (for visual feedback during drag-and-drop).
+    /// </summary>
+    [XmlIgnore]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DragTargetOpacity))]
+    public partial bool IsDragTarget { get; set; }
+
+    /// <summary>
+    /// Gets the opacity value based on whether this is a drag target.
+    /// </summary>
+    [XmlIgnore]
+    public double DragTargetOpacity => IsDragTarget ? 0.5 : 1.0;
+
+    /// <summary>
     ///  A string encoding of the number of shares allocated to each participant with a single digit for each <see cref="DinerID"/>.
     ///  Smallest DinerID first.
     /// </summary>

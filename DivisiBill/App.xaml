@@ -29,7 +29,8 @@
             <services:IsNegativeConverter x:Key="IsNegative" />
             <services:IsPositiveConverter x:Key="IsPositive" />
             <services:LocationIsValidConverter x:Key="IsLocationValid" />
-            <services:AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" /> 
+            <services:AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" />
+            <services:BoolToOpacityConverter x:Key="BoolToOpacityConverter" /> 
 
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All"/>
             <toolkit:VariableMultiValueConverter x:Key="Any" ConditionType="Any" />

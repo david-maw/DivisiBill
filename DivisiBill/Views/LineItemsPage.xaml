@@ -84,11 +84,13 @@
                 </Grid.Resources>
                 <!--#region Item information-->
                 <Grid
+                    x:Name="ItemGrid"
                     Grid.ColumnSpan="5"
                     Margin="10,0,10,0"
                     ColumnDefinitions="20,*,Auto,20"
                     IsVisible="{Binding IsSharedByFilter}"
-                    RowDefinitions="Auto">
+                    RowDefinitions="Auto"
+                    Opacity="{Binding DragTargetOpacity}">
                     <Label
                         Grid.Column="0"
                         FontSize="{StaticResource FontSizeMedium}"
@@ -136,6 +138,17 @@
                             Command="{Binding DisplayPaymentsForLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
                             CommandParameter="{Binding SelectedLineItem, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
                             NumberOfTapsRequired="2" />
+                        <DragGestureRecognizer 
+                            DragStartingCommand="{Binding DragStartingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            DragStartingCommandParameter="{Binding .}" />
+                        <DropGestureRecognizer 
+                            AllowDrop="True"
+                            DragOverCommand="{Binding DragOverCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            DragOverCommandParameter="{Binding .}"
+                            DragLeaveCommand="{Binding DragLeaveCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            DragLeaveCommandParameter="{Binding .}"
+                            DropCommand="{Binding DropCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            DropCommandParameter="{Binding .}" />
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--  Tap to toggle Comped value, spans the margin and does not cause an item to be selected  -->
