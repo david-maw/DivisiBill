@@ -1,3 +1,25 @@
+# Version 6.3.26
+
+## Allow Drag and Drop to Reorder Items
+
+It is now possible to press and hold on an item in the Items page then drag it to another location in the item list and drop it there.
+
+## Auto gray-out for Toolbar Commands
+
+Icons and menu items are now grayed out when they are not appropriate on a number of pages. Previously those options simply did not respond, so there's no functional change, just a more intuitive user interface.
+
+## Restore Settings Option 
+
+When restoring an archive from the Data Management page you can now elect whether or not to restore program settings. Additionally, the messages used when archiving or restoring are improved.
+
+## Import using Share or Open With
+
+Previously importing an archive using "share" or "open with" would import bills but not the corresponding people or venues, this has been corrected.
+
+## Fault After "Exit"
+
+In rare cases after using "Exit" to shut down DivisiBill, restarting it shortly thereafter would fail. Subsequent attempts to start it were fine. This has been corrected.
+
 # Version 6.3.25
 
 ## Correct Status Bar Color
