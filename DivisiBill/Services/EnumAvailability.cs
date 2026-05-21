@@ -1,13 +1,17 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace DivisiBill.Services;
 
 /// <summary>
-/// Tracks availability of enum values using a 32-bit mask.
+/// Tracks availability of enum values using a 31-bit mask.
 /// </summary>
 /// <remarks>Supports enums with up to 31 distinct values. All enum values are marked as available upon
-/// initialization.</remarks>
-/// <typeparam name="TEnum">The enum type whose values are tracked. Must be a enumValue type enum.</typeparam>
+/// initialization. Unfortunately this fails mysteriously in Android phones and worse - it seems to cause a
+/// Visual Studio hang when it does, so for now it is switched for  <see cref="EnumAvailabilityArray{TEnum}"/>
+/// a simpler, but slower version using a bool array for storage.</remarks>
+/// <typeparam name="TEnum">The enum type whose values are tracked, whose values must span a range of 31 or less.
+/// In practice this means an enumValue type enum as opposed to one used for bit flags.</typeparam>
 public sealed class EnumAvailability<TEnum> where TEnum : struct, Enum
 {
     private readonly int _min;
@@ -22,7 +26,7 @@ public sealed class EnumAvailability<TEnum> where TEnum : struct, Enum
 
         int count = _max - _min + 1;
         if (count > 31)
-            throw new InvalidOperationException("Enum too large for 32-bit mask");
+            throw new InvalidOperationException("Enum too large, limit is 31");
 
         // All available initially
         _mask = (1 << count) - 1;
@@ -60,6 +64,16 @@ public sealed class EnumAvailability<TEnum> where TEnum : struct, Enum
         int index = (int)Math.Log2(lowestBit);
 
         int enumValue = _min + index;
+        return Unsafe.As<int, TEnum>(ref enumValue);
+    }
+    public TEnum? GetHighestAvailable()
+    {
+        if (_mask == 0)
+            return null;
+
+        int index = BitOperations.Log2((uint)_mask);   // highest set bit
+        int enumValue = _min + index;
+
         return Unsafe.As<int, TEnum>(ref enumValue);
     }
 }

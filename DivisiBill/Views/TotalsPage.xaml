@@ -67,11 +67,18 @@
                             <TapGestureRecognizer NumberOfTapsRequired="2"
                                                   CommandParameter="{Binding}"
                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}" />
+                            <DragGestureRecognizer 
+                                DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DragStartingCommandParameter="{Binding .}" />
+                            <DropGestureRecognizer 
+                                AllowDrop="True"
+                                DropCommand="{Binding DropPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DropCommandParameter="{Binding .}" />
                         </Grid.GestureRecognizers>
                     </Grid>
                     <!--#endregion-->
                 </SwipeView>
-                <!--#region Select Button -->
+                <!--#region Select/Drag Button -->
                 <ImageButton Grid.Column="1" MinimumHeightRequest="10">
                     <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer
@@ -80,6 +87,13 @@
                         <TapGestureRecognizer NumberOfTapsRequired="2"
                                               CommandParameter="{Binding}"
                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
+                        <DragGestureRecognizer 
+                            DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            DragStartingCommandParameter="{Binding .}"/>
+                        <DropGestureRecognizer 
+                            AllowDrop="True"
+                            DragOverCommand="{Binding DragOverPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                            DragOverCommandParameter="{Binding .}"/>
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--#endregion-->

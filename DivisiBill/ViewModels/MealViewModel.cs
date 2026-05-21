@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace DivisiBill.ViewModels;
 
@@ -119,45 +120,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public async Task PushProperties() => await App.PushAsync(Routes.PropertiesPage);
     #endregion
     #region PersonCost
-    private readonly Stack<SavedCost> deletedCosts = new();
-    private bool InsertCost(PersonCost pc)
-    {
-        int endInx = Costs.Count - 1; // Last element
-        if (endInx + 1 >= LineItem.maxSharers)
-            return false; // The list is already full
-
-        if (endInx < 0 // costs list is empty, the merge is trivial
-            || (pc.DinerIndex >= endInx + 1)) // after the last element, so there's an unused DinerID available
-        {
-            pc.DinerID = (LineItem.DinerID)(endInx + 2); // Force it to use the next ID
-            Costs.Add(pc);
-            return true;
-        }
-        else // The more complex case of adding somewhere within the list
-        {
-            int costInx = pc.DinerIndex;
-            // Find the slot contained the ID we want or the one before it (the list is ordered and sequential)
-            if (Costs[costInx].DinerID == pc.DinerID) // The CostIndex has been reused
-            {
-                //The list could have been resequenced or a new item added, either way, just insert this where it was before, moving everything after down one
-                for (int unusedCostInx = endInx + 1; unusedCostInx > costInx; unusedCostInx--) // first move down all the ones including and after the slot we want
-                {
-                    PersonCostRenumber(Costs[unusedCostInx - 1], (LineItem.DinerID)(unusedCostInx + 1));
-                }
-                // Now we have opened up an empty slot so we'll just be able to insert there
-                Costs.Insert(costInx, pc); // Insert the new diner in the newly emptied slot
-            }
-            else // The slot at costInx contains the first ID that is smaller than the one we are inserting
-                Costs.Insert(costInx + 1, pc); // Insert the new diner after the one with a smaller DinerId
-            return true;
-        }
-    }
-    public void DistributeCostsIfNeeded()
-    {
-        if (!Meal.CurrentMeal.IsDistributed)
-            Meal.CurrentMeal.DistributeCosts();
-    }
-
+    #region PersonCost General Commands
     [RelayCommand]
     public void UndeleteCost()
     {
@@ -205,7 +168,7 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
 #if WINDOWS
-    private PersonCost lastCostSelectedByMe = null;
+    private PersonCost LastCostSelectedByMe { get; set; } = null; // Part of a workaround used by SelectCost below
 #endif
 
     [RelayCommand]
@@ -215,15 +178,15 @@ public partial class MealViewModel : ObservableObjectPlus
         // Unfortunately Windows selects any new item before calling this code
         // probably related to https://github.com/dotnet/maui/issues/5446
         // This kludge works around that as long as you only use this method for selection
-        if (pc == lastCostSelectedByMe)
+        if (pc == LastCostSelectedByMe)
         {
             SelectedCost = null;
-            lastCostSelectedByMe = null;
+            LastCostSelectedByMe = null;
         }
         else
         {
             SelectedCost = pc;
-            lastCostSelectedByMe = pc;
+            LastCostSelectedByMe = pc;
         }
 #else        
         if (pc == SelectedCost)
@@ -311,6 +274,83 @@ public partial class MealViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task ShowUnallocated() => await App.GoToAsync(Routes.LineItemsPage + "?command=SelectFirstUnallocatedLineItem");
 
+    #endregion
+    #region PersonCost Drag and Drop Commands
+    private PersonCost draggedPersonCost;
+
+    [RelayCommand]
+    private void DragStartingPersonCost(PersonCost personCost)
+    {
+        Utilities.DebugMsg($"Enter DragStartingPersonCost for {personCost.Nickname}");
+        if (Costs.Count >= LineItem.maxSharers) // We need one empty slot for temporary storage
+        {
+            Utilities.DisplayAlertAsync("Error", $"Sorry, drag and drop is not allowed with over {LineItem.maxSharers - 1} participants");
+            return;
+        }
+        if (personCost != null)
+        {
+            draggedPersonCost = personCost;
+        }
+    }
+
+    [RelayCommand]
+    private void DropPersonCost(PersonCost targetCost)
+    {
+        Utilities.DebugMsg($"Entering DropPersonCost for {targetCost.Nickname}");
+        if (draggedPersonCost != null && targetCost != null && draggedPersonCost != targetCost)
+        {
+            int draggedIndex = Costs.IndexOf(draggedPersonCost);
+            int targetIndex = Costs.IndexOf(targetCost);
+
+            if (draggedIndex != -1 && targetIndex != -1 && draggedIndex != targetIndex)
+            {
+                MovePersonCost(draggedIndex, targetIndex);
+                if (!CostListResequence()) // Ensure DinerIDs are in order after the move
+                    MovePersonCost(targetIndex, draggedIndex); // It did not work, put the dragged item back where it was and give up
+            }
+        }
+        draggedPersonCost = null;
+    }
+    #endregion
+    #region Assorted Properties and Methods
+    private readonly Stack<SavedCost> deletedCosts = new();
+    private bool InsertCost(PersonCost pc)
+    {
+        int endInx = Costs.Count - 1; // Last element
+        if (endInx + 1 >= LineItem.maxSharers)
+            return false; // The list is already full
+
+        if (endInx < 0 // costs list is empty, the merge is trivial
+            || (pc.DinerIndex >= endInx + 1)) // after the last element, so there's an unused DinerID available
+        {
+            pc.DinerID = (LineItem.DinerID)(endInx + 2); // Force it to use the next ID
+            Costs.Add(pc);
+            return true;
+        }
+        else // The more complex case of adding somewhere within the list
+        {
+            int costInx = pc.DinerIndex;
+            // Find the slot contained the ID we want or the one before it (the list is ordered and sequential)
+            if (Costs[costInx].DinerID == pc.DinerID) // The CostIndex has been reused
+            {
+                //The list could have been resequenced or a new item added, either way, just insert this where it was before, moving everything after down one
+                for (int unusedCostInx = endInx + 1; unusedCostInx > costInx; unusedCostInx--) // first move down all the ones including and after the slot we want
+                {
+                    PersonCostRenumber(Costs[unusedCostInx - 1], (LineItem.DinerID)(unusedCostInx + 1));
+                }
+                // Now we have opened up an empty slot so we'll just be able to insert there
+                Costs.Insert(costInx, pc); // Insert the new diner in the newly emptied slot
+            }
+            else // The slot at costInx contains the first ID that is smaller than the one we are inserting
+                Costs.Insert(costInx + 1, pc); // Insert the new diner after the one with a smaller DinerId
+            return true;
+        }
+    }
+    public void DistributeCostsIfNeeded()
+    {
+        if (!Meal.CurrentMeal.IsDistributed)
+            Meal.CurrentMeal.DistributeCosts();
+    }
     public bool IsAnyDeletedCost
     {
         get;
@@ -352,6 +392,17 @@ public partial class MealViewModel : ObservableObjectPlus
         foreach (PersonCost pc in new List<PersonCost>(Meal.CurrentMeal.Costs))
             CostListDelete(pc);
     }
+    public void MovePersonCost(int oldIndex, int newIndex)
+    {
+        if (oldIndex < 0 || oldIndex >= Costs.Count || newIndex < 0 || newIndex >= Costs.Count)
+            return;
+
+        if (oldIndex == newIndex)
+            return;
+
+        Costs.Move(oldIndex, newIndex);
+    }
+
     private void PersonCostRenumber(PersonCost pcToChange, LineItem.DinerID newUnusedDinerID)
     {
         // Validity check - ensure the new ID is unused
@@ -362,23 +413,116 @@ public partial class MealViewModel : ObservableObjectPlus
         foreach (LineItem li in LineItems.Where(li => li.GetShares(oldDinerID) > 0))
             li.TransferShares(newSharerID: newUnusedDinerID, oldSharerID: oldDinerID);
     }
-    public void CostListResequence()
+    // Handy record type to track the information we need for resequencing the cost list, we will build a list of these and then process them in order to do the resequencing
+    [DebuggerDisplay("{DebuggerText}")]
+    private class PersonCostInfo(PersonCost pc, LineItem.DinerID currentID, LineItem.DinerID desiredID)
     {
-        LineItem.DinerID desiredID = LineItem.DinerID.first;
+        public PersonCost pc = pc;
+        public LineItem.DinerID currentID = currentID;
+        public LineItem.DinerID desiredID = desiredID;
+        public string DebuggerText => $"{pc.Nickname} ({pc.DinerIndex + 1}) - {currentID} -> {desiredID}";
+    }
+
+    /// <summary>
+    /// Resequences the cost list to ensure DinerIDs are sequential starting from the first identifier.
+    /// </summary>
+    /// <remarks>Passes through the PersonCost items determining which should be renumbered and then moving them in order so that each move frees 
+    /// a desirable number (DinerID). That permits us to move whoever gets that number, so they free up another number, and so on. If the number that is
+    /// freed up happens to be outside the target range (1 thru count of items) we just move on to an arbitrary item and if its desired number is taken we
+    /// move the item that is currently using the Target item to a DinerID outside the target range.</remarks>
+    /// <returns>true if resequencing succeeded or was unnecessary; false if the operation failed.</returns>
+    public bool CostListResequence()
+    {
         try
         {
-            foreach (PersonCost pc in Costs.ToList())
+            // Initial easy decisions
+            if (Costs.Count == 0)
+                return false; // Nothing to do!
+            // No sorting required for the trivial case but we may still need to fix up the number if the one item is not using the first DinerID
+            if (Costs.Count == 1)
             {
+                // Just one item, so just make sure it is using the first DinerID
+                if (Costs[0].DinerID != LineItem.DinerID.first)
+                    PersonCostRenumber(Costs[0], LineItem.DinerID.first);
+                return true;
+            }
+
+            // On to the non-trivial case of multiple items, start by initializing a list of which DinerIDs are currently in use and which are not,
+            // we will need this to know which items need to be moved and to find temporary slots for moving items around
+            EnumAvailabilityArray<LineItem.DinerID> Unused = new();
+            Unused[LineItem.DinerID.limit] = false; // The limit value is not a valid DinerID and should never be used, so mark it as unavailable to simplify the logic
+
+            // Build list of items that need resequencing and record which DinerIDs are currently in use.
+            var itemsToMove = new List<PersonCostInfo>();
+            LineItem.DinerID desiredID = LineItem.DinerID.first;
+            foreach (PersonCost pc in Costs)
+            {
+                Unused[pc.DinerID] = false; // Mark this ID as used
                 if (pc.DinerID != desiredID)
-                    PersonCostRenumber(pc, desiredID);
+                    itemsToMove.Add(new(pc, pc.DinerID, desiredID));
                 desiredID++;
             }
+
+            // another trivial case is that all items are using a desirable DinerID, so no sorting or moving needed
+            if (itemsToMove.Count == 0)
+                return true; // Nothing to do!
+
+            // We need to do some reordering so we need at least one unused DinerID to use as temporary storage
+            if (Costs.Count >= LineItem.maxSharers)
+                throw new Exception("In MealViewModel.CostListResequence, costs list has " + Costs.Count + " items, which exceeds the maximum we can resequence of " + LineItem.maxSharers);
+
+            // All the easy outs are gone, we must actually start reallocating things.
+            LineItem.DinerID largestDesiredID = desiredID - 1;
+
+            // Local utility function to do a renumber and update the tracking variables accordingly
+            void Renumber(PersonCost itemToRenumber, LineItem.DinerID oldID, LineItem.DinerID newID)
+            {
+                PersonCostRenumber(itemToRenumber, newID);
+                Unused[oldID] = true;
+                Unused[newID] = false;
+            }
+
+            // Step through the list, handle the easy cases where the desirable DinerID is not currently being used by just moving the item there, which will free up its
+            // current DinerID for another item that needs it. This will also reduce the number of items we need to move in the more complex cases, where we will
+            // use a temporary slot to free up the desirable DinerID.
+            foreach (var item in itemsToMove.OrderBy(x => x.desiredID))
+            {
+                // Because we're stepping through the list in order of desirable DinerID, we know that any target desirable DinerID that is currently in use must be being
+                // used by an item that has not yet been moved and is therefore still in the list of items to move, so we can just check that list to find the item that is
+                // currently using the desirable DinerID for this item
+                if (item.desiredID == item.currentID)
+                    continue; // This item has already been moved to desired DinerID, so nothing to do for this item
+                if (Unused[item.desiredID])
+                {
+                    // the destination DinerID is available, so we can just move this item there and be done with it
+                    Renumber(item.pc, item.currentID, item.desiredID);
+                    continue;
+                }
+                else
+                {
+                    // the destination DinerID is not available, so we need to move the item that is currently using it to a temporary slot first to free up the desirable DinerID for this item
+                    var target = itemsToMove.FirstOrDefault(x => x.currentID == item.desiredID);
+                    var tempID = Unused.GetHighestAvailable();
+                    if (tempID is null or LineItem.DinerID.none)
+                        throw new Exception("In MealViewModel.CostListResequence, no unused DinerID available for temporary assignment");
+                    // Now swap the two items using a temporary slot
+                    Renumber(target.pc, target.currentID, tempID.Value);
+                    Renumber(item.pc, item.currentID, item.desiredID);
+                    Renumber(target.pc, tempID.Value, item.currentID);
+                    // The target item now has the DinerID that the item formerly had, so update the item info for the target item to reflect that change,
+                    // this will ensure that when we need to move the target item later we will be able to find it in the list by its new current DinerID
+                    target.currentID = item.currentID;
+                }
+            }
+            return true; // Success!
         }
         catch (Exception ex)
         {
-            Utilities.DebugMsg("In MealViewModel.CostListResequence, exception: " + ex);
+            ex.ReportCrash("Exception in MealViewModel.CostListResequence");
+            return false; // Fail - exception
         }
     }
+    #endregion
     #endregion
     #region LineItem
     #region Data Entry
@@ -691,8 +835,7 @@ public partial class MealViewModel : ObservableObjectPlus
 
         LineItems.Move(oldIndex, newIndex);
     }
-
-    #region Drag and Drop Commands
+    #region LineItem Drag and Drop Commands
     private LineItem draggedLineItem;
 
     [RelayCommand]
@@ -741,7 +884,6 @@ public partial class MealViewModel : ObservableObjectPlus
         draggedLineItem = null;
     }
     #endregion
-
     public void ChangeShares(LineItem li)
     {
         if (li.TotalSharers == 0)

@@ -5,15 +5,13 @@ using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
-[DebuggerDisplay("[{DinerIndex}] {Nickname} - {PersonGUID.ToString()}")]
+[DebuggerDisplay("[{DinerIndex}] {DinerIDText} {Nickname} - {PersonGUID.ToString()}")]
 public partial class PersonCost : ObservableObject
 {
     // This is the GUID of the diner
     [XmlAttribute]
     public Guid PersonGUID { set; get; }
 
-
-    // This is the name of the diner, or a default
     /// <summary>
     /// Gets or sets the nickname of the diner associated with this instance.
     /// </summary>
@@ -42,6 +40,7 @@ public partial class PersonCost : ObservableObject
             Diner = Person.FindByGuid(PersonGUID);
         return Diner is not null;
     }
+
     /// <summary>
     /// Gets or sets the person associated with the diner.
     /// </summary>
@@ -106,6 +105,7 @@ public partial class PersonCost : ObservableObject
     /// </summary>
     [XmlIgnore]
     public decimal PreTaxCouponAmount { get; set; }
+
     /// <summary>
     /// <para>The total value of any coupons assigned to this participant.</para>
     /// Coupons may be before or after tax (see <see cref="Meal.IsCouponAfterTax"/>) and for calculation purposes taxable coupons
@@ -116,6 +116,7 @@ public partial class PersonCost : ObservableObject
     [ObservableProperty]
     [XmlIgnore]
     public partial decimal CouponAmount { get; set; }
+
     /// <summary>
     /// The sum of any comped items this participant got, and any coupons (possibly reduced if they are taxable).
     /// Coupon amounts (not reduced) and comped items are also tracked separately.
@@ -129,18 +130,21 @@ public partial class PersonCost : ObservableObject
     /// This is the tax basis for this participant.
     /// </summary>
     public decimal ChargedAmount => OrderAmount - CompedAmount;
+
     /// <summary>
     /// The sum of this participant's shares in comped items.
     /// </summary>
     [ObservableProperty]
     [XmlIgnore]
     public partial decimal CompedAmount { get; set; }
+
     /// <summary>
     /// The sum of shares in any items this participant ordered, including comped items, excluding coupons
     /// </summary>
     [ObservableProperty]
     [XmlIgnore]
     public partial decimal OrderAmount { get; set; }
+
     /// <summary>
     /// The amount this participant will pay, so it has any coupons subtracted, comped items ignored and a 
     /// fair share of <see cref="Meal.Tip"/> and <see cref="Meal.Tax"/> added.
@@ -157,6 +161,7 @@ public partial class PersonCost : ObservableObject
     /// but for historical reasons it is under the name DinerIndex (see <see cref="DinerIndexStored"/>).</remarks>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(DinerIndex))]
+    [NotifyPropertyChangedFor(nameof(DinerIDText))]
     [XmlIgnore]
     public partial LineItem.DinerID DinerID { get; set; }
     partial void OnDinerIDChanged(LineItem.DinerID value) => DinerIndexStored = (uint)value;
