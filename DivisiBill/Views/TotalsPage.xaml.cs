@@ -23,6 +23,9 @@ public partial class TotalsPage : ContentPage
         Meal.RequestSnapshot();
         base.OnDisappearing();
     }
+
+    // Because add and replace item actions need to open a new page they were historically forced to run
+    // in the code behind. A more modern solution would be to put them in the view model and use Shell navigation.
     private async void OnReplaceItem(object sender, EventArgs e)
     {
         PersonCost pc = null;
@@ -53,6 +56,11 @@ public partial class TotalsPage : ContentPage
     }
     public async void OnAddItem(object sender, EventArgs e)
     {
+        if (viewModel.Costs.Count >= LineItem.maxSharers) // We need one empty slot for temporary storage
+        {
+            await Utilities.DisplayAlertAsync("Error", $"Sorry, you may not add more than {LineItem.maxSharers} participants");
+            return;
+        }
         PeopleListPage v = new();
         v.OnPersonSelected += HandlePersonSelected;
         await Navigation.PushAsync(v);
