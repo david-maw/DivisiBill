@@ -269,7 +269,7 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphList}"                                    Command="{Binding ChangeListCommand}" />
         <ToolbarItem IconImageSource="{StaticResource GlyphDel}"                                     Command="{Binding DeleteMealCommand}"
-                     IsEnabled="{Binding SelectedMealSummary, Converter={StaticResource IsNotNull}}" />
+                     IsEnabled="{Binding IsAnyMealSelected}" />
         <ToolbarItem Text="Use"                                                                      Command="{Binding InvokeUseMealCommand}"          Order="Secondary"
                      IsEnabled="{Binding SelectedMealSummary, Converter={StaticResource IsNotNull}}" />
         <ToolbarItem Text="Show Details"                                                             Command="{Binding InvokeShowDetailsCommand}"      Order="Secondary"

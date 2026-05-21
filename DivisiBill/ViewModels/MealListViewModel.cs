@@ -373,6 +373,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     [RelayCommand(CanExecute = nameof(ShowRemoteMeals))]
     private async Task DeleteRemoteMeals() => await DeleteAnyMeal(false, true);
 
+    public bool IsAnyMealSelected => IsSelectableList || SelectedMealSummary is not null;
+
     [RelayCommand]
     private async Task DeleteMeal(MealSummary ms)
     {
@@ -1000,6 +1002,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     public partial int ProgressLimit { get; set; } = 0;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsAnyMealSelected))]
     public partial bool IsSelectableList { get; set; } = false;
 
     partial void OnIsSelectableListChanged(bool value)
@@ -1012,6 +1015,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsAnyMealSelected))]
     public partial MealSummary SelectedMealSummary { get; set; }
     public int SelectedMealSummariesCount
     {
