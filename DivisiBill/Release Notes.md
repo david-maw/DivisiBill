@@ -1,3 +1,13 @@
+# Version 6.3.27
+
+## Allow Drag and Drop to Reorder Participants
+
+You can now use drag and drop to reorder the participants list on the Totals page. When that is done the order of assignment buttons on the items page will change and the list will be sequenced from 1, so some participant numbers will change.
+
+## Enable Bills Page Delete Icon
+
+When the list is in multiple selection mode the delete icon is enabled regardless of whether any bills are selected for deletion.
+
 # Version 6.3.26
 
 ## Allow Drag and Drop to Reorder Items
