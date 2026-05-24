@@ -55,7 +55,7 @@
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All" />
         </ResourceDictionary>
         <DataTemplate x:Key="NoSwipe" x:DataType="model:LineItem">
-            <Grid ColumnDefinitions="35,*,80,*,30">
+            <Grid ColumnDefinitions="35,*,30">
                 <Grid.Resources>
                     <Style x:Key="SignedLabelStyle" TargetType="Label">
                         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -89,8 +89,7 @@
                     Margin="10,0,10,0"
                     ColumnDefinitions="20,*,Auto,20"
                     IsVisible="{Binding IsSharedByFilter}"
-                    RowDefinitions="Auto"
-                    Opacity="{Binding DragTargetOpacity}">
+                    RowDefinitions="Auto">
                     <Label
                         Grid.Column="0"
                         FontSize="{StaticResource FontSizeMedium}"
@@ -101,7 +100,23 @@
                         Grid.Column="1"
                         FontSize="{StaticResource FontSizeTitle}"
                         LineBreakMode="TailTruncation"
-                        Text="{Binding ItemName}" />
+                        Text="{Binding ItemName}" >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                CommandParameter="{Binding}" />
+                            <TapGestureRecognizer
+                                Command="{Binding DisplayPaymentsForLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                CommandParameter="{Binding}" 
+                                NumberOfTapsRequired="2" />
+                            <DragGestureRecognizer 
+                                DragStartingCommand="{Binding DragStartingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DragStartingCommandParameter="{Binding}" />
+                            <DropGestureRecognizer 
+                                DropCommand="{Binding DropCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DropCommandParameter="{Binding}" />
+                        </Label.GestureRecognizers>
+                    </Label>
                     <Label
                         x:Name="amountLabel"
                         Grid.Column="2"
@@ -119,40 +134,16 @@
                         VerticalOptions="Center" />
                 </Grid>
                 <!--#endregion-->
-                <!--#region overlay buttons-->
+                <!--#region overlay buttons to extend in a useful amount from the left and right-->
                 <!--  Tap to toggle sharing, spans the margin and does not cause an item to be selected  -->
                 <Rectangle Grid.Column="0">
                     <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ChangeSharingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
+                        <TapGestureRecognizer Command="{Binding ChangeSharingGestureCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
-                <!--  Tap to toggle select or double tap to display payments  -->
-                <ImageButton
-                    Grid.Column="1"
-                    Grid.ColumnSpan="3"
-                    MinimumHeightRequest="10"
-                    BackgroundColor="Transparent">
-                    <ImageButton.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
-                        <TapGestureRecognizer
-                            Command="{Binding DisplayPaymentsForLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            CommandParameter="{Binding SelectedLineItem, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            NumberOfTapsRequired="2" />
-                        <DragGestureRecognizer 
-                            DragStartingCommand="{Binding DragStartingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            DragStartingCommandParameter="{Binding .}" />
-                        <DropGestureRecognizer 
-                            AllowDrop="True"
-                            DragOverCommand="{Binding DragOverCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            DragOverCommandParameter="{Binding .}"
-                            DragLeaveCommand="{Binding DragLeaveCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            DragLeaveCommandParameter="{Binding .}"
-                            DropCommand="{Binding DropCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            DropCommandParameter="{Binding .}" />
-                    </ImageButton.GestureRecognizers>
-                </ImageButton>
+                <!-- Gap in the middle (column 1) allows tap to fall through to the item below -->
                 <!--  Tap to toggle Comped value, spans the margin and does not cause an item to be selected  -->
-                <Rectangle Grid.Column="4">
+                <Rectangle Grid.Column="2">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding ChangeCompCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
                     </Rectangle.GestureRecognizers>

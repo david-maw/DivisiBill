@@ -222,7 +222,7 @@ public partial class MealViewModel : ObservableObjectPlus
             ShellNavigationQueryParameters navigationParameter = new()
             {
                     { "TargetPerson", pc.Diner }
-                };
+            };
             await App.PushAsync(Routes.PersonEditPage, navigationParameter);
         }
         else // should never happen, but just in case...
@@ -307,6 +307,11 @@ public partial class MealViewModel : ObservableObjectPlus
                 MovePersonCost(draggedIndex, targetIndex);
                 if (!CostListResequence()) // Ensure DinerIDs are in order after the move
                     MovePersonCost(targetIndex, draggedIndex); // It did not work, put the dragged item back where it was and give up
+                #region This is a hack to force the display to update correctly, see https://github.com/dotnet/maui/issues/35599
+                var temp = Costs; // Alias for Meal.CurrentMeal.Costs
+                Meal.CurrentMeal.Costs = null;
+                Meal.CurrentMeal.Costs = temp;
+                #endregion
             }
         }
         draggedPersonCost = null;
@@ -509,10 +514,19 @@ public partial class MealViewModel : ObservableObjectPlus
                     Renumber(target.pc, target.currentID, tempID.Value);
                     Renumber(item.pc, item.currentID, item.desiredID);
                     Renumber(target.pc, tempID.Value, item.currentID);
-                    // The target item now has the DinerID that the item formerly had, so update the item info for the target item to reflect that change,
+                    // The target item now has the DinerID that the item formerly had and vice versa, so update the currentID values to reflect that change,
                     // this will ensure that when we need to move the target item later we will be able to find it in the list by its new current DinerID
-                    target.currentID = item.currentID;
+                    (target.currentID, item.currentID) = (item.currentID, target.currentID);
                 }
+            }
+            // validate the new order because the preceding code has a lot of moving parts and it's easy to make a mistake that would leave the list in an invalid state,
+            // so we'll check that the DinerIDs are now in the desired order with no duplicates or gaps
+            desiredID = LineItem.DinerID.first;
+            foreach (PersonCost pc in Costs)
+            {
+                if (pc.DinerID != desiredID)
+                    throw new Exception($"Resequence failed to properly reorder costs, expected DinerID {desiredID} for \"{pc.Nickname}\" but found {pc.DinerID}");
+                desiredID++;
             }
             return true; // Success!
         }
@@ -680,7 +694,7 @@ public partial class MealViewModel : ObservableObjectPlus
             nextItem = DeleteItem(li);
         SelectedLineItem = nextItem;
     }
-    public bool CanDeleteLineItem(LineItem li) => li is not null || LineItems.Count > 0;
+    public bool CanDeleteLineItem(LineItem li) => li is not null || (LineItems is not null && LineItems.Count > 0);
     public void LineItemDeselected(LineItem li)
     {
         if (IsFiltered && li.GetShares(AmountForSharerID) < 1)
@@ -848,38 +862,22 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [RelayCommand]
-    private void DragOver(LineItem targetItem)
+    private void Drop(LineItem targetItem)
     {
         if (draggedLineItem != null && targetItem != null && draggedLineItem != targetItem)
         {
-            // Set visual feedback
-            targetItem.IsDragTarget = true;
-
             int draggedIndex = LineItems.IndexOf(draggedLineItem);
             int targetIndex = LineItems.IndexOf(targetItem);
 
             if (draggedIndex != -1 && targetIndex != -1 && draggedIndex != targetIndex)
             {
                 MoveLineItem(draggedIndex, targetIndex);
+                #region This is a hack to force the display to update correctly, see https://github.com/dotnet/maui/issues/35599
+                var temp = LineItems;
+                LineItems = null;
+                LineItems = temp;
+                #endregion
             }
-        }
-    }
-
-    [RelayCommand]
-    private void DragLeave(LineItem targetItem)
-    {
-        if (targetItem != null)
-        {
-            targetItem.IsDragTarget = false;
-        }
-    }
-
-    [RelayCommand]
-    private void Drop(LineItem targetItem)
-    {
-        if (targetItem != null)
-        {
-            targetItem.IsDragTarget = false;
         }
         draggedLineItem = null;
     }
@@ -951,8 +949,16 @@ public partial class MealViewModel : ObservableObjectPlus
     {
         if (param is string changeTypeString && Enum.TryParse(changeTypeString, out ChangeType changeType))
             ChangeSharing(SelectedOrFirstLineItem, changeType);
-        else if (param is LineItem li)
-            ChangeSharing(li, ChangeType.Cycle);
+    }
+
+    /// <summary>
+    /// Used for the in-line case where there need not be a selected item
+    /// </summary>
+    /// <param name="li"></param>
+    [RelayCommand]
+    public void ChangeSharingGesture(LineItem li)
+    {
+        ChangeSharing(li, ChangeType.Cycle);
     }
     public event Action<LineItem> SharingChanged;
 

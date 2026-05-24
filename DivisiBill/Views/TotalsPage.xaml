@@ -54,56 +54,46 @@
                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
                         </SwipeItems>
                     </SwipeView.RightItems>
-                    <!--#region PersonCost display -->
+                    <!--#region PersonCost display with Drag gesture on Nickname-->
                     <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions= "*,Auto">
-                        <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="{StaticResource FontSizeTitle}" />
-                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}"
-                               LineBreakMode="NoWrap"
-                               FontSize="{StaticResource FontSizeTitle}" IsEnabled="True" HorizontalTextAlignment="End" />
-                        <Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Text="{Binding Nickname}" LineBreakMode="NoWrap" FontSize="{StaticResource FontSizeTitle}">
+                            <Label.GestureRecognizers>
                             <TapGestureRecognizer
                                 CommandParameter="{Binding}"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}" />
                             <TapGestureRecognizer NumberOfTapsRequired="2"
-                                                  CommandParameter="{Binding}"
-                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}" />
+                                CommandParameter="{Binding}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}" />
                             <DragGestureRecognizer 
                                 DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                                DragStartingCommandParameter="{Binding .}" />
+                                DragStartingCommandParameter="{Binding}" />
                             <DropGestureRecognizer 
-                                AllowDrop="True"
                                 DropCommand="{Binding DropPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                                DropCommandParameter="{Binding .}" />
-                        </Grid.GestureRecognizers>
+                                DropCommandParameter="{Binding}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}"
+                               LineBreakMode="NoWrap"
+                               FontSize="{StaticResource FontSizeTitle}" IsEnabled="True" HorizontalTextAlignment="End" />
                     </Grid>
                     <!--#endregion-->
                 </SwipeView>
-                <!--#region Select/Drag Button -->
+                <!--#region Select/Deselect Button, a small region in the center of each line -->
                 <ImageButton Grid.Column="1" MinimumHeightRequest="10">
                     <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
+                        <!-- Also must handle double tap because it masks the control below it -->
                         <TapGestureRecognizer NumberOfTapsRequired="2"
                                               CommandParameter="{Binding}"
                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
-                        <DragGestureRecognizer 
-                            DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            DragStartingCommandParameter="{Binding .}"/>
-                        <DropGestureRecognizer 
-                            AllowDrop="True"
-                            DragOverCommand="{Binding DragOverPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                            DragOverCommandParameter="{Binding .}"/>
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--#endregion-->
                 <!--#region Context Menu to Replace Swipe on Windows -->
                 <FlyoutBase.ContextFlyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem
-                            Text="Person Details"
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
                         <MenuFlyoutItem
                             Text="Filter"
                             CommandParameter="{Binding}"
@@ -112,10 +102,6 @@
                             Text="Delete"
                             CommandParameter="{Binding}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
-                        <MenuFlyoutItem
-                            Text="Change Selection"
-                            CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
                     </MenuFlyout>
                 </FlyoutBase.ContextFlyout>
                 <!--#endregion-->
