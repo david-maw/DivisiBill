@@ -28,6 +28,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public MealViewModel()
     {
         Meal.CurrentMeal.PropertyChanged += CurrentMeal_PropertyChanged;
+        SubscribeToCosts(Costs);
         LineItems = GetLineItems();
         DefaultTipRatePercentage = App.Settings.DefaultTipRate;
         DefaultTaxRatePercentage = (decimal)(App.Settings.DefaultTaxRate * 100);
@@ -35,6 +36,7 @@ public partial class MealViewModel : ObservableObjectPlus
     ~MealViewModel()
     {
         Meal.CurrentMeal.PropertyChanged -= CurrentMeal_PropertyChanged;
+        UnsubscribeFromCosts();
     }
     public void LoadLineItem()
     {
@@ -110,6 +112,12 @@ public partial class MealViewModel : ObservableObjectPlus
             if (IsFiltered)
                 SetFilteredSubtotal();
         }
+        else if (e.PropertyName.Equals(nameof(Meal.Costs)))
+        {
+            UnsubscribeFromCosts();
+            SubscribeToCosts(Costs);
+            NotifyIsAnyCostsChanged();
+        }
     }
     #endregion
     #region Object Independent
@@ -152,7 +160,7 @@ public partial class MealViewModel : ObservableObjectPlus
         IsAnyDeletedCost = false;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyCosts))]
     public void DeleteCost(PersonCost pc)
     {
         if (pc is null)
@@ -246,7 +254,7 @@ public partial class MealViewModel : ObservableObjectPlus
         await DisplayPayments(pc);
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyCosts))]
     public async Task FilterItems(PersonCost pc)
     {
         if (pc is null) // No idea who this could be for so just cycle through all 
@@ -656,7 +664,7 @@ public partial class MealViewModel : ObservableObjectPlus
     public LineItem DeleteItem(LineItem li)
     {
         LineItem alternate = LineItems.Alternate(li);
-        if (IsNotFiltered)
+        if (!IsFiltered)
         {
             LineItems.Remove(li);
             deletedLineItems.Push(li);
@@ -965,7 +973,7 @@ public partial class MealViewModel : ObservableObjectPlus
     [RelayCommand]
     public async Task GoToTotals() => await App.GoToAsync(Routes.TotalsPage);
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsAnyCosts))]
     public async Task Adjust()
     {
         IPopupResult<decimal> popupResult = await Shell.Current.ShowPopupAsync<decimal>
@@ -979,6 +987,37 @@ public partial class MealViewModel : ObservableObjectPlus
             SelectedLineItem = adjustmentLineItem;
             DistributeCostsIfNeeded(); // to account for the adjustment amount
         }
+    }
+
+    public bool IsAnyCosts => Costs is not null && Costs.Count > 0;
+
+    private ObservableCollection<PersonCost> _subscribedCosts;
+    private void SubscribeToCosts(ObservableCollection<PersonCost> costs)
+    {
+        _subscribedCosts = costs;
+        if (costs is not null)
+            costs.CollectionChanged += OnCostsCollectionChanged;
+    }
+    private void UnsubscribeFromCosts()
+    {
+        if (_subscribedCosts is not null)
+        {
+            _subscribedCosts.CollectionChanged -= OnCostsCollectionChanged;
+            _subscribedCosts = null;
+        }
+    }
+    private void OnCostsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        int oldCount = Costs.Count - (e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0);
+        if ((oldCount == 0) != (Costs.Count == 0))
+            NotifyIsAnyCostsChanged();
+    }
+    private void NotifyIsAnyCostsChanged()
+    {
+        OnPropertyChanged(nameof(IsAnyCosts));
+        DeleteCostCommand.NotifyCanExecuteChanged();
+        FilterItemsCommand.NotifyCanExecuteChanged();
+        AdjustCommand.NotifyCanExecuteChanged();
     }
     #endregion
     #endregion
@@ -1041,7 +1080,13 @@ public partial class MealViewModel : ObservableObjectPlus
         {
             if (Meal.CurrentMeal.AmountForSharerID != value)
             {
+                bool isFilteredChanged = IsFiltered != (value != LineItem.DinerID.none);
                 Meal.CurrentMeal.AmountForSharerID = value;
+                if (isFilteredChanged)
+                {
+                    OnPropertyChanged(nameof(IsFiltered));
+                    ClearFilteringCommand.NotifyCanExecuteChanged();
+                }
                 LineItems = GetLineItems();
                 if (IsFiltered)
                 {
@@ -1054,7 +1099,6 @@ public partial class MealViewModel : ObservableObjectPlus
     // The glyph to use - note it is inverted because it is showing what the glyph will do, not what the current state is
     public FontImageSource FilterGlyph => (FontImageSource)(IsFiltered ? Application.Current.Resources["GlyphFilterOff"] : Application.Current.Resources["GlyphFilterOn"]);
     public bool IsFiltered => AmountForSharerID != LineItem.DinerID.none;
-    public bool IsNotFiltered => AmountForSharerID == LineItem.DinerID.none;
     public string FilteredSharerName => IsFiltered ? FilteredSharer.Nickname : string.Empty;
     private PersonCost FilteredSharer => IsFiltered ? Costs.Where((pc) => pc.DinerID == AmountForSharerID).FirstOrDefault() : null;
 

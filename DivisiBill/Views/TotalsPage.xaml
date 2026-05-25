@@ -16,9 +16,9 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphDel}"      Command="{Binding DeleteCostCommand}"      CommandParameter="{Binding SelectedCost}"/>
         <ToolbarItem Text = "Clear Filter"  Order="Secondary"          Command="{Binding ClearFilteringCommand}"/>
         <ToolbarItem Text = "Mail"          Order="Secondary"          Command="{Binding MailCommand}"            CommandParameter="{Binding SelectedCost}"/>
-        <ToolbarItem Text = "Replace"       Order="Secondary"          Clicked="OnReplaceItem"                    CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text = "Replace"       Order="Secondary"          Clicked="OnReplaceItem"                    CommandParameter="{Binding SelectedCost}" IsEnabled="{Binding SelectedCost, Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem Text = "Payments"      Order="Secondary"          Command="{Binding DisplayPaymentsCommand}" CommandParameter="{Binding SelectedCost}"/>
-        <ToolbarItem Text = "Person"        Order="Secondary"          Command="{Binding ShowPersonCommand}"      CommandParameter="{Binding SelectedCost}"/>
+        <ToolbarItem Text = "Person"        Order="Secondary"          Command="{Binding ShowPersonCommand}"      CommandParameter="{Binding SelectedCost}" IsEnabled="{Binding SelectedCost, Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem Text = "Adjust Amount" Order="Secondary"          Command="{Binding AdjustCommand}"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Resources>
@@ -61,9 +61,6 @@
                             <TapGestureRecognizer
                                 CommandParameter="{Binding}"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}" />
-                            <TapGestureRecognizer NumberOfTapsRequired="2"
-                                CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}" />
                             <DragGestureRecognizer 
                                 DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
                                 DragStartingCommandParameter="{Binding}" />

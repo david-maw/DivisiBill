@@ -5,6 +5,7 @@
              Shell.FlyoutBehavior="Disabled"
              x:DataType="vm:PersonEditViewModel"
              x:Class="DivisiBill.Views.PersonEditPage"
+             Padding="10,0"
              Title="Person Details">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding SaveCommand}"/>
