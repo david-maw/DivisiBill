@@ -1,3 +1,17 @@
+# Version 6.3.28
+
+## Improve Drag and Drop Interface
+
+Drag and drop can be used to reorder items and participants (on the Totals page). It is now easier to see what is being dragged.
+
+## Grey Out Totals Actions
+
+The various navigation bar actions on the Totals page are now grayed out when they are not appropriate. For example, the delete icon is grayed if there are no participants to delete and the "Clear Filter" menu choice is grayed out if we are not filtering for any participant.
+
+## Correct the Unallocated Amount
+
+When the last participant was deleted their costs were not added to the unallocated amount. This has been corrected.
+
 # Version 6.3.27
 
 ## Allow Drag and Drop to Reorder Participants
