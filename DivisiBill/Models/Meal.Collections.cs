@@ -299,7 +299,13 @@ public partial class Meal
         }
         // Now the diner has been removed from all items it is safe to delete
         Costs.Remove(pc);
-        DistributeCosts();
+        if (Costs.Count > 0) // If there are any diners left, we should redo sharing and resequence to eliminate any gaps in the DinerIDs
+        {
+            DistributeCosts();
+            CostListResequence();
+        }
+        else // If there are no diners left we can just mark all the money s unallocated, there is nothing to resequence
+            UnallocatedAmount = SubTotal;
     }
 
     /// <summary>

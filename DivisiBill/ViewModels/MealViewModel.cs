@@ -397,7 +397,6 @@ public partial class MealViewModel : ObservableObjectPlus
         }
         deletedCosts.Push(sc);
         Meal.CurrentMeal.CostListDelete(pc);
-        Meal.CurrentMeal.CostListResequence();
         IsAnyDeletedCost = true;
     }
     public void CostListDeleteAll()
