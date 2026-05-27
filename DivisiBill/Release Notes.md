@@ -1,3 +1,9 @@
+# Version 6.3.29
+
+## Update "Help"
+
+The help subsystem has been brought up to date with the software.
+
 # Version 6.3.28
 
 ## Improve Drag and Drop Interface
