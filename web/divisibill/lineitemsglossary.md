@@ -54,8 +54,7 @@ Sometimes items will be "comped" by a restaurant, usually by way of an apology b
 
 ## Line Items
 
-You can swipe individual items left to delete them (if you delete an item by mistake you can get it back until you exit the page). Tap on an item to make it the current focus so you can edit the name or price and/or assign it to one or more participants. This button disappears when you leave the page and you can no longer restore the current set of deleted items.
-
+You can swipe individual items left to delete them (if you delete an item by mistake you can get it back until you exit the page). Tap on an item to make it the current focus so you can edit the name or price and/or assign it to one or more participants. Tap and hold on an item to drag it to a different position in the list. When you do this, the name of the item you are dragging will drag to remind you what you are moving.
 ## Undelete
 
 The Undelete button appears when there is at least one deleted item, tap it to restore the most recently deleted item. This button disappears when you leave the page.

@@ -42,7 +42,7 @@ This is the name of the current venue. Tap on it to see the details of the curre
 
 ## Participant
 
-Each of the participant lines shows the name of the participant and the amount allocated to them. Tap on the line to see the payment breakdown for that participant (good for answering  "what did I pay for" questions); double tap to view the detailed information for that person. Swipe the line left to delete the participant (<u>&#xF0A7A;</u>). Swipe the line right to filter items for just that participant (<u>&#xF0233;</u>).
+Each of the participant lines shows the name of the participant and the amount allocated to them. Tap on the line to see the payment breakdown for that participant (good for answering  "what did I pay for" questions). Swipe the line left to delete the participant (<u>&#xF0A7A;</u>). Swipe the line right to filter items for just that participant (<u>&#xF0233;</u>). You can use a long press to drag a participant to a different position in the list. When you do this, the name of the participant you are dragging will drag to remind you who you are moving.
 
 Swiping right or tapping in the open area below the list of participants switches to the Items page, deselects any selected participant, or (with a double Tap) shows the breakdown of payments to reach a round number.   
 

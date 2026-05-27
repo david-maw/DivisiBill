@@ -30,6 +30,10 @@ Tap this button to select an archive to restore. When you do the page will updat
 
 Tap this to locate an archive file previously created by the "Archive" action and restore its contents. After the restore completes it will switch to the list of bills page.
 
+## Program Settings
+
+Tap this to restore program settings from an archive file. This includes things like the default tax and tip percentages, and so on. If you do not select this option, these settings will not be changed when you restore from an archive file containing them.
+
 ## Delete Option
 
 Select "Delete Everything First" to remove all people, venues and bills before restoring them. 
