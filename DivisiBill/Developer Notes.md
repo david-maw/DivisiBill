@@ -362,6 +362,7 @@ gh secret set DIVISIBILL_WS_KEY     -b "%DIVISIBILL_WS_KEY_RELEASE%"
 gh secret set DIVISIBILL_SENTRY_DSN -b "%DIVISIBILL_SENTRY_DSN%"
 gh secret set SENTRY_AUTH_TOKEN     -b "%SENTRY_AUTH_TOKEN%"
 gh secret set DIVISIBILL_MAPS_KEY   -b "%DIVISIBILL_MAPS_KEY%"
+gh secret set SIXLABORS_LICENSE_KEY -b "%SIXLABORS_LICENSE_KEY%"
 ```
 or, if you prefer PowerShell:
 ```
@@ -369,7 +370,8 @@ gh secret set DIVISIBILL_WS_URI     -b "$env:DIVISIBILL_WS_URI_RELEASE";
 gh secret set DIVISIBILL_WS_KEY     -b "$env:DIVISIBILL_WS_KEY_RELEASE";
 gh secret set DIVISIBILL_SENTRY_DSN -b "$env:DIVISIBILL_SENTRY_DSN";
 gh secret set SENTRY_AUTH_TOKEN     -b "$env:SENTRY_AUTH_TOKEN";
-gh secret set DIVISIBILL_MAPS_KEY   -b "$env:DIVISIBILL_MAPS_KEY"
+gh secret set DIVISIBILL_MAPS_KEY   -b "$env:DIVISIBILL_MAPS_KEY";
+gh secret set SIXLABORS_LICENSE_KEY -b "$env:SIXLABORS_LICENSE_KEY";
 ```
 
 The quotes are not strictly necessary since none of these secrets contain spaces, but they don't hurt and they do make it clear where the secret value is.

@@ -378,7 +378,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         image.Mutate(x => x
             .Resize(newBitmapWidth, newBitmapHeight) // Set the width because setting height works strangely
             .Grayscale());
-        await image.SaveAsync(newStream, new JpegEncoder() { ColorType = JpegEncodingColor.Luminance });
+        await image.SaveAsync(newStream, new JpegEncoder() { ColorType = JpegColorType.Luminance });
     }
 
     /// <summary>
@@ -421,7 +421,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         using FileStream inputStream = File.OpenRead(imagePath);
         using SixLabors.ImageSharp.Image image = await SixLabors.ImageSharp.Image.LoadAsync(inputStream);
         image.Mutate(x => x.Rotate(degrees));
-        await image.SaveAsync(outputStream, new JpegEncoder() { ColorType = JpegEncodingColor.Luminance });
+        await image.SaveAsync(outputStream, new JpegEncoder() { ColorType = JpegColorType.Luminance });
     }
 
     /// <summary>

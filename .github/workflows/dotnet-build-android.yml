@@ -49,6 +49,7 @@ jobs:
     # Build to apk and aab
     - name: Build
       env:
+        SIXLABORS_LICENSE_KEY: ${{ secrets.SIXLABORS_LICENSE_KEY }}
         DIVISIBILL_WS_URI: ${{ secrets.DIVISIBILL_WS_URI }}
         DIVISIBILL_WS_KEY: ${{ secrets.DIVISIBILL_WS_KEY }}
         DIVISIBILL_MAPS_KEY: ${{ secrets.DIVISIBILL_MAPS_KEY }}
