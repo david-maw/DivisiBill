@@ -39,6 +39,8 @@ jobs:
     
     # Test the release
     - name: Test
+      env:
+        SIXLABORS_LICENSE_KEY: ${{ secrets.SIXLABORS_LICENSE_KEY }}
       run: dotnet test DivisiBill.Tests/DivisiBill.Tests.csproj -c:Release -f:net10.0-windows10.0.19041.0
       
     # Restore the aAndroid keystore used to sign the APK/AAB    
