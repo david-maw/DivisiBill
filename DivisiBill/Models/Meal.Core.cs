@@ -187,6 +187,7 @@ public partial class Meal : ObservableObjectPlus
                 field = value;
                 Venue.SetCurrentByName(value?.VenueName);
                 CurrentMealSummaryChanged?.Invoke(prior, value?.Summary);
+                CurrentMealChanged?.Invoke(field, value);
             }
         }
     }
@@ -194,6 +195,10 @@ public partial class Meal : ObservableObjectPlus
     public delegate void CurrentMealSummaryChangedEventHandler(MealSummary oldSummary, MealSummary newSummary);
 
     public static event CurrentMealSummaryChangedEventHandler CurrentMealSummaryChanged;
+
+    public delegate void CurrentMealChangedEventHandler(Meal oldMeal, Meal newMeal);
+
+    public static event CurrentMealChangedEventHandler CurrentMealChanged;
 
     /// <summary>
     /// Loop saving the bill locally as necessary
