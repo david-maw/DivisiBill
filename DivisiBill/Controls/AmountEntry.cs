@@ -73,7 +73,7 @@ public partial class AmountEntry : Entry
             Amount = value;
     }
 
-    private void UpdateTextFromAmount() => Text = Amount == 0 && AllowBlank ? string.Empty : Amount.ToString("N" + nfi.CurrencyDecimalDigits).First(MaxLength)?.TrimEnd('.', ',');
+    private void UpdateTextFromAmount() => Text = Amount == 0 && AllowBlank ? string.Empty : Amount.ToString("0." + new string('0', nfi.CurrencyDecimalDigits)).First(MaxLength)?.TrimEnd('.', ',');
 
     private void ValidateEntry()
     {
