@@ -1,3 +1,19 @@
+# Version 6.3.30
+
+## Android Material3 UI
+
+Android has a new user interface standard called Material3, this change implements it in DivisiBill. The main impact is that data entry fields are now surrounded by boxes so they take a little more vertical space.
+
+The most significant change is on the Properties page which was substantially reorganized to accommodate the changed dimensions. Other pages that needed some reorganization include Data Management, Settings and Properties.
+
+## Handle Amounts Greater Than 999.99
+
+Entering an amount of 1000 or more would fail because it would be updated to (for example) "1,000" and the comma would then cause the format to be tagged as invalid. This has been corrected.
+
+## Update Properties
+
+When a new bill was selected the Properties page would continue to show the old one, that has been corrected.
+
 # Version 6.3.29
 
 ## Update "Help"
