@@ -30,8 +30,8 @@
      inkscape:cy="877.09163"
      inkscape:window-width="1200"
      inkscape:window-height="1521"
-     inkscape:window-x="1200"
-     inkscape:window-y="0"
+     inkscape:window-x="1611"
+     inkscape:window-y="36"
      inkscape:window-maximized="0"
      inkscape:current-layer="g842"
      inkscape:showpageshadow="2"
@@ -81,7 +81,7 @@
        xlink:href="propertiesglossary.html#tax-delta"
        target="_parent"
        xlink:title="Tax Adjustment"
-       transform="matrix(3.3669724,0,0,0.81632654,-713.65854,326.12244)">
+       transform="matrix(1.9266055,0,0,0.81632654,-334.20534,163.97105)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect983"
@@ -95,7 +95,7 @@
        xlink:href="propertiesglossary.html#tax"
        target="_parent"
        xlink:title="Tax Specification"
-       transform="matrix(1,0,0,1.2073171,12,-72.170246)">
+       transform="matrix(1.9659091,0,0,0.65853662,-1410.8785,310.91692)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect985"
@@ -109,7 +109,7 @@
        xlink:href="propertiesglossary.html#tip"
        target="_parent"
        xlink:title="Tip Specification"
-       transform="matrix(1,0,0,1.5487805,9.5179403,-698.59715)">
+       transform="matrix(1.9318182,0,0,0.65853661,-1376.8765,147.57427)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect985-93"
@@ -123,10 +123,38 @@
        xlink:href="propertiesglossary.html#scanned"
        target="_parent"
        xlink:title="Printed Amounts"
-       transform="matrix(1,0,0,0.94318182,33.585632,186.17294)">
+       transform="matrix(1.1445783,0,0,1.8522727,-212.07461,-1306.1559)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect987"
+         width="244.7012"
+         height="259.44223"
+         x="801.91235"
+         y="1129.1633" />
+    </a>
+    <a
+       id="a995-8"
+       xlink:href="propertiesglossary.html#tip-on-tax"
+       target="_parent"
+       xlink:title="Whether to tip on tax"
+       transform="matrix(0.43373495,0,0,0.37499997,529.14274,845.4363)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect987-3"
+         width="244.7012"
+         height="259.44223"
+         x="801.91235"
+         y="1129.1633" />
+    </a>
+    <a
+       id="a995-8-7"
+       xlink:href="propertiesglossary.html#coupon"
+       target="_parent"
+       xlink:title="Coupon after tax"
+       transform="matrix(0.43373495,0,0,0.37499997,519.02721,961.01001)">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect987-3-7"
          width="244.7012"
          height="259.44223"
          x="801.91235"
@@ -137,7 +165,7 @@
        xlink:href="propertiesglossary.html#venue-notes"
        target="_parent"
        xlink:title="Notes for Current Venue"
-       transform="matrix(4.4578312,0,0,0.90909091,-3579.3916,532.59947)">
+       transform="matrix(4.4578312,0,0,0.71590909,-3579.3916,750.7333)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect987-7"

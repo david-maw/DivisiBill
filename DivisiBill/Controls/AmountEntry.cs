@@ -18,16 +18,34 @@ public partial class AmountEntry : Entry
     // Optional leading minus then either an integer or floating point number with two digits of precision
     private static readonly Regex NumberRegex = new(@"^-?\d{1,15}(" + ((nfi.CurrencyDecimalSeparator[0] == '.') ? @"\." : ",") + @"\d{" + nfi.CurrencyDecimalDigits + "})?$");
     private CancellationTokenSource? stoppedTypingCts;
+    private const string defaultText = " "; // Not null so as to avoid PlaceHolder text on Android Material 3 Entry objects
 
     public AmountEntry()
     {
         // Set a couple of attributes to sensible defaults for a numeric field
         Keyboard = Keyboard.Numeric;
         HorizontalTextAlignment = TextAlignment.End;
+        Text = defaultText; // Initial Amount is 0, so show a blank rather than nothing
 
         // Events causing Amount updates
         TextChanged += OnTextChanged;
         Completed += OnCompleted;
+        // Events to deal with the default blank text and ensure the Placeholder is shown in Android when the field is blank and not focused
+        Focused += OnFocused;
+        Unfocused += OnUnfocused;
+    }
+    // When the control is focused, if the text is the default blank text then clear it to make it easier for the user to start typing.
+    // When the control is unfocused, if the text is blank then set it back to the default blank text to force the display of
+    // the Placeholder text in Android.
+    private void OnFocused(object? sender, FocusEventArgs e)
+    {
+        if (Text == defaultText)
+            Text = string.Empty;
+    }
+    private void OnUnfocused(object? sender, FocusEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(Text))
+            Text = defaultText;
     }
     #endregion
     #region Data Entry Management

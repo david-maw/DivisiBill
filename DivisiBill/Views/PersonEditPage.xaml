@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
+             xmlns:controls="clr-namespace:DivisiBill.Controls"
              Shell.FlyoutBehavior="Disabled"
              x:DataType="vm:PersonEditViewModel"
              x:Class="DivisiBill.Views.PersonEditPage"
@@ -14,21 +15,19 @@
         <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>
         <ToolbarItem Command="{Binding DeleteCommand}" IconImageSource="{StaticResource GlyphDel}"/>
     </ContentPage.ToolbarItems>
-    <ContentPage.Content>
-        <Grid x:Name="grid" ColumnDefinitions="Auto,*" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto">
-            <Label Grid.ColumnSpan="2" Text="{Binding Path=CurrentPerson.DisplayName}" LineBreakMode="MiddleTruncation"
-                   HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
-            <Label Grid.Row="1" Grid.ColumnSpan="2" Text= "(used in current bill)" IsVisible="{Binding IsInUse}" HorizontalOptions="Center"/>
-            <Label Grid.Row="2" Text="First Name" VerticalOptions="End"/>
-            <Entry Grid.Row="2" Grid.Column="1" x:Name="firstNameEntry" Text="{Binding CurrentPerson.FirstName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
-            <Label Grid.Row="3" Text="Middle Name" VerticalOptions="End"/>
-            <Entry Grid.Row="3" Grid.Column="1" Text="{Binding CurrentPerson.MiddleName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
-            <Label Grid.Row="4" Text="Last Name" VerticalOptions="End"/>
-            <Entry Grid.Row="4" Grid.Column="1" Text="{Binding CurrentPerson.LastName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
-            <Label Grid.Row="5" Text="NickName" VerticalOptions="End"/>
-            <Entry Grid.Row="5" Grid.Column="1" x:Name="nicknameEntry" Text="{Binding CurrentPerson.Nickname}" Placeholder="{Binding CurrentPerson.FirstName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
-            <Label Grid.Row="6" Text="email" VerticalOptions="End"/>
-            <Entry Grid.Row="6" Grid.Column="1" Text="{Binding CurrentPerson.Email}" ReturnType="Done" Completed="OnCompleted" Keyboard="Email"/>
-        </Grid>
-    </ContentPage.Content>
+    <controls:ColumnLayout>
+        <Label Text="{Binding Path=CurrentPerson.DisplayName}" LineBreakMode="MiddleTruncation"
+                HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
+        <Label Text= "(used in current bill)" IsVisible="{Binding IsInUse}" HorizontalOptions="Center"/>
+        <Label Text="First Name" FontAttributes="Bold" Margin="0,15,0,0"/>
+        <Entry Grid.Column="1" x:Name="firstNameEntry" Text="{Binding CurrentPerson.FirstName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
+        <Label Text="Middle Name" FontAttributes="Bold" Margin="0,15,0,0"/>
+        <Entry Grid.Column="1" Text="{Binding CurrentPerson.MiddleName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
+        <Label Text="Last Name" FontAttributes="Bold" Margin="0,15,0,0"/>
+        <Entry Grid.Column="1" Text="{Binding CurrentPerson.LastName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
+        <Label Text="NickName" FontAttributes="Bold" Margin="0,15,0,0"/>
+        <Entry Grid.Column="1" x:Name="nicknameEntry" Text="{Binding CurrentPerson.Nickname}" Placeholder="{Binding CurrentPerson.FirstName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
+        <Label Text="email" FontAttributes="Bold" Margin="0,15,0,0"/>
+        <Entry Grid.Column="1" Text="{Binding CurrentPerson.Email}" ReturnType="Done" Completed="OnCompleted" Keyboard="Email"/>
+    </controls:ColumnLayout>
 </ContentPage>

@@ -26,6 +26,14 @@ This is used to indicate the difference between the tax amount and what would be
 
 Printed bills often have a Tax amount and a Subtotal amount printed on them; those values appear here if the program scanned them on the bill. If these values are set, they can be used to cross check the program's calculations (numbers which differ will be highlighted).
 
+## Tip on Tax
+
+Check this box to calculate the tip based on the total amount including tax instead of the subtotal.
+
+## Coupon
+
+If you have a coupon it may in some rare cases be applied after tax, in which case you can check this box to have the program calculate the discount after tax instead of before.
+
 ## Venue Notes
 
-These are notes relating to the venue the current bill is assigned to.
+These are notes relating to the venue the current bill is assigned to. They are not used by the application in any way, but are there for your use.

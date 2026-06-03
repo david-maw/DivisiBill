@@ -29,7 +29,7 @@
      inkscape:pagecheckerboard="1"
      showgrid="false"
      inkscape:zoom="0.51316815"
-     inkscape:cx="538.80974"
+     inkscape:cx="539.78408"
      inkscape:cy="1170.1817"
      inkscape:window-width="1592"
      inkscape:window-height="1443"
@@ -52,7 +52,7 @@
        x="1.7327491"
        y="0.90023959" /><a
        xlink:href="datamanagementglossary.html#use-bills-between"
-       transform="matrix(0.54844977,0,0,0.71101405,236.92194,43.973099)"
+       transform="matrix(0.54844977,0,0,0.79243133,236.92194,-23.671366)"
        inkscape:label="wifi"
        xlink:title="Limit Range of Bills Used"
        target="_parent"
@@ -64,7 +64,7 @@
          x="35.378487"
          y="1469.5219" /></a><a
        xlink:href="datamanagementglossary.html#archive-button"
-       transform="matrix(-0.21253946,0,0,3.6507821,276.09715,-5024.3877)"
+       transform="matrix(-0.21253946,0,0,3.9811132,276.09715,-5529.3033)"
        inkscape:label="wifi"
        xlink:title="Create an archive"
        target="_parent"
@@ -76,7 +76,7 @@
          x="35.378487"
          y="1469.5219" /></a><a
        xlink:href="datamanagementglossary.html#select-downloadable-bills"
-       transform="matrix(0.54000707,0,0,1.3980614,243.18296,-253.82812)"
+       transform="matrix(0.33982733,0,0,1.3980614,90.473338,-216.80322)"
        inkscape:label="wifi"
        xlink:title="Download missing bills"
        target="_parent"
@@ -88,7 +88,7 @@
          x="35.378487"
          y="1469.5219" /></a><a
        xlink:href="datamanagementglossary.html#restore-keys"
-       transform="matrix(0.30205757,0,0,1.3062304,376.89854,-450.44012)"
+       transform="matrix(0.22651805,0,0,1.3062304,780.99888,-339.36542)"
        inkscape:label="wifi"
        xlink:title="Restore archived keys"
        target="_parent"
@@ -100,7 +100,7 @@
          x="35.378487"
          y="1469.5219" /></a><a
        xlink:href="datamanagementglossary.html#archive-keys"
-       transform="matrix(0.41158988,0,0,1.3062304,115.79782,-581.52915)"
+       transform="matrix(0.34360431,0,0,1.3062304,57.793998,-335.9956)"
        inkscape:label="wifi"
        xlink:title="Archive keys to disk"
        target="_parent"
@@ -112,7 +112,7 @@
          x="35.378487"
          y="1469.5219" /></a><a
        xlink:href="datamanagementglossary.html#share-key-archive"
-       transform="matrix(0.3757086,0,0,1.3062304,554.52762,-583.04733)"
+       transform="matrix(0.31905396,0,0,1.3062304,429.86784,-337.51378)"
        inkscape:label="wifi"
        xlink:title="Archive keys"
        target="_parent"
@@ -124,7 +124,7 @@
          x="35.378487"
          y="1469.5219" /></a><a
        xlink:href="datamanagementglossary.html#overwrite-option"
-       transform="matrix(0.56430199,0,0,0.82541369,295.95963,-280.19689)"
+       transform="matrix(0.59262931,0,0,0.90009902,294.95745,-349.84724)"
        inkscape:label="wifi"
        xlink:title="Overwrite existing items"
        target="_parent"
@@ -136,7 +136,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#delete-option"
-       transform="matrix(0.56430199,0,0,0.87743176,297.90831,-458.71493)"
+       transform="matrix(0.5303092,0,0,0.9568238,299.11092,-550.518)"
        inkscape:label="wifi"
        xlink:title="Delete all items before restore"
        target="_parent"
@@ -148,7 +148,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#program-settings"
-       transform="matrix(0.56430199,0,0,0.87743176,296.72792,-563.42928)"
+       transform="matrix(0.57940989,0,0,0.9568238,296.19343,-664.70715)"
        inkscape:label="wifi"
        xlink:title="Restore program setting from archive"
        target="_parent"
@@ -160,7 +160,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#delete-option"
-       transform="matrix(0.63039907,0,0,0.6791405,215.98198,179.84547)"
+       transform="matrix(0.66061488,0,0,0.75690798,196.91299,127.75957)"
        inkscape:label="wifi"
        xlink:title="Only use items related to a bill"
        target="_parent"
@@ -172,7 +172,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#key-password"
-       transform="matrix(0.87590252,0,0,0.81979807,60.397562,407.53332)"
+       transform="matrix(0.50387037,0,0,1.1943482,270.37608,-291.62369)"
        inkscape:label="wifi"
        xlink:title="Password for archived keys"
        target="_parent"
@@ -185,7 +185,7 @@
          y="1450.4404"
          inkscape:label="rect846-9-1-1-0-1-0" /></a><a
        xlink:href="datamanagementglossary.html#archive-to-disk"
-       transform="matrix(0.24703599,0,0,0.87743176,562.35832,-916.1979)"
+       transform="matrix(0.24703599,0,0,0.9568238,579.89643,-1049.3951)"
        inkscape:label="wifi"
        xlink:title="Store Archive on Disk"
        target="_parent"
@@ -197,7 +197,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#share-archive"
-       transform="matrix(0.55540213,0,0,0.87743176,281.0443,-916.1979)"
+       transform="matrix(0.60435132,0,0,0.9568238,279.31255,-1049.3951)"
        inkscape:label="wifi"
        xlink:title="Share an archive in mail etc."
        target="_parent"
@@ -209,7 +209,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#only-selected-bills"
-       transform="matrix(1.2095413,0,0,0.87743176,257.28751,-807.42734)"
+       transform="matrix(1.2095413,0,0,0.9568238,257.28751,-930.78271)"
        inkscape:label="wifi"
        xlink:title="Archile only selected bills"
        target="_parent"
@@ -221,7 +221,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#store-images"
-       transform="matrix(1.2184412,0,0,0.87743176,255.30396,-700.71215)"
+       transform="matrix(1.2184412,0,0,0.9568238,255.30396,-814.41169)"
        inkscape:label="wifi"
        xlink:title="Store images along with bills"
        target="_parent"
@@ -233,7 +233,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#restore-button"
-       transform="matrix(-0.21320462,0,0,1.7081623,276.80705,-1620.5179)"
+       transform="matrix(-0.21320462,0,0,1.8627208,276.80705,-1817.4435)"
        inkscape:label="wifi"
        xlink:title="Restore an archive"
        target="_parent"
@@ -245,7 +245,7 @@
          x="35.378487"
          y="1450.4404" /></a><a
        xlink:href="datamanagementglossary.html#select-button"
-       transform="matrix(0.21895244,0,0,1.6810208,47.524677,-1843.8686)"
+       transform="matrix(0.21895244,0,0,1.8331235,47.524677,-2061.0036)"
        inkscape:label="wifi"
        xlink:title="Select an archive"
        target="_parent"
@@ -258,7 +258,7 @@
          y="1513.0433"
          transform="scale(-1,1)" /></a><a
        xlink:href="datamanagementglossary.html#select-all-but-latest"
-       transform="matrix(0.7465651,0,0,0.45790705,140.86143,1285.4054)"
+       transform="matrix(0.5769739,0,0,0.45790705,416.48413,1187.9714)"
        inkscape:label="scans"
        xlink:title="Select older bills"
        target="_parent"
@@ -270,7 +270,7 @@
          x="85.498009"
          y="1441.6733" /></a><a
        xlink:href="datamanagementglossary.html#danger-area"
-       transform="matrix(0.41390543,0,0,0.33200785,320.91528,1617.2226)"
+       transform="matrix(0.41390543,0,0,0.33200785,322.86396,1535.3781)"
        inkscape:label="scans"
        xlink:title="Select older bills"
        target="_parent"

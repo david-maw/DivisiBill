@@ -9,14 +9,13 @@
     xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     xmlns:controls="clr-namespace:DivisiBill.Controls"
     Title="Properties of the bill"
+    Padding="5"
     x:DataType="vm:PropertiesViewModel"
     BindingContext="{vm:PropertiesViewModel}">
-    <!--#region Tool Bar-->
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding MarkCurrentMealAsNewCommand}" IconImageSource="{StaticResource GlyphFile}"/>
         <ToolbarItem Command="{Binding SaveCurrentMealCommand}" IconImageSource="{StaticResource GlyphSave}"/>
     </ContentPage.ToolbarItems>
-    <!--#endregion-->
     <ContentPage.Resources>
         <x:String x:Key="StoppedTypingTimeThreshold">1000</x:String>
         <Style TargetType="controls:AmountEntry">
@@ -72,290 +71,187 @@
                 Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
             <Label
                 HorizontalOptions="Center"
+                IsVisible="{Binding IsLastChangeTimeDifferent,Converter={StaticResource Not}}"
+                Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
+            <Label
+                HorizontalOptions="Center"
                 IsVisible="{Binding IsEncrypted}"
                 Text="Remote Data is Encrypted"/>
             <!--#endregion-->
             <!--#region Bill Diagnostics (file name etc.)-->
-            <Label
-                FontSize="{StaticResource FontSizeSmall}"
-                HorizontalOptions="Center"
-                IsVisible="{x:Static services:Utilities.IsDebug}"
-                Text="{Binding DiagnosticInfo}"/>
+            <!--Label takes up a fixed height so as not to move the whole of the page when it changes-->
             <Label
                 FontSize="{StaticResource FontSizeSmall}"
                 HorizontalOptions="Center"
                 IsVisible="{x:Static services:Utilities.IsDebug}"
                 Text="{Binding DefaultFileName, StringFormat='Stored in {0}'}"/>
+            <Label
+                FontSize="{StaticResource FontSizeSmall}"
+                HorizontalOptions="Center"
+                IsVisible="{x:Static services:Utilities.IsDebug}"
+                HeightRequest="34"
+                Text="{Binding DiagnosticInfo}"/>
             <!--#endregion-->
-            <!--#region Bill information-->
-            <Grid
-                Margin="10,0"
-                ColumnDefinitions="*,auto,auto"
-                RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto"
-                RowSpacing="-7">
-                <!--#region Tip-->
-                <!--#region Tip on Tax-->
+            <!--#region Bill Information-->
+            <Grid ColumnDefinitions="30, auto, auto, auto, auto" RowDefinitions="auto, auto, auto, auto" ColumnSpacing="5" Margin="0,15,0,0" HorizontalOptions="Center">
+                <!--#region Tip -->
+                <!--#region Tip Label-->
                 <Label
-                    Grid.Row="0"
-                    Text="{Binding IsDefaultTipOnTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)', StringFormat='Tip on Tax{0}'}"/>
-                <CheckBox
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    BackgroundColor="Transparent"
-                    HorizontalOptions="End"
-                    IsChecked="{Binding TipOnTax}"/>
-                <!--#endregion-->
-                <!--#region Tip Rate Label-->
-                <Label
-                    Grid.Row="1"
-                    FontAttributes="{services:MatchProperty entryTipRate}"
-                    FontSize="{services:MatchProperty entryTipRate}"
-                    LineBreakMode="TailTruncation"
-                    Text="{Binding IsDefaultTipRate, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)', StringFormat='Tip Rate{0}'}"/>
+                    Grid.Row="0" Grid.Column="0"
+                    Text="Tip"/>
                 <!--#endregion-->
                 <!--#region Tip Rate Value-->
                 <controls:AmountEntry
-                    x:Name="entryTipRate"
-                    Grid.Row="1"
-                    Grid.Column="1"
+                    Grid.Row="0" Grid.Column="1"
+                    Placeholder="Rate %"
+                    WidthRequest="80"
                     MaxLength="2"
                     Amount="{Binding TipRate}"
+                    EqualValue="{Binding DefaultTipRate}"
                     MaximumValue="99"
                     MinimumValue="0"/>
                 <!--#endregion-->
-                <Label
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    FontAttributes="{services:MatchProperty entryTipRate}"
-                    FontSize="{services:MatchProperty entryTipRate}"
-                    Text="%"
-                    TextColor="{Binding Source={x:Reference entryTipRate}, Path=TextColor, x:DataType=Entry}"/>
-                <!--#endregion-->
-                <Label
-                    Grid.Row="2"
-                    FontAttributes="{services:MatchProperty entryTipAmount}"
-                    FontSize="{services:MatchProperty entryTipAmount}"
-                    LineBreakMode="TailTruncation"
-                    Text="Tip Amount including delta"/>
                 <!--#region Tip Amount Value-->
                 <controls:AmountEntry
-                    x:Name="entryTipAmount"
-                    Grid.Row="2"
-                    Grid.Column="1"
+                    Grid.Row="0" Grid.Column="2"
+                    Placeholder="Amount"
+                    WidthRequest="100"
                     Amount="{Binding Tip}"
                     MaximumValue="999.99"
                     MinimumValue="0"/>
                 <!--#endregion-->
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    FontAttributes="{services:MatchProperty entryTipAmount}"
-                    FontSize="{services:MatchProperty entryTipAmount}"
-                    Text="{x:Static services:Utilities.CurrencySymbol}"/>
-                <!--#endregion-->
-                <!--#region Tip Delta-->
-                <Label
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Margin="0,10,50,10"
-                    LineBreakMode="WordWrap"
-                    IsVisible="{Binding TipDelta, Converter={StaticResource IsNonZero}}"
-                    Text="Calculated Tip Delta is NOT Zero"/>
-                <Label
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Margin="0,10,50,10"
-                    LineBreakMode="WordWrap"
-                    IsVisible="{Binding TipDelta, Converter={StaticResource IsZero}}"
-                    Text="Calculated Tip Delta is Zero"/>
-                <controls:AmountEntry
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Amount="{Binding TipDelta}"
-                    AllowBlank="True"
-                    IsReadOnly="true"/>
-                <Label
-                    Grid.Row="3"
-                    Grid.Column="2"
-                    Text="{x:Static services:Utilities.CurrencySymbol}"/>
+                <!--#region Tip Delta -->
+                <HorizontalStackLayout
+                    Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2"
+                    HorizontalOptions="Start"
+                    IsVisible="{Binding TipDelta, Converter={StaticResource IsNonZero}}">
+                    <Label Text="{Binding TipRate, StringFormat='{0}%'}"/>
+                    <Label Text="{Binding TipDelta, StringFormat=' +{0:C}'}" IsVisible="{Binding TipDelta,Converter={StaticResource IsPositive}}"/>
+                    <Label Text="{Binding TipDelta, StringFormat=' {0:C}'}" IsVisible="{Binding TipDelta,Converter={StaticResource IsNegative}}"/>
+                </HorizontalStackLayout>
                 <!--#endregion-->
                 <!--#endregion-->
-                <!--#region Tax-->
-                <!--#region Tax on coupon-->
-                <Label
-                    Grid.Row="4"
-                    Text="">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="Apply Coupon After Tax"/>
-                            <Span Text="{Binding IsDefaultCouponAfterTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)'}"/>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <CheckBox
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    HorizontalOptions="End"
-                    IsChecked="{Binding CouponAfterTax}"/>
-                <!--#endregion-->
+                <!--#region Tax (2 rows) -->
                 <!--#region Tax Rate Label-->
                 <Label
-                    Grid.Row="5"
-                    FontAttributes="{services:MatchProperty entryTaxRate}"
-                    FontSize="{services:MatchProperty entryTaxRate}"
-                    LineBreakMode="TailTruncation"
-                    Text="{Binding IsDefaultTaxRate, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)', StringFormat='Tax Rate{0}'}"/>
+                    Grid.Row="1" Grid.Column="0"
+                    Text="Tax"/>
                 <!--#endregion-->
                 <!--#region Tax Rate Value-->
                 <controls:AmountEntry
-                    x:Name="entryTaxRate"
-                    Grid.Row="5"
-                    Grid.Column="1"
+                    Grid.Row="1" Grid.Column="1"
                     MaxLength="5"
-                    Amount="{Binding TaxRate}"
+                    Placeholder="Rate %"
+                    WidthRequest="80"
                     MaximumValue="99.99"
-                    MinimumValue="0"/>
+                    MinimumValue="0"
+                    Amount="{Binding TaxRate}"
+                    EqualValue="{Binding DefaultTaxRatePercentage}"/>
                 <!--#endregion-->
-                <Label
-                    Grid.Row="5"
-                    Grid.Column="2"
-                    FontAttributes="{services:MatchProperty entryTaxRate}"
-                    FontSize="{services:MatchProperty entryTaxRate}"
-                    Text="%"
-                    TextColor="{Binding Source={x:Reference entryTaxRate}, Path=TextColor, x:DataType=Entry}"/>
-                <!--#endregion-->
-                <Label
-                    Grid.Row="6"
-                    FontAttributes="{services:MatchProperty entryTaxAmount}"
-                    FontSize="{services:MatchProperty entryTaxAmount}"
-                    LineBreakMode="TailTruncation"
-                    Text="Tax Amount including Delta"/>
                 <!--#region Tax Amount value-->
                 <controls:AmountEntry
-                    x:Name="entryTaxAmount"
-                    Grid.Row="6"
-                    Grid.Column="1"
+                    Grid.Row="1" Grid.Column="2"
                     MaxLength="8"
-                    Amount="{Binding Tax}"
-                    EqualValue="{Binding ScannedTax}"
+                    Placeholder="Amount"
+                    WidthRequest="100"
+                    MaximumValue="99999.99"
+                    MinimumValue="0"
+                    Amount="{Binding Tax}"/>
+                <!--#endregion-->
+                <!--#region Scanned Tax-->
+                <controls:AmountEntry
+                    Placeholder="Scanned"
+                    WidthRequest="100"
+                    Grid.Row="1" Grid.Column="3"    
+                    MaxLength="9"
                     MaximumValue="999999.99"
                     MinimumValue="0"
+                    AllowBlank="True"
+                    Amount="{Binding ScannedTax}"
+                    EqualValue="{Binding Tax}"
                     TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"/>
-                <Label
-                    Grid.Row="6"
-                    Grid.Column="2"
-                    FontAttributes="{services:MatchProperty entryTaxAmount}"
-                    FontSize="{services:MatchProperty entryTaxAmount}"
-                    Text="{x:Static services:Utilities.CurrencySymbol}"/>
+                <!--#endregion-->
+                <!--#region Tax Delta Stepper -->
+                <Stepper
+                    Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                    WidthRequest="90"
+                    HorizontalOptions="Start"
+                    Increment="0.01"
+                    Maximum="0.99"
+                    Minimum="-0.99"
+                    Scale="1"
+                    Value="{Binding TaxDelta}"/>
                 <!--#endregion-->
                 <!--#region Tax Delta-->
-                <HorizontalStackLayout Grid.Row="7">
-                    <Label
-                        Margin="0,10,50,10"
-                        LineBreakMode="WordWrap"
-                        Text="Tax Delta"/>
-                    <Stepper
-                        Increment="0.01"
-                        Maximum="1"
-                        Minimum="-1"
-                        Scale="0.6"
-                        Value="{Binding TaxDelta}"/>
-                </HorizontalStackLayout>
-                <controls:AmountEntry
-                    Grid.Row="7"
-                    Grid.Column="1"
-                    AllowBlank="True"
-                    IsReadOnly="True"
-                    Amount="{Binding TaxDelta}"/>
                 <Label
-                    Grid.Row="7"
-                    Grid.Column="2"
-                    Text="{x:Static services:Utilities.CurrencySymbol}"/>
+                    Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                    Margin="0,0,14,0"
+                    HorizontalTextAlignment="End"
+                    Text="{Binding TaxDelta, StringFormat='Tax Delta {0:C}'}"/>
                 <!--#endregion-->
                 <!--#endregion-->
-                <!--#region Scanned Amounts-->
-                <!--#region Scanned Tax-->
+                <!--#region Subtotal -->
+                <!--#region Subtotal Label -->
                 <Label
-                    Grid.Row="8"
-                    FontAttributes="{services:MatchProperty entryScannedTax}"
-                    FontSize="{services:MatchProperty entryScannedTax}"
-                    LineBreakMode="TailTruncation"
-                    Text="Scanned Tax Amount"/>
-                <controls:AmountEntry
-                    x:Name="entryScannedTax"
-                    Grid.Row="8"
-                    Grid.Column="1"
-                    MaxLength="9"
-                    Amount="{Binding ScannedTax}"
-                    AllowBlank="True"
-                    EqualValue="{Binding Tax}"
-                    MaximumValue="999999.99"
-                    MinimumValue="0"
-                    TestEquality="{Binding ScannedTax, Converter={StaticResource IsNonZero}}"/>
-                <Label
-                    Grid.Row="8"
-                    Grid.Column="2"
-                    FontAttributes="{services:MatchProperty entryScannedTax}"
-                    FontSize="{services:MatchProperty entryScannedTax}"
-                    Text="{x:Static services:Utilities.CurrencySymbol}"/>
+                    Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                    Text="Subtotal"/>
                 <!--#endregion-->
                 <!--#region Calculated Subtotal-->
                 <Label
-                    Grid.Row="9"
-                    Margin="0,10,0,0"
-                    Text="Calculated SubTotal Amount"/>
-                <Label
-                    Grid.Row="9"
-                    Grid.Column="1"
-                    Margin="0,0,5,0"
+                    Grid.Row="3" Grid.Column="2"
+                    Margin="0,0,14,0"
                     HorizontalTextAlignment="End"
-                    Text="{Binding SubTotal, StringFormat='{0:0.00}'}"/>
-                <Label
-                    Grid.Row="9"
-                    Grid.Column="2"
-                    Text="{x:Static services:Utilities.CurrencySymbol}"/>
+                    Text="{Binding SubTotal, StringFormat='{0:C}'}"/>
                 <!--#endregion-->
                 <!--#region Scanned Subtotal-->
-                <Label
-                    Grid.Row="10"
-                    Margin="0,20,0,0"
-                    FontAttributes="{services:MatchProperty entryScannedSubtotal}"
-                    FontSize="{services:MatchProperty entryScannedSubtotal}"
-                    LineBreakMode="TailTruncation"
-                    Text="Scanned Subtotal Amount"/>
                 <controls:AmountEntry
-                    x:Name="entryScannedSubtotal"
-                    Grid.Row="10"
-                    Grid.Column="1"
+                    Grid.Row="3" Grid.Column="3"
                     MaxLength="8"
+                    Placeholder="Scanned"
+                    WidthRequest="100"
                     Amount="{Binding ScannedSubTotal}"
                     AllowBlank="True"
                     EqualValue="{Binding SubTotal}"
                     MaximumValue="999999.99"
                     MinimumValue="0"
                     TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"/>
-                <Label
-                    Grid.Row="10"
-                    Grid.Column="2"
-                    FontAttributes="{services:MatchProperty entryScannedSubtotal}"
-                    FontSize="{services:MatchProperty entryScannedSubtotal}"
-                    Text="{x:Static services:Utilities.CurrencySymbol}"/>
                 <!--#endregion-->
                 <!--#endregion-->
             </Grid>
+            <!--#region Simple Checkboxes -->
+            <Grid ColumnDefinitions="280,auto" RowDefinitions="auto, auto" HorizontalOptions="Center">
+                <!--#region Tip on Tax-->
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    Text="{Binding IsDefaultTipOnTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)', StringFormat='Tip on Tax{0}'}"/>
+                <CheckBox
+                    Grid.Row="0" Grid.Column="1"
+                    IsChecked="{Binding TipOnTax}"/>
+                <!--#endregion-->
+                <!--#region Tax on coupon-->
+                <Label 
+                    Grid.Row="1" Grid.Column="0"
+                    Text="{Binding IsDefaultCouponAfterTax, Converter={StaticResource TrueToString}, ConverterParameter=' (non default)', StringFormat='Apply Coupon After Tax{0}'}"/>
+                <CheckBox
+                    Grid.Row="1" Grid.Column="1"
+                    IsChecked="{Binding CouponAfterTax}"/>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
             <!--#endregion-->
             <!--#region Venue Notes-->
-            <Label
-                Margin="0,25,0,0"
-                HorizontalOptions="Center"
-                Text="{Binding VenueName, StringFormat='Venue notes for {0}'}"/>
-            <Border Margin="5">
-                <Editor Text="{Binding VenueNotes}"
-                    Completed="OnCompleted"
-                    Focused="OnFocused"
-                    Unfocused="OnInputViewUnfocused"/>
+            <Border Margin="0,25,0,0">
+                <VerticalStackLayout>
+                    <Label
+                        Margin="0,5,0,0"
+                        HorizontalOptions="Center"
+                        FontAttributes="Bold"
+                        Text="{Binding VenueName, StringFormat='Venue notes for {0}'}"/>
+                    <Editor Text="{Binding VenueNotes}"
+                        Completed="OnCompleted"
+                        Focused="OnFocused"
+                        Unfocused="OnInputViewUnfocused"/>
+                </VerticalStackLayout>
             </Border>
             <!--#endregion-->
         </VerticalStackLayout>

@@ -122,38 +122,33 @@
                 <Border>
                     <VerticalStackLayout Padding="10,0,10,10">
                         <Label
-                            Margin="0,0,0,5"
                             FontSize="{StaticResource FontSizeMedium}"
                             HorizontalOptions="Center"
                             Text="Key Archive and Restore" />
+                            <Entry Placeholder="Required Password" WidthRequest="200" Text="{Binding KeyArchivePassword}" IsPassword="True" HorizontalOptions="Center" Margin="{OnPlatform Default='0,0,0,5', WinUI='0,9,0,10'}"/>
                         <HorizontalStackLayout HorizontalOptions="Center" Spacing ="10">
-                            <Button Text="Archive Keys to Disk" Command="{Binding ArchiveKeysCommand}"/>
-                            <Button Text="Share Key Archive" Command="{Binding ArchiveKeysCommand}" CommandParameter="share"/>
+                            <Button Text="Archive to Disk" Command="{Binding ArchiveKeysCommand}"/>
+                            <Button Text="Share Archive" Command="{Binding ArchiveKeysCommand}" CommandParameter="share"/>
+                            <Button Text="Restore" Command="{Binding RestoreKeysCommand}"/>
                         </HorizontalStackLayout>
-                        <Button Text="Restore Keys" Command="{Binding RestoreKeysCommand}" HorizontalOptions="Center" Margin="0,10,0,-5"/>
-                        <HorizontalStackLayout HorizontalOptions="Center" Margin="{OnPlatform WinUI='0,9,0,10'}">
-                            <Label Text="Password (required):" VerticalTextAlignment="Center"/>
-                            <Entry WidthRequest="200" Text="{Binding KeyArchivePassword}" IsPassword="True"/>
-                        </HorizontalStackLayout >
                     </VerticalStackLayout>
                 </Border>
                 <!--#endregion-->
-                <!--#region Bill Management-->
+                <!--#region Select Bills-->
                 <Border>
                     <VerticalStackLayout Spacing="10" Padding="10,0,10,10">
                         <Label
                             FontSize="{StaticResource FontSizeMedium}"
                             HorizontalOptions="Center"
-                            Text="Bill Management" />
-                        <Button
-                            Command="{Binding SelectDownloadableCommand}"
-                            HorizontalOptions="Center"
-                            Text="Select Downloadable Bills" />
-                        <Button
-                            Margin="0,0,0,0"
-                            Command="{Binding SelectOlderCommand}"
-                            HorizontalOptions="Center"
-                            Text="Select All But Latest Bill Per Venue" />
+                            Text="Select Bills" />
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Button
+                                Command="{Binding SelectDownloadableCommand}"
+                                Text="Downloadable" />
+                            <Button
+                                Command="{Binding SelectOlderCommand}"
+                                Text="All But Latest Per Venue" />
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
                 <!--#endregion-->

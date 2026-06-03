@@ -6,8 +6,11 @@ namespace DivisiBill.Views;
 public partial class SettingsPage : ContentPage
 {
     private SettingsViewModel svm = null;
-    private MealViewModel mvm = null;
-    public SettingsPage() => InitializeComponent();
+    public SettingsPage()
+    {
+        InitializeComponent();
+        svm = BindingContext as ViewModels.SettingsViewModel;
+    }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -22,12 +25,6 @@ public partial class SettingsPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         Utilities.DebugMsg($"Entering {nameof(SettingsPage)}.{nameof(OnNavigatedTo)}");
-        // Reestablish the MealViewModel in case the current meal changed while we were away
-        if (Application.Current.Resources.TryGetValue("MealViewModel", out object mvmObject))
-            mvm = mvmObject as MealViewModel;
-        MealSection.BindingContext = mvm;
-        // establish the SettingsViewModel, only need to do this once
-        svm ??= BindingContext as ViewModels.SettingsViewModel;
         svm.OnNavigatedTo();
         base.OnNavigatedTo(args);
     }

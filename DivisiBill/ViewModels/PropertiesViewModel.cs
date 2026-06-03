@@ -30,6 +30,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #region Enter / Exit Page
     public void LoadProperties()
     {
+        RefreshDefaultProperties(); // Because there's no notification if they change while the page isn't open
         LoadVenueNotes();
     }
     public void UnloadProperties()
@@ -45,14 +46,20 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         if (e.PropertyName.Equals(nameof(Meal.VenueName)))
             LoadVenueNotes();
         else if (e.PropertyName.Equals(nameof(Meal.CreationTime)))
-        {
             OnPropertyChanged(nameof(DefaultFileName));
-        }
         else if (e.PropertyName.Equals(nameof(Meal.LastChangeTime)))
         {
             OnPropertyChanged(nameof(IsLastChangeTimeDifferent));
             OnPropertyChanged(nameof(LastChangeTimeText));
         }
+        else if (e.PropertyName.Equals(nameof(Meal.Tax)))
+            OnPropertyChanged(nameof(ScannedTax)); // Because they may no longer match
+        else if (e.PropertyName.Equals(nameof(Meal.SubTotal)))
+            OnPropertyChanged(nameof(ScannedSubTotal)); // Because they may no longer match
+        else if (e.PropertyName.Equals(nameof(Meal.ScannedTax)))
+            OnPropertyChanged(nameof(Tax)); // Because they may no longer match
+        else if (e.PropertyName.Equals(nameof(Meal.ScannedSubTotal)))
+            OnPropertyChanged(nameof(SubTotal)); // Because they may no longer match
     }
     #endregion
     #region Totals, meal amounts and properties
@@ -70,11 +77,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     public int TipRate
     {
         get => Convert.ToInt32(Meal.CurrentMeal.TipRate * 100);
-        set
-        {
-            Meal.CurrentMeal.TipRate = value / 100.0;
-            OnPropertyChanged(nameof(IsDefaultTipRate));
-        }
+        set => Meal.CurrentMeal.TipRate = value / 100.0;
     }
     public decimal Tip
     {
@@ -205,14 +208,20 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #endregion
     #region Handling Defaults
     public bool IsDefault => Meal.CurrentMeal.IsDefault;
-    public bool IsDefaultTipRate => App.Settings.DefaultTipRate == TipRate;
     public bool IsDefaultTaxRate => App.Settings.DefaultTaxRate == Meal.CurrentMeal.TaxRate;
     public bool IsDefaultTipOnTax => App.Settings.DefaultTipOnTax == TipOnTax;
     public bool IsDefaultCouponAfterTax => App.Settings.DefaultTaxOnCoupon == CouponAfterTax;
-    public bool IsDefaultTip => IsDefaultTipOnTax && IsDefaultTipRate;
-    public bool IsDefaultTax => IsDefaultCouponAfterTax && IsDefaultTaxRate;
     public int DefaultTipRate => App.Settings.DefaultTipRate;
-    public double DefaultTaxRate => App.Settings.DefaultTaxRate;
-    public bool DefaultTipOnTax => App.Settings.DefaultTipOnTax;
+    public double DefaultTaxRatePercentage => App.Settings.DefaultTaxRate * 100;
+    private void RefreshDefaultProperties()
+    {
+        OnPropertyChanged(nameof(IsDefault));
+        OnPropertyChanged(nameof(IsDefaultTaxRate));
+        OnPropertyChanged(nameof(IsDefaultTipOnTax));
+        OnPropertyChanged(nameof(IsDefaultCouponAfterTax));
+        OnPropertyChanged(nameof(IsDefaultTaxRate));
+        OnPropertyChanged(nameof(DefaultTipRate));
+        OnPropertyChanged(nameof(DefaultTaxRatePercentage));
+    }
     #endregion
 }

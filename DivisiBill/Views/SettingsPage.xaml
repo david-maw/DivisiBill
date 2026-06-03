@@ -30,7 +30,6 @@
             </Style.Triggers>
         </Style>
     </ContentPage.Resources>
-
     <ScrollView Margin="20,0,10,0">
         <VerticalStackLayout>
             <!--#region Heading -->
@@ -46,32 +45,33 @@
                 <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
             </VerticalStackLayout>
             <!--#endregion-->
-            <!--#region Regular Application Settings -->
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <!--Everything in this Grid is in the current meal data context although they are defaults that apply to all new meals-->
-            <Grid ColumnDefinitions ="*, auto, *, auto, auto" RowDefinitions="auto, auto, auto, auto, auto, auto, auto" ColumnSpacing="{OnPlatform 10, Android=0}" x:Name="MealSection"
-                    x:DataType="vm:MealViewModel" BindingContext="{StaticResource MealViewModel}">
-                <Label Grid.Row="1" Grid.Column="0" Text="Tip on Tax" VerticalOptions="Center" HorizontalOptions="End"/>
-                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding DefaultTipOnTax}" HorizontalOptions="End"/>
-                <Label Grid.Row="1" Grid.Column="2" Text="Tip Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
-                <controls:AmountEntry Grid.Row="1" Grid.Column="3" Text="{Binding DefaultTipRatePercentage}" MaxLength="2" MinimumValue="0" MaximumValue="99" />
-                <Label Grid.Row="1" Grid.Column="4" Text="%" VerticalOptions="Center"/>
-                <Label Grid.Row="2" Text="Coupon After Tax" VerticalOptions="Center" HorizontalOptions="End"/>
-                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding DefaultTaxOnCoupon}"/>
-                <Label Grid.Row="2" Grid.Column="2" Text="Tax Percentage" VerticalOptions="Center" HorizontalOptions="End" Margin="10,0,0,0"/>
-                <controls:AmountEntry Grid.Row="2" Grid.Column="3" Amount="{Binding DefaultTaxRatePercentage}" WidthRequest="80" MinimumValue="0" MaximumValue="99.99"/>
-                <Label Grid.Row="2" Grid.Column="4" Text="%" VerticalOptions="Center"/>
-            </Grid>
-            <!--#endregion-->
-            <!--#region Hint, CheckBoxes and Dark Mode-->
-            <Grid ColumnDefinitions="*,*" RowDefinitions="auto, auto" ColumnSpacing="10" RowSpacing="10" Margin="30,10,30,10">
-                <Button Text="Restore Hints" LineBreakMode="WordWrap" Command="{Binding EnableHintsCommand}"/>
-                <Button Grid.Column="1" Text="Clear CheckBoxes" LineBreakMode="WordWrap" Command="{Binding ResetCheckBoxesCommand}"/>
-                <Button Grid.Row="1" Text="System Settings" LineBreakMode="WordWrap" Command="{Binding SystemSettingsCommand}"/>
-                <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*, auto" ColumnSpacing="{OnPlatform 10, Android=0}">
+            <!--#region Meal Values -->
+            <Grid ColumnDefinitions="*,*" RowDefinitions="auto, auto, auto, auto" ColumnSpacing="10" RowSpacing="10" Margin="30,10,30,10">
+                <!--#region Default Settings -->
+                <HorizontalStackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="Center">
+                    <Label Text="Tip on Tax" VerticalOptions="Center"/>
+                    <CheckBox IsChecked="{Binding DefaultTipOnTax}"/>
+                </HorizontalStackLayout>
+                <controls:AmountEntry Grid.Row="0" Grid.Column="1" Placeholder="Tip %" WidthRequest="90" Amount="{Binding DefaultTipRatePercentage}"
+                                      MaxLength="2" MinimumValue="0" MaximumValue="99" HorizontalOptions="Center" />
+                <HorizontalStackLayout Grid.Row="1" Grid.Column="0" HorizontalOptions="Center">
+                    <Label Text="Coupon After Tax" VerticalOptions="Center"/>
+                    <CheckBox IsChecked="{Binding DefaultTaxOnCoupon}"/>
+                </HorizontalStackLayout>
+                <controls:AmountEntry Grid.Row="0" Grid.Column="0" Placeholder="Tax %" Amount="{Binding DefaultTaxRatePercentage}"
+                                      WidthRequest="90" MinimumValue="0" MaximumValue="99.99" HorizontalOptions="Center"/>
+                <!--#endregion-->
+                <!--#region Hint, CheckBoxes and Dark Mode-->
+                <!--Subsequent settings are in the "normal" view model, SettingViewModel-->
+                <Button Grid.Row="2" Grid.Column="0" Text="Restore Hints" LineBreakMode="WordWrap" Command="{Binding EnableHintsCommand}"/>
+                <Button Grid.Row="2" Grid.Column="1" Text="Clear CheckBoxes" LineBreakMode="WordWrap" Command="{Binding ResetCheckBoxesCommand}"/>
+                <Button Grid.Row="3" Grid.Column="0" Text="System Settings" LineBreakMode="WordWrap" Command="{Binding SystemSettingsCommand}"/>
+                <Grid Grid.Row="3" Grid.Column="1" ColumnDefinitions="*, auto" ColumnSpacing="{OnPlatform 10, Android=0}">
                     <Label Text="Dark UI" VerticalOptions="Center" HorizontalOptions="End"/>
                     <Switch Grid.Column="1" IsToggled="{Binding Dark}" HorizontalOptions="End" Margin="20,0,0,0"/>
                 </Grid>
+                <!--#endregion-->
             </Grid>
             <!--#endregion-->
             <!--#region Cloud UI -->

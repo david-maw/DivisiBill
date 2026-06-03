@@ -10,6 +10,7 @@ namespace DivisiBill.ViewModels;
 public partial class SettingsViewModel : ObservableObjectPlus
 {
     private readonly Application currentApp;
+    private static MealViewModel? Mvm => App.Current?.Resources is { } r && r.TryGetValue("MealViewModel", out object? obj) ? obj as MealViewModel : null;
     public SettingsViewModel()
     {
         if (!App.LicenseChecked)
@@ -57,6 +58,14 @@ public partial class SettingsViewModel : ObservableObjectPlus
         HasPassword = CryptManager.HasStoredPassword;
         // Ones where side effects are needed when they change
         IsLimited = App.IsLimited;
+        // Meal default values may have changed if the current meal changed
+        if (Mvm is not null)
+        {
+            DefaultTipOnTax = Mvm.DefaultTipOnTax;
+            DefaultTipRatePercentage = Mvm.DefaultTipRatePercentage;
+            DefaultTaxOnCoupon = Mvm.DefaultTaxOnCoupon;
+            DefaultTaxRatePercentage = Mvm.DefaultTaxRatePercentage;
+        }
     }
 
     public void OnNavigatedTo()
@@ -268,6 +277,26 @@ public partial class SettingsViewModel : ObservableObjectPlus
         if (!value)
             WiFiOnly = false;
     }
+
+    #region Application Defaults via MealViewModel
+    // These are convenience properties - they are really App properties but there's no change notification mechanism for them
+    // so we set them in the current meal viewmodel so that changes here are reflected there (though that is not a common occurrence)
+    [ObservableProperty]
+    public partial bool DefaultTipOnTax { get; set; } = Mvm?.DefaultTipOnTax ?? App.Settings.DefaultTipOnTax;
+    partial void OnDefaultTipOnTaxChanged(bool value) { Mvm?.DefaultTipOnTax = value; }
+
+    [ObservableProperty]
+    public partial decimal DefaultTipRatePercentage { get; set; } = Mvm?.DefaultTipRatePercentage ?? (decimal)App.Settings.DefaultTipRate;
+    partial void OnDefaultTipRatePercentageChanged(decimal value) { Mvm?.DefaultTipRatePercentage = value; }
+
+    [ObservableProperty]
+    public partial bool DefaultTaxOnCoupon { get; set; } = Mvm?.DefaultTaxOnCoupon ?? App.Settings.DefaultTaxOnCoupon;
+    partial void OnDefaultTaxOnCouponChanged(bool value) { Mvm?.DefaultTaxOnCoupon = value; }
+
+    [ObservableProperty]
+    public partial decimal DefaultTaxRatePercentage { get; set; } = Mvm?.DefaultTaxRatePercentage ?? (decimal)(App.Settings.DefaultTaxRate * 100);
+    partial void OnDefaultTaxRatePercentageChanged(decimal value) { Mvm?.DefaultTaxRatePercentage = value; }
+    #endregion
     #endregion
     #region Cryptography Properties
     [ObservableProperty]

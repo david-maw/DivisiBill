@@ -35,11 +35,10 @@
                 <TapGestureRecognizer Command="{Binding ClearLocationCommand}" NumberOfTapsRequired="2" />
             </Label.GestureRecognizers>
         </Label>
-        <Grid ColumnDefinitions="auto, *, auto">
-            <Label Text="New Name:" VerticalOptions="Center"/>
-            <Entry Grid.Column="1" x:Name="nameEntry" ClearButtonVisibility="WhileEditing" Placeholder="Enter Venue Name"
+        <Grid ColumnDefinitions="*, auto" ColumnSpacing="10" Margin="0,5,0,5">
+            <Entry Grid.Column="0" x:Name="nameEntry" ClearButtonVisibility="WhileEditing" Placeholder="Venue Name"
                ReturnType="Next" Keyboard="Text" Text="{Binding Name}" Focused="SelectFirst"/>
-            <Button Grid.Column="2" Text="Search" IsVisible="{Binding Location, Converter={StaticResource IsLocationValid}}" Command="{Binding ShowPossiblesCommand}"/>
+            <Button Grid.Column="1" Text="Search" IsVisible="{Binding Location, Converter={StaticResource IsLocationValid}}" Command="{Binding ShowPossiblesCommand}" VerticalOptions="Center"/>
         </Grid>
         <Label Text="Nearby Venue Names" HorizontalOptions="Center" FontAttributes="Bold" IsVisible="{Binding PossiblesShowing}"/>
         <Border Padding="10" IsVisible="{Binding PossiblesShowing}">

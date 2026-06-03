@@ -14,11 +14,23 @@ public partial class ScrollButton : ContentView
     /// Timer used to reset visual state back to normal after user interactions
     /// </summary>
     private readonly Timer StateTimer;
+    /// <summary>
+    /// Stores the original background brush to restore it when the control is resized from zero to a valid size.
+    /// Needed because Android Material3 faults if a radial brush is used when size is zero.
+    /// </summary>
+    private Brush originalBackground;
 
     public ScrollButton()
     {
         InitializeComponent();
         StateTimer = new Timer(_ => MainThread.InvokeOnMainThreadAsync(() => VisualStateManager.GoToState(this, "Normal")));
+        originalBackground = border.Background;
+    }
+
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+        border.Background = (width <= 0 || height <= 0) ? Brush.Transparent : originalBackground;
     }
 
     /// <summary>

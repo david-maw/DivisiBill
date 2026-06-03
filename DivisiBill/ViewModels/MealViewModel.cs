@@ -552,14 +552,23 @@ public partial class MealViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial LineItem SelectedLineItem { get; set; }
 
+    /// <summary>
+    /// Because of some strange behavior on Android where clicking on an item causes the sequence of events to be 
+    /// SelectedLineItemChanged(oldValue, null) followed by SelectedLineItemChanged(null, newValue), we need to 
+    /// track the prior selected item so that we can properly unload it when the new value is temporarily null.
+    /// All while continuing to work on Windows.
+    /// </summary>
+    private LineItem priorSelectedLineItem = null;
     partial void OnSelectedLineItemChanging(LineItem oldValue, LineItem newValue)
     {
+        if (newValue is null)
+            priorSelectedLineItem = oldValue; // because on android re-selecting the same item transits through null
         if (oldValue is not null && IsValidLineItemAmount)
             UnloadLineItem();
     }
-    partial void OnSelectedLineItemChanged(LineItem value)
+    partial void OnSelectedLineItemChanged(LineItem oldValue, LineItem newValue)
     {
-        if (value is not null)
+        if (newValue is not null)
             LoadLineItem();
         FilterItemsFromLineItemCommand.NotifyCanExecuteChanged();
         DuplicateLineItemCommand.NotifyCanExecuteChanged();
@@ -575,7 +584,16 @@ public partial class MealViewModel : ObservableObjectPlus
     /// </summary>
     /// <param name="li"></param>
     [RelayCommand]
-    private void ToggleSelectLineItem(LineItem li) => SelectedLineItem = SelectedLineItem == li ? null : li;
+    private void ToggleSelectLineItem(LineItem li)
+    {
+        if ((priorSelectedLineItem ?? SelectedLineItem) == li)
+        {
+            SelectedLineItem = null;
+            priorSelectedLineItem = null;
+        }
+        else
+            SelectedLineItem = li;
+    }
 
     [RelayCommand]
     private void DeselectAllLineItems(LineItem li) => SelectedLineItem = null;
