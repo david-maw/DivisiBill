@@ -43,17 +43,10 @@ public partial class AppShell : Shell
     /// <returns>true if the request has been handled, false if the caller should handle it</returns>
     public bool HandleBackRequest()
     {
-        if (!App.InitializationComplete.Task.IsCompleted)
-            return false; // Just ignore the back button until initialization is complete, otherwise it can cause crashes if the user tries to back out of the app before it's ready
-        if (FlyoutIsPresented)
-        {
-            FlyoutIsPresented = false;
-            return true;
-        }
-        else if (Navigation.NavigationStack.Count > 1 || Navigation.ModalStack.Any()) // Bottom of NavigationStack has a null entry
+        if (Navigation.NavigationStack.Count > 1 || Navigation.ModalStack.Any()) // Bottom of NavigationStack has a null entry
         {
             DebugMsg("In Shell.OnBackButtonPressed navigation branch");
-            // If there is an active back button behavior, use it
+            // If there is an active back button behavior, honor it regardless of initialization state
             BackButtonBehavior bb = CurrentPage.GetPropertyIfSet(BackButtonBehaviorProperty, returnIfNotSet: (BackButtonBehavior)null);
             if (bb != null)
             {
@@ -61,8 +54,17 @@ public partial class AppShell : Shell
                     bb.Command.Execute(null);
                 return true; // handled, do nothing
             }
-            return base.OnBackButtonPressed();
         }
+        if (!App.InitializationComplete.Task.IsCompleted)
+            return false; // Just ignore the back button until initialization is complete, otherwise it can cause crashes if the user tries to back out of the app before it's ready
+        // If the flyout is showing, just close it, this is a common user expectation and it is simpler than trying to detect if the back button should be handled by the flyout or not
+        if (FlyoutIsPresented)
+        {
+            FlyoutIsPresented = false;
+            return true;
+        }
+        else if (Navigation.NavigationStack.Count > 1 || Navigation.ModalStack.Any()) // Bottom of NavigationStack has a null entry (no BackButtonBehavior, already handled above)
+            return base.OnBackButtonPressed();
         //TODO make this work better, ideally detect the default shell page automatically
         else if (CurrentPage?.GetType() == typeof(Views.LineItemsPage))
             return base.OnBackButtonPressed(); // With empty navigation stacks this will simply exit
