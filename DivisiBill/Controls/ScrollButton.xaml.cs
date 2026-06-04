@@ -27,6 +27,13 @@ public partial class ScrollButton : ContentView
         originalBackground = border.Background;
     }
 
+    /// <summary>
+    /// Overrides the size allocation to handle cases where the control is resized to zero dimensions, which can cause a fault with radial background brushes
+    /// on Android Material3. See https://github.com/dotnet/maui/issues/35753. The occasions when this function is called with zero dimensions are very rare 
+    /// (so far only DivisiBill running on ARM Android 36) but need to be handled gracefully.
+    /// </summary>
+    /// <param name="width">The width to resize to.</param>
+    /// <param name="height">The height to resize to.</param>
     protected override void OnSizeAllocated(double width, double height)
     {
         base.OnSizeAllocated(width, height);
