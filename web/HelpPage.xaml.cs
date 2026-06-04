@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows.Input;
 
 namespace web;
@@ -37,6 +38,9 @@ public partial class HelpPage : ContentPage
             PageName = "index";
         if (!string.IsNullOrEmpty(Fragment))
             Fragment = "#" + Fragment.ToLower();
+
+        webView.Navigated += WebView_Navigated; // We have to wait until the first page is loaded and then clear the history,
+        // otherwise the back button will just take us back to the about:blank page that MAUI inserts before loading our content
 
         // This allows us to have a virtual web site of help files embedded as resources in the app and
         // navigate between them with links in the HTML.
@@ -87,12 +91,26 @@ public partial class HelpPage : ContentPage
             webView.Source = $"help/{PageName.ToLower()}.html{Fragment}";
         }
     }
+
+    private void WebView_Navigated(object? sender, WebNavigatedEventArgs e)
+    {
+        Debug.WriteLine($">>> WebView navigated to {e.Url} with navigation event {e.NavigationEvent}");
+        foreach (var entry in webView.GetAndroidHistory())
+        {
+            Console.WriteLine(
+                $"{(entry.IsCurrent ? "->" : " ")} [{entry.Index}] {entry.Title}  {entry.Url}"
+            );
+        }
+        webView.ClearAndroidHistory();
+        webView.Navigated -= WebView_Navigated; // Unsubscribe after the first navigation, we don't need to clear the history again
+    }
+
     public string PageName { get; set; } = string.Empty;
     public string Fragment { get; set; } = string.Empty;
 
     public ICommand BackCommand { get; }
 
-    private async void OnIndexIconClicked(object sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages')");
+    private async void OnIndexIconClicked(object sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages');alert('History depth: ' + history.length);location.replace('venueeditpage.html');alert('Navigated. History depth: ' + history.length);");
     private void OnExitIconClicked(object sender, EventArgs e) => ReturnToApp();
 
     private void ReturnToApp() => Shell.Current.Navigation.PopAsync();

@@ -39,6 +39,9 @@ public partial class HelpPage : ContentPage
         if (!string.IsNullOrEmpty(Fragment))
             Fragment = "#" + Fragment.ToLower();
 
+        webView.Navigated += WebView_Navigated; // We have to wait until the first page is loaded and then clear the history,
+        // otherwise the back button will just take us back to the about:blank page that MAUI inserts before loading our content
+
         // This allows us to have a virtual web site of help files embedded as resources in the app and
         // navigate between them with links in the HTML.
 
@@ -83,6 +86,15 @@ public partial class HelpPage : ContentPage
             }
             : (WebViewSource)$"help/{PageName.ToLower()}.html{Fragment}"; // not Windows, probably Android, no intermediate page
     }
+    private void WebView_Navigated(object sender, Microsoft.Maui.Controls.WebNavigatedEventArgs e)
+    {
+        Utilities.DebugMsg($"WebView navigated to {e.Url} with navigation event {e.NavigationEvent}");
+        foreach (var entry in webView.GetAndroidHistory())
+            Utilities.DebugMsg($"{(entry.IsCurrent ? "->" : " ")} [{entry.Index}] {entry.Title}  {entry.Url}");
+        webView.ClearAndroidHistory(); // Clear the history again after the first navigation
+        webView.Navigated -= WebView_Navigated; // We only need to clear the history after the first navigation,
+    }
+
     public string PageName { get; set; }
     public string Fragment { get; set; }
 
