@@ -1,3 +1,9 @@
+# Version 6.3.31
+
+## Improve Help Page Navigation
+
+Moving back from the help pages could briefly show a blank page before returning to the app. This happened because the Android WebView retains an internal `about:blank` history entry inserted by MAUI. The history is now cleared after the help page loads, so back navigation exits the help pages cleanly.
+
 # Version 6.3.30
 
 ## Android Material3 UI
