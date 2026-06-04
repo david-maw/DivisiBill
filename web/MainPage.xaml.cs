@@ -26,7 +26,6 @@ public partial class MainPage : ContentPage
         Shell.Current.FlyoutIsPresented = false;
         await Shell.Current.GoToAsync($"{nameof(HelpPage)}?page=index&fragment=pages");
     }
-
     public bool Dark
     {
         set
@@ -38,5 +37,12 @@ public partial class MainPage : ContentPage
         }
         get => Application.Current?.UserAppTheme == AppTheme.Dark || Application.Current?.RequestedTheme == AppTheme.Dark;
     }
-
+    private async void OnGettingStarted(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(HelpPage) + "?page=GettingStarted"); // The "Page" value is case-insensitive, we used mixed case here just to satisfy the spell checker
+    }
+    private async void OnLineItems(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(HelpPage) + "?page=LineItemsPage"); // The "Page" value is case-insensitive, we used mixed case here just to satisfy the spell checker
+    }
 }

@@ -13,10 +13,12 @@
             Spacing="25">
 
             <Label
-                Text="Welcome to &#10;DivisiBill Help"
+                Text="Welcome to &#10;DivisiBill Help Tester"
                 Style="{StaticResource SubHeadline}" />
 
-            <Button Text="Help Index" Clicked="OnHelpIndexClicked"/>
+            <Button Text="Index" Clicked="OnHelpIndexClicked" HorizontalOptions="Center"/>
+            <Button Text="Getting Started" Clicked="OnGettingStarted" HorizontalOptions="Center"/>
+            <Button Text="Line Items" Clicked="OnLineItems" HorizontalOptions="Center"/>
             <HorizontalStackLayout HorizontalOptions="Center">
                 <Label Text="Dark Mode" VerticalOptions="Center"/>
                 <Switch IsToggled="{Binding Dark}"/>
