@@ -97,8 +97,8 @@ public partial class HelpPage : ContentPage
         Debug.WriteLine($">>> WebView navigated to {e.Url} with navigation event {e.NavigationEvent}");
         foreach (var entry in webView.GetAndroidHistory())
         {
-            Console.WriteLine(
-                $"{(entry.IsCurrent ? "->" : " ")} [{entry.Index}] {entry.Title}  {entry.Url}"
+            Debug.WriteLine(
+                $"{(entry.IsCurrent ? "->" : "  ")} [{entry.Index}] {entry.Title}  {entry.Url}"
             );
         }
         webView.ClearAndroidHistory();
