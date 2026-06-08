@@ -209,6 +209,7 @@ public partial class LineItem : ObservableObject
             OnPropertyChanged(nameof(TotalSharers));
             OnPropertyChanged(nameof(SharesList));
             OnPropertyChanged(nameof(FilteredAmount));
+            OnPropertyChanged(nameof(Sharers));
         }
     }
 
