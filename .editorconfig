@@ -108,14 +108,14 @@ csharp_style_var_for_built_in_types = false:silent
 csharp_style_var_when_type_is_apparent = true:silent
 
 # Expression-bodied members
-csharp_style_expression_bodied_accessors = true:silent
+csharp_style_expression_bodied_accessors = when_on_single_line:silent
 csharp_style_expression_bodied_constructors = when_on_single_line:silent
-csharp_style_expression_bodied_indexers = true:silent
-csharp_style_expression_bodied_lambdas = true:silent
-csharp_style_expression_bodied_local_functions = true:silent
-csharp_style_expression_bodied_methods = true:silent
+csharp_style_expression_bodied_indexers = when_on_single_line:silent
+csharp_style_expression_bodied_lambdas = when_on_single_line:silent
+csharp_style_expression_bodied_local_functions = when_on_single_line:silent
+csharp_style_expression_bodied_methods = when_on_single_line:silent
 csharp_style_expression_bodied_operators = when_on_single_line:silent
-csharp_style_expression_bodied_properties = true:silent
+csharp_style_expression_bodied_properties = when_on_single_line:silent
 
 # Pattern matching preferences
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
@@ -297,3 +297,29 @@ dotnet_style_qualification_for_field = false:silent
 dotnet_style_qualification_for_property = false:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_event = false:silent
+
+# Copilot Specific Behavior Rules
+
+[*.cs]
+
+# Never generate "get field;" or expression-bodied accessors
+copilot.disallowedPatterns = "get field;", "=> field", "get =>"
+
+# Prefer standard auto-properties
+copilot.preferredPatterns = "get; set;", "[ObservableProperty] partial public", "is null"
+
+# braces only when necessary
+csharp_style_prefer_braces = false:silent
+
+# Naming rules Copilot will follow
+dotnet_naming_symbols.properties.applicable_kinds = property, class, namespace, method, local_function, struct
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_naming_rule.properties_should_be_pascal_case.style = pascal_case
+dotnet_naming_rule.properties_should_be_pascal_case.symbols = properties
+dotnet_naming_rule.properties_should_be_pascal_case.severity = error
+
+dotnet_naming_symbols.locals.applicable_kinds = local, parameter
+dotnet_naming_style.camel_case.capitalization = camel_case
+dotnet_naming_rule.locals_should_be_camel_case.symbols = locals
+dotnet_naming_rule.locals_should_be_camel_case.style = camel_case
+dotnet_naming_rule.locals_should_be_camel_case.severity = silent
