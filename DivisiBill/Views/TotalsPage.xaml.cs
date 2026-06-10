@@ -65,4 +65,9 @@ public partial class TotalsPage : ContentPage
         v.OnPersonSelected += HandlePersonSelected;
         await Navigation.PushAsync(v);
     }
+
+    private void OnPersonDrop(object _, DropEventArgs e)
+    {
+        e.Handled = true; // Inhibit default MAUI handling, see https://github.com/dotnet/maui/issues/35599
+    }
 }

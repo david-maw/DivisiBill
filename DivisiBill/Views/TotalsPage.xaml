@@ -66,7 +66,8 @@
                                 DragStartingCommandParameter="{Binding}" />
                             <DropGestureRecognizer 
                                 DropCommand="{Binding DropPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
-                                DropCommandParameter="{Binding}" />
+                                DropCommandParameter="{Binding}"
+                                Drop="OnPersonDrop"/>
                             </Label.GestureRecognizers>
                         </Label>
                         <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}"

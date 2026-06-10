@@ -312,14 +312,12 @@ public partial class MealViewModel : ObservableObjectPlus
 
             if (draggedIndex != -1 && targetIndex != -1 && draggedIndex != targetIndex)
             {
+                // The target seems reasonable, so move the dragged item to the target index, then resequence the list to ensure DinerIDs are in order, if that fails, move the dragged item back to where it was
                 MovePersonCost(draggedIndex, targetIndex);
                 if (!CostListResequence()) // Ensure DinerIDs are in order after the move
+                {
                     MovePersonCost(targetIndex, draggedIndex); // It did not work, put the dragged item back where it was and give up
-                #region This is a hack to force the display to update correctly, see https://github.com/dotnet/maui/issues/35599
-                var temp = Costs; // Alias for Meal.CurrentMeal.Costs
-                Meal.CurrentMeal.Costs = null;
-                Meal.CurrentMeal.Costs = temp;
-                #endregion
+                }
             }
         }
         draggedPersonCost = null;
@@ -442,7 +440,7 @@ public partial class MealViewModel : ObservableObjectPlus
     /// a desirable number (DinerID). That permits us to move whoever gets that number, so they free up another number, and so on. If the number that is
     /// freed up happens to be outside the target range (1 thru count of items) we just move on to an arbitrary item and if its desired number is taken we
     /// move the item that is currently using the Target item to a DinerID outside the target range.</remarks>
-    /// <returns>true if resequencing succeeded or was unnecessary; false if the operation failed.</returns>
+    /// <returns>true if resequencing succeeded or was unnecessary; false if the operation failed (probably because the list of participants is full).</returns>
     public bool CostListResequence()
     {
         try
@@ -897,11 +895,6 @@ public partial class MealViewModel : ObservableObjectPlus
             if (draggedIndex != -1 && targetIndex != -1 && draggedIndex != targetIndex)
             {
                 MoveLineItem(draggedIndex, targetIndex);
-                #region This is a hack to force the display to update correctly, see https://github.com/dotnet/maui/issues/35599
-                var temp = LineItems;
-                LineItems = null;
-                LineItems = temp;
-                #endregion
             }
         }
         draggedLineItem = null;

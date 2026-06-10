@@ -256,4 +256,9 @@ public partial class LineItemsPage : ContentPage
         mealViewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;
     }
     #endregion
+
+    private void OnDrop(object _, DropEventArgs e)
+    {
+        e.Handled = true; // Inhibit MAUI default processing of the drop, see https://github.com/dotnet/maui/issues/35599
+    }
 }
