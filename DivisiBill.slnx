@@ -12,6 +12,7 @@
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+    <File Path=".github/copilot-instructions.md" />
     <File Path=".github/workflows/dotnet-build-android.yml" />
     <File Path="LICENSE.txt" />
     <File Path="md-styles.css" />
