@@ -90,6 +90,11 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     {
         if (Meal.CurrentMeal != lastCurrentShown)
         {
+            if (IsGrouped && expandedGroup is not null)
+            {
+                expandedGroup.IsExpanded = false;
+                expandedGroup = null;
+            }
             ShowCurrent();
             lastCurrentShown = Meal.CurrentMeal;
         }
@@ -364,7 +369,18 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     /// </summary>
     /// <param name="ms">The MealSummary for the Meal which is to be made current</param>
     [RelayCommand]
-    private async Task InvokeUseMeal(MealSummary ms) => await UseMealParam?.Invoke(BestMealSummary(ms));
+    private async Task InvokeUseMeal(MealSummary ms)
+    {
+        if (UseMealParam is not null)
+        {
+            // Clear out the navigation stack in case we were pushed here so the user never navigates back to a pushed page
+            var nav = Shell.Current.Navigation;
+
+            for (int i = nav.NavigationStack.Count - 1; i > 0; i--)
+                nav.RemovePage(nav.NavigationStack[i]);
+            await UseMealParam.Invoke(BestMealSummary(ms));
+        }
+    }
 
     #region Delete / Undelete
     [RelayCommand(CanExecute = nameof(ShowLocalMeals))]
@@ -924,8 +940,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     }
 
     [RelayCommand]
-    private async Task ShowMealsForVenue(string venueName) => await App.GoToAsync(Routes.MealListByAgePage,
-            $"venue={Uri.EscapeDataString(venueName)}&ShowLocal={ShowLocalMeals}&ShowRemote={ShowRemoteMeals}");
+    private async Task ShowMealsForVenue(string venueName) => await App.PushAsync(Routes.MealListPage,
+            $"venue={Uri.EscapeDataString(venueName)}&ShowLocal={ShowLocalMeals}&ShowRemote={ShowRemoteMeals}&grouped=false&sort=date");
     [RelayCommand]
     private void OnGroupExpanded(object o)
     {
@@ -1321,20 +1337,21 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     // This handles query parameters
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        static bool boolValue(object value) => value is string s && bool.TryParse(s, out bool parsedBool) ? parsedBool : value is bool b && b;
+        static bool BoolValue(object value) => value is string s && bool.TryParse(s, out bool parsedBool) ? parsedBool : value is bool b && b;
 
-        #region Leave alone if not set
+        #region Leave these properties alone if not set
         if (query.TryGetValue("sort", out object sortValue))
             Sort = sortValue?.ToString();
         if (query.TryGetValue("ShowLocal", out object showLocalValue))
-            ShowLocalMeals = boolValue(showLocalValue);
+            ShowLocalMeals = BoolValue(showLocalValue);
         if (query.TryGetValue("ShowRemote", out object showRemoteValue))
-            ShowRemoteMeals = boolValue(showRemoteValue);
+            ShowRemoteMeals = BoolValue(showRemoteValue);
+        if (query.TryGetValue("grouped", out object groupedValue))
+            IsGrouped = BoolValue(groupedValue);
         #endregion
-        #region Default values if not set
-        IsSelectableList = query.TryGetValue("IsSelectableList", out object selectableValue) && boolValue(selectableValue);
-        IsGrouped = query.TryGetValue("grouped", out object groupValue) && boolValue(groupValue);
-        SetCount = query.TryGetValue("count", out object countValue) && boolValue(countValue);
+        #region These properties get default values if not set
+        IsSelectableList = query.TryGetValue("IsSelectableList", out object selectableValue) && BoolValue(selectableValue);
+        SetCount = query.TryGetValue("count", out object countValue) && BoolValue(countValue);
         FilteredVenueName = query.TryGetValue("venue", out object venueValue) && venueValue is string venueName ? Uri.UnescapeDataString(venueName).ToString() : null;
         #endregion
     }

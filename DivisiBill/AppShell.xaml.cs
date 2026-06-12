@@ -14,6 +14,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(Routes.ImagePage, typeof(ImagePage)); // For the tutorial page to use
         Routing.RegisterRoute(Routes.MapPage, typeof(MapPage));
         Routing.RegisterRoute(Routes.MealSummaryPage, typeof(MealSummaryPage));
+        Routing.RegisterRoute(Routes.MealListPage, typeof(MealListPage));
         Routing.RegisterRoute(Routes.PersonEditPage, typeof(PersonEditPage));
         Routing.RegisterRoute(Routes.PropertiesPage, typeof(PropertiesPage));
         Routing.RegisterRoute(Routes.ScanPage, typeof(ScanPage));
