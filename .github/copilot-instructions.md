@@ -8,3 +8,4 @@
 - Adhere to naming conventions.
 - For properties that call OnPropertyChanged, prefer auto-properties with [NotifyPropertyChangedFor] and OnXChanged methods instead of manual backing fields.
 - Prefer collection expressions as initializers when possible.
+- Prefer is null and is not null to  == null and != null.
