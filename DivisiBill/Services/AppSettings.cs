@@ -12,14 +12,14 @@ public class AppSettings : ISettings
         }
     }
     // TODO: Remove workaround for https://github.com/dotnet/maui/issues/27167 Intermittent Problem with Preferences on Windows
-    private bool TrySetPreference(string key, DateTime value)
+    private bool SetPreference(string key, DateTime value)
     {
         try
         {
-            MainThread.BeginInvokeOnMainThread(() =>
+            MainThread.InvokeOnMainThreadAsync(() =>
             {
                 Preferences.Set(key, value);
-            });
+            }).GetAwaiter().GetResult();
             return true;
         }
         catch (Exception ex)
@@ -28,82 +28,148 @@ public class AppSettings : ISettings
             return false;
         }
     }
+
+    private bool SetPreference(string key, string? value)
+    {
+        try
+        {
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Preferences.Set(key, value);
+            }).GetAwaiter().GetResult();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return false;
+        }
+    }
+    private bool SetPreference(string key, bool value)
+    {
+        try
+        {
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Preferences.Set(key, value);
+            }).GetAwaiter().GetResult();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return false;
+        }
+    }
+    private bool SetPreference(string key, int value)
+    {
+        try
+        {
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Preferences.Set(key, value);
+            }).GetAwaiter().GetResult();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return false;
+        }
+    }
+    private bool SetPreference(string key, double value)
+    {
+        try
+        {
+            MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                Preferences.Set(key, value);
+            }).GetAwaiter().GetResult();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            return false;
+        }
+    }
+
     public string StoredMeal
     {
         get => Preferences.Get("Meal", string.Empty);
-        set => Preferences.Set("Meal", value);
+        set => SetPreference("Meal", value);
     }
     public Guid PeopleUpdater
     {
         get => Guid.Parse(Preferences.Get(nameof(PeopleUpdater), Guid.Empty.ToString()));
-        set => Preferences.Set(nameof(PeopleUpdater), value.ToString());
+        set => SetPreference(nameof(PeopleUpdater), value.ToString());
     }
     public DateTime PeopleUpdateTime
     {
         get => Preferences.Get(nameof(PeopleUpdateTime), DateTime.MinValue);
-        set => Preferences.Set(nameof(PeopleUpdateTime), value);
+        set => SetPreference(nameof(PeopleUpdateTime), value.ToString());
     }
     public Guid VenueUpdater
     {
         get => Guid.Parse(Preferences.Get(nameof(VenueUpdater), Guid.Empty.ToString()));
-        set => Preferences.Set(nameof(VenueUpdater), value.ToString());
+        set => SetPreference(nameof(VenueUpdater), value.ToString());
     }
     public DateTime VenueUpdateTime { get; set; } = DateTime.MinValue;
     public int DefaultTipRate
     {
         get => Preferences.Get(nameof(DefaultTipRate), 20);
-        set => Preferences.Set(nameof(DefaultTipRate), value);
+        set => SetPreference(nameof(DefaultTipRate), value);
     }
     public double DefaultTaxRate
     {
         get => Preferences.Get(nameof(DefaultTaxRate), 0.0775);
-        set => Preferences.Set(nameof(DefaultTaxRate), value);
+        set => SetPreference(nameof(DefaultTaxRate), value);
     }
     public bool DefaultTipOnTax
     {
         get => Preferences.Get(nameof(DefaultTipOnTax), true);
-        set => Preferences.Set(nameof(DefaultTipOnTax), value);
+        set => SetPreference(nameof(DefaultTipOnTax), value);
     }
     public bool DefaultTaxOnCoupon
     {
         get => Preferences.Get("DefaultTaxOnDiscount", false);
-        set => Preferences.Set("DefaultTaxOnDiscount", value);
+        set => SetPreference("DefaultTaxOnDiscount", value);
     }
     public bool MealFrozen
     {
         get => Preferences.Get(nameof(MealFrozen), true);
-        set => Preferences.Set(nameof(MealFrozen), value);
+        set => SetPreference(nameof(MealFrozen), value);
     }
     public bool MealSavedToFile
     {
         get => Preferences.Get(nameof(MealSavedToFile), true);
-        set => Preferences.Set(nameof(MealSavedToFile), value);
+        set => SetPreference(nameof(MealSavedToFile), value);
     }
     public bool MealSavedToRemote
     {
         get => Preferences.Get(nameof(MealSavedToRemote), true);
-        set => Preferences.Set(nameof(MealSavedToRemote), value);
+        set => SetPreference(nameof(MealSavedToRemote), value);
     }
     public bool IsCloudAccessAllowed
     {
         get => Preferences.Get(nameof(IsCloudAccessAllowed), false) && !App.IsLimited;
         set
         {
-            Preferences.Set(nameof(IsCloudAccessAllowed), value);
+            SetPreference(nameof(IsCloudAccessAllowed), value);
             App.HandleActivityChanges();
         }
     }
     public bool StartFresh
     {
         get => Preferences.Get(nameof(StartFresh), false);
-        set => Preferences.Set(nameof(StartFresh), value);
+        set => SetPreference(nameof(StartFresh), value);
     }
     public bool WiFiOnly
     {
         get => Preferences.Get(nameof(WiFiOnly), DeviceInfo.Current.Idiom != DeviceIdiom.Desktop);
         set
         {
-            Preferences.Set(nameof(WiFiOnly), value);
+            SetPreference(nameof(WiFiOnly), value);
             App.EvaluateCloudAccessible();
         }
     }
@@ -112,59 +178,59 @@ public class AppSettings : ISettings
         get => Preferences.Get(nameof(FirstUse), true);
         set
         {
-            Preferences.Set(nameof(FirstUse), value);
+            SetPreference(nameof(FirstUse), value);
             App.HandleActivityChanges();
         }
     }
     public DateTime LastUse
     {
         get => Preferences.Get(nameof(LastUse), DateTime.MinValue);
-        set => TrySetPreference(nameof(LastUse), value);
+        set => SetPreference(nameof(LastUse), value);
     }
     public string UserKey
     {
         get => Preferences.Get(nameof(UserKey), string.Empty);
-        set => Preferences.Set(nameof(UserKey), value);
+        set => SetPreference(nameof(UserKey), value);
     }
     public bool ShowLineItemsHint
     {
         get => Preferences.Get(nameof(ShowLineItemsHint), true);
-        set => Preferences.Set(nameof(ShowLineItemsHint), value);
+        set => SetPreference(nameof(ShowLineItemsHint), value);
     }
     public bool ShowTotalsHint
     {
         get => Preferences.Get(nameof(ShowTotalsHint), true);
-        set => Preferences.Set(nameof(ShowTotalsHint), value);
+        set => SetPreference(nameof(ShowTotalsHint), value);
     }
     public bool ShowVenuesHint
     {
         get => Preferences.Get(nameof(ShowVenuesHint), true);
-        set => Preferences.Set(nameof(ShowVenuesHint), value);
+        set => SetPreference(nameof(ShowVenuesHint), value);
     }
     public bool ShowPeopleHint
     {
         get => Preferences.Get(nameof(ShowPeopleHint), true);
-        set => Preferences.Set(nameof(ShowPeopleHint), value);
+        set => SetPreference(nameof(ShowPeopleHint), value);
     }
     public bool SendCrashYes
     {
         get => Preferences.Get(nameof(SendCrashYes), true);
-        set => Preferences.Set(nameof(SendCrashYes), value);
+        set => SetPreference(nameof(SendCrashYes), value);
     }
     public bool SendCrashAsk
     {
         get => Preferences.Get(nameof(SendCrashAsk), true);
-        set => Preferences.Set(nameof(SendCrashAsk), value);
+        set => SetPreference(nameof(SendCrashAsk), value);
     }
     public bool ShowTutorial
     {
         get => Preferences.Get(nameof(ShowTutorial), true);
-        set => Preferences.Set(nameof(ShowTutorial), value);
+        set => SetPreference(nameof(ShowTutorial), value);
     }
     public bool HadProSubscription
     {
         get => Preferences.Get(nameof(HadProSubscription), false);
-        set => Preferences.Set(nameof(HadProSubscription), value);
+        set => SetPreference(nameof(HadProSubscription), value);
     }
 
     /// <summary>
@@ -189,10 +255,10 @@ public class AppSettings : ISettings
                 int y = Math.Abs(value.Y) < int.MaxValue ? (int)value.Y : 0;
                 int width = Math.Abs(value.Width) < int.MaxValue ? (int)value.Width : 0;
                 int height = Math.Abs(value.Height) < int.MaxValue ? (int)value.Height : 0;
-                Preferences.Set("PositionX", x);
-                Preferences.Set("PositionY", y);
-                Preferences.Set("PositionWidth", width);
-                Preferences.Set("PositionHeight", height);
+                SetPreference("PositionX", x);
+                SetPreference("PositionY", y);
+                SetPreference("PositionWidth", width.ToString());
+                SetPreference("PositionHeight", height.ToString());
             }
             catch (Exception ex)
             {
@@ -242,7 +308,7 @@ public class AppSettings : ISettings
             if (value is 0 or >= Distances.AccuracyLimit) // clear it
                 Preferences.Remove(nameof(FakeAccuracy)); // invalidates FakeLatitude/Longitude as well
             else
-                Preferences.Set(nameof(FakeAccuracy), value);
+                SetPreference(nameof(FakeAccuracy), value);
         }
     }
 
@@ -254,7 +320,7 @@ public class AppSettings : ISettings
             if (value == 0)
                 Preferences.Remove(nameof(FakeLatitude));
             else
-                Preferences.Set(nameof(FakeLatitude), value);
+                SetPreference(nameof(FakeLatitude), value);
         }
     }
 
@@ -266,24 +332,24 @@ public class AppSettings : ISettings
             if (value == 0)
                 Preferences.Remove(nameof(FakeLongitude));
             else
-                Preferences.Set(nameof(FakeLongitude), value);
+                SetPreference(nameof(FakeLongitude), value);
         }
     }
 
     public bool BackupImages
     {
         get => Preferences.Get(nameof(BackupImages), false);
-        set => Preferences.Set(nameof(BackupImages), value);
+        set => SetPreference(nameof(BackupImages), value);
     }
 
     public bool BackupImagesOnlyWiFi
     {
         get => Preferences.Get(nameof(BackupImagesOnlyWiFi), true);
-        set => Preferences.Set(nameof(BackupImagesOnlyWiFi), value);
+        set => SetPreference(nameof(BackupImagesOnlyWiFi), value);
     }
     public DateTime PreviousArchiveEndTime
     {
         get => Preferences.Get(nameof(PreviousArchiveEndTime), DateTime.MinValue);
-        set => TrySetPreference(nameof(PreviousArchiveEndTime), value);
+        set => SetPreference(nameof(PreviousArchiveEndTime), value);
     }
 }
