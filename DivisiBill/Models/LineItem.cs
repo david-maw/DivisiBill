@@ -27,9 +27,18 @@ public partial class LineItem : ObservableObject
         /// </summary>
         none = 0,
         /// <summary>
-        /// First diner (1-based index).
+        /// Diner ordinal names for prettiness (1-based index).
         /// </summary>
         first = 1,
+        second = 2,
+        third = 3,
+        fourth = 4,
+        fifth = 5,
+        sixth = 6,
+        seventh = 7,
+        eighth = 8,
+        ninth = 9,
+        tenth = 10,
         /// <summary>
         /// One beyond the maximum diner id (used for iteration limits).
         /// </summary>
