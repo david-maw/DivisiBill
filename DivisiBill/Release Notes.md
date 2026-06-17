@@ -1,3 +1,11 @@
+# Version 6.3.32
+
+## List Saved Bills by Name
+
+This was showing a list of bills by default, once again it shows a list of venues with bills clustered together below each venue. You can expand the list of bills for a venue and if there are too many to show inline a button to show them on another page appears.
+
+## 
+
 # Version 6.3.31
 
 ## Improve Help Page Navigation
