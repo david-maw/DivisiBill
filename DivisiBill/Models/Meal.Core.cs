@@ -318,6 +318,7 @@ public partial class Meal : ObservableObjectPlus
     public static async Task AddLocalMeals(IEnumerable<Meal> newMeals, bool replace)
     {
         bool wasEmpty = LocalMealList.Count == 0;
+        List<string> duplicateNames = [];
         HashSet<string> localMealNames = [.. LocalMealList.Where(ms => !ms.IsDefault).Select(ms => ms.Id)];
         foreach (Meal meal in newMeals)
         {
@@ -329,7 +330,13 @@ public partial class Meal : ObservableObjectPlus
                 LocalMealList.Remove(meal.Summary);
                 localMealNames.Remove(meal.Summary.Id);
             }
-            if (!localMealNames.Contains(meal.Summary.Id))
+            if (localMealNames.Contains(meal.Summary.Id))
+            {
+                // This is a duplicate meal, so skip it but keep track of the fact that we had duplicates
+                duplicateNames.Add(meal.Summary.Id);
+                continue;
+            }
+            else
             {
                 if (meal.IsLastChangeTimeSet || !File.Exists(meal.FilePath)) // never replace an unchanged meal
                 {
@@ -344,6 +351,11 @@ public partial class Meal : ObservableObjectPlus
                 localMealNames.Add(meal.Summary.Id); // to ensure we do not add duplicates
             }
         }
+        // If there were duplicates, let the user know that some meals were not added because had duplicate IDs (creation times), but don't list them all because that could be overwhelming, just the first few
+        if (duplicateNames.Count > 1)
+            await Utilities.ShowAppSnackBarAsync($"{duplicateNames.Count} bills were not added because they had duplicate creation times: {string.Join(", ", duplicateNames.Take(5))} {(duplicateNames.Count > 5 ? "..." : "")}");
+        else if (duplicateNames.Count == 1)
+            await Utilities.ShowAppSnackBarAsync($"Bill {duplicateNames[0]} was not added because it had a duplicate creation time");
         // Get the list of remote meals if we can (and should) and update whatever local meals are also remote
         if (App.IsCloudAllowed)
         {

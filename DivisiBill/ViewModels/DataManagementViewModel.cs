@@ -247,8 +247,8 @@ internal partial class DataManagementViewModel : ObservableObject
                 PickerTitle = "Please select an archive file",
                 FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
-                        { DevicePlatform.Android, [ "text/xml", "application/zip" ] },
-                        { DevicePlatform.WinUI, [ ".xml", "*.zip" ] },
+                        { DevicePlatform.Android, [ "text/xml", "application/xml", "application/zip" ] },
+                        { DevicePlatform.WinUI, [ "*.xml", "*.zip" ] },
                 }),
             });
             if (result is not null)
