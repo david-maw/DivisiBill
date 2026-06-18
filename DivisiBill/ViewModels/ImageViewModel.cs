@@ -34,14 +34,16 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// </summary>
     private bool startWithCamera = false;
 
-    public async Task ProcessQueryAsync()
+    public async Task OnNavigatedTo()
     {
-        // Kludge to work around ApplyQueryAttributes being fired at the wrong time, this gives it an opportunity to fire
-        // see: https://github.com/dotnet/maui/issues/24241
-        await Task.Delay(50);
-
+        // Kludge to work around ApplyQueryAttributes being fired too late, this gives it an opportunity to fire, see: https://github.com/dotnet/maui/issues/24241 - which is closed.
+        // Despite that, it describes this problem and there doesn't seem to be any indication that it is better in .NET 10, so this workaround is still needed
+        await Task.Yield();
         if (startWithCamera)
+        {
+            startWithCamera = false; // only do this once, otherwise if the user pops back to the image page after going to the camera page, it will immediately go back to the camera page again
             await App.PushAsync(Routes.CameraPage);
+        }
         else
             await Load();
     }

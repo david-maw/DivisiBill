@@ -19,7 +19,7 @@ public partial class ImagePage : ContentPage
             : FlyoutBehavior.Flyout;
         if (!(Utilities.IsDebug || await Flashlight.IsSupportedAsync()))
             ToolbarItems.Remove(FlashlightTbi); // Don't bother to display an ineffective icon in a release build
-        await viewModel.ProcessQueryAsync();
+        await viewModel.OnNavigatedTo();
     }
     // OnNavigatedTo is not called if navigation is to ".." so do not rely on it 
     protected override void OnDisappearing()
