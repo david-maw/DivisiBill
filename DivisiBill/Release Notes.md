@@ -4,7 +4,11 @@
 
 This was showing a list of bills by default, once again it shows a list of venues with bills clustered together below each venue. You can expand the list of bills for a venue and if there are too many to show inline a button to show them on another page appears.
 
-## 
+## Improve Archive restore
+
+The restore operation now shows a message if any bills were not restored because they were duplicated (another bill was created in the same second). The message says how many and what the first few were.
+
+Archive selection on Android  now identifies more files as archives.
 
 # Version 6.3.31
 
