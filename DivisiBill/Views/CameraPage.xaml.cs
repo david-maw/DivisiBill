@@ -25,6 +25,19 @@ public partial class CameraPage : ContentPage
     {
         base.OnAppearing();
         await viewModel.SetCameraAvailabilityAsync();
+
+        // Initialize available cameras
+        if (viewModel.IsCameraAvailable)
+        {
+            viewModel.AvailableCameras = cameraProvider.AvailableCameras;
+
+            // Select the rear camera by default if available, otherwise the first camera
+            if (viewModel.AvailableCameras is not null && viewModel.AvailableCameras.Count > 0)
+            {
+                viewModel.SelectedCamera = viewModel.AvailableCameras.FirstOrDefault(c => c.Position == CameraPosition.Rear)
+                                        ?? viewModel.AvailableCameras[0];
+            }
+        }
     }
     private void OnPictureTaken(object? sender, MediaCapturedEventArgs e)
     {

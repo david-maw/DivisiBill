@@ -227,6 +227,7 @@ public partial class App : Application, INotifyPropertyChanged
         IsIntentLaunch = Platforms.Android.MainActivity.IsIntentLaunch;
 #endif
         Utilities.DebugMsg($"In CreateWindow, IsIntentLaunch = {IsIntentLaunch}");
+
         return IsIntentLaunch
             ? new Window(new Views.RestorePage())
             : CreateMainWindow();

@@ -15,6 +15,20 @@ public partial class CameraViewModel : ObservableObject
     public partial bool IsBusy { get; set; }
     [ObservableProperty]
     public partial bool IsCameraAvailable { get; set; }
+
+    private IReadOnlyList<CameraInfo>? availableCameras;
+    public IReadOnlyList<CameraInfo>? AvailableCameras
+    {
+        get => availableCameras;
+        set
+        {
+            if (SetProperty(ref availableCameras, value))
+            {
+                SwitchCameraCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
     [ObservableProperty]
     public partial CameraInfo SelectedCamera { get; set; }
     partial void OnSelectedCameraChanged(CameraInfo value)
@@ -92,6 +106,19 @@ public partial class CameraViewModel : ObservableObject
         FlashMode = FlashMode == CameraFlashMode.Off ? CameraFlashMode.On : CameraFlashMode.Off;
         FlashGlyph = (FontImageSource)(FlashMode == CameraFlashMode.Off ? App.Current.Resources["GlyphFlashOn"] : App.Current.Resources["GlyphFlashOff"]);
     }
+
+    [RelayCommand(CanExecute = nameof(CanSwitchCamera))]
+    private void SwitchCamera()
+    {
+        if (AvailableCameras is null || AvailableCameras.Count <= 1 || SelectedCamera is null)
+            return;
+
+        int currentIndex = AvailableCameras.ToList().IndexOf(SelectedCamera);
+        int nextIndex = (currentIndex + 1) % AvailableCameras.Count;
+        SelectedCamera = AvailableCameras[nextIndex];
+    }
+
+    private bool CanSwitchCamera() => AvailableCameras is not null && AvailableCameras.Count > 1;
     #endregion
     #region Commands
     /// <summary>
