@@ -89,8 +89,8 @@ public partial class SplashPage : ContentPage
         if (Connectivity.NetworkAccess == NetworkAccess.Internet && App.WsUriDefined)
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
-            bool licensCheckWorked = await App.CheckLicenses(true);
-            if (licensCheckWorked)
+            bool licenseCheckWorked = await App.CheckLicenses(true);
+            if (licenseCheckWorked)
                 await StatusMsgAsync("License check completed without errors");
             else
                 await StatusMsgAsync("License check failed, cloud access may not work");

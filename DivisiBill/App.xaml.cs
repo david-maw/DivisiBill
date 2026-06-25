@@ -22,14 +22,14 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     internal static bool LicenseChecked = false;
     /// <summary>
-    /// IsLimited is the inverse of whether Professional Edition has been purchased, so it is only ever set, not reset.
+    /// IsLimited is the inverse of whether Professional Edition has been purchased, so it may be set but is rarely reset.
     /// The normal scenario is that a person uses the Basic Edition then buys the Professional Edition so at the point
     /// where they buy it they cannot have created any cloud based backups and the fact we would not attempt to recover
     /// them during initialization does not matter.
     /// 
-    /// If Basic Edition is uninstalled the state (including saved Meals, Venues and People) is lost. If an instance of
-    /// Professional Edition is uninstalled, Meals, Venues and People should have been backed up to the cloud and only
-    /// bill images and program options will be lost.
+    /// If Basic Edition is uninstalled the state (including saved Meals, Venues and People) is lost unless manually archived.
+    /// If an instance of Professional Edition is uninstalled, Meals, Images, Venues and People should have been backed up to
+    /// the cloud and only program options (see <see cref="Settings"/>) will be lost.
     /// </summary>
     internal static bool IsLimited = true; // Whether capabilities are limited, set in initialization
 #if DEBUG
@@ -50,6 +50,12 @@ public partial class App : Application, INotifyPropertyChanged
     private static Task? LocationMonitorTask;
     private static CancellationTokenSource LocationMonitorCancellationTokenSource = new();
     internal static CancellationTokenSource SaveProcessCancellationTokenSource = new();
+    /// <summary>
+    /// CancellationTokenSource used to cancel the license checking process.
+    /// This token source allows for cooperative cancellation of the license checking task.
+    /// This would enable the application to stop the license verification process gracefully should it need to.
+    /// </summary>
+    internal static readonly CancellationTokenSource LicenseProcessCancellationTokenSource = new();
     public static TaskCompletionSource<bool> InitializationComplete { get; set; } = new();// Allows processes to wait for initialization to complete before doing things that might interfere with it, such as persistence during shutdown
     public static readonly PauseTokenSource IsRunningSource = new();
     public static readonly PauseTokenSource CloudAllowedSource = new();
@@ -514,28 +520,74 @@ public partial class App : Application, INotifyPropertyChanged
     #endregion
     #region Licensing
     internal static event EventHandler? ProEditionVerified;
-    private static DateTime NextLicenseCheckTime = DateTime.MinValue;
-
+    private static readonly TimeSpan mandatoryCheckPeriod = TimeSpan.FromDays(8); // If we have not checked for a subscription in this long, check it anyway
+    private static DateTime NextMandatoryCheckTime { get; set; } = DateTime.MinValue;
     /// <summary>
-    /// Check for the presence of licenses and subscriptions. This is called during startup an on entering the Settings page.
+    /// Task that performs optional pro license checks in the background. This task runs periodically to ensure that the application's
+    /// licensing status is up-to-date without interrupting the user experience. In particular, if the user suspends and re-enters the
+    /// application, this task will improve the odds that the licensing state is already current and no time-consuming web service
+    /// calls will be necessary.
     /// </summary>
+    internal static Task? PeriodicCheckForProEditionTask = null;
+    internal static async Task PeriodicCheckForProEdition(CancellationToken cancellationToken)
+    {
+        Utilities.DebugMsg($"Enter App.PeriodicCheckForProEdition awaiting InitializationComplete");
+        await InitializationComplete.Task;
+        Utilities.DebugMsg($"In App.PeriodicCheckForProEdition InitializationComplete happened");
+        PauseToken IsRunning = IsRunningSource.Token;
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            // Wait until we are halfway to the next mandatory check time
+            var timeOfNextOptionalCheck = NextMandatoryCheckTime - mandatoryCheckPeriod / 2;
+            // If we are already past that point, so wait a fixed time before checking
+            if (DateTime.Now > timeOfNextOptionalCheck)
+                timeOfNextOptionalCheck = DateTime.Now + mandatoryCheckPeriod / 10;
+
+            Utilities.DebugMsg($"PeriodicCheckForProEdition: waiting {timeOfNextOptionalCheck - DateTime.Now:c} to check for license");
+
+            // Wait until the next optional check time, but if the app is paused allow for the missing time
+            while (DateTime.Now < timeOfNextOptionalCheck)
+            {
+                // Wait until the app is running, if it is paused we don't want to do anything
+                await IsRunning.WaitWhilePausedAsync();
+                await Task.Delay((int)(mandatoryCheckPeriod.TotalMilliseconds / 30), cancellationToken);
+            }
+            bool verified = Billing.ProPurchase is not null && await CallWs.TryVerifyPurchase(Billing.ProPurchase);
+            if (verified)
+            {
+                // Do the update on the main thread, just in case it matters to the UI
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    NextMandatoryCheckTime = DateTime.Now + mandatoryCheckPeriod;
+                });
+            }
+        }
+        Utilities.DebugMsg($"Exit App.PeriodicCheckForProEdition");
+    }
+    /// <summary>
+    /// Checks the licensing status of the application, including whether a professional subscription is active
+    /// and whether an OCR license is available. This method also handles user notifications regarding subscription
+    /// status changes and updates application settings accordingly.
+    /// </summary>
+    /// <param name="mandatory">Indicates whether the license check is mandatory or may be skipped if we have a recent result.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the
+    /// license check was performed but the actual results are in global state (see <see cref="App.IsLimited"/>).</returns>
     internal static async Task<bool> CheckLicenses(bool mandatory = false)
     {
         #region Validate Initial Conditions
         if (!WsUriDefined)
             return false; // Web services are disabled, perhaps this is a new build environment, do nothing at all
 
-        bool wasLimited = App.IsLimited; // This will always be false for the call during initialization but later It may change
+        bool wasLimited = App.IsLimited;
 
-        if (!mandatory && !wasLimited && DateTime.Now < NextLicenseCheckTime) // Don't check for a subscription expiring yet
+        if (!mandatory && !wasLimited && DateTime.Now < NextMandatoryCheckTime) // Don't check for a subscription expiring yet
         {
+            // We have a pro subscription and we have checked recently enough, so don't check again yet.
             Utilities.DebugMsg("App.CheckLicenses early exit - no check needed yet");
-            return false;
+            return true;
         }
 
         Utilities.DebugMsg("Entered App.CheckLicenses proper, no early exit was taken");
-
-        NextLicenseCheckTime = DateTime.Now + TimeSpan.FromMinutes(30);
 
         // Ensure we have network access - this can fail with an RPC error on Windows if we're returning from searching for an image
         try
@@ -627,6 +679,8 @@ public partial class App : Application, INotifyPropertyChanged
             if (IsLimited != wasLimited) // it changed, tell anyone who cares (usually the Settings ViewModel)
             {
                 ProEditionVerified?.Invoke(null, EventArgs.Empty);
+                NextMandatoryCheckTime = DateTime.Now + mandatoryCheckPeriod;
+                PeriodicCheckForProEditionTask ??= Task.Run(() => PeriodicCheckForProEdition(LicenseProcessCancellationTokenSource.Token));
             }
             Utilities.DebugMsg("Checking for OCR License");
             if (await Billing.GetHasOcrLicenseAsync() == 0)

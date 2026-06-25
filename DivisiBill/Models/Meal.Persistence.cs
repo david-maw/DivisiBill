@@ -302,7 +302,6 @@ public partial class Meal : ObservableObjectPlus
     public bool OldEnoughToBeNewFile => IdleTime > App.MinimumIdleTime;
     internal void SaveToApp()
     {
-        Utilities.DebugMsg($"In Meal.SaveToApp");
         byte[] buf = new byte[10000];
         MemoryStream s = new(buf);
         SaveToStream(s);

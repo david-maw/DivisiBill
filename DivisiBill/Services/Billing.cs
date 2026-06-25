@@ -14,19 +14,20 @@ namespace DivisiBill.Services;
 /// discussion the license may be for a product or a subscription.</para>
 /// 
 /// <para>Professional licenses (usually subscriptions) enable cloud features, OCR licenses enable scans, 
-/// you can buy an OCR license one whenever your scan counts drop below a threshold. Buying one adds a
+/// you can buy an OCR license whenever your scan counts drop below a small threshold. Buying one adds a
 /// fixed number of scans which then decrement as you perform OCR scans on individual bills. When the scan count
 /// reaches zero we notify the store that the license has been consumed and you must buy another before more 
 /// scans are allowed. The tracking is mostly done by the web service, but we keep a local copy of how many scans
-/// we think are left for convenience even though the web service value is definitive.</para>
+/// we think are left for convenience, even though the web service value is definitive.</para>
 /// 
 /// <para>The flow is that a user buys a license through the program using the store for the platform (only Android at
 /// present) and then presents it to a web service for validation. The web service ALSO calls the store to validate the
-/// license it was given was issued by the store and also checks that it is not in its list of known licenses. if that
+/// would-be license was issued by the store and not yet acknowledged. We check the license signature early in both the
+/// client and server because if that check fails there's no need to go on and do expensive web service calls, the license
+/// can be rejected. The web service also checks that the license is not yet in its list of known licenses. If that
 /// validation passes, the license is stored in a table (so it's now a known one) and a value is returned to the caller
-/// to tell it to acknowledge the license with the store.
-/// If it is an OCR license we also return a count of OCR scans it enables the user to consume, and persist the new total
-/// including unused scans from a previous license.</para>
+/// to tell it to acknowledge the license with the store. If it is an OCR license we also return a count of OCR scans it
+/// enables the user to consume, and persist the new total including unused scans from any previous licenses.</para>
 /// 
 /// <para>In the unlikely event that a purchase is interrupted in the middle the user might end up with a legitimate license
 /// we've never seen. In that case the license is added to our store just as if it had gone through the normal purchase flow.</para>

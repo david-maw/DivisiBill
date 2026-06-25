@@ -221,9 +221,15 @@ internal static class CallWs
     }
 
     /// <summary>
-    /// Verify that an InAppBilling purchase really is what it pretends to be by calling the issuer
-    /// and also that we previously purchased it. Currently only implemented for Android.
+    /// Verify that an InAppBilling purchase really is what it pretends to be and that we previously purchased it.
+    /// Currently only implemented for Android.
     /// </summary>
+    /// <remarks>
+    /// This method is always called at least once per initialization of the app to verify that the pro license is still valid
+    /// and record its value for future web service calls. It is also called when a new purchase is made to verify that the
+    /// purchase is valid and record it for future use. If verification fails, it will return null and the license will be
+    /// considered invalid.
+    /// </remarks>
     /// <param name="purchase">The InAppBilling object to be tested</param>
     /// <returns>The contents of the returned verification message or null if verification failed</returns>
     internal static async Task<string?> VerifyPurchase(InAppBillingPurchase purchase)
@@ -271,6 +277,53 @@ internal static class CallWs
             Utilities.DebugMsg("In VerifyPurchase, not Android");
         Utilities.DebugMsg("Leaving VerifyPurchase, returning null");
         return null;
+    }
+
+    /// <summary>
+    /// Verify that an InAppBilling purchase really is what it pretends to be and also that we own it.
+    /// Fails silently if verification cannot be performed. Currently only implemented for Android.
+    /// </summary>
+    /// <remarks>
+    /// This method will not throw exceptions if verification fails. It is designed to be used in scenarios
+    /// where a failed verification should not disrupt the user experience, such as doing a periodic reverification of a
+    /// pro subscription. If you need to know the reason for a failed verification or have the current pro license recorded, 
+    /// use <see cref="VerifyPurchase(InAppBillingPurchase)"/> instead.
+    /// </remarks>
+    /// <param name="purchase">The InAppBilling object to be tested</param>
+    /// <returns>True if the purchase is verified, false otherwise</returns>
+    internal static async Task<bool> TryVerifyPurchase(InAppBillingPurchase purchase)
+    {
+        Utilities.DebugMsg($"In TryVerifyPurchase for {purchase.Id}");
+        if ((DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug)) && purchase.OriginalJson is not null && purchase.Signature is not null)
+        {
+            try
+            {
+                Dictionary<string, string> formData = new()
+                {
+                    { "purchase", purchase.OriginalJson },
+                    { "signature", purchase.Signature }
+                };
+                FormUrlEncodedContent content = new(formData);
+                Utilities.DebugMsg("In TryVerifyPurchase, awaiting VerifyAndroidPurchase");
+                // validate the license by calling a web service
+                HttpResponseMessage response = await client.PostAsync("VerifyAndroidPurchase", content);
+                if (response.IsSuccessStatusCode && purchase.ProductId is not null)
+                {
+                    Utilities.DebugMsg("In TryVerifyPurchase, verify returned status ok");
+                    return true;
+                }
+                else
+                    Utilities.DebugMsg("In TryVerifyPurchase, verify returned status " + (int)response.StatusCode + "-" + response.StatusCode + " and '" + await response.Content.ReadAsStringAsync() + "'");
+            }
+            catch (Exception ex)
+            {
+                Utilities.RecordMsg("Exception in TryVerifyPurchase for " + purchase.Id + ": " + ex.Message);
+            }
+        }
+        else
+            Utilities.DebugMsg("In TryVerifyPurchase, not Android");
+        Utilities.DebugMsg("Leaving TryVerifyPurchase, returning false");
+        return false;
     }
     #endregion
     #region CRUD operations on Meal/VenueList/PersonList
