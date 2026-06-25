@@ -1,5 +1,9 @@
 # Version 6.3.32
 
+## Improved License Checking
+
+Licenses are now checked periodically in the background so unless DivisiBill is not used in more than a week it should be possible to speed initialization by leaving it running. Normally no license check will be needed when it is revisited.
+
 ## List Saved Bills by Name
 
 This was showing a list of bills by default, once again it shows a list of venues with bills clustered together below each venue. You can expand the list of bills for a venue and if there are too many to show inline a button to show them on another page appears.
@@ -12,7 +16,11 @@ Archive selection on Android  now identifies more files as archives.
 
 ## Improve Camera Page Navigation
 
-After switching to the Camera page from most other pages it was impossible to just use a 'back' action to exit to the Image page. Doing so would just pop back to the camera page immediately. This has been corrected. Simply exiting the Camera page in these circumstances will bring up the image page with the image unchanged.  
+After switching to the Camera page from most other pages it was impossible to just use a 'back' action to exit to the Image page. Doing so would just pop back to the camera page immediately. This has been corrected. Simply exiting the Camera page in these circumstances will bring up the image page with the image unchanged.
+
+## Allow Camera Switching
+
+If more than one camera is available the Camera page allows the user to switch between cameras.
 
 # Version 6.3.31
 
