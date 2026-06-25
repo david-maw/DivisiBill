@@ -126,7 +126,6 @@ public partial class App : Application, INotifyPropertyChanged
     #endregion
     #region Lifecycle and window management
     #region Persist Changes
-    // TODO: remove workaround for https://github.com/dotnet/maui/issues/27167
     private static async void PersistAsNeeded() => await MainThread.InvokeOnMainThreadAsync(ActualPersistAsNeeded);
 
     /// <summary>
@@ -253,8 +252,7 @@ public partial class App : Application, INotifyPropertyChanged
         void StoreWindowLocation(double x, double y, double w, double h)
         {
             if (Utilities.IsWinUI && Settings is not null)
-                MainThread.InvokeOnMainThreadAsync(() => Settings.InitialPosition = new Rect(x, y, w, h));
-            // TODO: Only on the main thread to work around https://github.com/dotnet/maui/issues/27167
+                Settings.InitialPosition = new Rect(x, y, w, h);
         }
 
         // Outer block of CreateWindow
@@ -314,6 +312,8 @@ public partial class App : Application, INotifyPropertyChanged
                 StoreWindowLocation(window.X, window.Y, window.Width, window.Height);
             }
         };
+
+        App.Settings = new AppSettings(); // We need to replace the fake settings before we can do much, this is the first use
 
         // Set the App window to a sensible (phone like) size during initialization
         if (DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet)

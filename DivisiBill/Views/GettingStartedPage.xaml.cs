@@ -13,7 +13,6 @@ public partial class GettingStartedPage : ContentPage
     public GettingStartedPage()
     {
         InitializeComponent();
-        App.Settings = new AppSettings(); // We need to replace the fake settings before we can check if this is the first use
         Shell.Current.Navigating += PreventPrematureNavigation;
         Loaded += async (s, e) =>
         {
