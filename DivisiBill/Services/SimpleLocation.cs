@@ -20,9 +20,9 @@ public class SimpleLocation : IEquatable<SimpleLocation>
             Longitude = Utilities.Adjusted(location.Longitude, accuracy);
         }
     }
-    public bool Equals(SimpleLocation other) => Latitude == other.Latitude && Longitude == other.Longitude && accuracy == other.accuracy;
+    public bool Equals(SimpleLocation? other) => other is not null && Latitude == other.Latitude && Longitude == other.Longitude && accuracy == other.accuracy;
 
-    public static implicit operator Location(SimpleLocation simpleLocation) => new(simpleLocation.Latitude, simpleLocation.Longitude) { Accuracy = simpleLocation.Accuracy };
+    public static implicit operator Location?(SimpleLocation? simpleLocation) => simpleLocation is null ? null : new Location(simpleLocation.Latitude, simpleLocation.Longitude) { Accuracy = simpleLocation.Accuracy };
 
     public string ToXml()
     {
@@ -49,11 +49,11 @@ public class SimpleLocation : IEquatable<SimpleLocation>
             return false;
         }
     }
-    public static SimpleLocation FromStream(Stream stream)
+    public static SimpleLocation? FromStream(Stream stream)
     {
         try
         {
-            return (SimpleLocation)xmlSerializer.Deserialize(stream);
+            return (SimpleLocation?)xmlSerializer.Deserialize(stream);
         }
         catch (Exception)
         {
@@ -94,7 +94,7 @@ public class SimpleLocation : IEquatable<SimpleLocation>
             }
         }
     }
-    public override bool Equals(object obj) => obj is SimpleLocation simpleLocation && Equals(simpleLocation);
+    public override bool Equals(object? obj) => obj is SimpleLocation simpleLocation && Equals(simpleLocation);
 
     public override int GetHashCode() => base.GetHashCode();
 }

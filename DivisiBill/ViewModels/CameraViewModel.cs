@@ -64,14 +64,14 @@ public partial class CameraViewModel : ObservableObject
     /// Because this doesn't seem to work on android there's no UI for it
     /// </summary>
     [ObservableProperty]
-    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)Application.Current.Resources["GlyphFlashlightOn"];
+    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)App.Current.Resources["GlyphFlashlightOn"];
 
     [ObservableProperty]
     public partial bool IsLightOn { get; set; } = false;
 
     partial void OnIsLightOnChanged(bool value)
     {
-        LightGlyph = (FontImageSource)(value ? Application.Current.Resources["GlyphFlashlightOff"] : Application.Current.Resources["GlyphFlashlightOn"]);
+        LightGlyph = (FontImageSource)(value ? App.Current.Resources["GlyphFlashlightOff"] : App.Current.Resources["GlyphFlashlightOn"]);
     }
     [RelayCommand]
     private void ChangeLightMode() => IsLightOn = !IsLightOn;
@@ -81,7 +81,7 @@ public partial class CameraViewModel : ObservableObject
     /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
     /// </summary>
     [ObservableProperty]
-    public partial FontImageSource FlashGlyph { get; set; } = (FontImageSource)Application.Current.Resources["GlyphFlashOn"];
+    public partial FontImageSource FlashGlyph { get; set; } = (FontImageSource)App.Current.Resources["GlyphFlashOn"];
 
     [ObservableProperty]
     public partial CameraFlashMode FlashMode { get; set; } = CameraFlashMode.Off;
@@ -90,7 +90,7 @@ public partial class CameraViewModel : ObservableObject
     private void ChangeFlashMode()
     {
         FlashMode = FlashMode == CameraFlashMode.Off ? CameraFlashMode.On : CameraFlashMode.Off;
-        FlashGlyph = (FontImageSource)(FlashMode == CameraFlashMode.Off ? Application.Current.Resources["GlyphFlashOn"] : Application.Current.Resources["GlyphFlashOff"]);
+        FlashGlyph = (FontImageSource)(FlashMode == CameraFlashMode.Off ? App.Current.Resources["GlyphFlashOn"] : App.Current.Resources["GlyphFlashOff"]);
     }
     #endregion
     #region Commands
@@ -104,7 +104,7 @@ public partial class CameraViewModel : ObservableObject
         try
         {
             IsBusy = true;
-            FileResult photo = (await MediaPicker.PickPhotosAsync()).FirstOrDefault();
+            FileResult? photo = (await MediaPicker.PickPhotosAsync()).FirstOrDefault();
             // We have identified an  image, now copy it to the private storage area, so we have it later, if it is needed
             if (photo is not null)
             {

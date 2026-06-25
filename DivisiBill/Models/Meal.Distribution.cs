@@ -387,7 +387,7 @@ public partial class Meal
             }
             if (Math.Abs(roundingErrorLeft) >= 0.005m) // sharing among clusters of identical orders didn't do it, try giving it to any solo participant 
             {
-                PersonCost ci = amountClusters.Where(result => result.SameOrderAmountCount == 1) // Just the ones with unique order amounts
+                PersonCost? ci = amountClusters.Where(result => result.SameOrderAmountCount == 1) // Just the ones with unique order amounts
                     .SelectMany(cluster => cluster.CostsWithSameOrderAmount) // Flatten the lists
                     .FirstOrDefault(ci => (ci.Amount + roundingErrorLeft) > 0); // now see if there's one that can handle the remainder 
                 if (ci is not null)
@@ -400,7 +400,7 @@ public partial class Meal
         if (roundingErrorLeft != 0) // As a last resort, just give it to the first participant that can handle it
         {
             // The extra is added(or subtracted from) the first non zero total it would not overwhelm.
-            PersonCost costItem = costsWithAmount.FirstOrDefault(ci => (ci.Amount + roundingErrorLeft) > 0);
+            PersonCost? costItem = costsWithAmount.FirstOrDefault(ci => (ci.Amount + roundingErrorLeft) > 0);
             if (costItem is not null)
                 costItem.Amount += roundingErrorLeft;
             else // We could not find any way to allocate remainingTotal should always be zero
@@ -590,9 +590,11 @@ public partial class Meal
         decimal totalDifference = 0;
         DistributeCosts20230527();
         string s = System.Text.Json.JsonSerializer.Serialize(Costs.ToList());
-        System.Collections.Generic.List<PersonCost> OldCosts = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<PersonCost>>(s);
+        System.Collections.Generic.List<PersonCost>? OldCosts = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<PersonCost>>(s);
         DistributeCosts();
-        foreach ((PersonCost oldPc, PersonCost newPc) in OldCosts.Zip(Costs))
+        if (OldCosts is null)
+            return 0; // Should never happen, but if it does, just say there's no difference
+        foreach ((PersonCost? oldPc, PersonCost? newPc) in OldCosts.Zip(Costs))
         {
             if (oldPc is null || newPc is null)
                 break;

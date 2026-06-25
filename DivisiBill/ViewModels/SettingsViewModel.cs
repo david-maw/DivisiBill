@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using CommunityToolkit.Maui.Extensions;
+﻿using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
@@ -336,7 +334,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public bool HasOcrLicense => Billing.OcrPurchase is not null;
     public bool InvalidOcrLicense => Billing.OcrPurchase is not null && Billing.OcrPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? OcrLicenseId => Billing.OcrPurchase?.Id;
-    public string BaseAddress => App.WsUriDefined ? CallWs.BaseAddress.ToString() : "";
+    public string BaseAddress => App.WsUriDefined ? CallWs.BaseAddress?.ToString() ?? "" : "";
     public string LastUse => App.Settings.LastUse.ToString();
     public bool Dark
     {
@@ -351,7 +349,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
         get => currentApp.UserAppTheme == AppTheme.Dark || currentApp.RequestedTheme == AppTheme.Dark;
     }
     public bool UseLocation => App.UseLocation;
-    public Location AppLocation => App.MyLocation;
+    public Location? AppLocation => App.MyLocation;
     #region Fake Location Management (Debug Only)
     [RelayCommand]
     private async Task SetFakeLocation()

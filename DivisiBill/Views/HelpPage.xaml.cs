@@ -86,7 +86,7 @@ public partial class HelpPage : ContentPage
             }
             : (WebViewSource)$"help/{PageName.ToLower()}.html{Fragment}"; // not Windows, probably Android, no intermediate page
     }
-    private void WebView_Navigated(object sender, Microsoft.Maui.Controls.WebNavigatedEventArgs e)
+    private void WebView_Navigated(object? sender, Microsoft.Maui.Controls.WebNavigatedEventArgs e)
     {
         Utilities.DebugMsg($"WebView navigated to {e.Url} with navigation event {e.NavigationEvent}");
         foreach (var entry in webView.GetAndroidHistory())
@@ -95,13 +95,13 @@ public partial class HelpPage : ContentPage
         webView.Navigated -= WebView_Navigated; // We only need to clear the history after the first navigation,
     }
 
-    public string PageName { get; set; }
-    public string Fragment { get; set; }
+    public string PageName { get; set; } = string.Empty;
+    public string Fragment { get; set; } = string.Empty;
 
     public ICommand BackCommand { get; }
 
-    private async void OnIndexIconClicked(object sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages')");
-    private void OnExitIconClicked(object sender, EventArgs e) => ReturnToApp();
+    private async void OnIndexIconClicked(object? sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages')");
+    private void OnExitIconClicked(object? sender, EventArgs e) => ReturnToApp();
 
     private void ReturnToApp() => Shell.Current.Navigation.PopAsync();
 }

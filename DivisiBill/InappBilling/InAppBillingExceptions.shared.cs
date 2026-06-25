@@ -78,7 +78,7 @@ public class InAppBillingPurchaseException : Exception
     /// </summary>
     public PurchaseError PurchaseError { get; }
 
-    public string[] Invalid { get; }
+    public string[]? Invalid { get; }
 
     /// <summary>
     /// 
@@ -103,7 +103,7 @@ public class InAppBillingPurchaseException : Exception
     /// 
     /// </summary>
     /// <param name="error"></param>
-    public InAppBillingPurchaseException(PurchaseError error, string message, string[] invalid) : base(message)
+    public InAppBillingPurchaseException(PurchaseError error, string message, string[]? invalid) : base(message)
     {
         PurchaseError = error;
         Invalid = invalid;

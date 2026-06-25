@@ -1,6 +1,4 @@
-﻿using DivisiBill.Services;
-
-namespace DivisiBill.Tests;
+﻿namespace DivisiBill.Services;
 
 internal class FakeAppSettings : ISettings
 {
@@ -32,7 +30,7 @@ internal class FakeAppSettings : ISettings
     public bool SendCrashYes { get; set; } = false;
     public bool SendCrashAsk { get; set; } = false;
     public bool ShowTutorial { get; set; } = false;
-    public Location FakeLocation { get; set; } = null;
+    public Location? FakeLocation { get; set; } = null;
     public bool HadProSubscription { get; set; } = false;
     public Rect InitialPosition { get; set; } = new Rect(0, 0, 0, 0);
     public bool BackupImages { get; set; } = false;

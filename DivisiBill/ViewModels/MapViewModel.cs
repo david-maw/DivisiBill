@@ -10,17 +10,18 @@ namespace DivisiBill.ViewModels;
 public partial class MapViewModel : ObservableObject
 {
     // Used to store the original venue location so we can restore it if the user clicks the "Restore" button   
-    private Location originalVenueLocation;
+    private Location? originalVenueLocation;
 
     // Events to notify the view when the location or map type changes so it can handle non-MVVM map features.
-    public event EventHandler<Location> LocationChanged;
-    public event EventHandler RestoreRequested;
-    public event EventHandler<MapType> MapTypeRequested;
-    public event EventHandler ClearLocationRequested;
+    public delegate void LocationChangedEventHandler(object? sender, Location? newLocation);
+    public event LocationChangedEventHandler? LocationChanged;
+    public event EventHandler? RestoreRequested;
+    public event EventHandler<MapType>? MapTypeRequested;
+    public event EventHandler? ClearLocationRequested;
 
     public MapViewModel()
     {
-        App.MyLocationChanged += (_, _) => VenueDistance = App.GetDistanceTo(VenueLocation);
+        App.MyLocationChanged += (_, _) => { if (VenueLocation is not null) VenueDistance = App.GetDistanceTo(VenueLocation); };
     }
 
     /// <summary>
@@ -30,7 +31,7 @@ public partial class MapViewModel : ObservableObject
     /// messaging system or shared state. We update the ViewModel properties directly from the MapSettings
     /// when it is set, so that the UI is initialized with the correct values.
     /// </summary>
-    public MapSettings MapSettings
+    public MapSettings? MapSettings
     {
         get => field;
         set
@@ -44,7 +45,7 @@ public partial class MapViewModel : ObservableObject
                 field = value;
             }
         }
-    }
+    } = null;
 
     /// <summary>
     /// We are exiting the map page, so if the venue location has changed, we need to update the MapSettings
@@ -81,15 +82,20 @@ public partial class MapViewModel : ObservableObject
     // The name of the venue is displayed in the UI but does not affect any map functionality,
     // so it does not need to be updated when the location changes.
     // It is only set from the MapSettings when the page is initialized.
-    public string VenueName { get; private set; }
+    public string VenueName { get; private set; } = string.Empty;
 
     // The venue location is the core piece of data that this ViewModel manages.
     // When it changes, we need to update the distance and for a native map notify the view so
     // it can update the map marker and accuracy circle.
     [ObservableProperty]
-    public partial Location VenueLocation { get; set; }
-    partial void OnVenueLocationChanged(Location value)
+    public partial Location? VenueLocation { get; set; }
+    partial void OnVenueLocationChanged(Location? value)
     {
+        if (value is null)
+        {
+            VenueDistance = Distances.Unknown;
+            return;
+        }
         VenueDistance = App.GetDistanceTo(value);
         VenueLocationHasChanged = true;
         // Notify the view that the location has changed so it can update the map marker and accuracy
@@ -156,7 +162,7 @@ public partial class MapViewModel : ObservableObject
     // The WebViewSource for the Google Map is stored in the ViewModel so it can be initialized with
     // the correct HTML+JavaScript when the page loads <see cref="GenerateGoogleMapHtml"/>.
     [ObservableProperty]
-    public partial WebViewSource GoogleMapSource { get; set; } = null;
+    public partial WebViewSource? GoogleMapSource { get; set; } = null;
 
     // Initializes the Google Map by generating the HTML+JavaScript with the correct initial center,
     // zoom, and marker based on the venue location.
@@ -165,7 +171,9 @@ public partial class MapViewModel : ObservableObject
         if (Utilities.IsWinUI && MapSettings != null)
         {
             double zoom = 15; // Default zoom level for accurate location
-            Location mapCenter = VenueLocation?.IsAccurate() == true ? VenueLocation : App.MyLocation;
+            Location? mapCenter = VenueLocation?.IsAccurate() == true ? VenueLocation : App.MyLocation;
+            if (mapCenter is null)
+                return;
             GoogleMapSource = new HtmlWebViewSource
             {
                 Html = GenerateGoogleMapHtml(mapCenter.Latitude, mapCenter.Longitude, zoom)
@@ -191,10 +199,10 @@ public partial class MapViewModel : ObservableObject
     {
         bool hasAccurateLocation = VenueLocation?.IsAccurate() == true;
         string initialMarkerHtml = hasAccurateLocation
-            ? $"updateMarker({VenueLocation.Latitude:F5}, {VenueLocation.Longitude:F5}, {VenueLocation.Accuracy:F0});"
+            ? $"updateMarker({VenueLocation?.Latitude:F5}, {VenueLocation?.Longitude:F5}, {VenueLocation?.Accuracy:F0});"
             : "";
         string restoreMarkerHtml = hasAccurateLocation ? initialMarkerHtml : "clearMarker();";
-        string showCurrentLocationHtml = App.UseLocation
+        string showCurrentLocationHtml = App.UseLocation && App.MyLocation is not null
             ? $"showCurrentLocation({App.MyLocation.Latitude:F5}, {App.MyLocation.Longitude:F5}, {App.MyLocation?.Accuracy ?? 0:F0});"
             : "";
 
@@ -381,7 +389,7 @@ public partial class MapViewModel : ObservableObject
     class GoogleMapMessage
     {
         [JsonPropertyName("event")]
-        public string Event { get; set; }
+        public string Event { get; set; } = string.Empty;
         [JsonPropertyName("lat")]
         public double Latitude { get; set; }
         [JsonPropertyName("lng")]

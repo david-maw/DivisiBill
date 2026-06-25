@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Provides automatic icon opacity management for toolbar items.
-/// Icons automatically adjust their opacity based on the IsEnabled andCommand.CanExecute state.
+/// Icons automatically adjust their opacity based on the IsEnabled and Command.CanExecute state.
 /// </summary>
 public static class IconState
 {
@@ -44,21 +44,21 @@ public static class IconState
     /// Called when the icon's parent changes. Sets up command and IsEnabled monitoring on the ToolbarItem
     /// and subscribes to Command and IsEnabled property changes to handle changes after parent assignment.
     /// </summary>
-    private static void OnParentChanged(object sender, EventArgs e)
+    private static void OnParentChanged(object? sender, EventArgs e)
     {
         if (sender is not Element element)
             return;
 
-        if (element.Parent is ToolbarItem toolbarItem)
+        if (element.Parent is ToolbarItem toolbarItem && element is ImageSource icon)
         {
-            SetupMonitoring(element as ImageSource, toolbarItem);
+            SetupMonitoring(icon, toolbarItem);
             // Monitor for Command and IsEnabled property changes
             toolbarItem.PropertyChanged += (_, args) =>
             {
                 if (args.PropertyName == nameof(ToolbarItem.Command))
-                    SetupMonitoring(element as ImageSource, toolbarItem);
+                    SetupMonitoring(icon, toolbarItem);
                 else if (args.PropertyName == nameof(ToolbarItem.IsEnabled))
-                    UpdateOpacityForToolbarItem(element as ImageSource, toolbarItem);
+                    UpdateOpacityForToolbarItem(icon, toolbarItem);
             };
         }
     }

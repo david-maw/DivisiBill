@@ -32,9 +32,9 @@ internal class PinchToZoomContainer : ContentView
         Content.TranslationY = 0;
     }
 
-    private void OnTapped(object sender, EventArgs e) => ResetImage();
+    private void OnTapped(object? sender, EventArgs e) => ResetImage();
 
-    private void OnPinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
+    private void OnPinchUpdated(object? sender, PinchGestureUpdatedEventArgs e)
     {
         if (e.Status == GestureStatus.Started)
         {
@@ -82,7 +82,7 @@ internal class PinchToZoomContainer : ContentView
             yOffset = Content.TranslationY;
         }
     }
-    private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
+    private void OnPanUpdated(object? sender, PanUpdatedEventArgs e)
     {
         if (e.StatusType == GestureStatus.Started)
         {

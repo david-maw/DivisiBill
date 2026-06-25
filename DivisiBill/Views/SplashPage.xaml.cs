@@ -31,7 +31,7 @@ public partial class SplashPage : ContentPage
     /// redo it all. Of course it is possible external state (like the bills stored locally or remotely, or cloud
     /// accessibility) might have changed, so we check the ones we display.
     /// </summary>
-    private async void SplashPage_Loaded(object sender, EventArgs e)
+    private async void SplashPage_Loaded(object? sender, EventArgs e)
     {
         base.OnAppearing();
         // reevaluate some values that may have changed
@@ -73,7 +73,6 @@ public partial class SplashPage : ContentPage
     {
         await StatusMsgAsync("Commencing initialization, tap the icon above to pause");
         Shell.Current.Navigating += PreventPrematureNavigation;
-        App.Settings ??= new AppSettings(); // allowed to be null for testing
         Meal.InitializeFolders();
         if (App.SentryAllowed && App.Settings.SendCrashAsk)
         {
@@ -81,8 +80,8 @@ public partial class SplashPage : ContentPage
                 new QuestionPage("Telemetry", "Do you want to report crash data anonymously to DivisiBill Support?", App.Settings.SendCrashYes),
                 Utilities.GetNullPopupOptions(false));
             // It's ok to ask the questions in debug builds, but debug builds never send reports, regardless of the answer
-            App.Settings.SendCrashYes = d.Result.Yes;
-            App.Settings.SendCrashAsk = d.Result.Ask;
+            App.Settings.SendCrashYes = d.Result?.Yes ?? false;
+            App.Settings.SendCrashAsk = d.Result?.Ask ?? false;
         }
         App.EvaluateCloudAccessible(); // Set initial values
         App.HandleActivityChanges();
@@ -90,7 +89,7 @@ public partial class SplashPage : ContentPage
         if (Connectivity.NetworkAccess == NetworkAccess.Internet && App.WsUriDefined)
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
-            bool licensCheckWorked =  await App.CheckLicenses(true);
+            bool licensCheckWorked = await App.CheckLicenses(true);
             if (licensCheckWorked)
                 await StatusMsgAsync("License check completed without errors");
             else
@@ -157,7 +156,7 @@ public partial class SplashPage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private static void PreventPrematureNavigation(object sender, ShellNavigatingEventArgs e)
+    private static void PreventPrematureNavigation(object? sender, ShellNavigatingEventArgs e)
     {
         if (e.CanCancel)
         {// If we can cancel the navigation, do so if it is not for a popup
@@ -209,7 +208,7 @@ public partial class SplashPage : ContentPage
             statusScrollView.ScrollToAsync(statusLabel, ScrollToPosition.End, true);
         }
     });
-    private async void OnStatusTapped(object sender, EventArgs e)
+    private async void OnStatusTapped(object? sender, EventArgs e)
     {
         if (!Utilities.PauseBeforeMessage)
             await Utilities.StatusMsgAsync("*** Pausing Messages ***");

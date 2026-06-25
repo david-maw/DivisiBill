@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using CommunityToolkit.Maui.Storage;
+﻿using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
@@ -136,14 +134,19 @@ internal partial class DataManagementViewModel : ObservableObject
             DateTime startDateTime = DateOnly.FromDateTime(StartDate).ToDateTime(TimeOnly.MinValue);
             DateTime finishDateTime = DateOnly.FromDateTime(FinishDate).ToDateTime(TimeOnly.MaxValue);
             // Make a list of meals by looping through list of local mealSummaries and creating a meal from selected ones
-            toArchive = [.. Meal.LocalMealList
+
+            var ml = Meal.LocalMealList
                 .Where(ms => // A meal that is already selected (if we are selecting) and within date range if there is one
                     (!OnlySelectedMeals || ms.FileSelected) &&
                     ms.CreationTime >= startDateTime &&
                     ms.CreationTime <= finishDateTime
                 )
                 .OrderByDescending(ms => ms.CreationTime)
-                .Select(ms => Meal.LoadFromFile(ms))];
+                .Select(ms => Meal.LoadFromFile(ms));
+
+            List<Meal> meals = [.. ml.Where(m => m is not null).Cast<Meal>()];
+
+            toArchive = meals;
             SelectedMealsCount = toArchive.Count;
         }
         else if (Utilities.IsDebug)// an archive is selected, we should not have been called   
@@ -167,14 +170,14 @@ internal partial class DataManagementViewModel : ObservableObject
             return;
         }
         Archive archive = new(toArchive, OnlyRelated);
-        archive.UserSettings.BillsFromDate = StartDate.ToShortDateString();
-        archive.UserSettings.BillsToDate = FinishDate.ToShortDateString();
-        if (archive.AllMeals.Count == 0)
+        archive.UserSettings?.BillsFromDate = StartDate.ToShortDateString();
+        archive.UserSettings?.BillsToDate = FinishDate.ToShortDateString();
+        if (archive.AllMeals?.Count == 0)
         {
             await Utilities.DisplayAlertAsync("Archiving Error", "No bills meet the archive criteria");
             return;
         }
-        string zipFullName = archive.ZipAsync(SaveImages);
+        string? zipFullName = archive.CreateZipArchive(SaveImages);
         if (string.IsNullOrWhiteSpace(zipFullName) || !File.Exists(zipFullName))
         {
             await Utilities.ShowAppSnackBarAsync("Archive Zip File Creation Failed");
@@ -199,7 +202,7 @@ internal partial class DataManagementViewModel : ObservableObject
                     // File.Delete(zipFilePath);
                     await Utilities.ShowAppSnackBarAsync("Archive Sharing Initiated");
                     // We do not know for sure that the archive happened but assume it did and remember the date of the last meals that was archived
-                    App.Settings.PreviousArchiveEndTime = archive.AllMeals.First().CreationTime; // List is in descending date order
+                    App.Settings.PreviousArchiveEndTime = archive.AllMeals?.First().CreationTime ?? DateTime.MinValue; // List is in descending date order
                     StartDate = App.Settings.PreviousArchiveEndTime;
                 }
                 else
@@ -216,7 +219,7 @@ internal partial class DataManagementViewModel : ObservableObject
                 {
                     File.Delete(zipFullName);
                     await Utilities.ShowAppSnackBarAsync("Archive to disk completed successfully");
-                    App.Settings.PreviousArchiveEndTime = archive.AllMeals.Last().CreationTime;
+                    App.Settings.PreviousArchiveEndTime = archive.AllMeals?.Last().CreationTime ?? DateTime.MinValue;
                 }
                 else
                     await Utilities.ShowAppSnackBarAsync("Archive Failed");

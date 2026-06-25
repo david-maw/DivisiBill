@@ -25,7 +25,7 @@ internal static class CallWs
     public static readonly TimeSpan CallTimeout = TimeSpan.FromSeconds(30);
     private static readonly HttpClient client = new() { BaseAddress = new Uri(Generated.BuildInfo.DivisiBillWsUri), Timeout = CallTimeout };
 
-    public static Uri BaseAddress => client.BaseAddress;
+    public static Uri? BaseAddress => client.BaseAddress;
 
     #region Class Constructor
     static CallWs()
@@ -47,7 +47,7 @@ internal static class CallWs
     {
         var webStopwatch = Stopwatch.StartNew();
         CancellationTokenSource tokenSource = new();
-        Task <HttpResponseMessage> webCallTask = webCall(tokenSource);
+        Task<HttpResponseMessage> webCallTask = webCall(tokenSource);
         await webCallTask.OrDelay(5000); // If it responds quickly, don't even bother to show a dialog
         // Call the web service and wait for a response or until the user gives up 
         if (webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode)
@@ -61,7 +61,7 @@ internal static class CallWs
     #region Header Management
     private static void StoreTokenHeader(this HttpResponseMessage response)
     {
-        string tokenValue = response.Headers.Contains(TokenHeaderName) ? response.Headers.GetValues(TokenHeaderName).FirstOrDefault() : null;
+        string? tokenValue = response.Headers.Contains(TokenHeaderName) ? response.Headers.GetValues(TokenHeaderName).FirstOrDefault() : null;
         if (!string.IsNullOrWhiteSpace(tokenValue))
             UpsertHttpClientHeader(TokenHeaderName, tokenValue);
     }
@@ -81,7 +81,7 @@ internal static class CallWs
     /// <param name="cancel">A CancellationToken used to stop an in-process scan</param>
     /// <returns>A ScannedBill object indicating the number of scans left on the license used and the contents of the scan</returns>
     /// <exception cref="OperationCanceledException"></exception>
-    internal static Task<ScannedBill> ImageToScannedBill(string ImagePath, CancellationToken cancel)
+    internal static Task<ScannedBill?> ImageToScannedBill(string ImagePath, CancellationToken cancel)
     {
         byte[] readFile = File.ReadAllBytes(ImagePath);
         MemoryStream stream = new(readFile);
@@ -96,11 +96,11 @@ internal static class CallWs
     /// <param name="imageStream">The image to scan (usually JPEG, sometimes PNG)</param>
     /// <param name="cancel">A CancellationToken used to stop an in-process scan</param>
     /// <returns>A ScannedBill object indicating the number of scans left on the license used and the contents of the scan</returns>
-    private static async Task<ScannedBill> ImageToScannedBill(Stream imageStream, CancellationToken cancel)
+    private static async Task<ScannedBill?> ImageToScannedBill(Stream imageStream, CancellationToken cancel)
     {
-        if (Billing.ScansLeft <= 0)
+        if (Billing.ScansLeft <= 0 || Billing.OcrPurchase?.OriginalJson is null)
             return null;
-        string content = null;
+        string? content = null;
         // Create a multi part form data content message body and send it
         using (StreamContent fileContent = new(imageStream))
         using (StringContent stringContent = new(Billing.OcrPurchase.OriginalJson, Encoding.UTF8, "application/json"))
@@ -114,7 +114,7 @@ internal static class CallWs
             content = await PostFormToScanAsync(multipartFormDataContent, cancel);
         }
 
-        ScannedBill sb = System.Text.Json.JsonSerializer.Deserialize<ScannedBill>(content);
+        ScannedBill? sb = System.Text.Json.JsonSerializer.Deserialize<ScannedBill>(content);
         if (sb is null)
             return null;
         // Now set the scans remaining count
@@ -128,7 +128,7 @@ internal static class CallWs
         {
             throw new IOException("No Internet access");
         }
-        string responseData = null;
+        string? responseData = null;
         try
         {
             // Send image data to the server and return the response text
@@ -154,7 +154,7 @@ internal static class CallWs
     #endregion
     #region Get Version
 
-    internal static string MostRecentVersionInfo { get; set; } = null;
+    internal static string? MostRecentVersionInfo { get; set; } = null;
 
     /// <summary>
     /// Get the version of various server-side components
@@ -196,10 +196,9 @@ internal static class CallWs
     /// </summary>
     /// <param name="purchase"></param>
     /// <returns>True if the purchase was recorded, false if not</returns>
-    /// 
     internal static async Task<bool> RecordPurchaseAsync(InAppBillingPurchase purchase)
     {
-        if (DeviceInfo.Platform == DevicePlatform.Android)
+        if (DeviceInfo.Platform == DevicePlatform.Android && purchase.OriginalJson is not null && purchase.Signature is not null)
         {
             // Store the license by calling a web service
             try
@@ -227,10 +226,10 @@ internal static class CallWs
     /// </summary>
     /// <param name="purchase">The InAppBilling object to be tested</param>
     /// <returns>The contents of the returned verification message or null if verification failed</returns>
-    internal static async Task<string> VerifyPurchase(InAppBillingPurchase purchase)
+    internal static async Task<string?> VerifyPurchase(InAppBillingPurchase purchase)
     {
         Utilities.DebugMsg("In VerifyPurchase for " + purchase.Id);
-        if (DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug))
+        if ((DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug)) && purchase.OriginalJson is not null && purchase.Signature is not null)
         {
             try
             {
@@ -243,7 +242,7 @@ internal static class CallWs
                 Utilities.DebugMsg("In VerifyPurchase, awaiting VerifyAndroidPurchase");
                 // validate the license by calling a web service
                 HttpResponseMessage response = await CallUncertainWebServiceAsync((CancellationTokenSource cts) => client.PostAsync("VerifyAndroidPurchase", content, cts.Token));
-                if (response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode && purchase.ProductId is not null)
                 {
                     string s = await response.Content.ReadAsStringAsync();
                     Utilities.RecordMsg("In VerifyPurchase, VerifyAndroidPurchase returned ok and \"" + s + "\"");
@@ -282,13 +281,13 @@ internal static class CallWs
     /// <param name="id">Name of the item to be retrieved</param>
     /// <returns>The item data (even for meal items), normally an XML encoded object</returns>
     /// 
-    public static async Task<string> GetItemDataAsStringAsync(string itemTypeName, string id)
+    public static async Task<string?> GetItemDataAsStringAsync(string itemTypeName, string id)
     {
         HttpResponseMessage response = await client.GetAsync($"{itemTypeName}/{id}");
-        if (response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode && response.Content is not null)
         {
             StoreTokenHeader(response);
-            bool isEncrypted = string.Equals(response.Content.Headers.ContentType.MediaType, "application/octet-stream");
+            bool isEncrypted = string.Equals(response.Content.Headers?.ContentType?.MediaType, "application/octet-stream");
             if (isEncrypted)
             {
                 byte[] encryptedBytes = await response.Content.ReadAsByteArrayAsync();
@@ -301,13 +300,13 @@ internal static class CallWs
         else
             return null;
     }
-    public static async Task<Stream> GetItemDataAsStreamAsync(string itemTypeName, string id)
+    public static async Task<Stream?> GetItemDataAsStreamAsync(string itemTypeName, string id)
     {
         HttpResponseMessage response = await client.GetAsync($"{itemTypeName}/{id}");
-        if (response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode && response.Content is not null)
         {
             StoreTokenHeader(response);
-            bool isEncrypted = string.Equals(response.Content.Headers.ContentType.MediaType, "application/octet-stream");
+            bool isEncrypted = string.Equals(response.Content.Headers?.ContentType?.MediaType, "application/octet-stream");
             if (isEncrypted)
             {
                 byte[] encryptedBytes = await response.Content.ReadAsByteArrayAsync();
@@ -330,7 +329,7 @@ internal static class CallWs
     /// <param name="itemData">Data associated with the item</param>
     /// <param name="itemSummary">Summary data for the item (valid only for meal items</param>
     /// <returns>true of the put worked, false if not</returns>
-    public static async Task<bool> PutItemAsync(string itemTypeName, string id, string itemData, string itemSummary = null)
+    public static async Task<bool> PutItemAsync(string itemTypeName, string id, string itemData, string? itemSummary = null)
     {
         if (CryptManager.HasStoredPassword && !CryptManager.HasStoredRsa)
             throw new CryptographicException("Unable to access stored key");
@@ -343,7 +342,7 @@ internal static class CallWs
             multipartFormDataContent.Add(await FormContent("summary", itemSummary));
 
         // Call the web service and show the response 
-        string responseData = null;
+        string? responseData = null;
         try
         {
             HttpResponseMessage response = await client.PutAsync($"{itemTypeName}/{id}", multipartFormDataContent);
@@ -363,7 +362,7 @@ internal static class CallWs
         {
             HttpContent itemDataContent;
             // Optionally load RSA for encryption
-            using RSA rsa = await CryptManager.GetStoredRsaFromFingerprintAsync();
+            using RSA? rsa = await CryptManager.GetStoredRsaFromFingerprintAsync();
             // Build data content (encrypt if RSA available)
             if (rsa is not null)
             {
@@ -440,7 +439,7 @@ internal static class CallWs
             Stream fileStream = File.OpenRead(filePath);
             string blobName = Path.GetFileName(filePath);
             // Detect a few common MIME types based on the file extension
-            using RSA rsa = CryptManager.HasStoredPassword ? await CryptManager.GetStoredRsaFromFingerprintAsync() : null;
+            using RSA? rsa = CryptManager.HasStoredPassword ? await CryptManager.GetStoredRsaFromFingerprintAsync() : null;
             if (rsa is not null)
             {
                 MemoryStream encrypted = new();
@@ -471,7 +470,9 @@ internal static class CallWs
 
     public static async Task<bool> DownloadFileAsync(string fileNameValue, string savePath, bool isEncrypted)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+        string? saveDirectory = Path.GetDirectoryName(savePath);
+        if (saveDirectory is not null)
+            Directory.CreateDirectory(saveDirectory);
         string blobNameValue = fileNameValue + (isEncrypted ? ".enc" : string.Empty); // Add .enc at the end if necessary
         try
         {
@@ -512,7 +513,7 @@ internal static class CallWs
             return false;
         }
     }
-    public static async Task<List<ImageItem>> EnumerateFilesAsync()
+    public static async Task<List<ImageItem>?> EnumerateFilesAsync()
     {
         HttpResponseMessage httpResponse;
         try
@@ -550,8 +551,8 @@ internal static class CallWs
 }
 public sealed class ImageItem
 {
-    public string name { get; set; }
-    public string contentType { get; set; }
-    public long size { get; set; }
-    public DateTimeOffset? lastModified { get; set; }
+    public string? Name { get; set; }
+    public string? ContentType { get; set; }
+    public long Size { get; set; }
+    public DateTimeOffset? LastModified { get; set; }
 }

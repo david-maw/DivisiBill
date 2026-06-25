@@ -20,7 +20,7 @@ public partial class MealSummaryViewModel : ObservableObject
         get => ms;
         set
         {
-            if (CurrentMeal is null)
+            if (CurrentMeal.Summary is null)
                 ms = value;
         }
     }
@@ -30,23 +30,23 @@ public partial class MealSummaryViewModel : ObservableObject
         set
         {
             field = value;
-            ms = value?.Summary;
+            ms = value?.Summary ?? new MealSummary();
         }
-    }
+    } = new();
     public string VenueName => ms.VenueName;
     public DateTime LastChangeTime => ms.LastChangeTime;
     public bool IsLastChangeTimeDifferent => !Utilities.WithinOneSecond(CreationTime, LastChangeTime);
-    public string LastChangeTimeText => ms.GetLastChangeString();
+    public string? LastChangeTimeText => ms.GetLastChangeString();
     public DateTime CreationTime => ms.CreationTime;
     public string Id => ms.Id;
     public decimal RoundedAmount => HasMealInfo ? CurrentMeal.RoundedAmount : 0;
-    public ObservableCollection<PersonCost> Costs => CurrentMeal?.Costs;
+    public ObservableCollection<PersonCost> Costs => CurrentMeal.Costs;
     public int LineItemCount => HasMealInfo ? CurrentMeal.LineItems.Count : 0;
     public bool HasImage => ms.HasImage;
     public bool HasDeletedImage => ms.HasDeletedImage;
     public bool HasRemoteImage => ms.HasRemoteImage;
     public bool IsBad => HasMealInfo && CurrentMeal.Size < 0;
-    public string ErrorMessage => IsBad ? CurrentMeal?.CreationReason : string.Empty;
+    public string ErrorMessage => IsBad ? CurrentMeal.CreationReason ?? string.Empty : string.Empty;
     public string FileName => ms.FileName;
     public decimal UnallocatedAmount => HasMealInfo ? CurrentMeal.UnallocatedAmount : 0;
     public bool IsAnyUnallocated => UnallocatedAmount != 0;

@@ -1,9 +1,9 @@
 using Android.App;
 using Android.BillingClient.Api;
 using Android.Content;
+using DivisiBill.InAppBilling;
 using static Android.BillingClient.Api.BillingClient;
 using BillingResponseCode = Android.BillingClient.Api.BillingResponseCode;
-using DivisiBill.InAppBilling;
 
 namespace DivisiBill.Platforms.Android;
 
@@ -16,7 +16,7 @@ public class InAppBillingImplementation : BaseInAppBilling
     /// <summary>
     /// Gets or sets a callback for out of band purchases to complete.
     /// </summary>
-    public static Action<BillingResult, List<InAppBillingPurchase>> OnAndroidPurchasesUpdated { get; set; } = null;
+    public static Action<BillingResult, List<InAppBillingPurchase>>? OnAndroidPurchasesUpdated { get; set; } = null;
 
     /// <summary>
     /// Gets the context, aka the currently activity.
@@ -36,14 +36,14 @@ public class InAppBillingImplementation : BaseInAppBilling
 
     }
 
-    private BillingClient BillingClient { get; set; }
-    private BillingClient.Builder BillingClientBuilder { get; set; }
+    private BillingClient? BillingClient { get; set; }
+    private BillingClient.Builder? BillingClientBuilder { get; set; }
     /// <summary>
     /// Determines if it is connected to the backend actively (Android).
     /// </summary>
     public override bool IsConnected { get; set; }
-    private TaskCompletionSource<(BillingResult billingResult, IList<Purchase> purchases)> tcsPurchase;
-    private TaskCompletionSource<bool> tcsConnect;
+    private TaskCompletionSource<(BillingResult billingResult, IList<Purchase> purchases)>? tcsPurchase;
+    private TaskCompletionSource<bool>? tcsConnect;
     /// <summary>
     /// Connect to billing service
     /// </summary>
@@ -56,7 +56,7 @@ public class InAppBillingImplementation : BaseInAppBilling
         tcsConnect?.TrySetCanceled();
         tcsConnect = new TaskCompletionSource<bool>();
 
-        using CancellationTokenRegistration _ = cancellationToken.Register(() => tcsConnect.TrySetCanceled());
+        using CancellationTokenRegistration _ = cancellationToken.Register(() => tcsConnect?.TrySetCanceled());
         BillingClientBuilder = NewBuilder(Context);
         BillingClientBuilder.SetListener(OnPurchasesUpdated);
         if (enablePendingPurchases)
@@ -90,10 +90,10 @@ public class InAppBillingImplementation : BaseInAppBilling
     {
         tcsPurchase?.TrySetResult((billingResult, purchases));
 
-        if (OnAndroidPurchasesUpdated == null)
+        if (OnAndroidPurchasesUpdated == null || purchases is null || purchases.Count == 0)
             return;
 
-        OnAndroidPurchasesUpdated?.Invoke(billingResult, purchases?.Select(p => p.ToIABPurchase())?.ToList());
+        OnAndroidPurchasesUpdated.Invoke(billingResult, [.. purchases.Select(p => p.ToIABPurchase())]);
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public class InAppBillingImplementation : BaseInAppBilling
 
         ParseBillingResult(purchasesResult.Result);
 
-        return purchasesResult.Purchases.Select(p => p.ToIABPurchase());
+        return purchasesResult.Purchases?.Select(p => p.ToIABPurchase()) ?? Enumerable.Empty<InAppBillingPurchase>();
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public class InAppBillingImplementation : BaseInAppBilling
     /// <param name="obfuscatedAccountId">Specifies an optional obfuscated string that is uniquely associated with the user's account in your app.</param>
     /// <param name="obfuscatedProfileId">Specifies an optional obfuscated string that is uniquely associated with the user's profile in your app.</param>
     /// <returns></returns>
-    public override async Task<InAppBillingPurchase> PurchaseAsync(string productId, ItemType itemType, string obfuscatedAccountId = null, string obfuscatedProfileId = null, string subOfferToken = null, CancellationToken cancellationToken = default)
+    public override async Task<InAppBillingPurchase?> PurchaseAsync(string productId, ItemType itemType, string? obfuscatedAccountId = null, string? obfuscatedProfileId = null, string? subOfferToken = null, CancellationToken cancellationToken = default)
     {
         if (BillingClient == null || !IsConnected)
         {
@@ -169,7 +169,7 @@ public class InAppBillingImplementation : BaseInAppBilling
         }
 
         if (!string.IsNullOrWhiteSpace(obfuscatedProfileId) && string.IsNullOrWhiteSpace(obfuscatedAccountId))
-            throw new ArgumentNullException("You must set an account id if you are setting a profile id");
+            throw new ArgumentNullException(nameof(obfuscatedAccountId), "You must set an account id if you are setting a profile id");
 
         switch (itemType)
         {
@@ -186,7 +186,7 @@ public class InAppBillingImplementation : BaseInAppBilling
         return null;
     }
 
-    private async Task<InAppBillingPurchase> PurchaseAsync(string productSku, string itemType, string obfuscatedAccountId = null, string obfuscatedProfileId = null, string subOfferToken = null, CancellationToken cancellationToken = default)
+    private async Task<InAppBillingPurchase?> PurchaseAsync(string productSku, string itemType, string? obfuscatedAccountId = null, string? obfuscatedProfileId = null, string? subOfferToken = null, CancellationToken cancellationToken = default)
     {
 
         QueryProductDetailsParams.Product productList = QueryProductDetailsParams.Product.NewBuilder()
@@ -196,7 +196,7 @@ public class InAppBillingImplementation : BaseInAppBilling
 
         QueryProductDetailsParams.Builder skuDetailsParams = QueryProductDetailsParams.NewBuilder().SetProductList(new[] { productList });
 
-        QueryProductDetailsResult skuDetailsResult = await BillingClient.QueryProductDetailsAsync(skuDetailsParams.Build());
+        QueryProductDetailsResult skuDetailsResult = await BillingClient!.QueryProductDetailsAsync(skuDetailsParams.Build());
 
         //ParseBillingResult(skuDetailsResult.Result);
 
@@ -230,23 +230,23 @@ public class InAppBillingImplementation : BaseInAppBilling
         BillingFlowParams flowParams = billingFlowParams.Build();
 
         tcsPurchase = new TaskCompletionSource<(BillingResult billingResult, IList<Purchase> purchases)>();
-        CancellationTokenRegistration _ = cancellationToken.Register(() => tcsPurchase.TrySetCanceled());
+        CancellationTokenRegistration _ = cancellationToken.Register(() => tcsPurchase!.TrySetCanceled());
 
-        BillingResult responseCode = BillingClient.LaunchBillingFlow(Activity, flowParams);
+        BillingResult responseCode = BillingClient!.LaunchBillingFlow(Activity, flowParams);
 
         ParseBillingResult(responseCode);
 
-        (BillingResult billingResult, IList<Purchase> purchases) result = await tcsPurchase.Task;
+        (BillingResult billingResult, IList<Purchase> purchases) result = await tcsPurchase!.Task;
         ParseBillingResult(result.billingResult);
 
         //we are only buying 1 thing.
-        Purchase androidPurchase = result.purchases?.FirstOrDefault(p => p.Products.Contains(productSku));
+        Purchase? androidPurchase = result.purchases?.FirstOrDefault(p => p.Products.Contains(productSku));
 
         //for some reason the data didn't come back
-        if (androidPurchase == null)
+        if (androidPurchase is null)
         {
             IEnumerable<InAppBillingPurchase> purchases = await GetPurchasesAsync(itemType == ProductType.Inapp ? ItemType.InAppPurchase : ItemType.Subscription, cancellationToken);
-            return purchases.FirstOrDefault(p => p.ProductId == productSku);
+            return purchases.FirstOrDefault(p => productSku.Equals(p.ProductId, StringComparison.OrdinalIgnoreCase));
         }
 
         return androidPurchase.ToIABPurchase();

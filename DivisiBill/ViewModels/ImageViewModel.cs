@@ -24,11 +24,11 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// <summary>
     /// The name of the picture that was selected, used to speed up debugging OCR operations
     /// </summary>
-    private string browsedPictureName = null;
+    private string? browsedPictureName = null;
     /// <summary>
     /// The replacement image stream provided by the camera page
     /// </summary>
-    private Stream replacementImageStream = null;
+    private Stream? replacementImageStream = null;
     /// <summary>
     /// Whether the image page should immediately start a camera page
     /// </summary>
@@ -84,7 +84,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         Meal.CurrentMeal.Summary.PropertyChanged -= CurrentMeal_PropertyChanged;
     }
 
-    private void CurrentMeal_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void CurrentMeal_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
         {
@@ -120,7 +120,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             IsBusy = true;
             browsedPictureName = null;
             // Parameter to PickPhotosAsync works around https://github.com/dotnet/maui/issues/32535
-            FileResult photo = (await MediaPicker.PickPhotosAsync(new MediaPickerOptions())).FirstOrDefault();
+            FileResult? photo = (await MediaPicker.PickPhotosAsync(new MediaPickerOptions())).FirstOrDefault();
             // We have identified an  image, now copy it to the private storage area, so we have it later, if it is needed
             if (photo is not null)
             {
@@ -157,8 +157,8 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             {
                     { "ImagePath", Meal.CurrentMeal.ImagePath}
                 };
-            if (!string.IsNullOrEmpty(browsedPictureName))
-                navigationParameter.Add("ScannedBill", ScannedBill.LoadFromFile(browsedPictureName));
+            if (ScannedBill.LoadFromFile(browsedPictureName) is ScannedBill scannedBill)
+                navigationParameter.Add("ScannedBill", scannedBill);
 
             await App.PushAsync(Routes.ScanPage, navigationParameter);
         }
@@ -239,7 +239,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
     /// </summary>
     [ObservableProperty]
-    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)Application.Current.Resources["GlyphFlashlightOn"];
+    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)App.Current.Resources["GlyphFlashlightOn"];
 
     [ObservableProperty]
     public partial bool IsLightOn { get; set; } = false;
@@ -248,7 +248,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     private async Task ChangeLightMode()
     {
         IsLightOn = !IsLightOn;
-        LightGlyph = (FontImageSource)(IsLightOn ? Application.Current.Resources["GlyphFlashlightOff"] : Application.Current.Resources["GlyphFlashlightOn"]);
+        LightGlyph = (FontImageSource)(IsLightOn ? App.Current.Resources["GlyphFlashlightOff"] : App.Current.Resources["GlyphFlashlightOn"]);
         try
         {
             if (await Flashlight.IsSupportedAsync())
@@ -285,7 +285,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     [NotifyCanExecuteChangedFor(nameof(DeleteCommand))]
     [NotifyCanExecuteChangedFor(nameof(UndeleteCommand))]
     [NotifyCanExecuteChangedFor(nameof(RotateRightCommand))]
-    public partial ImageSource PreviewImageSource { get; set; } = null;
+    public partial ImageSource? PreviewImageSource { get; set; } = null;
 
     [ObservableProperty]
     public partial double ImageScale { get; set; } = 1;
@@ -366,7 +366,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             foreach (IExifValue item in image.Metadata.ExifProfile.Values)
                 if (item.Tag == SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.Orientation)
                 {
-                    exifOrientation = (ushort)item.GetValue();
+                    exifOrientation = (ushort)(item.GetValue() ?? 0);
                     break;
                 }
         }
@@ -460,9 +460,9 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     #region IQueryAttributable Implementation
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        replacementImageStream = query.TryGetValue("ImageStream", out object streamObject) ? streamObject as Stream : null; // Comes from the camera page
-        browsedPictureName = query.TryGetValue("Browsed", out object browsedObject) ? browsedObject as string : null; // From a browse initiated by the camera page
-        startWithCamera = query.TryGetValue("StartWithCamera", out object startWithCameraObject) && startWithCameraObject is string s && bool.TryParse(s, out bool b) && b;
+        replacementImageStream = query.TryGetValue("ImageStream", out object? streamObject) ? streamObject as Stream : null; // Comes from the camera page
+        browsedPictureName = query.TryGetValue("Browsed", out object? browsedObject) ? browsedObject as string : null; // From a browse initiated by the camera page
+        startWithCamera = query.TryGetValue("StartWithCamera", out object? startWithCameraObject) && startWithCameraObject is string s && bool.TryParse(s, out bool b) && b;
     }
     #endregion
 }

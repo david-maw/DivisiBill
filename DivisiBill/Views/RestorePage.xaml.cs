@@ -14,7 +14,8 @@ public partial class RestorePage : ContentPage
         {
             Utilities.DebugMsg("RestorePage.Loaded: Starting to wait for intent updates");
             // Start waiting for intent triggered updates
-            await (BindingContext as RestoreViewModel)?.WaitForUpdatesAsync();
+            if (BindingContext is RestoreViewModel vm)
+                await vm.WaitForUpdatesAsync();
         };
     }
     public async void ExitPage()
@@ -23,7 +24,7 @@ public partial class RestorePage : ContentPage
         {
 #if ANDROID
             Utilities.DebugMsg("RestorePage.ExitPage: Exiting using FinishAndRemoveTask");
-            Platform.CurrentActivity.FinishAndRemoveTask();
+            Platform.CurrentActivity?.FinishAndRemoveTask();
 #endif
         }
         else

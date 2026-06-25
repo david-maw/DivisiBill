@@ -45,7 +45,7 @@ public partial class VenueEditPage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void SelectFirst(object sender, FocusEventArgs e)
+    private void SelectFirst(object? sender, FocusEventArgs e)
     {
         if (sender is Entry entry && !string.IsNullOrEmpty(entry.Text))
         {

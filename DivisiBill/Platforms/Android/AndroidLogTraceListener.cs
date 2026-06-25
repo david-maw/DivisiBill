@@ -1,5 +1,4 @@
-﻿#nullable enable
-using Android.Util;
+﻿using Android.Util;
 using System.Diagnostics;
 
 namespace DivisiBill.Platforms.Android;

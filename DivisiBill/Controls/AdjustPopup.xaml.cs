@@ -1,4 +1,3 @@
-#nullable enable
 using CommunityToolkit.Maui.Core.Platform;
 using DivisiBill.ViewModels;
 

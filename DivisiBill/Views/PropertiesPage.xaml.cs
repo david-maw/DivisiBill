@@ -13,7 +13,7 @@ public partial class PropertiesPage : ContentPage
         viewModel = (PropertiesViewModel)BindingContext;
         var amountEntries = FindVisualChildren<AmountEntry>(this);
 
-        foreach (var entry in amountEntries.Where(en=>!en.IsReadOnly))
+        foreach (var entry in amountEntries.Where(en => !en.IsReadOnly))
         {
             entry.Focused += OnFocused;
             entry.Unfocused += OnInputViewUnfocused;
@@ -40,21 +40,21 @@ public partial class PropertiesPage : ContentPage
     }
 
     // Manage keyboard visibility for InputViews (Entry and Edit controls)
-    InputView currentInputView = null;
-    private async void OnFocused(object sender, FocusEventArgs e)
+    InputView? currentInputView = null;
+    private async void OnFocused(object? sender, FocusEventArgs e)
     {
         currentInputView = sender as InputView;
         if (currentInputView is not null)
             await currentInputView.ShowKeyboardAsync();
     }
-    private async void OnInputViewUnfocused(object sender, FocusEventArgs e)
+    private async void OnInputViewUnfocused(object? sender, FocusEventArgs e)
     {
         await Task.Yield();// Give Focused for the next control a chance to run
 
         if (currentInputView is null && sender is InputView inputView)
             await inputView.HideKeyboardAsync();
     }
-    private async void OnCompleted(object sender, EventArgs e) => (sender as VisualElement)?.Unfocus();
+    private async void OnCompleted(object? sender, EventArgs e) => (sender as VisualElement)?.Unfocus();
     private static IEnumerable<T> FindVisualChildren<T>(Element parent) where T : Element
     {
         if (parent == null)

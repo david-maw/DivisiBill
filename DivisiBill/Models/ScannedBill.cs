@@ -15,7 +15,7 @@ public class ScannedBill
     {
     }
     #region Properties
-    public string SourceName { get; set; }
+    public string? SourceName { get; set; }
 
     /// <summary>
     /// Number of scans remaining on the license used
@@ -48,34 +48,37 @@ public class ScannedBill
     public void StoreToFile()
     {
         SourceName ??= Meal.CurrentMeal.FileName;
+        if (SourceName is null)
+        {
+            Utilities.DebugMsg("In ScannedBill.StoreToFile: No source name, can't store");
+            return; // can't do anything without a source name
+        }
         string TargetFilePath = Path.Combine(Meal.ImageFolderPath, Path.ChangeExtension(SourceName, "xml"));
         using FileStream stream = File.Open(TargetFilePath, FileMode.Create); // Overwrites any existing file
         Serialize(stream);
         Utilities.DebugExamineStream(stream);
     }
-    private static ScannedBill Deserialize(Stream s)
+    private static ScannedBill? Deserialize(Stream s)
     {
         using StreamReader sr = new(s, Encoding.UTF8, true, 512, true);
         using var xmlReader = XmlReader.Create(sr);
-        return (ScannedBill)itemsSerializer.Deserialize(xmlReader);
+        return (ScannedBill?)itemsSerializer.Deserialize(xmlReader);
     }
 
-    public static ScannedBill LoadFromFile(string fileName)
+    public static ScannedBill? LoadFromFile(string? fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
             return null;
-        ScannedBill result = null;
+        ScannedBill? result = null;
         string TargetFilePath = Path.Combine(Meal.ImageFolderPath, Path.ChangeExtension(fileName, "xml"));
-        if (!File.Exists(TargetFilePath))
-        {
-            result = new ScannedBill();
-        }
-        else
+        if (File.Exists(TargetFilePath))
         {
             using FileStream stream = File.Open(TargetFilePath, FileMode.Open); // Expect an existing file
             result = Deserialize(stream);
             Utilities.DebugExamineStream(stream);
         }
+        if (result is null)
+            return null;
         result.SourceName = fileName;
         return result;
     }
@@ -96,7 +99,7 @@ public class ScannedBill
         int lastLineInx = OrderLines.Count - 1;
         if (lastLineInx > 0) // Two or more lines
         {
-            OrderLine priorItem = null;
+            OrderLine? priorItem = null;
             if (string.IsNullOrWhiteSpace(OrderLines[0].ItemName) && string.IsNullOrWhiteSpace(OrderLines[lastLineInx].ItemCost))
             { // The name column is offset below the cost column
                 OrderLines.ForEach(orderLine =>
@@ -126,8 +129,8 @@ public class ScannedBill
 /// </summary>
 public class OrderLine
 {
-    public string ItemName { get; set; }
-    public string ItemCost { get; set; }
+    public string? ItemName { get; set; }
+    public string? ItemCost { get; set; }
 
     /// <summary>
     /// Convert an OrderLine to a LineItem handling two special cases 
@@ -137,8 +140,8 @@ public class OrderLine
     /// <returns></returns>
     public LineItem ToLineItem()
     {
-        (decimal amount, string leadingText) = CurrencyStringToAmount(ItemCost);
-        if (ItemName.Contains('\n')) // Happens with Azure FormRecognizer occasionally
+        (decimal amount, string leadingText) = CurrencyStringToAmount(ItemCost ?? "0");
+        if (ItemName is not null && ItemName.Contains('\n')) // Happens with Azure FormRecognizer occasionally
         {
             // Just forget about any possible stray text because we've no good idea where to put it
             return new LineItem()
@@ -239,8 +242,8 @@ public class OrderLine
         return (result, leadingText);
     }
 }
-public class FormElement
+public record FormElement
 {
-    public string FieldName { get; set; }
-    public string FieldValue { get; set; }
+    public string? FieldName { get; init; }
+    public string? FieldValue { get; init; }
 }

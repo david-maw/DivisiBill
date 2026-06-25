@@ -13,18 +13,18 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #region Constructor/Destructor
     public PropertiesViewModel()
     {
-        Meal.CurrentMeal?.PropertyChanged += CurrentMeal_PropertyChanged;
+        Meal.CurrentMeal.PropertyChanged += CurrentMeal_PropertyChanged;
         Meal.CurrentMealChanged += (oldValue, newValue) =>
         {
-            oldValue?.PropertyChanged -= CurrentMeal_PropertyChanged;
-            newValue?.PropertyChanged += CurrentMeal_PropertyChanged;
+            oldValue.PropertyChanged -= CurrentMeal_PropertyChanged;
+            newValue.PropertyChanged += CurrentMeal_PropertyChanged;
             OnPropertyChanged(string.Empty); // just refresh everything, it's easier than trying to figure out what changed
         };
     }
 
     ~PropertiesViewModel()
     {
-        Meal.CurrentMeal?.PropertyChanged -= CurrentMeal_PropertyChanged;
+        Meal.CurrentMeal.PropertyChanged -= CurrentMeal_PropertyChanged;
     }
     #endregion
     #region Enter / Exit Page
@@ -40,8 +40,10 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     }
     #endregion
     #region Propagating Meal Events
-    public void CurrentMeal_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    public void CurrentMeal_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        if (e.PropertyName is null)
+            return; // Don't know what changed, so just ignore it.
         OnPropertyChanged(e.PropertyName);
         if (e.PropertyName.Equals(nameof(Meal.VenueName)))
             LoadVenueNotes();
@@ -65,13 +67,13 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     #region Totals, meal amounts and properties
     public decimal SubTotal => Meal.CurrentMeal.SubTotal;
     public string VenueName => Meal.CurrentMeal.VenueName;
-    public Location AppLocation => App.MyLocation;
+    public Location? AppLocation => App.MyLocation;
     public DateTime CreationTime => Meal.CurrentMeal.CreationTime;
     public DateTime LastChangeTime => Meal.CurrentMeal.LastChangeTime;
-    public string LastChangeTimeText => Meal.CurrentMeal.Summary.GetLastChangeString();
+    public string? LastChangeTimeText => Meal.CurrentMeal.Summary.GetLastChangeString();
     public bool IsLastChangeTimeDifferent => !Utilities.WithinOneSecond(CreationTime, LastChangeTime);
     public string DiagnosticInfo => Meal.CurrentMeal?.DiagnosticInfo ?? string.Empty;
-    public string DefaultFileName => IsDefault ? null : Meal.CurrentMeal.FileName;
+    public string DefaultFileName => IsDefault ? "" : Meal.CurrentMeal.FileName;
     #endregion
     #region Tip
     public int TipRate
@@ -157,8 +159,6 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task SaveCurrentMeal()
     {
-        if (Meal.CurrentMeal is null) // rare - only seems to happen in Play Store testing
-            return;
         if (Meal.CurrentMeal.IsDefault)
             await Utilities.DisplayAlertAsync("Default Bill", "You cannot save the default bill. Modify it and try again.", "ok");
         else
@@ -173,14 +173,14 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
         if (Venue.FindVenueByName(VenueName) is Venue venue)
             await App.PushAsync(Routes.VenueListByNamePage);
         else if (await Utilities.AskAsync("Question", $"Venue \"{VenueName}\" not found, do you want to create it?"))
-            await App.PushAsync(Routes.VenueEditPage, "Venue", Venue.SelectOrAddVenue(VenueName, $"Created from bill {Meal.CurrentMeal?.Summary?.Id} on {DateTime.Now:d}"));
+            await App.PushAsync(Routes.VenueEditPage, "Venue", Venue.SelectOrAddVenue(VenueName, $"Created from bill {Meal.CurrentMeal.Summary.Id} on {DateTime.Now:d}"));
         else
             await App.PushAsync(Routes.VenueListByNamePage);
     }
     #endregion
     #region Venue Notes
     [ObservableProperty]
-    public partial string VenueNotes { get; set; }
+    public partial string VenueNotes { get; set; } = string.Empty;
 
     partial void OnVenueNotesChanged(string value)
     {
@@ -189,7 +189,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     private void LoadVenueNotes()
     {
         currentVenue = Venue.FindVenueByName(VenueName);
-        VenueNotes = currentVenue?.Notes;
+        VenueNotes = currentVenue?.Notes ?? string.Empty;
         venueNotesChanged = false;
     }
     private void UnloadVenueNotes()
@@ -204,7 +204,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     /// Set true if the notes have been changed since being loaded
     /// </summary>
     private bool venueNotesChanged;
-    private Venue currentVenue;
+    private Venue? currentVenue;
     #endregion
     #region Handling Defaults
     public bool IsDefault => Meal.CurrentMeal.IsDefault;

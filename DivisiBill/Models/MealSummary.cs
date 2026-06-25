@@ -25,9 +25,9 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
 {
     #region Global
     static MealSummary() => Meal.CurrentMealSummaryChanged += NotifyCurrentMealSummaryChanged;
-    public MealSummary ShallowCopy() => MemberwiseClone() as MealSummary;
+    public MealSummary ShallowCopy() => MemberwiseClone() as MealSummary ?? new MealSummary();
 
-    public override bool Equals(object obj) => obj is not null && (ReferenceEquals(this, obj)
+    public override bool Equals(object? obj) => obj is not null && (ReferenceEquals(this, obj)
         || (GetType() == obj.GetType() && FileName == ((MealSummary)obj).FileName));
     public override int GetHashCode() => FileName.GetHashCode();
     public override string ToString() => FileName + " (" + VenueName + ")";
@@ -54,7 +54,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
 
     [DataMember(Name = "LastChangeTime", EmitDefaultValue = false)]
     [XmlElement(ElementName = "LastChangeTime")]
-    public string StoredLastChangeTime
+    public string? StoredLastChangeTime
     {
         get => ActualLastChangeTime.DateTime == DateTime.MinValue
                 ? null
@@ -62,7 +62,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
 
         set
         {
-            if (!DateTimeOffset.TryParse(value, out DateTimeOffset result) && !TryParseJsonDate(value, out result))
+            if (value is null || !DateTimeOffset.TryParse(value, out DateTimeOffset result) && !TryParseJsonDate(value, out result))
                 result = DateTimeOffset.MinValue;
             ActualLastChangeTime = result;
         }
@@ -91,7 +91,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
             }
         }
     }
-    public string GetLastChangeString()
+    public string? GetLastChangeString()
     {
         if (!WithinOneSecond(CreationTime, LastChangeTime))
         {
@@ -115,7 +115,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
 
     public bool IsForCurrentMeal => Meal.CurrentMeal is not null && CreationTime == Meal.CurrentMeal.CreationTime;
 
-    public static void NotifyCurrentMealSummaryChanged(MealSummary old, MealSummary newMs)
+    public static void NotifyCurrentMealSummaryChanged(MealSummary? old, MealSummary? newMs)
     {
         old?.OnPropertyChanged(nameof(IsForCurrentMeal));
         newMs?.OnPropertyChanged(nameof(IsForCurrentMeal));
@@ -361,7 +361,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
             Meal.LocalMealList.Remove(this);
     }
 
-    public static MealSummary PopMostRecentDeletion() => DeletedStack.Count > 0 ? DeletedStack.Pop() : null;
+    public static MealSummary? PopMostRecentDeletion() => DeletedStack.Count > 0 ? DeletedStack.Pop() : null;
 
     /// <summary>
     /// Undelete a local Meal and its associated image, if by some weird mischance the corresponding file already exists, just discard it
@@ -470,14 +470,14 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     private static readonly DataContractJsonSerializer mealSummarySerializer = new(typeof(MealSummary));
     private static readonly XmlRootAttribute root = new("Meal");
     private static readonly XmlSerializer mealSummaryXmlSerializer = new(typeof(MealSummary), root);
-    public static MealSummary LoadJsonFrom(Stream sourceStream)
+    public static MealSummary? LoadJsonFrom(Stream sourceStream)
     {
-        MealSummary ms = null;
+        MealSummary? ms = null;
         try
         {
-            ms = (MealSummary)mealSummarySerializer.ReadObject(sourceStream);
+            ms = mealSummarySerializer.ReadObject(sourceStream) as MealSummary;
             // Beware the MealSummary constructor is not called above use [OnDeserializing] or [OnDeserialized] if that's ever needed
-            ms.CheckImageFiles();
+            ms?.CheckImageFiles();
         }
         catch (Exception ex)
         {
@@ -485,13 +485,13 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         }
         return ms;
     }
-    public static MealSummary LoadJsonFrom(string sourceString)
+    public static MealSummary? LoadJsonFrom(string sourceString)
     {
         MemoryStream s = new(Encoding.UTF8.GetBytes(sourceString));
-        MealSummary ms = LoadJsonFrom(s);
+        MealSummary? ms = LoadJsonFrom(s);
         return ms;
     }
-    public string GetJsonString()
+    public string? GetJsonString()
     {
         byte[] buf = new byte[10000];
         MemoryStream s = new(buf);
@@ -500,9 +500,9 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         return myString;
     }
     public void SaveJsonToStream(Stream s) => mealSummarySerializer.WriteObject(s, this);
-    public static MealSummary LoadFromMealStream(Stream sourceStream, string diagnosticName)
+    public static MealSummary? LoadFromMealStream(Stream sourceStream, string diagnosticName)
     {
-        MealSummary ms;
+        MealSummary? ms;
         DebugExamineStream(sourceStream);
         if (sourceStream.Length == 0)
         {
@@ -512,10 +512,13 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         }
         try
         {
-            ms = (MealSummary)mealSummaryXmlSerializer.Deserialize(sourceStream);
+            ms = mealSummaryXmlSerializer.Deserialize(sourceStream) as MealSummary;
             // Deserialize above calls the MealSummary constructor
-            ms.Size = (int)sourceStream.Length;
-            ms.CheckImageFiles();
+            if (ms is not null)
+            {
+                ms.Size = (int)sourceStream.Length;
+                ms.CheckImageFiles();
+            }
         }
         catch (Exception ex)
         {
@@ -533,9 +536,9 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// <param name="TargetFileName"></param>
     /// <returns></returns>
     /// <exception cref="NullReferenceException"></exception>
-    public static MealSummary LoadFromMealFile(string TargetFileName)
+    public static MealSummary? LoadFromMealFile(string TargetFileName)
     {
-        MealSummary ms = null;
+        MealSummary? ms = null;
         using (FileStream sourceStream = File.OpenRead(Path.Combine(Meal.MealFolderPath, TargetFileName)))
         {
             if (sourceStream.Length > 0) // Empty files are clearly bad
@@ -576,10 +579,10 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
         DateTime fileNameTime = DateTimeFromName(Path.GetFileNameWithoutExtension(fn));
         return !WithinOneSecond(fileNameTime, CreationTime);
     }
-    public static async Task<MealSummary> LoadFromRemoteMealAsync(string name)
+    public static async Task<MealSummary?> LoadFromRemoteMealAsync(string name)
     {
-        MealSummary resultMs = null;
-        using (Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, name))
+        MealSummary? resultMs = null;
+        using (Stream? sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, name))
         {
 
             if (sourceStream is null)
@@ -609,7 +612,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// <returns></returns>
     public bool TryAddTo(Collection<MealSummary> list)
     {
-        (MealSummary ms, int inx) = list.FindItemAndIndex((item) => item.CreationTime <= CreationTime);
+        (MealSummary? ms, int inx) = list.FindItemAndIndex((item) => item.CreationTime <= CreationTime);
         if (ms is null)
             list.Add(this);
         else if (ms.CreationTime == CreationTime)
@@ -618,22 +621,22 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
             list.Insert(inx, this);
         return true; // Item added
     }
-    public int CompareTo(MealSummary otherMs) => CompareCreationTimeTo(otherMs);
+    public int CompareTo(MealSummary? otherMs) => CompareCreationTimeTo(otherMs);
 
     /// <summary>
     /// Compare by creation time, latest first. No two creation times should be the same.
     /// </summary>
     /// <param name="otherMs">the MealSummary to compare the current one with</param>
     /// <returns>+1 if this is later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
-    public int CompareCreationTimeTo(MealSummary otherMs) => otherMs.CreationTime.CompareTo(CreationTime); // Note that this is inverted because we want newest first;
-    public static int CompareCreationTimeTo(MealSummary thisMs, MealSummary otherMs) => thisMs.CompareCreationTimeTo(otherMs);
+    public int CompareCreationTimeTo(MealSummary? otherMs) => otherMs?.CreationTime.CompareTo(CreationTime) ?? 1; // Note that this is inverted because we want newest first;
+    public static int CompareCreationTimeTo(MealSummary thisMs, MealSummary? otherMs) => thisMs.CompareCreationTimeTo(otherMs);
 
     /// <summary>
     /// Compare by venue name then creation time newest first
     /// </summary>
     /// <param name="otherMs">the MealSummary to compare the current one with</param>
     /// <returns>+1 if this would sort later than the parameter, 0 if they are the same (should not happen),-1 if this should precede the parameter</returns>
-    public int CompareVenueTo(MealSummary otherMs)
+    public int CompareVenueTo(MealSummary? otherMs)
     {
         if (Equals(otherMs))
             return 0;

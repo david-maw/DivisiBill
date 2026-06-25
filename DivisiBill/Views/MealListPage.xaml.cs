@@ -11,7 +11,7 @@ public partial class MealListPage : ContentPage
     public MealListPage()
     {
         InitializeComponent();
-        viewModel = (MealListViewModel)BindingContext;
+        viewModel = BindingContext as MealListViewModel ?? throw new InvalidOperationException("BindingContext must be of type MealListViewModel");
         viewModel.UseMealParam = UseMeal;
         viewModel.ShowDetailsParam = ShowSummary;
         viewModel.ScrollItemsTo = ScrollItemsTo;
@@ -37,22 +37,22 @@ public partial class MealListPage : ContentPage
         viewModel.OnNavigatedTo();
     }
 
-    private async Task ShowSummary(MealSummary ms)
+    private async Task ShowSummary(MealSummary? ms)
     {
         if (ms is null)
             return;
-        Meal m = ms.IsForCurrentMeal ? Meal.CurrentMeal : await Meal.LoadAsync(ms, true);
+        Meal? m = ms.IsForCurrentMeal ? Meal.CurrentMeal : await Meal.LoadAsync(ms, true);
         ShellNavigationQueryParameters navigationParameter = new()
         {
-                    { "ShowStorage", viewModel.ShowLocalMeals && viewModel.ShowRemoteMeals }
-                };
+            { "ShowStorage", viewModel.ShowLocalMeals && viewModel.ShowRemoteMeals }
+        };
         if (m is not null)
             navigationParameter.Add("Meal", m);
         else
             navigationParameter.Add("MealSummary", ms);
         await App.PushAsync(Routes.MealSummaryPage, navigationParameter);
     }
-    private async Task UseMeal(MealSummary ms)
+    private async Task UseMeal(MealSummary? ms)
     {
         if (ms is null)
             return;
@@ -60,7 +60,7 @@ public partial class MealListPage : ContentPage
             await Utilities.ShowAppSnackBarAsync("The assignment is unnecessary, this is already the current bill");
         else
         {
-            Meal m = await Meal.LoadAsync(ms, true);
+            Meal? m = await Meal.LoadAsync(ms, true);
             if (m is null)
                 await Utilities.ShowAppSnackBarAsync("Warning: Bill could not be loaded");
             else
@@ -86,7 +86,7 @@ public partial class MealListPage : ContentPage
     }
     // Ideally this would be handled in properties of the CollectionView but it isn't
     // Also beware, on Windows it is not always called
-    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
         //Utilities.DebugMsg($"InOnCollectionViewScrolled FirstVisibleItemIndex={e.FirstVisibleItemIndex}, LastVisibleItemIndex={e.LastVisibleItemIndex}");
         viewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;

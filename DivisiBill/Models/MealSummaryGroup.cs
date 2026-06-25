@@ -12,7 +12,7 @@ public partial class MealSummaryGroup : ObservableObject
     public MealSummaryGroup() { } // for XAML
     public MealSummaryGroup(MealSummary msParameter)
     {
-        VenueName = msParameter.VenueName;
+        VenueName = msParameter.VenueName ?? string.Empty;
         CreationTime = msParameter.CreationTime;
         MealSummaries.CollectionChanged += MealSummaries_CollectionChanged;
         Meal.CurrentMealSummaryChanged += Meal_CurrentMealSummaryChanged;
@@ -25,7 +25,7 @@ public partial class MealSummaryGroup : ObservableObject
         MealSummaries.CollectionChanged -= MealSummaries_CollectionChanged;
     }
 
-    private void MealSummaries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void MealSummaries_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         // If the list of MealSummaries changed then the shortened list may have, so regenerate it
         // Cleverer code would update it but it doesn't seem worth the bother for such a short list
@@ -34,15 +34,15 @@ public partial class MealSummaryGroup : ObservableObject
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                Count += e.NewItems.Count;
+                Count += e.NewItems?.Count ?? 0;
                 break;
 
             case NotifyCollectionChangedAction.Remove:
-                Count -= e.OldItems.Count;
+                Count -= e.OldItems?.Count ?? 0;
                 break;
 
             case NotifyCollectionChangedAction.Replace:
-                Count += e.NewItems.Count - e.OldItems.Count;
+                Count += (e.NewItems?.Count ?? 0) - (e.OldItems?.Count ?? 0);
                 break;
 
             case NotifyCollectionChangedAction.Reset:
@@ -50,10 +50,10 @@ public partial class MealSummaryGroup : ObservableObject
                 break;
         }
     }
-    private void Meal_CurrentMealSummaryChanged(MealSummary old, MealSummary newMs) => IsForCurrentMeal = string.Equals(VenueName, newMs.VenueName, StringComparison.OrdinalIgnoreCase);
+    private void Meal_CurrentMealSummaryChanged(MealSummary? old, MealSummary? newMs) => IsForCurrentMeal = string.Equals(VenueName, newMs?.VenueName, StringComparison.OrdinalIgnoreCase);
 
     #region Properties
-    public string VenueName { get; }
+    public string VenueName { get; } = string.Empty;
     /// <summary>
     /// The <see cref="MealSummary.CreationTime"/> of the newest Meal in the group.
     /// </summary>
@@ -82,7 +82,7 @@ public partial class MealSummaryGroup : ObservableObject
             var v = Venue.FindVenueByName(VenueName);
             return v is null ? Distances.Unknown : v.SimplifiedDistance;
         }
-    }   
+    }
     public void NotifyDistanceChanged() => OnPropertyChanged(nameof(Distance));
     public ObservableCollection<MealSummary> MealSummaries { get; } = [];
     public ObservableCollection<MealSummary> FirstMealSummaries => new(MealSummaries.Take(maxMeals));

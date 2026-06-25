@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using AndroidX.Activity;
+﻿using AndroidX.Activity;
 using global::Android.App;
 using global::Android.Content;
 using global::Android.Content.PM;

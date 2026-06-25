@@ -3,7 +3,7 @@
 [Preserve(AllMembers = true)]
 public class InAppBillingPurchaseComparer : IEqualityComparer<InAppBillingPurchase>
 {
-    public bool Equals(InAppBillingPurchase x, InAppBillingPurchase y) => x.Equals(y);
+    public bool Equals(InAppBillingPurchase? x, InAppBillingPurchase? y) => x?.Equals(y) ?? y is null;
 
 
     public int GetHashCode(InAppBillingPurchase x) => x.GetHashCode();
@@ -26,27 +26,27 @@ public class InAppBillingPurchase : IEquatable<InAppBillingPurchase>
     /// <summary>
     /// Purchase/Order Id
     /// </summary>
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     /// <summary>
     /// TransactionIdentifier - This is the Id/Token that needs to be acknowledge/finalized
     /// </summary>
-    public string TransactionIdentifier { get; set; }
+    public string? TransactionIdentifier { get; set; }
 
     /// <summary>
     /// OriginalTransactionIdentifier - This is the Id/Token of restored transaction from the AppStore
     /// </summary>
-    public string OriginalTransactionIdentifier { get; set; }
+    public string? OriginalTransactionIdentifier { get; set; }
 
     /// <summary>
     /// Transaction date in UTC
     /// </summary>
-    public DateTime TransactionDateUtc { get; set; }
+    public DateTime? TransactionDateUtc { get; set; }
 
     /// <summary>
     /// Product Id/Sku
     /// </summary>
-    public string ProductId { get; set; }
+    public string? ProductId { get; set; }
 
 
     /// <summary>
@@ -57,7 +57,7 @@ public class InAppBillingPurchase : IEquatable<InAppBillingPurchase>
     /// <summary>
     /// Product Ids/Skus
     /// </summary>
-    public IList<string> ProductIds { get; set; }
+    public IList<string>? ProductIds { get; set; }
 
     /// <summary>
     /// Indicates whether the subscription renewed automatically. If true, the sub is active, else false the user has canceled.
@@ -67,7 +67,7 @@ public class InAppBillingPurchase : IEquatable<InAppBillingPurchase>
     /// <summary>
     /// Unique token identifying the purchase for a given item
     /// </summary>
-    public string PurchaseToken { get; set; }
+    public string? PurchaseToken { get; set; }
 
     /// <summary>
     /// Gets the current purchase/subscription state
@@ -79,25 +79,25 @@ public class InAppBillingPurchase : IEquatable<InAppBillingPurchase>
     /// </summary>
     public bool? IsAcknowledged { get; set; }
 
-    public string ObfuscatedAccountId { get; set; }
+    public string? ObfuscatedAccountId { get; set; }
 
-    public string ObfuscatedProfileId { get; set; }
+    public string? ObfuscatedProfileId { get; set; }
 
     /// <summary>
     /// Developer payload
     /// </summary>
-    public string ApplicationUsername { get; set; }
-    public string Payload { get; set; }
+    public string? ApplicationUsername { get; set; }
+    public string? Payload { get; set; }
 
     /// <summary>
     /// The original json returned by the Play store
     /// </summary>
-    public string OriginalJson { get; set; }
+    public string? OriginalJson { get; set; }
 
     /// <summary>
     /// The digital signature associated with <see cref="OriginalJson"/>.
     /// </summary>
-    public string Signature { get; set; }
+    public string? Signature { get; set; }
 
     public static bool operator ==(InAppBillingPurchase left, InAppBillingPurchase right) =>
             Equals(left, right);
@@ -105,10 +105,11 @@ public class InAppBillingPurchase : IEquatable<InAppBillingPurchase>
     public static bool operator !=(InAppBillingPurchase left, InAppBillingPurchase right) =>
         !Equals(left, right);
 
-    public override bool Equals(object obj) =>
+    public override bool Equals(object? obj) =>
         (obj is InAppBillingPurchase purchase) && Equals(purchase);
 
-    public bool Equals(InAppBillingPurchase other) =>
+    public bool Equals(InAppBillingPurchase? other) =>
+        other is not null &&
         (Id, TransactionDateUtc, IsAcknowledged, ProductId, AutoRenewing, PurchaseToken, State, Payload, ObfuscatedAccountId, ObfuscatedProfileId, Quantity, ProductIds, OriginalJson, Signature) ==
         (other.Id, other.TransactionDateUtc, other.IsAcknowledged, other.ProductId, other.AutoRenewing, other.PurchaseToken, other.State, other.Payload, other.ObfuscatedAccountId, other.ObfuscatedProfileId, other.Quantity, other.ProductIds, other.OriginalJson, other.Signature);
 

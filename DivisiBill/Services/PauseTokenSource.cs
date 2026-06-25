@@ -5,7 +5,7 @@ namespace DivisiBill.Services;
 
 public class PauseTokenSource
 {
-    private volatile TaskCompletionSource<bool> m_paused;
+    private volatile TaskCompletionSource<bool>? m_paused;
 
     public bool IsPaused
     {
@@ -21,7 +21,7 @@ public class PauseTokenSource
             {
                 while (true)
                 {
-                    TaskCompletionSource<bool> tcs = m_paused;
+                    TaskCompletionSource<bool>? tcs = m_paused;
                     if (tcs is null)
                         return;
                     if (Interlocked.CompareExchange(ref m_paused, null, tcs) == tcs)
@@ -36,7 +36,7 @@ public class PauseTokenSource
 
     internal Task WaitWhilePausedAsync()
     {
-        TaskCompletionSource<bool> cur = m_paused;
+        TaskCompletionSource<bool>? cur = m_paused;
         return cur is not null ? cur.Task : s_completedTask;
     }
 

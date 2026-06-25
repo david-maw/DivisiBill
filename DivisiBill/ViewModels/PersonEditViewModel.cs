@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
 
@@ -67,10 +65,10 @@ internal partial class PersonEditViewModel(Person personParameter, Action CloseP
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Utilities.ReportCrash(ex);
             closePage = true;
-            System.Diagnostics.Debugger.Break();
         }
         if (closePage)
             ClosePage.Invoke();

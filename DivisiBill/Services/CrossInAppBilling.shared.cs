@@ -25,7 +25,7 @@ public class CrossInAppBilling
 #elif WINDOWS
     private static IInAppBilling CreateInAppBilling() => new Platforms.Windows.InAppBillingImplementation();
 #else
-    static IInAppBilling CreateInAppBilling() => null;
+    static IInAppBilling? CreateInAppBilling() => null;
 #endif
 
     internal static Exception NotImplementedInReferenceAssembly() =>

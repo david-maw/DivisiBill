@@ -27,7 +27,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
         try
         {
             tokenSource.Cancel();
-            await ClosePopupAsync?.Invoke(result);
+            await ClosePopupAsync.Invoke(result);
         }
         catch (Exception ex)
         {
@@ -42,9 +42,9 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
     /// </summary>
     /// <param name="message">What's happening</param>
     /// <param name="messageExtra">How long for or when it will end</param>
-    private void SetStatusMessage(string message, string messageExtra = null)
+    private void SetStatusMessage(string? message, string? messageExtra = null)
     {
-        static string Quoted(string s) => s is not null ? "\"" + s + "\"" : "null";
+        static string Quoted(string? s) => s is null ? "null" : "\"" + s + "\"";
 
         if (message is not null)
         { // Only update the message if it is not null
@@ -61,7 +61,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
     public partial string StatusMessage { get; set; }
 
     [ObservableProperty]
-    public partial string StatusMessageExtra { get; set; }
+    public partial string? StatusMessageExtra { get; set; }
 
     [ObservableProperty]
     public partial float Progress { get; set; }
@@ -195,7 +195,7 @@ public partial class CheckWebPageViewModel(Func<HttpResponseMessage, Task> Close
                 }
                 catch (TaskCanceledException ex)
                 {
-                    if (tokenSource != null && tokenSource.IsCancellationRequested)
+                    if (tokenSource.IsCancellationRequested)
                         // The user canceled the operation, so we can just ignore this and exit the loop
                         Utilities.DebugMsg("In CheckWebPageViewModel.WaitForConnection, webCallTask was canceled by user, exiting loop. Exception message: " + ex.Message);
                     else

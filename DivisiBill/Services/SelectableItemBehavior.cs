@@ -47,12 +47,12 @@ public static class SelectableItemBehavior
         cv.PropertyChanged -= OnCollectionViewPropertyChanged;
     }
 
-    private static void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private static void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         // VisualStateManager handles visuals, this exists just in case it is needed.
     }
 
-    private static void OnCollectionViewPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private static void OnCollectionViewPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is not CollectionView cv)
             return;

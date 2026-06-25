@@ -5,7 +5,7 @@ namespace DivisiBill.Services;
 internal class IsNegativeConverter : IValueConverter
 {
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo cultureInfo) => value is null
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo cultureInfo) => value is null
             ? false
             : value switch
             {
@@ -24,5 +24,5 @@ internal class IsNegativeConverter : IValueConverter
                 _ => (object)false,
             };
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo cultureInfo) => throw new NotImplementedException();
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo cultureInfo) => throw new NotImplementedException();
 }

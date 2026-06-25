@@ -12,19 +12,17 @@ namespace DivisiBill.ViewModels;
 public partial class MealViewModel : ObservableObjectPlus
 {
     #region Nested Classes
-    internal class ShareInfo // would be a record if I could use C#9
-    {
-        public LineItem LineItem;
-        public byte Shares;
-    }
+    internal record ShareInfo(LineItem LineItem, byte Shares);
 
-    internal class SavedCost
+    internal record SavedCost(PersonCost personCost)
     {
-        public PersonCost PersonCost;
+        public PersonCost PersonCost = personCost;
         public List<ShareInfo> ShareInfoList = [];
     }
     #endregion
     #region Initialization and Termination
+    private readonly bool initializing = true;
+
     public MealViewModel()
     {
         Meal.CurrentMeal.PropertyChanged += CurrentMeal_PropertyChanged;
@@ -32,6 +30,7 @@ public partial class MealViewModel : ObservableObjectPlus
         LineItems = GetLineItems();
         DefaultTipRatePercentage = App.Settings.DefaultTipRate;
         DefaultTaxRatePercentage = (decimal)(App.Settings.DefaultTaxRate * 100);
+        initializing = false;
     }
     ~MealViewModel()
     {
@@ -50,37 +49,39 @@ public partial class MealViewModel : ObservableObjectPlus
     }
     #endregion
     #region Property Change Events
-    public void CurrentMeal_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    public void CurrentMeal_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
+        if (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName is not string propertyName)
+            return; // We have no idea what changed, so do nothing
         OnPropertyChanged(e.PropertyName);
-        if (e.PropertyName.Equals(nameof(Meal.AmountForSharerID)))
+        if (propertyName.Equals(nameof(Meal.AmountForSharerID)))
         {
             OnPropertyChanged(nameof(IsFiltered));
             OnPropertyChanged(nameof(FilterGlyph));
             OnPropertyChanged(nameof(FilteredSharerName));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.VenueName)))
+        else if (propertyName.Equals(nameof(Meal.VenueName)))
             OnPropertyChanged(nameof(CurrentVenue));
-        else if (e.PropertyName.Equals(nameof(Meal.TipRate)))
+        else if (propertyName.Equals(nameof(Meal.TipRate)))
         {
             OnPropertyChanged(nameof(IsDefaultTip));
             OnPropertyChanged(nameof(IsDefaultTipRate));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.TipDelta)))
+        else if (propertyName.Equals(nameof(Meal.TipDelta)))
         {
             OnPropertyChanged(nameof(IsDefaultTip));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.TaxRate)))
+        else if (propertyName.Equals(nameof(Meal.TaxRate)))
         {
             OnPropertyChanged(nameof(IsDefaultTax));
             OnPropertyChanged(nameof(IsDefaultTaxRate));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.TipOnTax)))
+        else if (propertyName.Equals(nameof(Meal.TipOnTax)))
         {
             OnPropertyChanged(nameof(IsDefaultTip));
             OnPropertyChanged(nameof(IsDefaultTipOnTax));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.IsCouponAfterTax)))
+        else if (propertyName.Equals(nameof(Meal.IsCouponAfterTax)))
         {
             OnPropertyChanged(nameof(IsDefaultTax));
             OnPropertyChanged(nameof(IsDefaultCouponAfterTax));
@@ -90,29 +91,29 @@ public partial class MealViewModel : ObservableObjectPlus
                 SetFilteredBlockTotals();
             }
         }
-        else if (e.PropertyName.Equals(nameof(Meal.UnallocatedAmount)))
+        else if (propertyName.Equals(nameof(Meal.UnallocatedAmount)))
         {
             OnPropertyChanged(nameof(IsAnyUnallocated));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.CreationTime)))
+        else if (propertyName.Equals(nameof(Meal.CreationTime)))
         {
             OnPropertyChanged(nameof(DefaultFileName));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.LastChangeTime)))
+        else if (propertyName.Equals(nameof(Meal.LastChangeTime)))
         {
             OnPropertyChanged(nameof(IsLastChangeTimeDifferent));
             OnPropertyChanged(nameof(LastChangeTimeText));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.IsCouponAfterTax)))
+        else if (propertyName.Equals(nameof(Meal.IsCouponAfterTax)))
         {
             OnPropertyChanged(nameof(SubTotal));
         }
-        else if (e.PropertyName.Equals(nameof(Meal.SubTotal)))
+        else if (propertyName.Equals(nameof(Meal.SubTotal)))
         {
             if (IsFiltered)
                 SetFilteredSubtotal();
         }
-        else if (e.PropertyName.Equals(nameof(Meal.Costs)))
+        else if (propertyName.Equals(nameof(Meal.Costs)))
         {
             UnsubscribeFromCosts();
             SubscribeToCosts(Costs);
@@ -167,7 +168,7 @@ public partial class MealViewModel : ObservableObjectPlus
             CostListDeleteAll();
         else if (pc == SelectedCost)
         {
-            PersonCost next = Costs.Alternate(SelectedCost);
+            PersonCost? next = Costs.Alternate(SelectedCost);
             CostListDelete(SelectedCost);
             SelectedCost = next;
         }
@@ -176,7 +177,7 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
 #if WINDOWS
-    private PersonCost LastCostSelectedByMe { get; set; } = null; // Part of a workaround used by SelectCost below
+    private PersonCost? LastCostSelectedByMe { get; set; } = null; // Part of a workaround used by SelectCost below
 #endif
 
     [RelayCommand]
@@ -208,10 +209,10 @@ public partial class MealViewModel : ObservableObjectPlus
     public void DeselectCost(PersonCost pc) => SelectedCost = null;
 
     [ObservableProperty]
-    public partial PersonCost SelectedCost { get; set; }
+    public partial PersonCost? SelectedCost { get; set; }
 
     [RelayCommand]
-    private async Task ShowPerson(PersonCost pc)
+    private async Task ShowPerson(PersonCost? pc)
     {
         if (pc is null)
             return;
@@ -238,7 +239,7 @@ public partial class MealViewModel : ObservableObjectPlus
                 + ". Edit the bill and we'll find (or create) one.");
     }
     [RelayCommand]
-    private async Task DisplayPayments(PersonCost pc)
+    private async Task DisplayPayments(PersonCost? pc)
     {
         if (pc is null && IsFiltered)
             pc = FilteredSharer;
@@ -246,20 +247,20 @@ public partial class MealViewModel : ObservableObjectPlus
             RoundedAmount, pc?.Nickname, pc is null ? 0 : RoundedAmount - Math.Round(pc.Amount), UnallocatedAmount));
     }
     [RelayCommand]
-    private async Task DisplayPaymentsForLineItem(LineItem li)
+    private async Task DisplayPaymentsForLineItem(LineItem? li)
     {
-        PersonCost pc = null;
+        PersonCost? pc = null;
         if (li is not null && !IsFiltered)
             pc = Meal.CurrentMeal.Costs.FirstOrDefault(personCost => personCost.DinerID == li.FirstSharer);
         await DisplayPayments(pc);
     }
 
     [RelayCommand(CanExecute = nameof(IsAnyCosts))]
-    public async Task FilterItems(PersonCost pc)
+    public async Task FilterItems(PersonCost? pc)
     {
         if (pc is null) // No idea who this could be for so just cycle through all 
         {
-            PersonCost next = Meal.CurrentMeal.GetNextPersonCost(FilteredSharer);
+            PersonCost? next = Meal.CurrentMeal.GetNextPersonCost(FilteredSharer);
             AmountForSharerID = next is null ? LineItem.DinerID.none : next.DinerID;
             if (next is not null)
                 await GoToItemsAsync();
@@ -284,7 +285,7 @@ public partial class MealViewModel : ObservableObjectPlus
 
     #endregion
     #region PersonCost Drag and Drop Commands
-    private PersonCost draggedPersonCost;
+    private PersonCost? draggedPersonCost;
 
     [RelayCommand]
     private void DragStartingPersonCost(PersonCost personCost)
@@ -379,7 +380,7 @@ public partial class MealViewModel : ObservableObjectPlus
     } = false;
     public bool IsManyDeletedCosts => deletedCosts.Count > 1;
     public ObservableCollection<PersonCost> Costs => Meal.CurrentMeal.Costs;
-    public PersonCost CostListAdd(Person p) => Meal.CurrentMeal.CostListAdd(p);
+    public PersonCost? CostListAdd(Person p) => Meal.CurrentMeal.CostListAdd(p);
     public void CostListDelete(PersonCost pc)
     {
         if (pc.DinerID == AmountForSharerID)
@@ -387,12 +388,9 @@ public partial class MealViewModel : ObservableObjectPlus
             // We are about to delete the filtered sharer so turn off filtering first
             ClearFiltering();
         }
-        SavedCost sc = new() { PersonCost = pc };
+        SavedCost sc = new(pc);
         foreach (LineItem li in LineItems.Where((li) => li.SharedBy[pc.DinerIndex]))
-        {
-            ShareInfo si = new() { LineItem = li, Shares = li.GetShares(pc.DinerID) };
-            sc.ShareInfoList.Add(si);
-        }
+            sc.ShareInfoList.Add(new(li, li.GetShares(pc.DinerID)));
         deletedCosts.Push(sc);
         Meal.CurrentMeal.CostListDelete(pc);
         IsAnyDeletedCost = true;
@@ -511,7 +509,7 @@ public partial class MealViewModel : ObservableObjectPlus
                 else
                 {
                     // the destination DinerID is not available, so we need to move the item that is currently using it to a temporary slot first to free up the desirable DinerID for this item
-                    var target = itemsToMove.FirstOrDefault(x => x.currentID == item.desiredID);
+                    var target = itemsToMove.FirstOrDefault(x => x.currentID == item.desiredID) ?? throw new Exception("In MealViewModel.CostListResequence, could not find item currently using desirable DinerID " + item.desiredID);
                     var tempID = Unused.GetHighestAvailable();
                     if (tempID is null or LineItem.DinerID.none)
                         throw new Exception("In MealViewModel.CostListResequence, no unused DinerID available for temporary assignment");
@@ -548,7 +546,7 @@ public partial class MealViewModel : ObservableObjectPlus
     #region Item Selection
 
     [ObservableProperty]
-    public partial LineItem SelectedLineItem { get; set; }
+    public partial LineItem? SelectedLineItem { get; set; }
 
     /// <summary>
     /// Because of some strange behavior on Android where clicking on an item causes the sequence of events to be 
@@ -556,15 +554,15 @@ public partial class MealViewModel : ObservableObjectPlus
     /// track the prior selected item so that we can properly unload it when the new value is temporarily null.
     /// All while continuing to work on Windows.
     /// </summary>
-    private LineItem priorSelectedLineItem = null;
-    partial void OnSelectedLineItemChanging(LineItem oldValue, LineItem newValue)
+    private LineItem? priorSelectedLineItem = null;
+    partial void OnSelectedLineItemChanging(LineItem? oldValue, LineItem? newValue)
     {
         if (newValue is null)
             priorSelectedLineItem = oldValue; // because on android re-selecting the same item transits through null
         if (oldValue is not null && IsValidLineItemAmount)
             UnloadLineItem();
     }
-    partial void OnSelectedLineItemChanged(LineItem oldValue, LineItem newValue)
+    partial void OnSelectedLineItemChanged(LineItem? oldValue, LineItem? newValue)
     {
         if (newValue is not null)
             LoadLineItem();
@@ -572,7 +570,7 @@ public partial class MealViewModel : ObservableObjectPlus
         DuplicateLineItemCommand.NotifyCanExecuteChanged();
         ChangeSharingCommand.NotifyCanExecuteChanged();
     }
-    public LineItem SelectedOrFirstLineItem => SelectedLineItem ?? LineItems.FirstOrDefault();
+    public LineItem? SelectedOrFirstLineItem => SelectedLineItem ?? LineItems.FirstOrDefault();
 
     /// <summary>
     /// Implements a command to select or Deselect the current LineItem
@@ -624,12 +622,12 @@ public partial class MealViewModel : ObservableObjectPlus
     [RelayCommand(CanExecute = nameof(CanDuplicateLineItem))]
     public void DuplicateLineItem()
     {
-        LineItem li = SelectedLineItem ?? LineItems.LastOrDefault();
+        LineItem? li = SelectedLineItem ?? LineItems.LastOrDefault();
         LineItem newLi = li is null ? new LineItem() : new LineItem(li);
         AddItem(newLi);
         SelectedLineItem = newLi;
     }
-    public Action<LineItem> LineItemAddCompletedInUi { get; set; }
+    public Action<LineItem>? LineItemAddCompletedInUi { get; set; }
     /// <summary>
     /// Notify the UI that an add action has completed in case it wants to set focus.
     /// </summary>
@@ -665,20 +663,20 @@ public partial class MealViewModel : ObservableObjectPlus
     #region ItemName
     public bool IsValidLineItemAmount { get; set; } = false;
     #endregion
-    private void LoadLineItemNameString() => LineItemNameString = SelectedLineItem.ItemName;
+    private void LoadLineItemNameString() => LineItemNameString = SelectedLineItem?.ItemName ?? string.Empty;
 
     [RelayCommand]
     private void UnloadLineItemNameString() => SelectedLineItem?.ItemName = LineItemNameString;
 
     [ObservableProperty]
-    public partial string LineItemNameString { get; set; }
+    public partial string LineItemNameString { get; set; } = string.Empty;
     #endregion
     #endregion
     #region Delete and UnDelete
     private readonly Stack<LineItem> deletedLineItems = new();
-    public LineItem DeleteItem(LineItem li)
+    public LineItem? DeleteItem(LineItem li)
     {
-        LineItem alternate = LineItems.Alternate(li);
+        LineItem? alternate = LineItems.Alternate(li);
         if (!IsFiltered)
         {
             LineItems.Remove(li);
@@ -707,17 +705,17 @@ public partial class MealViewModel : ObservableObjectPlus
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteLineItem))]
-    public void DeleteLineItem(LineItem li)
+    public void DeleteLineItem(LineItem? li)
     {
         li ??= SelectedLineItem;
-        LineItem nextItem = null;
+        LineItem? nextItem = null;
         if (li is null)
             RemoveAllLineItems();
         else
             nextItem = DeleteItem(li);
         SelectedLineItem = nextItem;
     }
-    public bool CanDeleteLineItem(LineItem li) => li is not null || (LineItems is not null && LineItems.Count > 0);
+    public bool CanDeleteLineItem(LineItem? li) => li is not null || (LineItems is not null && LineItems.Count > 0);
     public void LineItemDeselected(LineItem li)
     {
         if (IsFiltered && li.GetShares(AmountForSharerID) < 1)
@@ -797,7 +795,7 @@ public partial class MealViewModel : ObservableObjectPlus
         IsLineItemSwipeUpAllowed = value > 0 && value < LineItems.Count - 1;
     }
 
-    public Action<int, bool> ScrollLineItemsTo = null;
+    public Action<int, bool>? ScrollLineItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)
@@ -840,7 +838,7 @@ public partial class MealViewModel : ObservableObjectPlus
     : Meal.CurrentMeal.LineItems;
 
     [ObservableProperty]
-    public partial ObservableCollection<LineItem> LineItems { get; set; } = null;
+    public partial ObservableCollection<LineItem> LineItems { get; set; } = [];
 
     partial void OnLineItemsChanged(ObservableCollection<LineItem> oldValue, ObservableCollection<LineItem> newValue)
     {
@@ -855,7 +853,7 @@ public partial class MealViewModel : ObservableObjectPlus
         DeleteLineItemCommand.NotifyCanExecuteChanged();
     }
 
-    private void LineItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void LineItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         DeleteLineItemCommand.NotifyCanExecuteChanged();
         FilterItemsFromLineItemCommand.NotifyCanExecuteChanged();
@@ -873,7 +871,7 @@ public partial class MealViewModel : ObservableObjectPlus
         LineItems.Move(oldIndex, newIndex);
     }
     #region LineItem Drag and Drop Commands
-    private LineItem draggedLineItem;
+    private LineItem? draggedLineItem;
 
     [RelayCommand]
     private void DragStarting(LineItem lineItem)
@@ -916,7 +914,7 @@ public partial class MealViewModel : ObservableObjectPlus
         Clear,
         Cycle
     }
-    public void ChangeSharing(LineItem li, ChangeType changeType)
+    public void ChangeSharing(LineItem? li, ChangeType changeType)
     {
         if (li is not null)
         {
@@ -978,7 +976,7 @@ public partial class MealViewModel : ObservableObjectPlus
     {
         ChangeSharing(li, ChangeType.Cycle);
     }
-    public event Action<LineItem> SharingChanged;
+    public event Action<LineItem>? SharingChanged;
 
     [RelayCommand]
     public async Task GoToTotals() => await App.GoToAsync(Routes.TotalsPage);
@@ -1001,22 +999,22 @@ public partial class MealViewModel : ObservableObjectPlus
 
     public bool IsAnyCosts => Costs is not null && Costs.Count > 0;
 
-    private ObservableCollection<PersonCost> _subscribedCosts;
+    private ObservableCollection<PersonCost>? subscribedCosts;
     private void SubscribeToCosts(ObservableCollection<PersonCost> costs)
     {
-        _subscribedCosts = costs;
+        subscribedCosts = costs;
         if (costs is not null)
             costs.CollectionChanged += OnCostsCollectionChanged;
     }
     private void UnsubscribeFromCosts()
     {
-        if (_subscribedCosts is not null)
+        if (subscribedCosts is not null)
         {
-            _subscribedCosts.CollectionChanged -= OnCostsCollectionChanged;
-            _subscribedCosts = null;
+            subscribedCosts.CollectionChanged -= OnCostsCollectionChanged;
+            subscribedCosts = null;
         }
     }
-    private void OnCostsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void OnCostsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         int oldCount = Costs.Count - (e.NewItems?.Count ?? 0) + (e.OldItems?.Count ?? 0);
         if ((oldCount == 0) != (Costs.Count == 0))
@@ -1043,15 +1041,15 @@ public partial class MealViewModel : ObservableObjectPlus
     public decimal RoundedAmount => Meal.CurrentMeal.RoundedAmount;
     public bool IsAnyUnallocated => Meal.CurrentMeal.UnallocatedAmount != 0;
     public decimal UnallocatedAmount => Meal.CurrentMeal.UnallocatedAmount;
-    public Venue CurrentVenue => Venue.FindVenueByName(Meal.CurrentMeal.VenueName);
+    public Venue? CurrentVenue => Venue.FindVenueByName(Meal.CurrentMeal.VenueName);
     public DateTime CreationTime => Meal.CurrentMeal.CreationTime;
     public DateTime LastChangeTime => Meal.CurrentMeal.LastChangeTime;
-    public string LastChangeTimeText => Meal.CurrentMeal.Summary.GetLastChangeString();
+    public string? LastChangeTimeText => Meal.CurrentMeal.Summary.GetLastChangeString();
     public bool IsLastChangeTimeDifferent => !Utilities.WithinOneSecond(CreationTime, LastChangeTime);
     public decimal RoundingErrorAmount => Meal.CurrentMeal.RoundingErrorAmount;
     public bool IsUnsharedAmountSignificant => Meal.CurrentMeal.IsUnsharedAmountSignificant;
-    public string DiagnosticInfo => Meal.CurrentMeal?.DiagnosticInfo ?? string.Empty;
-    public string DefaultFileName => IsDefault ? null : Meal.CurrentMeal.FileName;
+    public string DiagnosticInfo => Meal.CurrentMeal.DiagnosticInfo ?? string.Empty;
+    public string? DefaultFileName => IsDefault ? null : Meal.CurrentMeal.FileName;
     #endregion
     #region Meal Data
     public string VenueName => Meal.CurrentMeal.VenueName;
@@ -1107,12 +1105,12 @@ public partial class MealViewModel : ObservableObjectPlus
         }
     }
     // The glyph to use - note it is inverted because it is showing what the glyph will do, not what the current state is
-    public FontImageSource FilterGlyph => (FontImageSource)(IsFiltered ? Application.Current.Resources["GlyphFilterOff"] : Application.Current.Resources["GlyphFilterOn"]);
+    public FontImageSource FilterGlyph => (FontImageSource)(IsFiltered ? App.Current.Resources["GlyphFilterOff"] : App.Current.Resources["GlyphFilterOn"]);
     public bool IsFiltered => AmountForSharerID != LineItem.DinerID.none;
-    public string FilteredSharerName => IsFiltered ? FilteredSharer.Nickname : string.Empty;
-    private PersonCost FilteredSharer => IsFiltered ? Costs.Where((pc) => pc.DinerID == AmountForSharerID).FirstOrDefault() : null;
+    public string? FilteredSharerName => IsFiltered ? FilteredSharer?.Nickname : null;
+    private PersonCost? FilteredSharer => IsFiltered ? Costs.Where((pc) => pc.DinerID == AmountForSharerID).FirstOrDefault() : null;
 
-    private LineItem previousFilteredLineItem = null;
+    private LineItem? previousFilteredLineItem = null;
 
     bool CanFilterFromLineItems => LineItems.Count > 0;
 
@@ -1122,7 +1120,7 @@ public partial class MealViewModel : ObservableObjectPlus
         if (SelectedLineItem is null)
         {
             // No item selected, just iterate through all the costs
-            PersonCost next = Meal.CurrentMeal.GetNextPersonCost(FilteredSharer);
+            PersonCost? next = Meal.CurrentMeal.GetNextPersonCost(FilteredSharer);
             AmountForSharerID = next is null ? LineItem.DinerID.none : next.DinerID;
         }
         else if (SelectedLineItem != previousFilteredLineItem)
@@ -1179,7 +1177,11 @@ public partial class MealViewModel : ObservableObjectPlus
     [NotifyPropertyChangedFor(nameof(IsDefaultTipRate))]
     [NotifyPropertyChangedFor(nameof(IsDefaultTip))]
     public partial decimal DefaultTipRatePercentage { get; set; }
-    partial void OnDefaultTipRatePercentageChanged(decimal value) => App.Settings.DefaultTipRate = (int)value;
+    partial void OnDefaultTipRatePercentageChanged(decimal value)
+    {
+        if (!initializing)
+            App.Settings.DefaultTipRate = (int)value;
+    }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsDefaultTaxRate))]

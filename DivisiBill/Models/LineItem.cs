@@ -48,7 +48,7 @@ public partial class LineItem : ObservableObject
     /// <summary>
     /// Backing collection tracking whether each potential diner shares this item.
     /// </summary>
-    private ObservableCollection<bool> sharedBy;
+    private ObservableCollection<bool> sharedBy = [with(Enumerable.Repeat(false, maxSharers))];
 
     /// <summary>
     /// Next default item number used when creating unnamed items.
@@ -58,15 +58,15 @@ public partial class LineItem : ObservableObject
     /// <summary>
     /// Initializes a new instance of <see cref="LineItem"/> with default values and a default item name.
     /// </summary>
-    public LineItem() => SetupSharedBy();
+    public LineItem() => sharedBy.CollectionChanged += Sharers_CollectionChanged;
 
     /// <summary>
     /// Initializes a new instance of <see cref="LineItem"/> copying values from the provided <paramref name="li"/>.
     /// </summary>
     /// <param name="li">Source <see cref="LineItem"/> to copy values from.</param>
-    public LineItem(LineItem li)
+    public LineItem(LineItem li) : this()
     {
-        SetupSharedBy();
+
         ItemName = li.ItemName;
         FilterForSharerID = li.FilterForSharerID;
         Amount = li.Amount;
@@ -74,12 +74,17 @@ public partial class LineItem : ObservableObject
         Comped = li.Comped;
     }
 
+    ~LineItem()
+    {
+        sharedBy.CollectionChanged -= Sharers_CollectionChanged;
+    }
+
     /// <summary>
     /// Handles changes to the sharers collection and raises property change notifications for dependent properties.
     /// </summary>
     /// <param name="sender">The collection that changed.</param>
     /// <param name="e">Event data describing the change.</param>
-    private void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void Sharers_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         OnPropertyChanged(nameof(SharedBy));
         OnPropertyChanged(nameof(Sharers));
@@ -396,15 +401,7 @@ public partial class LineItem : ObservableObject
     /// The encoding in XML is handled by <see cref="SharesList"/> 
     /// </summary>
     [XmlIgnore]
-    public ObservableCollection<bool> SharedBy
-    {
-        get
-        {
-            if (sharedBy is null)
-                SetupSharedBy();
-            return sharedBy;
-        }
-    }
+    public ObservableCollection<bool> SharedBy => sharedBy;
 
     /// <summary>
     /// A list of shares over and above one that each participant has every value set here should have a corresponding setting in <see cref="SharedBy"/>.
@@ -474,9 +471,6 @@ public partial class LineItem : ObservableObject
     /// </summary>
     private void SetupSharedBy()
     {
-        sharedBy = new ObservableCollection<bool>(Enumerable.Repeat(false, maxSharers));
-        sharedBy.CollectionChanged += Sharers_CollectionChanged;
-        ExtraShares ??= new byte[maxSharers];
     }
 
     /// <summary>
@@ -496,7 +490,7 @@ public partial class LineItem : ObservableObject
     /// </summary>
     [XmlAttribute]
     [ObservableProperty]
-    public partial string ItemName { get; set; }
+    public partial string ItemName { get; set; } = string.Empty;
 
     /// <summary>
     /// Called when <see cref="ItemName"/> changes. Attempts to update <see cref="NextItemNumber"/> based on the new name.

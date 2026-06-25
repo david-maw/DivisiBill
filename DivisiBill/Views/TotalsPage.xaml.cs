@@ -7,12 +7,21 @@ namespace DivisiBill.Views;
 public partial class TotalsPage : ContentPage
 {
     private MealViewModel viewModel;
-    public TotalsPage() => InitializeComponent();
+    public TotalsPage()
+    {
+        InitializeComponent();
+        viewModel = BindingContext is MealViewModel vm
+            ? vm
+            : throw new InvalidOperationException("TotalsPage must have a MealViewModel as its BindingContext");
+    }
+
     protected override void OnAppearing()
     {
         Utilities.DebugMsg("In TotalsPage.OnAppearing");
         base.OnAppearing();
-        viewModel = BindingContext as MealViewModel; // It may have changed
+        viewModel = BindingContext is MealViewModel vm
+            ? vm // It may have changed since the page was created, so we need to check again
+            : throw new InvalidOperationException("TotalsPage must have a MealViewModel as its BindingContext");
         viewModel.DistributeCostsIfNeeded();
         viewModel.ShowTotalsHint = App.Settings.ShowTotalsHint;
     }
@@ -26,9 +35,9 @@ public partial class TotalsPage : ContentPage
 
     // Because add and replace item actions need to open a new page they were historically forced to run
     // in the code behind. A more modern solution would be to put them in the view model and use Shell navigation.
-    private async void OnReplaceItem(object sender, EventArgs e)
+    private async void OnReplaceItem(object? sender, EventArgs e)
     {
-        PersonCost pc = null;
+        PersonCost? pc = null;
         if (sender is BindableObject b && b.BindingContext is PersonCost boundPc)
             pc = boundPc;
         else if (sender is ToolbarItem tbi)
@@ -41,7 +50,7 @@ public partial class TotalsPage : ContentPage
             await Navigation.PushAsync(v);
         }
     }
-    private void HandlePersonSelected(Person selectedPerson, PersonCost pc)
+    private void HandlePersonSelected(Person selectedPerson, PersonCost? pc)
     {
         if (pc is null)
         {
@@ -54,7 +63,7 @@ public partial class TotalsPage : ContentPage
         if (pc is not null)
             CostsListView.ScrollTo(pc);
     }
-    public async void OnAddItem(object sender, EventArgs e)
+    public async void OnAddItem(object? sender, EventArgs e)
     {
         if (viewModel.Costs.Count >= LineItem.maxSharers) // We need one empty slot for temporary storage
         {
@@ -66,7 +75,7 @@ public partial class TotalsPage : ContentPage
         await Navigation.PushAsync(v);
     }
 
-    private void OnPersonDrop(object _, DropEventArgs e)
+    private void OnPersonDrop(object? _, DropEventArgs e)
     {
         e.Handled = true; // Inhibit default MAUI handling, see https://github.com/dotnet/maui/issues/35599
     }

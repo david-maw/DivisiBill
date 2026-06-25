@@ -9,11 +9,11 @@ namespace DivisiBill.Views;
 /// </summary>
 public partial class PeopleListPage : ContentPage
 {
-    private readonly ViewModels.PeopleListViewModel context = null;
+    private readonly ViewModels.PeopleListViewModel context;
     public PeopleListPage() : this(null)
     {
     }
-    public PeopleListPage(PersonCost personCost = null)
+    public PeopleListPage(PersonCost? personCost = null)
     {
         InitializeComponent();
         context = new ViewModels.PeopleListViewModel(SelectPerson, ShowPerson, personCost);
@@ -31,8 +31,8 @@ public partial class PeopleListPage : ContentPage
         context.ShowPeopleHint = App.Settings.ShowPeopleHint;
     }
 
-    public delegate void SelectPersonDelegate(Person person, PersonCost personCost);
-    public event SelectPersonDelegate OnPersonSelected;
+    public delegate void SelectPersonDelegate(Person person, PersonCost? personCost);
+    public event SelectPersonDelegate? OnPersonSelected;
 
     /// <summary>
     /// Add the selected Person to the current Meal.
@@ -41,7 +41,7 @@ public partial class PeopleListPage : ContentPage
     /// </summary>
     /// <param name="p">The person to select</param>
     /// <param name="pc">The PersonCost item being replaced (if any)</param>
-    private async void SelectPerson(Person p, PersonCost pc)
+    private async void SelectPerson(Person p, PersonCost? pc)
     {
         if (OnPersonSelected is not null)
         {
@@ -70,7 +70,7 @@ public partial class PeopleListPage : ContentPage
     #region Collection Scrolling
     private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
         => CurrentCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
-    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
         context.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
         context.LastVisibleItemIndex = e.LastVisibleItemIndex;

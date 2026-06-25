@@ -13,6 +13,7 @@ public partial class GettingStartedPage : ContentPage
     public GettingStartedPage()
     {
         InitializeComponent();
+        App.Settings = new AppSettings(); // We need to replace the fake settings before we can check if this is the first use
         Shell.Current.Navigating += PreventPrematureNavigation;
         Loaded += async (s, e) =>
         {
@@ -53,7 +54,7 @@ public partial class GettingStartedPage : ContentPage
     /// </summary>
     /// <param name="sender">Usually the current shell instance</param>
     /// <param name="e">Information about the proposed navigation action</param>
-    private async void PreventPrematureNavigation(object sender, ShellNavigatingEventArgs e)
+    private async void PreventPrematureNavigation(object? sender, ShellNavigatingEventArgs e)
     {
         if (e.CanCancel)
         {   // If we can cancel the navigation, we may do so depending on the details

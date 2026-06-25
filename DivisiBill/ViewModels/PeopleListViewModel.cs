@@ -9,15 +9,15 @@ namespace DivisiBill.ViewModels;
 internal partial class PeopleListViewModel : Services.ObservableObjectPlus
 {
     #region Globals and constructors
-    public delegate void SelectPersonDelegate(Person person, PersonCost personCost);
+    public delegate void SelectPersonDelegate(Person person, PersonCost? personCost);
 
-    private readonly SelectPersonDelegate PersonSelected;
-    private readonly Action<Person> ShowPerson;
-    private readonly PersonCost personCost;
+    private readonly SelectPersonDelegate PersonSelected = (_, _) => { };
+    private readonly Action<Person> ShowPerson = _ => { };
+    private readonly PersonCost? personCost;
     public PeopleListViewModel()
     {
     }
-    public PeopleListViewModel(SelectPersonDelegate PersonSelectedParameter, Action<Person> ShowPersonParameter, PersonCost personCostParameter = null) : this()
+    public PeopleListViewModel(SelectPersonDelegate PersonSelectedParameter, Action<Person> ShowPersonParameter, PersonCost? personCostParameter = null) : this()
     {
         PersonSelected = PersonSelectedParameter;
         ShowPerson = ShowPersonParameter;
@@ -36,7 +36,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
     [RelayCommand]
     private async Task Delete(Person personParam)
     {
-        Person p = personParam ?? SelectedPerson;
+        Person? p = personParam ?? SelectedPerson;
         if (p is not null)
         {
             if (IsInUse(p))
@@ -99,7 +99,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
             if (fileListViewModel.FileListCount > 0)
             {
                 await Shell.Current.Navigation.PushAsync(new Views.FileListPage(fileListViewModel));
-                RemoteItemInfo result = await fileListViewModel.SelectionCompleted.Task;
+                RemoteItemInfo? result = await fileListViewModel.SelectionCompleted.Task;
                 if (result is not null)
                 {
                     bool loaded = await Person.LoadFromRemoteAsync(result.Name, result.ReplaceRequested);
@@ -121,7 +121,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
     [RelayCommand]
     private async Task Use(Person personParam)
     {
-        Person p = personParam ?? SelectedPerson;
+        Person? p = personParam ?? SelectedPerson;
         if (p is not null)
         {
             if (IsInUse(p))
@@ -135,7 +135,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
     private async Task Add()
     {
         Person p = new(Guid.NewGuid());
-        Contact contact = null;
+        Contact? contact = null;
         if (Utilities.IsAndroid) // there's no contact picker on Windows
             try
             {
@@ -164,16 +164,16 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
     [RelayCommand]
     private void ShowDetails(Person personParam)
     {
-        Person p = personParam ?? SelectedPerson;
+        Person? p = personParam ?? SelectedPerson;
         if (p is not null)
             ShowPerson.Invoke(p);
     }
 
     [ObservableProperty]
-    public partial Person SelectedPerson { get; set; }
+    public partial Person? SelectedPerson { get; set; }
 
 #if WINDOWS
-    private Person lastPersonSelectedByMe = null;
+    private Person? lastPersonSelectedByMe = null;
 #endif
 
     [RelayCommand]
@@ -219,7 +219,7 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
 
     partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < AllPeople.Count - 1;
 
-    public Action<int, bool> ScrollItemsTo = null;
+    public Action<int, bool>? ScrollItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)

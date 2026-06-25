@@ -1,5 +1,3 @@
-#nullable enable
-
 using DivisiBill.Services;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -342,7 +340,7 @@ public partial class AmountEntry : Entry
         BindableProperty.Create(nameof(Amount),
             typeof(decimal),
             typeof(AmountEntry),
-            0m,
+            decimal.MaxValue, // This ensures that real values always trigger propertyChanged when they are first assigned
             BindingMode.TwoWay,
             propertyChanged: (bindable, oldValue, newValue) =>
             {

@@ -9,7 +9,7 @@ namespace DivisiBill.Views;
 [QueryProperty(nameof(Command), "command")]
 public partial class LineItemsPage : ContentPage
 {
-    private MealViewModel mealViewModel;
+    private MealViewModel mealViewModel = new(); // Dummy value to avoid null reference warnings
     private readonly Button[] ShareButtons;
     public LineItemsPage()
     {
@@ -19,16 +19,16 @@ public partial class LineItemsPage : ContentPage
         ShareButtons = [.. SharesContainer.Children.Select(v => (Button)v)];
     }
 
-    private PersonCost CurrentPersonCost = null;
+    private PersonCost? CurrentPersonCost = null;
 
-    public string Command { get; set; } = null;
+    public string Command { get; set; } = string.Empty;
 
     /// <summary>
     /// Redraw the button only after it is released in order not to create a flash on the fake long press
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnSharesBtnReleased(object sender, EventArgs e)
+    private void OnSharesBtnReleased(object? sender, EventArgs e)
     {
         if (sender is Button btn && btn.CommandParameter is PersonCost pc && LineItemsListView.SelectedItem is LineItem li)
         {
@@ -41,7 +41,7 @@ public partial class LineItemsPage : ContentPage
     /// This contains a crude but effective 'press and hold' implementation, it's subject to some problems
     /// but good enough for practical use.
     /// </summary>
-    private async void OnSharesBtnPressed(object sender, EventArgs e)
+    private async void OnSharesBtnPressed(object? sender, EventArgs e)
     {
         if (sender is Button btn && LineItemsListView.SelectedItem is LineItem li)
         {
@@ -65,7 +65,7 @@ public partial class LineItemsPage : ContentPage
             }
         }
     }
-    private void LineItemsPage_SizeChanged(object sender, EventArgs e)
+    private void LineItemsPage_SizeChanged(object? sender, EventArgs e)
     {
         if (mealViewModel is not null)
             try
@@ -92,7 +92,9 @@ public partial class LineItemsPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        mealViewModel = BindingContext as MealViewModel; // It may have changed
+        if (BindingContext is not MealViewModel vm)
+            throw new InvalidOperationException("The BindingContext of LineItemsPage must be set to a MealViewModel before the page appears");
+        mealViewModel = vm;
         mealViewModel.ShowLineItemsHint = App.Settings is not null && App.Settings.ShowLineItemsHint;
         mealViewModel.LineItemAddCompletedInUi = LineItemAddCompletedInUi;
         ArrangeSharesButtons(); // In case the sharer list changed
@@ -110,7 +112,7 @@ public partial class LineItemsPage : ContentPage
         Meal.RequestSnapshot();
         mealViewModel.ForgetDeletedItems();
         base.OnDisappearing();
-        mealViewModel.ScrollLineItemsTo = null;
+        mealViewModel.ScrollLineItemsTo = (_, _) => { };
     }
     private void MealViewModel_SharingChanged(LineItem li)
     {
@@ -189,16 +191,16 @@ public partial class LineItemsPage : ContentPage
     /// </summary>
     /// <param name="sender">The item list</param>
     /// <param name="e">Information about what changed</param>
-    private async void OnItemSelected(object sender, SelectionChangedEventArgs e)
+    private async void OnItemSelected(object? sender, SelectionChangedEventArgs e)
     {
-        LineItem priorLi = e.PreviousSelection.Count == 0 ? null : (LineItem)e.PreviousSelection[0];
+        LineItem? priorLi = e.PreviousSelection.Count == 0 ? null : (LineItem)e.PreviousSelection[0];
         if (priorLi is not null)
         {
             // Hide the prior item if it should no longer be visible
             mealViewModel.LineItemDeselected(priorLi);
         }
 
-        LineItem li = e.CurrentSelection.Count == 0 ? null : (LineItem)e.CurrentSelection[0];
+        LineItem? li = e.CurrentSelection.Count == 0 ? null : (LineItem)e.CurrentSelection[0];
         ItemEntryContainer.IsVisible = li is not null;
         totalsContainer.IsVisible = li is null;
         SharesCountContainer.IsVisible = false;
@@ -218,13 +220,13 @@ public partial class LineItemsPage : ContentPage
         }
     }
 
-    private Button CurrentSharesButton = null;
+    private Button? CurrentSharesButton = null;
     private byte CurrentShares = 0;
-    private void OnSharesCountButtonClicked(object sender, EventArgs e)
+    private void OnSharesCountButtonClicked(object? sender, EventArgs e)
     {
         var li = (LineItem)LineItemsListView.SelectedItem;
         var btn = sender as Button;
-        if (li is not null && CurrentPersonCost is not null)
+        if (li is not null && CurrentPersonCost is not null && btn is not null && CurrentSharesButton is not null)
         {
             CurrentShares = byte.Parse(btn.Text);
             li.SetShares(sharerID: CurrentPersonCost.DinerID, CurrentShares);
@@ -234,30 +236,30 @@ public partial class LineItemsPage : ContentPage
     }
     private void UpdateSharesInfoHeaderText(byte shares)
     {
-        SharesCountHeader.Text = CurrentPersonCost.Nickname + ": " + shares + " share";
+        SharesCountHeader.Text = CurrentPersonCost?.Nickname + ": " + shares + " share";
         if (shares != 1)
             SharesCountHeader.Text += "s";
     }
     public void SelectFirstUnallocatedLineItem()
     {
         mealViewModel.ClearFiltering();
-        LineItem li = mealViewModel.LineItems.FirstOrDefault(li2 => li2.TotalSharers == 0);
+        LineItem? li = mealViewModel.LineItems.FirstOrDefault(li2 => li2.TotalSharers == 0);
         if (li is not null)
             LineItemsListView.SelectedItem = li;
     }
-    private void OnVenueNameTapped(object sender, TappedEventArgs e) => App.PushAsync(Routes.PropertiesPage);
+    private void OnVenueNameTapped(object? sender, TappedEventArgs e) => App.PushAsync(Routes.PropertiesPage);
 
     #region Collection Scrolling
     private void ScrollLineItemsTo(int index, bool toEnd) // Passed in to viewModel
 => LineItemsListView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
-    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
         mealViewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
         mealViewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;
     }
     #endregion
 
-    private void OnDrop(object _, DropEventArgs e)
+    private void OnDrop(object? sender, DropEventArgs e)
     {
         e.Handled = true; // Inhibit MAUI default processing of the drop, see https://github.com/dotnet/maui/issues/35599
     }

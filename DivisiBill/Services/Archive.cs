@@ -32,9 +32,9 @@ public class Archive
         public bool ShowTotalsHint { get; set; }
         public bool ShowVenuesHint { get; set; }
         public bool ShowPeopleHint { get; set; }
-        public SimpleLocation FakeLocation { get; set; }
-        public string BillsFromDate { get; set; } = null;
-        public string BillsToDate { get; set; } = null;
+        public SimpleLocation? FakeLocation { get; set; }
+        public string? BillsFromDate { get; set; } = null;
+        public string? BillsToDate { get; set; } = null;
         public bool OnlyRelated { get; set; }
     }
     public static readonly DateTime EarliestDateAllowed = new(2010, 1, 1);
@@ -88,8 +88,11 @@ public class Archive
         if (Utilities.IsDebug)
         {
             // this is a handy place to check for differences between the old and new DistributeCosts algorithms
-            foreach (Meal m in AllMeals)
-                m.CompareCostDistribution();
+            if (AllMeals is not null)
+            {
+                foreach (Meal m in AllMeals)
+                    m.CompareCostDistribution();
+            }
         }
         if (onlyRelatedParam)
         {
@@ -104,6 +107,8 @@ public class Archive
                     Venues.Add(v);
                 foreach (PersonCost pc in meal.Costs.Where(pc => pc.Diner is not null))
                 {
+                    if (pc.Diner is null)
+                        continue;// This should not happen since we are only looking at costs with a diner but to satisfy the compiler...
                     Persons.Add(pc.Diner);
                     if (pc.PersonGUID != pc.Diner.PersonGUID)
                     {
@@ -137,17 +142,17 @@ public class Archive
         set => _ = DateTimeOffset.TryParse(value, out creationTime);
     }
     public string TimeName => Utilities.NameFromDateTime(creationTime.LocalDateTime);
-    public UserSettingsClass UserSettings { get; set; } = null;
-    public List<Venue> Venues { get; set; } = null;
-    public List<Person> Persons { get; set; } = null;
-    public List<GuidMappingEntry> AliasGuids { get; set; } = null;
+    public UserSettingsClass? UserSettings { get; set; } = null;
+    public List<Venue>? Venues { get; set; } = null;
+    public List<Person>? Persons { get; set; } = null;
+    public List<GuidMappingEntry>? AliasGuids { get; set; } = null;
 
     /// <summary>
     /// Gets or sets the collection of all the meals associated with this instance, all are selected for backup,
     /// some, or all of them may be selected for restore (see <see cref="SelectedMeals"/>).
     /// </summary>
     [XmlArray("Meals")]
-    public List<Meal> AllMeals { get; set; } = null;
+    public List<Meal>? AllMeals { get; set; } = null;
 
     /// <summary>
     /// Start index and length of the current date-range selection within <see cref="AllMeals"/>.
@@ -189,20 +194,19 @@ public class Archive
     /// caller is responsible for disposing the stream when it is no longer needed.</remarks>
     /// <param name="stream">The stream to which the XML data will be written. If null, a new memory stream is created and used.</param>
     /// <returns>A stream containing the XML representation of the current object, or null if serialization fails.</returns>
-    public Stream AsXmlStream(Stream stream = null)
+    public Stream AsXmlStream(Stream? stream = null)
     {
         stream ??= new MemoryStream();
         long originalPosition = stream.Position;
         try
         {
             xmlSerializer.Serialize(stream, this);
-            stream.Position = originalPosition;
-            return stream;
         }
         catch (Exception)
         {
-            return null;
         }
+        stream.Position = originalPosition;
+        return stream;
     }
 
     /// <summary>
@@ -212,7 +216,7 @@ public class Archive
     /// represented as XML.</returns>
     public string AsXmlString()
     {
-        if (AsXmlStream() is Stream stream)
+        if (AsXmlStream() is Stream stream && stream.Length > 0)
         {
             using StreamReader reader = new(stream);
             return reader.ReadToEnd();
@@ -221,11 +225,11 @@ public class Archive
     }
     #endregion
     #region Deserialization
-    public static Archive FromXmlStream(Stream stream)
+    public static Archive? FromXmlStream(Stream stream)
     {
         try
         {
-            return (Archive)xmlSerializer.Deserialize(stream);
+            return (Archive?)xmlSerializer.Deserialize(stream);
         }
         catch (Exception ex)
         {
@@ -254,7 +258,7 @@ public class Archive
     /// <summary>
     /// Deserialize the provided XML stream into an Archive (or single-item Archive) but do not perform any restore actions.
     /// </summary>
-    public static Archive DeserializeFromXmlStream(Stream archiveStream, StreamType streamContent)
+    public static Archive? DeserializeFromXmlStream(Stream archiveStream, StreamType streamContent)
     {
         try
         {
@@ -262,19 +266,19 @@ public class Archive
             if (archiveStream.CanSeek)
                 archiveStream.Position = 0;
 
-            Archive archive = null;
+            Archive? archive = null;
             // For convenience we allow individual files to be deserialized
             switch (streamContent)
             {
                 case StreamType.Venues:
-                    List<Venue> vl = Venue.DeserializeList(archiveStream);
+                    List<Venue>? vl = Venue.DeserializeList(archiveStream);
                     if (vl is not null)
                         archive = new Archive() { Venues = vl };
                     else
                         Utilities.DebugMsg($"In DeserializeArchiveFromStream, Venue.DeserializeList returned null");
                     break;
                 case StreamType.People:
-                    List<Person> pl = Person.DeserializeList(archiveStream);
+                    List<Person>? pl = Person.DeserializeList(archiveStream);
                     if (pl is not null)
                         archive = new Archive() { Persons = pl };
                     else
@@ -294,8 +298,14 @@ public class Archive
                     break;
             }
 
+            if (archive is null)
+            {
+                Utilities.DebugMsg($"In DeserializeArchiveFromStream, deserialization returned null");
+                return null;
+            }
+
             // Some old archives are out of order so sort the list just in case
-            archive.AllMeals.Sort((x, y) => DateTime.Compare(y.CreationTime, x.CreationTime));
+            archive.AllMeals?.Sort((x, y) => DateTime.Compare(y.CreationTime, x.CreationTime));
             // Initialize SelectedMeals and span window to all meals
             archive.selectedMealsStartIndex = 0;
             archive.SelectedMealsCount = archive.AllMeals?.Count ?? 0;
@@ -322,7 +332,7 @@ public class Archive
     /// <returns>A tuple containing the deserialized <see cref="Archive"/> object or a string describing any error that
     /// occurred. If deserialization is successful, the error string is empty. If the archive type is unsupported or an
     /// error occurs, the <see cref="Archive"/> is <see langword="null"/> and the error string provides details.</returns>
-    public static async Task<(Archive, string)> DeserializeAnyAsync(Stream stream, string mimeType)
+    public static async Task<(Archive?, string)> DeserializeAnyAsync(Stream stream, string mimeType)
     {
         StreamType archiveType = StreamType.Unknown;
         if (mimeType.Equals("application/zip", StringComparison.OrdinalIgnoreCase) ||
@@ -387,7 +397,7 @@ public class Archive
     /// <returns>A tuple containing the deserialized <see cref="Archive"/> object and a status message. If deserialization fails,
     /// the archive will be <see langword="null"/> and the status message will describe the error.</returns>
     /// <param name="streamContent"></param>
-    public static async Task<(Archive, string)> DeserializeAnyAsync(string archiveContainerName, StreamType streamContent = StreamType.Unknown)
+    public static async Task<(Archive?, string)> DeserializeAnyAsync(string archiveContainerName, StreamType streamContent = StreamType.Unknown)
     {
         if (streamContent == StreamType.Unknown)
             streamContent = Path.GetExtension(archiveContainerName).ToLower() switch
@@ -402,8 +412,8 @@ public class Archive
                             Utilities.TryDateTimeFromName(archiveContainerName, out _) ? StreamType.Meal :
                             StreamType.XmlArchive; // If all else fails just assume it is an XML archive
 
-        ZipArchive zipArchive = null; // The zip archive if a zip was selected
-        Stream archiveStream = null; // The stream containing archived data (the XML entry or the xml file stream)
+        ZipArchive? zipArchive = null; // The zip archive if a zip was selected
+        Stream? archiveStream = null; // The stream containing archived data (the XML entry or the xml file stream)
         try
         {
             Utilities.DebugMsg($"In DeserializeAny: file name {archiveContainerName}");
@@ -430,7 +440,7 @@ public class Archive
                     if (zipArchive is not null)
                     {
                         // Find the first XML file in the zip archive and assume it is an archive file
-                        ZipArchiveEntry zipArchiveEntry = zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".xml", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                        ZipArchiveEntry? zipArchiveEntry = zipArchive.Entries.Where(zAE => Path.GetExtension(zAE.Name).Equals(".xml", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                         if (zipArchiveEntry is not null)
                         {
                             archiveStream = zipArchiveEntry.Open();
@@ -487,7 +497,7 @@ public class Archive
     /// <summary>
     /// The full name of the file the <see cref="Archive"/> was deserialized from.
     /// </summary>
-    public string ContainerFullName { get; set; } = null;
+    public string? ContainerFullName { get; set; } = null;
 
     /// <summary>
     /// A value indicating whether <see cref="ContainerFullName"/> is compressed using the ZIP format as opposed to
@@ -590,19 +600,19 @@ public class Archive
                 // figure out what is used by the meals in the list and just include that
                 foreach (Meal meal in SelectedMeals)
                 {
-                    Venue v = string.IsNullOrWhiteSpace(meal.VenueName) ? null : Venues.FirstOrDefault(venue => meal.VenueName.Equals(venue.Name));
+                    Venue? v = string.IsNullOrWhiteSpace(meal.VenueName) ? null : Venues?.FirstOrDefault(venue => meal.VenueName.Equals(venue.Name));
                     if (v is not null)
                         FilteredVenues.Add(v);
                     foreach (PersonCost pc in meal.Costs.Where(pc => pc.PersonGUID != Guid.Empty))
                     {
                         Guid personGuid = pc.PersonGUID;
-                        GuidMappingEntry guidMappingEntry = AliasGuids.FirstOrDefault(guidMapping => personGuid.Equals(guidMapping.Key));
+                        GuidMappingEntry? guidMappingEntry = AliasGuids?.FirstOrDefault(guidMapping => personGuid.Equals(guidMapping.Key));
                         if (guidMappingEntry is not null)
                         {
                             FilteredAliasGuids.Add(guidMappingEntry);
                             personGuid = guidMappingEntry.Value;
                         }
-                        Person person = Persons.FirstOrDefault(person => person.PersonGUID == personGuid);
+                        Person? person = Persons?.FirstOrDefault(person => person.PersonGUID == personGuid);
                         if (person is not null)
                             FilteredPersons.Add(person);
                     }
@@ -640,7 +650,7 @@ public class Archive
                     MealSummary.PermanentlyDeleteAllLocalMeals();
 
                     // The old current meal is deleted so look for the first meal that is not a fake meal (Size >= 0) to be the new one
-                    Meal m = null;
+                    Meal? m = null;
                     foreach (Meal meal in SelectedMeals)
                     {
                         if (meal.Size >= 0)
@@ -727,7 +737,7 @@ public class Archive
                             continue;
 
                         // Find corresponding local meal by ImageName so we can update it later
-                        MealSummary localMealSummary = Meal.LocalMealList.FirstOrDefault(lm => lm.CreationTime == meal.CreationTime);
+                        MealSummary? localMealSummary = Meal.LocalMealList.FirstOrDefault(lm => lm.CreationTime == meal.CreationTime);
                         if (localMealSummary is null)
                         {
                             Utilities.DebugMsg($"Restored Meal corresponding to {meal.ImageName} is missing");
@@ -735,7 +745,7 @@ public class Archive
                         }
 
                         // Find the image entry in the zip by looking up the image name
-                        ZipArchiveEntry zippedImageEntry = zippedImages[meal.ImageName];
+                        ZipArchiveEntry? zippedImageEntry = zippedImages[meal.ImageName];
                         if (zippedImageEntry is null)
                         {
                             Utilities.DebugMsg($"Zip entry for {meal.ImageName} is missing");
@@ -782,7 +792,7 @@ public class Archive
     /// langword="true"/> to add images; otherwise, only the XML data is archived.</param>
     /// <returns>The full file path of the created ZIP archive if successful; otherwise, <see langword="null"/> if there are no
     /// bills to archive or an error occurs.</returns>
-    public string ZipAsync(bool saveImages = true)
+    public string? CreateZipArchive(bool saveImages = true)
     {
         if (AllMeals is null || AllMeals.Count == 0)
         {
@@ -804,14 +814,14 @@ public class Archive
             {
                 archiveZip.CreateEntryFromFile(xmlFilePath, xmlFileName);
                 File.Delete(xmlFilePath); // Delete the XML file after zipping
-                Utilities.DebugMsg($"In ZipAsync: created zip archive {zipFilePath} containing {xmlFileName}");
+                Utilities.DebugMsg($"In CreateZipArchive: created zip archive {zipFilePath} containing {xmlFileName}");
                 if (saveImages)
                 {
                     // Save bill images if requested
                     foreach (Meal meal in AllMeals.Where(m => m.HasImage && File.Exists(m.ImagePath)))
                     {
                         archiveZip.CreateEntryFromFile(meal.ImagePath, meal.ImageName);
-                        Utilities.DebugMsg($"In ZipAsync: added image {meal.ImageName} to zip archive");
+                        Utilities.DebugMsg($"In CreateZipArchive: added image {meal.ImageName} to zip archive");
                     }
                 }
             }

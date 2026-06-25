@@ -48,7 +48,7 @@ public partial class AppShell : Shell
         {
             DebugMsg("In Shell.OnBackButtonPressed navigation branch");
             // If there is an active back button behavior, honor it regardless of initialization state
-            BackButtonBehavior bb = CurrentPage.GetPropertyIfSet(BackButtonBehaviorProperty, returnIfNotSet: (BackButtonBehavior)null);
+            BackButtonBehavior? bb = CurrentPage.GetPropertyIfSet(BackButtonBehaviorProperty, returnIfNotSet: (BackButtonBehavior?)null);
             if (bb != null)
             {
                 if (bb.Command is not null && bb.IsEnabled && bb.IsVisible && bb.Command.CanExecute(null))
@@ -75,12 +75,12 @@ public partial class AppShell : Shell
             return true; // Do not exit the program
         }
     }
-    private async void OnHelpIndexClicked(object sender, EventArgs e)
+    private async void OnHelpIndexClicked(object? sender, EventArgs e)
     {
         Shell.Current.FlyoutIsPresented = false;
         await App.PushAsync($"{Routes.HelpPage}?page=index&fragment=pages");
     }
-    private void OnHelpClicked(object sender, EventArgs e)
+    private void OnHelpClicked(object? sender, EventArgs e)
     {
         Shell.Current.FlyoutIsPresented = false;
         Type targetType = CurrentPage.GetType();
@@ -101,10 +101,10 @@ public partial class AppShell : Shell
 
         App.PushAsync($"{Routes.HelpPage}?page={TopicName}");
     }
-    private void OnExitClicked(object sender, EventArgs e) => Application.Current.CloseWindow(Application.Current.Windows[0]);
-    private void PushProperties(object sender, EventArgs e) => App.PushAsync(Routes.PropertiesPage);
+    private void OnExitClicked(object? sender, EventArgs e) => App.Current.CloseWindow(App.Current.Windows[0]);
+    private void PushProperties(object? sender, EventArgs e) => App.PushAsync(Routes.PropertiesPage);
 
-    private void GoToImagePageWithCamera(object sender, EventArgs e)
+    private void GoToImagePageWithCamera(object? sender, EventArgs e)
     {
         if (CurrentPage is ImagePage)
             App.PushAsync(Routes.CameraPage);

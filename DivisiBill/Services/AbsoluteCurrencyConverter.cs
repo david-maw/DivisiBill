@@ -4,7 +4,7 @@ namespace DivisiBill.Services;
 
 public sealed class AbsoluteCurrencyConverter : IValueConverter
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value == null)
             return string.Empty;
@@ -19,6 +19,6 @@ public sealed class AbsoluteCurrencyConverter : IValueConverter
         return value.ToString();
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         => throw new NotSupportedException("ConvertBack is not supported.");
 }

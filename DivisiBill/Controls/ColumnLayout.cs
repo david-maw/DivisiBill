@@ -1,4 +1,5 @@
 //From https://github.com/hartez/CustomLayoutExamples#single-column-layout 
+
 using Microsoft.Maui.Layouts;
 
 namespace DivisiBill.Controls;
@@ -37,8 +38,8 @@ public class ColumnLayout : VerticalStackLayout
     internal static bool GetSameRowForView(IView view) => view is BindableObject bindableObject && GetSameRow(bindableObject);
     class ColumnLayoutManager(ColumnLayout layout) : ILayoutManager
     {
-        private Grid _gridLayout;
-        private GridLayoutManager _manager;
+        private Grid? _gridLayout;
+        private GridLayoutManager? _manager;
 
         private static Grid ToColumnGrid(VerticalStackLayout stackLayout)
         {

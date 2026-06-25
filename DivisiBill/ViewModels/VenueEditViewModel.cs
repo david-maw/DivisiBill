@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
@@ -150,9 +148,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     [RelayCommand]
     private async Task ShowPossibles()
     {
-        if (!Location.IsValid())
+        if (Location is null || !Location.IsValid())
             return;
-        Possibles = (await FindRestaurantsAsync(Location)).ToList();
+        Possibles = [.. (await FindRestaurantsAsync(Location))];
         PossiblesShowing = true;
     }
 

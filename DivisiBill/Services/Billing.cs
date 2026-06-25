@@ -68,12 +68,12 @@ internal static class Billing
     public const string ExpectedPackageName = "com.autoplus.divisibill";
     public const int ScansWarningLevel = 4; // If this many or fewer are left, warn the user and allow them to purchase additional scans
 
-    private static string GetJsonFieldValue(string jsonString, string fieldName) => JsonDocument.Parse(jsonString).RootElement.TryGetProperty(fieldName, out JsonElement fieldValue) ? fieldValue.GetString() : string.Empty;
+    private static string? GetJsonFieldValue(string jsonString, string fieldName) => JsonDocument.Parse(jsonString).RootElement.TryGetProperty(fieldName, out JsonElement fieldValue) ? fieldValue.GetString() : string.Empty;
     #endregion
     #region Pro License
     public const string ProSubscriptionId = "pro.subscription";
     public const string OldProProductId = "pro.upgrade"; // a product, not a subscription, kept around to simplify testing because it does not expire
-    internal static InAppBillingPurchase ProPurchase { get; private set; } = null;
+    internal static InAppBillingPurchase? ProPurchase { get; private set; } = null;
     internal static bool HasOldProProductId { get; private set; } = false;
 
     /// <summary>
@@ -103,7 +103,7 @@ internal static class Billing
             {
                 string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
                 string signatureB64 = Generated.BuildInfo.DivisiBillTestProSignatureB64;
-                (Billing.BillingStatusType billingResult, string resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
+                (Billing.BillingStatusType billingResult, string? resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
                 if (billingResult == BillingStatusType.ok)
                 {
                     ProPurchase = new InAppBillingPurchase()
@@ -190,7 +190,7 @@ internal static class Billing
             Utilities.DebugMsg("In Billing.PurchaseProSubscriptionAsync, PurchaseItemAsync returned null");
         else
         {
-            string validationResult = await CallWs.VerifyPurchase(ProPurchase);
+            string? validationResult = await CallWs.VerifyPurchase(ProPurchase);
 
             if (validationResult is null)
                 Utilities.DebugMsg("In Billing.PurchaseProSubscriptionAsync, CallWs.VerifyPurchase returned null");
@@ -226,7 +226,7 @@ internal static class Billing
             {
                 string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestProJsonB64));
                 string signatureB64 = Generated.BuildInfo.DivisiBillTestProSignatureB64;
-                (Billing.BillingStatusType billingResult, string resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
+                (Billing.BillingStatusType billingResult, string? resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
                 if (billingResult == BillingStatusType.ok)
                 {
                     ProPurchase = new InAppBillingPurchase()
@@ -298,7 +298,7 @@ internal static class Billing
             Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, PurchaseItemAsync returned null");
         else
         {
-            string validationResult = await CallWs.VerifyPurchase(ProPurchase);
+            string? validationResult = await CallWs.VerifyPurchase(ProPurchase);
             if (validationResult is null)
                 Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase returned null");
             else if (!int.TryParse(validationResult, out int result))
@@ -323,7 +323,7 @@ internal static class Billing
             return; // Not implemented for Windows 
         BillingStatusType test = await GetHasProLicenseAsync();
         Utilities.DebugMsg("In ConsumeDepletedProLicense, license purchase test returned " + test);
-        if (ProPurchase is not null)
+        if (ProPurchase is not null && ProPurchase.ProductId is not null && ProPurchase.PurchaseToken is not null)
         {
             // Notify the store that it can forget about this item, and allow the user to purchase another.
             bool consumed = await ConsumeItemAsync(ProPurchase.ProductId, ProPurchase.PurchaseToken);
@@ -338,7 +338,7 @@ internal static class Billing
     #region OCR License
     public static readonly string OcrLicenseProductId = "ocr.calls";
     internal static int ScansLeft { get; set; }
-    internal static InAppBillingPurchase OcrPurchase { get; private set; } = null;
+    internal static InAppBillingPurchase? OcrPurchase { get; private set; } = null;
     /// <summary>
     /// Check whether the user has an OCR license, if it is valid, and if it has scans left
     /// </summary>
@@ -358,7 +358,7 @@ internal static class Billing
             {
                 string json = Encoding.UTF8.GetString(Convert.FromBase64String(Generated.BuildInfo.DivisiBillTestOcrJsonB64));
                 string signatureB64 = Generated.BuildInfo.DivisiBillTestOcrSignatureB64;
-                (Billing.BillingStatusType billingResult, string resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
+                (Billing.BillingStatusType billingResult, string? resultString) = await GetInAppBillingPurchaseFakeAsync(json, signatureB64);
                 if (billingResult == BillingStatusType.ok)
                 {
                     OcrPurchase = new InAppBillingPurchase() // Set regardless of whether verification works or fails
@@ -375,7 +375,7 @@ internal static class Billing
                         OcrPurchase.State = PurchaseState.Purchased;
                         ScansLeft = scans;
                         return scans;
-                    } 
+                    }
                 }
                 else
                     return -2; // Error
@@ -410,7 +410,7 @@ internal static class Billing
         OcrPurchase = await PurchaseItemAsync(OcrLicenseProductId, App.Settings.UserKey);
         if (OcrPurchase is null)
             return -1;
-        string validationResult = await CallWs.VerifyPurchase(OcrPurchase);
+        string? validationResult = await CallWs.VerifyPurchase(OcrPurchase);
         if (validationResult is null || !int.TryParse(validationResult, out int ocrLicenseScans))
             return -2;
         if (validationResult == "-408")
@@ -430,7 +430,7 @@ internal static class Billing
         Utilities.DebugMsg("In ConsumeDepletedOcrLicense, license purchase test returned " + purchaseCount);
         if (purchaseCount >= ScansWarningLevel) // Too many scans associated with this license have not yet been consumed
             Utilities.DebugMsg($"In ConsumeDepletedOcrLicense, because license still has {purchaseCount} scans it will not be removed");
-        else if (OcrPurchase is not null)
+        else if (OcrPurchase is not null && OcrPurchase.ProductId is not null && OcrPurchase.PurchaseToken is not null)
         {
             // Notify the store that it can forget about this item, and allow the user to purchase another.
             await ConsumeItemAsync(OcrPurchase.ProductId, OcrPurchase.PurchaseToken);
@@ -445,7 +445,7 @@ internal static class Billing
     #region Communication with App Store
     #region Connection Management
     public static int BillingConnections = 0;
-    private static async Task<(BillingStatusType Status, IInAppBilling Interface)> OpenBilling([CallerMemberName] string methodName = "UnknownMethod")
+    private static async Task<(BillingStatusType Status, IInAppBilling? Interface)> OpenBilling([CallerMemberName] string methodName = "UnknownMethod")
     {
         Utilities.DebugMsg($"In OpenBilling: Called from {methodName}: BillingConnections = {BillingConnections}");
         if (BillingConnections == 0)
@@ -489,15 +489,15 @@ internal static class Billing
     /// <param name="productId">The ID of the product or subscription to be purchased</param>
     /// <param name="isSubscription">Whether it is a subscription (true) or a one time product license (false)</param>
     /// <returns></returns>
-    private static async Task<InAppBillingPurchase> PurchaseItemAsync(string productId, string obfuscatedAccountId, bool isSubscription = false)
+    private static async Task<InAppBillingPurchase?> PurchaseItemAsync(string productId, string obfuscatedAccountId, bool isSubscription = false)
     {
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
         {
             // No Internet, don't even bother trying
             return null;
         }
-        InAppBillingPurchase purchase = null;
-        (_, IInAppBilling inAppBilling) = await OpenBilling();
+        InAppBillingPurchase? purchase = null;
+        (_, IInAppBilling? inAppBilling) = await OpenBilling();
         if (inAppBilling is null)
         {
             //we are off line or can't connect, don't try to purchase
@@ -577,7 +577,7 @@ internal static class Billing
             // No Internet, don't even bother trying
             return false;
         }
-        (BillingStatusType _, IInAppBilling Interface) = await OpenBilling();
+        (BillingStatusType _, IInAppBilling? Interface) = await OpenBilling();
         if (Interface is null)
         {
             //we are off line or can't connect, don't try to do anything
@@ -601,12 +601,15 @@ internal static class Billing
     }
     #endregion
     #region Validate Existing Licenses
-    private static bool VerifyDivisiBillPurchaseSignature(string signedData, string signature)
+    private static bool VerifyDivisiBillPurchaseSignature(string? signedData, string? signature)
     {
         const string divisiBillPublicKeyBase64 = @"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgfNwFZUg8fTc0Qd0PizHh+lZyjYJQDx2IH9XXZDE1X" +
             "/aTAp9s5offgtVYkaepHn17UAAHx8d4W6IVUSbtNlAiKxudmEo2tjoSYp6nnSlWRCs7Tzi6t91aMPmgaWUyx9/MCWFj3SRJz9cWhb84JiFDX3UecKKFUyOo+7NzeCvHOCvn" +
             "5JHe+kXMB+wxiYYKcy/vPsOuKlfxkf3GRvWsYJPRLxjB4hWm17HX+vT1AWXZxrLFI1iNiF0WFhYU72zunM7JAla6hUcHag/nFZYHfZxzjAf8YlFCMUbqPTZkINehRHDiM8lg" +
             "brHR5Df32rw+m3cLWKqd5wWqu4yr9+iOHdXzwIDAQAB";
+
+        if (signedData is null || signature is null)
+            return false;
 
         // string signedDataB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(signedData)); // Handy if you need to get hold of the signed data in base64 for testing
         try
@@ -634,7 +637,7 @@ internal static class Billing
     /// </summary>
     /// <param name="androidJson">JSON representation of a license</param>
     /// <returns></returns>
-    private static async Task<(BillingStatusType, string)> GetInAppBillingPurchaseFakeAsync(string androidJson, string signatureB64)
+    private static async Task<(BillingStatusType, string?)> GetInAppBillingPurchaseFakeAsync(string androidJson, string signatureB64)
     {
         Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync");
         var androidJsonObject = JsonNode.Parse(androidJson);
@@ -643,11 +646,11 @@ internal static class Billing
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, androidJsonObject was null, returning null");
             return (BillingStatusType.notFound, null);
         }
-        JsonNode productIdNode = androidJsonObject["productId"];
+        JsonNode? productIdNode = androidJsonObject["productId"];
         if (productIdNode is null || productIdNode.GetValue<string>() is not string productId)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, productIdNode was not a string, returning null");
-            return (BillingStatusType.notFound, null);          
+            return (BillingStatusType.notFound, null);
         }
         if (!VerifyDivisiBillPurchaseSignature(androidJson, signatureB64))
         {
@@ -663,7 +666,7 @@ internal static class Billing
         {
             InAppBillingPurchase fakePurchase = new() { OriginalJson = androidJson, Signature = signatureB64, ProductId = productId, State = PurchaseState.Purchased };
 
-            string validationResult = await CallWs.VerifyPurchase(fakePurchase);
+            string? validationResult = await CallWs.VerifyPurchase(fakePurchase);
 
             if (validationResult is null)
             {
@@ -694,7 +697,7 @@ internal static class Billing
     /// <param name="productId">The product Id we need a license for</param>
     /// <param name="isSubscription">Whether it is a subscription or a one-time product license</param>
     /// <returns></returns>
-    private static async Task<(BillingStatusType, InAppBillingPurchase)> GetInAppBillingPurchaseAsync(string productId, bool isSubscription = false)
+    private static async Task<(BillingStatusType, InAppBillingPurchase?)> GetInAppBillingPurchaseAsync(string productId, bool isSubscription = false)
     {
         Utilities.DebugMsg("In GetInAppBillingPurchaseAsync for " + productId + (isSubscription ? " subscription" : " license"));
         if (Connectivity.NetworkAccess != NetworkAccess.Internet)
@@ -702,7 +705,7 @@ internal static class Billing
             Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, no Internet, returning null");
             return (BillingStatusType.noInternet, null);
         }
-        (BillingStatusType Status, IInAppBilling Interface) = await OpenBilling();
+        (BillingStatusType Status, IInAppBilling? Interface) = await OpenBilling();
         if (Interface == null)
         {
             Utilities.DebugMsg("In GetInAppBillingPurchaseAsync, no billing connection, returning null");
@@ -712,11 +715,11 @@ internal static class Billing
         {
             IEnumerable<InAppBillingPurchase> purchaseList = await Interface.GetPurchasesAsync(isSubscription ? ItemType.Subscription : ItemType.InAppPurchase);
 
-            InAppBillingPurchase purchase = purchaseList?.Where(p => p.ProductId == productId).FirstOrDefault();
+            InAppBillingPurchase? purchase = purchaseList?.Where(p => p.ProductId == productId).FirstOrDefault();
 
             if (purchase is null)
             {
-                if (purchaseList.Any())
+                if (purchaseList?.Any() == true)
                     Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} not found in play store purchase list, returning null");
                 else
                     Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, {productId} not found, play store purchase list was empty, returning null");
@@ -729,7 +732,7 @@ internal static class Billing
                 return (BillingStatusType.notFound, null);
             }
             Utilities.DebugMsg($"In GetInAppBillingPurchaseAsync, signed {productId} found in play store purchase list, verifying with web service");
-            string validationResult = await CallWs.VerifyPurchase(purchase);
+            string? validationResult = await CallWs.VerifyPurchase(purchase);
 
             if (validationResult is null || !int.TryParse(validationResult, out int scans))
             {

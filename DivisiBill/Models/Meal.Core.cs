@@ -51,7 +51,6 @@ public partial class Meal : ObservableObjectPlus
             {
                 classIsInitialized = true;
                 await StatusMsgAsync("Starting Meal.InitializeAsync");
-                App.Settings ??= new AppSettings();
                 await GetLocalMealListAsync();
                 ;
                 if (LocalMealList.Count == 0 && Utilities.IsDebug)
@@ -59,13 +58,14 @@ public partial class Meal : ObservableObjectPlus
                     await StatusMsgAsync("Creating fake bill list so we have something to work with");
                     CreateFakeStoredBills();
                 }
-                Meal AppMeal = LoadFromApp(tryExistingSummary: true); // load the meal but use an existing summary if there is one
+                Meal? AppMeal = LoadFromApp(tryExistingSummary: true); // load the meal but use an existing summary if there is one
+                Meal? InitialMeal = null;
 
                 if (!App.RecentlyUsed && AppMeal is not null && AppMeal.TooOldToContinue)
                 {
                     // Determine which mealSummary is closest so we can use it instead of the old one
-                    MealSummary closestMealSummary = null;
-                    Venue closestVenue = null;
+                    MealSummary? closestMealSummary = null;
+                    Venue? closestVenue = null;
                     foreach (MealSummary ms in LocalMealList)
                     {
                         if (App.UseLocation)
@@ -80,19 +80,21 @@ public partial class Meal : ObservableObjectPlus
                         }
                     }
                     if (closestMealSummary is not null && AppMeal.Summary.CompareDistanceTo(closestMealSummary) > 0)
-                        CurrentMeal = LoadFromFile(closestMealSummary, true);
+
+                        InitialMeal = LoadFromFile(closestMealSummary, true);
                 }
-                CurrentMeal ??= AppMeal;
-                if (CurrentMeal is null)
+                InitialMeal ??= AppMeal;
+                if (InitialMeal is null)
                 {
 
                     Meal fake = new();
                     fake.LoadFakeSettings();
                     fake.Summary.CreationTime = DateTime.Now;
-                    CurrentMeal = fake; // We wait to assign it until the meal id fully formed and has a venue name
-                    LocalMealList.Insert(0, CurrentMeal.Summary); // ensure it is in the local meal list
+                    InitialMeal = fake; // We wait to assign it until the meal id fully formed and has a venue name
+                    LocalMealList.Insert(0, InitialMeal.Summary); // ensure it is in the local meal list
                 }
-                Application.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel
+                CurrentMeal = InitialMeal;
+                App.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel
                 SnapshotNeeded.IsPaused = true;
                 App.StartBackupLoop();
                 bool saved = await TrySaveOldBillAsync();
@@ -121,7 +123,7 @@ public partial class Meal : ObservableObjectPlus
                 ClosestMealSummary = ms;
             if (ClosestMealSummary != CurrentMeal.Summary)
             {
-                Meal closestMeal = LoadFromFile(ClosestMealSummary, true);
+                Meal? closestMeal = LoadFromFile(ClosestMealSummary, true);
                 closestMeal?.OverwriteCurrent();
             }
         }
@@ -159,15 +161,15 @@ public partial class Meal : ObservableObjectPlus
     public void OverwriteCurrent()
     {
         CurrentMeal = this;
-        // It is important to reassign CurrentMeal early so downstream code which wants to remove it from lists of meals
+        // It is important to reassign InitialMeal early so downstream code which wants to remove it from lists of meals
         // will recognize the correct meal. Such code may well be triggered by events, so beware.
 
-        Application.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel;
-        CurrentMeal.SaveToApp();
+        App.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel;
+        CurrentMeal?.SaveToApp();
     }
     /// <summary>
     /// Save the current meal if necessary then show it in the list of meals and hide the new selection from that list.
-    /// Take "this" and point Meal.CurrentMeal at it, then update various references so they'll also point at the new CurrentMeal
+    /// Take "this" and point Meal.InitialMeal at it, then update various references so they'll also point at the new InitialMeal
     /// and save a copy to the app local storage so it'll be recovered if the app restarts. 
     /// </summary>
     /// <returns></returns>
@@ -183,22 +185,22 @@ public partial class Meal : ObservableObjectPlus
         {
             if (field != value)
             {
-                MealSummary prior = field?.Summary;
+                MealSummary? prior = field?.Summary;
                 field = value;
-                Venue.SetCurrentByName(value?.VenueName);
-                CurrentMealSummaryChanged?.Invoke(prior, value?.Summary);
+                Venue.SetCurrentByName(value.VenueName);
+                CurrentMealSummaryChanged?.Invoke(prior, value.Summary);
                 CurrentMealChanged?.Invoke(field, value);
             }
         }
-    }
+    } = new();
 
-    public delegate void CurrentMealSummaryChangedEventHandler(MealSummary oldSummary, MealSummary newSummary);
+    public delegate void CurrentMealSummaryChangedEventHandler(MealSummary? oldSummary, MealSummary? newSummary);
 
-    public static event CurrentMealSummaryChangedEventHandler CurrentMealSummaryChanged;
+    public static event CurrentMealSummaryChangedEventHandler? CurrentMealSummaryChanged;
 
     public delegate void CurrentMealChangedEventHandler(Meal oldMeal, Meal newMeal);
 
-    public static event CurrentMealChangedEventHandler CurrentMealChanged;
+    public static event CurrentMealChangedEventHandler? CurrentMealChanged;
 
     /// <summary>
     /// Loop saving the bill locally as necessary
@@ -212,8 +214,8 @@ public partial class Meal : ObservableObjectPlus
         Utilities.DebugMsg($"In Meal.PeriodicSaveAsync InitializationComplete happened");
         while (true)
         {
-            if (!(bool)CurrentMeal?.SavedToApp)
-                CurrentMeal.SaveToApp();
+            if (CurrentMeal?.SavedToApp == true)
+                CurrentMeal?.SaveToApp();
             SnapshotNeeded.IsPaused = true;
             // Wait for delayTime seconds or until a request to check immediately is received
             await Task.WhenAny(Task.Delay(delayTime * 1000), SnapshotNeeded.WaitWhilePausedAsync());
@@ -275,7 +277,7 @@ public partial class Meal : ObservableObjectPlus
                 // The list of MealSummary objects is what is stored in LocalMealList, and it includes the presence of an image file if one exists
                 foreach (string fileName in files.Where(fn => !existingLocalMs.ContainsKey(fn)))
                 {
-                    if (existingRemoteMs.TryGetValue(fileName, out MealSummary ms))
+                    if (existingRemoteMs.TryGetValue(fileName, out MealSummary? ms))
                     {
                         // The MealSummary is already in the RemoteMealList, so just mark it as local too and add it to LocalMealList
                         // because local meals are automatically backed up, this is the most common case
@@ -285,7 +287,7 @@ public partial class Meal : ObservableObjectPlus
                     {
                         // This is a brand new Meal, not previously seen
                         ms = null;
-                        Task<MealSummary> T = new(() => MealSummary.LoadFromMealFile(fileName));
+                        Task<MealSummary?> T = new(() => MealSummary.LoadFromMealFile(fileName));
                         T.Start();
                         try
                         {
@@ -389,7 +391,7 @@ public partial class Meal : ObservableObjectPlus
     /// <param name="whoFor">The person for whom the cost information is to be formatted, null if it 
     /// is not for a specific participant.</param>
     /// <returns>A string containing the formatted cost details.</returns>
-    public string ToString(PersonCost whoFor)
+    public string ToString(PersonCost? whoFor)
     {
         MemoryStream ms = new();
         TextToStream(ms, whoFor);
@@ -411,7 +413,7 @@ public partial class Meal : ObservableObjectPlus
     /// operation.</param>
     /// <param name="whoFor">An optional person for whom to calculate and display individual share information. If null, the output includes
     /// only overall bill details.</param>
-    private void TextToStream(Stream stream, PersonCost whoFor = null)
+    private void TextToStream(Stream stream, PersonCost? whoFor = null)
     {
         StreamWriter sw = new(stream);
         try
@@ -507,13 +509,14 @@ public partial class Meal : ObservableObjectPlus
     /// silently after reporting the error.</remarks>
     /// <param name="whoFor">The person for whom the bill should be sent. If null, the bill is sent to all diners with a valid email address.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public async Task CreateEmailMessageAsync(PersonCost whoFor = null)
+    public async Task CreateEmailMessageAsync(PersonCost? whoFor = null)
     {
         List<string> recipients = [];
         if (whoFor is null) // send it to everyone
         {
             foreach (PersonCost pc in Costs.Where(pc => !string.IsNullOrWhiteSpace(pc.Diner?.Email)))
-                recipients.Add(pc.Diner.Email);
+                if (pc.Diner?.Email is not null && !recipients.Contains(pc.Diner.Email)) // compiler fail and avoid duplicates if multiple people have the same email address)
+                    recipients.Add(pc.Diner.Email);
         }
         else // send it to just the one person
         {
@@ -533,12 +536,12 @@ public partial class Meal : ObservableObjectPlus
         // Make an archive and attach it
         string zipFullName = CreateZipArchive();
         // Attach archive file
-        message.Attachments.Add(new EmailAttachment(zipFullName));
+        message.Attachments?.Add(new EmailAttachment(zipFullName));
         // Attach a copy of the message in a text file to make it easier to read.
         string fn = "Bill-" + CreationTime.ToString("yyyyMMddHHmmss") + ".txt";
         string tempFileFullName = Path.Combine(TempFolderPath, fn);
         File.WriteAllText(tempFileFullName, body);
-        message.Attachments.Add(new EmailAttachment(tempFileFullName));
+        message.Attachments?.Add(new EmailAttachment(tempFileFullName));
         // Send the message
         try
         {
@@ -682,7 +685,7 @@ public partial class Meal : ObservableObjectPlus
         int nextNumber = 1;
         foreach (PersonCost personCost in Costs.Where(pc => pc.Diner is null)) // Rare case where the guid didn't correspond to a known person
         {
-            if (Costs.Count(pc => pc.Nickname.Equals(personCost.Nickname)) > 1) // The same nickname is repeated, so make this one unique
+            if (Costs.Count(pc => string.Equals(pc.Nickname, personCost.Nickname, StringComparison.OrdinalIgnoreCase)) > 1) // The same nickname is repeated, so make this one unique
             {
                 personCost.Nickname += nextNumber; // Note the +=
                 nextNumber++;
@@ -703,7 +706,7 @@ public partial class Meal : ObservableObjectPlus
         // At this point the venue list might not contain the venue for this meal, just leave it that way
     }
     // Create a crash report - this will be sent immediately (it doesn't wait for a program restart)
-    public static void ReportCrash(string What, string Who, Stream sourceStream, Exception ex, string streamName, string errorDescription = "")
+    public static void ReportCrash(string What, string Who, Stream? sourceStream, Exception ex, string streamName, string errorDescription = "")
     {
         string errorMessage = $"Meal.ReportCrash reported What={What}, Who={Who}, Exception={ex}";
         Debug.WriteLine(errorMessage);
@@ -732,7 +735,7 @@ public partial class Meal : ObservableObjectPlus
                     }
                 }
                 field = value;
-                field.PropertyChanged += Summary_PropertyChanged;
+                field?.PropertyChanged += Summary_PropertyChanged;
                 MarkAsChanged();
             }
         }
@@ -742,22 +745,26 @@ public partial class Meal : ObservableObjectPlus
     /// <summary>
     /// Forwards property change notifications from the MealSummary to the Meal
     /// </summary>
-    private void Summary_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void Summary_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        OnPropertyChanged(e.PropertyName);
-        if (e.PropertyName is (nameof(MealSummary.IsLocal)) or (nameof(MealSummary.IsRemote)))
+        if (e.PropertyName is null)
+            return;
+
+        string propertyName = e.PropertyName;
+
+        OnPropertyChanged(propertyName);
+        if (propertyName is (nameof(MealSummary.IsLocal)) or (nameof(MealSummary.IsRemote)))
             OnPropertyChanged(nameof(DiagnosticInfo));
-        else if (e.PropertyName == nameof(MealSummary.HasImage))
+        else if (propertyName == nameof(MealSummary.HasImage))
             OnPropertyChanged(nameof(HasImage));
-        else if (e.PropertyName == nameof(MealSummary.HasDeletedImage))
+        else if (propertyName == nameof(MealSummary.HasDeletedImage))
             OnPropertyChanged(nameof(HasDeletedImage));
-        else if (e.PropertyName == nameof(MealSummary.CreationTime))
+        else if (propertyName == nameof(MealSummary.CreationTime))
         {
             OnPropertyChanged(nameof(Age));
             OnPropertyChanged(nameof(FileName));
             OnPropertyChanged(nameof(IsDefault));
         }
-        ;
     }
 
     [XmlIgnore]
@@ -893,28 +900,35 @@ public partial class Meal : ObservableObjectPlus
             Frozen = true;  // Meaning it has been saved and now you have a new copy
         }
     }
-    private void OnLineItemChange(object sender, PropertyChangedEventArgs e)
+    private void OnLineItemChange(object? sender, PropertyChangedEventArgs e)
     {
         MarkAsChanged();
-        if (e.PropertyName.Equals(nameof(LineItem.Amount)) || e.PropertyName.Equals(nameof(LineItem.Comped)))
+        string propertyName = e.PropertyName ?? string.Empty;
+        if (propertyName.Equals(nameof(LineItem.Amount)) || propertyName.Equals(nameof(LineItem.Comped)))
             UpdateAmounts();
-        else if (e.PropertyName.Equals(nameof(LineItem.SharedBy)))
+        else if (propertyName.Equals(nameof(LineItem.SharedBy)))
             IsDistributed = false;
     }
 
-    private void LineItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void LineItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         if (e.Action is System.Collections.Specialized.NotifyCollectionChangedAction.Add or
             System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
         { // Make sure the new items report any changes
-            foreach (object item in e.NewItems)
-                ((LineItem)item).PropertyChanged += OnLineItemChange;
+            if (e.NewItems is not null)
+            {
+                foreach (object? item in e.NewItems)
+                    ((LineItem)item).PropertyChanged += OnLineItemChange;
+            }
         }
         if (e.Action is System.Collections.Specialized.NotifyCollectionChangedAction.Remove or
             System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
         { // Make sure the old items no longer report any changes
-            foreach (object item in e.OldItems)
-                ((LineItem)item).PropertyChanged -= OnLineItemChange;
+            if (e.OldItems is not null)
+            {
+                foreach (object item in e.OldItems)
+                    ((LineItem)item).PropertyChanged -= OnLineItemChange;
+            }
             if (LineItems.Count == 0)
                 LineItem.NextItemNumber = 1;
         }
@@ -922,7 +936,7 @@ public partial class Meal : ObservableObjectPlus
         UpdateAmounts();
     }
 
-    private void Costs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => MarkAsChanged();
+    private void Costs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => MarkAsChanged();
     #endregion
     #region Data Items
     #region persistent items
@@ -954,13 +968,13 @@ public partial class Meal : ObservableObjectPlus
         }
     }
 
-    public string CreationReason; // changing this isn't worth saving the meal for
+    public string? CreationReason; // changing this isn't worth saving the meal for
 
-    public string SaveReason; // changing this isn't worth saving the meal for
+    public string? SaveReason; // changing this isn't worth saving the meal for
 
-    public string SaverVersion; // This is always set just before saving, so no need to monitor it
+    public string? SaverVersion; // This is always set just before saving, so no need to monitor it
 
-    public string DataVersion; // This is always set just before saving, so no need to monitor it
+    public string? DataVersion; // This is always set just before saving, so no need to monitor it
 
     // A few releases did not store a valid person Guid in Meal items, this indicates whether this meal was one of them 
     public bool PersonGuidsUseless => string.IsNullOrEmpty(SaverVersion) || SaverVersion[0] == '5';
@@ -1012,13 +1026,13 @@ public partial class Meal : ObservableObjectPlus
     /// The last time the Meal was changed - older meals (before 2022) will not have this value stored but it should always be present in newer ones. 
     /// </summary>
     [XmlElement(ElementName = "LastChangeTime")]
-    public string StoredLastChangeTime
+    public string? StoredLastChangeTime
     {
         get => ActualLastChangeTime.DateTime == DateTime.MinValue
                 ? null
                 : ActualLastChangeTime.ToString("s", System.Globalization.CultureInfo.InvariantCulture) + ActualLastChangeTime.ToString("zzz", System.Globalization.CultureInfo.InvariantCulture);
 
-        set => ActualLastChangeTime = DateTimeOffset.Parse(value);
+        set => ActualLastChangeTime = value is null ? DateTimeOffset.MinValue : DateTimeOffset.Parse(value);
     }
     [XmlIgnore]
     public DateTimeOffset ActualLastChangeTime

@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using Org.BouncyCastle.Crypto;
+﻿using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
@@ -29,9 +27,10 @@ namespace DivisiBill.Services;
 /// <b>RSA key management:</b>
 /// <list type="bullet">
 /// <item>An RSA key is derived deterministically from a password by seeding a BouncyCastle SecureRandom with PBKDF2-SHA512 output, then generating a 2048-bit RSA keypair. The private key is converted to a .NET RSA and can be exported/imported as PKCS#8.</item>
-/// <item>Keys are persisted in MAUI SecureStorage using a per-key storage name suffixed with the lowercase hex fingerprint.</item>
 /// <item>An index of all stored keys is maintained to support bulk deletion.</item>
-/// <item>Each RSA key is stored in secure storage under a key derived from its fingerprint; these are not normally removed, even when the password is changed, because they may have been used to encrypt something. The current password's fingerprint is stored.</item>
+/// <item>Each RSA key is stored in secure storage under a key derived from its fingerprint</item>
+/// <item>Keys are not normally removed, even when the password is changed, because they may have been used to encrypt something.</item>
+/// <item>The current password's fingerprint is stored.</item>
 /// </list>
 /// </para>
 /// <para>

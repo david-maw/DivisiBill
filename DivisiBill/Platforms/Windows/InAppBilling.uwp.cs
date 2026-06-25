@@ -1,6 +1,6 @@
+using DivisiBill.InAppBilling;
 using System.Xml;
 using Windows.ApplicationModel.Store;
-using DivisiBill.InAppBilling;
 
 namespace DivisiBill.Platforms.Windows;
 
@@ -44,7 +44,7 @@ public class InAppBillingImplementation : BaseInAppBilling
     /// <param name="obfuscatedProfileId">Specifies an optional obfuscated string that is uniquely associated with the user's profile in your app.</param>
     /// <returns></returns>
     /// <exception cref="InAppBillingPurchaseException">If an error occurs during processing</exception>
-    public override async Task<InAppBillingPurchase> PurchaseAsync(string productId, ItemType itemType, string obfuscatedAccountId = null, string obfuscatedProfileId = null, string subOfferToken = null, CancellationToken cancellationToken = default)
+    public override async Task<InAppBillingPurchase?> PurchaseAsync(string productId, ItemType itemType, string? obfuscatedAccountId = null, string? obfuscatedProfileId = null, string? subOfferToken = null, CancellationToken cancellationToken = default)
     {
         // Get purchase result from store or simulator
         PurchaseResults purchaseResult = await CurrentAppMock.RequestProductPurchaseAsync(InTestingMode, productId);
@@ -125,19 +125,21 @@ internal static class InAppBillingHelperUwp
         XmlNodeList xmlProductReceipts = xmlDoc.GetElementsByTagName("ProductReceipt");
         for (int i = 0; i < xmlProductReceipts.Count; i++)
         {
-            XmlNode xmlProductReceipt = xmlProductReceipts[i];
+            XmlNode? xmlProductReceipt = xmlProductReceipts[i];
+
 
             // Create new InAppBillingPurchase with values from the xml element
             InAppBillingPurchase purchase = new()
             {
-                Id = xmlProductReceipt.Attributes["Id"].Value,
-                TransactionDateUtc = Convert.ToDateTime(xmlProductReceipt.Attributes["PurchaseDate"].Value),
-                ProductId = xmlProductReceipt.Attributes["ProductId"].Value,
+                Id = xmlProductReceipt?.Attributes?["Id"]?.Value,
+                TransactionDateUtc = Convert.ToDateTime(xmlProductReceipt?.Attributes?["PurchaseDate"]?.Value),
+                ProductId = xmlProductReceipt?.Attributes?["ProductId"]?.Value,
                 AutoRenewing = false // Not supported by UWP yet
             };
             purchase.PurchaseToken = purchase.Id;
             purchase.TransactionIdentifier = purchase.Id;
-            purchase.ProductIds = new string[] { purchase.ProductId };
+            if (!string.IsNullOrEmpty(purchase.ProductId))
+                purchase.ProductIds = [purchase.ProductId];
 
             // Map native UWP status to PurchaseState
             purchase.State = status switch

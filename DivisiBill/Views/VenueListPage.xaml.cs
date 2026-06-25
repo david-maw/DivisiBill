@@ -1,5 +1,3 @@
-#nullable enable
-
 using DivisiBill.Models;
 using DivisiBill.Services;
 

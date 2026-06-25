@@ -29,7 +29,7 @@ public class AppSettings : ISettings
         }
     }
 
-    private bool SetPreference(string key, string? value)
+    private bool SetPreference(string key, string value)
     {
         try
         {
@@ -107,7 +107,7 @@ public class AppSettings : ISettings
     public DateTime PeopleUpdateTime
     {
         get => Preferences.Get(nameof(PeopleUpdateTime), DateTime.MinValue);
-        set => SetPreference(nameof(PeopleUpdateTime), value.ToString());
+        set => SetPreference(nameof(PeopleUpdateTime), value);
     }
     public Guid VenueUpdater
     {
@@ -272,7 +272,7 @@ public class AppSettings : ISettings
     /// The Fake Location is stored as three simple values accuracy, latitude and longitude and accuracy
     /// The accuracy also acts as a validity specifier inf it is greater than Distances.AccuracyLimit it is deemed invalid 
     /// </summary>
-    public Location FakeLocation
+    public Location? FakeLocation
     {
         get => FakeAccuracy >= Distances.AccuracyLimit ? null : new Location(FakeLatitude, FakeLongitude) { Accuracy = FakeAccuracy };
         set

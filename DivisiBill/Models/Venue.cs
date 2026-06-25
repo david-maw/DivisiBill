@@ -15,7 +15,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
 {
     public const string VenueFolderName = "Venues";
     public const string VenueFileName = "Venues.xml";
-    public static event EventHandler<VenueDistanceChangedEventArgs> DistanceChanged;
+    public static event EventHandler<VenueDistanceChangedEventArgs>? DistanceChanged;
 
     private static readonly string VenueFullName = Path.Combine(App.BaseFolderPath, VenueFolderName, VenueFileName);
     public static readonly Location MiddleOfNowhere = new(20, 170); // Middle of the Pacific, not close to anything
@@ -23,7 +23,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     private static readonly ObservableCollection<Venue> allVenues = [];
     private static readonly ObservableCollection<Venue> allVenuesByDistance = [];
     private static bool allVenuesByDistanceIsSorted = true;
-    public static Venue Current
+    public static Venue? Current
     {
         get => field;
         private set
@@ -92,9 +92,9 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         return false;
     }
 
-    public static async Task<bool> LoadFromRemoteAsync(string name, bool replace)
+    public static async Task<bool> LoadFromRemoteAsync(string? name, bool replace)
     {
-        Stream stream = null;
+        Stream? stream = null;
         if (App.IsCloudAllowed)
             stream = await RemoteWs.GetItemStreamAsync(RemoteWs.VenueListTypeName, name);
         if (stream is null)
@@ -116,7 +116,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     }
     public static async Task<bool> LoadFromLocal()
     {
-        Stream stream = new FileStream(VenueFullName, FileMode.Open, FileAccess.Read);
+        Stream? stream = new FileStream(VenueFullName, FileMode.Open, FileAccess.Read);
         if (stream is null)
             return false;
         else
@@ -139,7 +139,15 @@ public partial class Venue : ObservableObject, IComparable<Venue>
             }
         return false;
     }
-    public static void InitializeFolders() => Directory.CreateDirectory(Path.GetDirectoryName(VenueFullName));
+    public static void InitializeFolders()
+    {
+        string? directoryName = Path.GetDirectoryName(VenueFullName);
+        if (directoryName != null)
+        {
+            Directory.CreateDirectory(directoryName);
+        }
+    }
+
     public static async Task SaveSettingsAsync(bool remote = true)
     {
         using MemoryStream stream = new(10000);
@@ -147,7 +155,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         Utilities.DebugExamineStream(stream);
         // Initiate local backup if it is permitted
         bool failed = true;
-        Directory.CreateDirectory(Path.GetDirectoryName(VenueFullName));
+        InitializeFolders();
         try
         {
             using (Stream fileStream = new FileStream(VenueFullName, FileMode.Create, FileAccess.Write))
@@ -184,12 +192,12 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         // end using stream
     }
 
-    public static List<Venue> DeserializeList(Stream stream)
+    public static List<Venue>? DeserializeList(Stream stream)
     {
         try
         {
-            var storedVenues = (VenueRoot)allVenuesSerializer.Deserialize(stream);
-            return storedVenues.Venues;
+            var storedVenues = (VenueRoot?)allVenuesSerializer.Deserialize(stream);
+            return storedVenues?.Venues;
         }
         catch (Exception ex)
         {
@@ -206,8 +214,11 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     /// <param name="replace">Whether to replace the old list completely or just merge in the new one</param>
     public static void MergeVenues(Stream sourceStream, bool replace)
     {
-        List<Venue> storedVenues = DeserializeList(sourceStream);
-        MergeVenues(storedVenues, replace);
+        List<Venue>? storedVenues = DeserializeList(sourceStream);
+        if (storedVenues != null)
+        {
+            MergeVenues(storedVenues, replace);
+        }
     }
     public static void MergeVenues(List<Venue> newVenues, bool replace)
     {
@@ -222,7 +233,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         {
             if (!string.IsNullOrEmpty(storedVenue.Name))
             {
-                if (allVenuesDictionary.TryGetValue(storedVenue.Name, out Venue localVenue))
+                if (allVenuesDictionary.TryGetValue(storedVenue.Name, out Venue? localVenue))
                 {
                     if (localVenue.Accuracy > storedVenue.Accuracy)
                     {  // New Venue has a more accurate location, use it (big numbers are less accurate)
@@ -340,11 +351,11 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     /// <param name="VenueName">Name of the venue to be selected (or created)</param>
     /// <param name="notesParam">Optional notes for a venue if one is created</param>
     /// <returns>Reference to the venue with the specified name</returns>
-    public static Venue SelectOrAddVenue(string VenueName = null, string notesParam = null)
+    public static Venue SelectOrAddVenue(string? VenueName = null, string? notesParam = null)
     {
         if (allVenues is null) // initializing
-            return null;
-        Venue v = new() { Name = VenueName ?? "New", Notes = notesParam };
+            return new Venue(); // Should never happen
+        Venue v = new() { Name = VenueName ?? "New", Notes = notesParam ?? string.Empty };
         if (VenueName is null)
             v.Location = App.MyLocation; // Assign current location only to a newly created venue with no name
         // Find out where in the sorted list this venue should go, can't use BinarySearch method because it is
@@ -371,17 +382,17 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         return v;
     }
 
-    public static Venue FindVenueByName(string desiredName)
+    public static Venue? FindVenueByName(string? desiredName)
     {
         if (string.IsNullOrWhiteSpace(desiredName) || !(allVenues?.Count > 0)) // the current venue has been renamed or we're initializing or there just aren't any venues
             return null;
-        Venue v = allVenues.Where(v1 => v1.Name.Equals(desiredName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+        Venue? v = allVenues.Where(v1 => v1.Name.Equals(desiredName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
         return v;
     }
-    public static void SetCurrentByName(string desiredName) => Current = FindVenueByName(desiredName);
-    public int CompareTo(Venue otherVenue) => string.Compare(Name, otherVenue.Name, ignoreCase: true);
+    public static void SetCurrentByName(string? desiredName) => Current = FindVenueByName(desiredName);
+    public int CompareTo(Venue? otherVenue) => string.Compare(Name, otherVenue?.Name, ignoreCase: true);
     public static int CompareDistances(Venue item1, Venue item2) => item1.CompareDistanceTo(item2);
-    public int CompareDistanceTo(Venue otherVenue)
+    public int CompareDistanceTo(Venue? otherVenue)
     {
         if (this == otherVenue)
             return 0;
@@ -423,10 +434,10 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     /// Use a new location if it is more accurate than the old one and within the same area
     /// </summary>
     /// <param name="newLocation">The candidate new location</param>
-    public void SetLocationIfBetter(Location newLocation)
+    public void SetLocationIfBetter(Location? newLocation)
     {
         bool useNewLocation;
-        if (newLocation.IsValid())
+        if (newLocation is not null && newLocation.IsValid())
         {   // We have a pretty accurate location for this venue, so perhaps it's better
             if (IsLocationValid) // We currently have a location, so decide if the new one is better
             {
@@ -446,7 +457,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     }
 
     [XmlIgnore]
-    public Location Location
+    public Location? Location
     {
         get => (Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid
                 ? null
@@ -492,7 +503,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
 
     partial void OnNameChanged(string oldValue, string newValue)
     {
-        Name = string.IsNullOrEmpty(newValue) ? null : newValue.Trim();
+        Name = string.IsNullOrEmpty(newValue) ? "" : newValue.Trim();
         if (allVenues.Contains(this))
             MoveToCorrectPlace();
         UpdateTime = DateTime.Now;
@@ -504,7 +515,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
 
     partial void OnNotesChanged(string oldValue, string newValue)
     {
-        Notes = string.IsNullOrEmpty(newValue) ? null : newValue.Trim();
+        Notes = string.IsNullOrEmpty(newValue) ? "" : newValue.Trim();
         UpdateTime = DateTime.Now;
     }
 

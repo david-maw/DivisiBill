@@ -24,7 +24,7 @@ public partial class FileListViewModel : ObservableObjectPlus
         Utilities.DebugMsg($"In FileListViewModel.InitializeAsync FileList is {(FileList is null ? "" : "not ")} null");
         if (FileList is not null)
             return true; // already initialized
-        List<RemoteItemInfo> returnedItems = await RemoteWs.GetItemInfoListAsync(itemTypeName);
+        List<RemoteItemInfo>? returnedItems = await RemoteWs.GetItemInfoListAsync(itemTypeName);
         if (returnedItems is null)
             return false;
         FileList = [.. returnedItems];
@@ -33,20 +33,20 @@ public partial class FileListViewModel : ObservableObjectPlus
         return true;
     }
 
-    private void FileList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void FileList_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         OnPropertyChanged(nameof(ItemsFound));
         OnPropertyChanged(nameof(FileListCount));
     }
 
     public void Terminate() => SelectionCompleted.TrySetResult(null);
-    public ObservableCollection<RemoteItemInfo> FileList { get; set; }
+    public ObservableCollection<RemoteItemInfo>? FileList { get; set; }
 
     public bool ItemsFound => FileListCount > 0;
 
     public int FileListCount => FileList is null ? 0 : FileList.Count;
 
-    public TaskCompletionSource<RemoteItemInfo> SelectionCompleted = new();
+    public TaskCompletionSource<RemoteItemInfo?> SelectionCompleted = new();
 
     public string ItemTypePlural => RemoteWs.ItemTypeNameToPlural[itemTypeName];
 
@@ -70,9 +70,9 @@ public partial class FileListViewModel : ObservableObjectPlus
     }
 
     [ObservableProperty]
-    public partial RemoteItemInfo SelectedItem { get; set; }
+    public partial RemoteItemInfo? SelectedItem { get; set; }
 
-    partial void OnSelectedItemChanged(RemoteItemInfo value) => DeleteCommand.NotifyCanExecuteChanged();
+    partial void OnSelectedItemChanged(RemoteItemInfo? value) => DeleteCommand.NotifyCanExecuteChanged();
 
     [ObservableProperty]
     public partial List<RemoteItemInfo> SelectedItems { get; set; } = [];
@@ -85,9 +85,9 @@ public partial class FileListViewModel : ObservableObjectPlus
         if (ShowAsSelectableList)
         {
             if (remoteItemInfo.Selected)
-                SelectedItems.Remove(remoteItemInfo);
+                SelectedItems?.Remove(remoteItemInfo);
             else
-                SelectedItems.Add(remoteItemInfo);
+                SelectedItems?.Add(remoteItemInfo);
             DeleteCommand.NotifyCanExecuteChanged();
         }
         else // Selecting a single item
@@ -109,6 +109,9 @@ public partial class FileListViewModel : ObservableObjectPlus
     [RelayCommand(CanExecute = nameof(CanDelete))]
     private async Task DeleteAsync()
     {
+        if (FileList is null)
+            return;
+
         if (ShowAsSelectableList)
         {
             List<RemoteItemInfo> list = [.. FileList.Where((rii) => rii.Selected)];
@@ -119,7 +122,7 @@ public partial class FileListViewModel : ObservableObjectPlus
         }
         else if (SelectedItem is not null)
         {
-            RemoteItemInfo alternate = FileList.Alternate(SelectedItem);
+            RemoteItemInfo? alternate = FileList.Alternate(SelectedItem);
             await DeleteThisItemAsync(SelectedItem);
             SelectedItem = alternate;
         }
@@ -129,7 +132,7 @@ public partial class FileListViewModel : ObservableObjectPlus
     private async Task DeleteThisItemAsync(RemoteItemInfo remoteItemInfo)
     {
         if (await RemoteWs.DeleteItemAsync(itemTypeName, remoteItemInfo.Name))
-            FileList.Remove(remoteItemInfo);
+            FileList?.Remove(remoteItemInfo);
     }
 
     [ObservableProperty]
@@ -145,11 +148,14 @@ public partial class FileListViewModel : ObservableObjectPlus
             SelectedItem?.Selected = false; // deselect any old one 
         else
         {
-            foreach (RemoteItemInfo item in SelectedItems)
+            if (SelectedItems is not null)
             {
-                item.Selected = false;
+                foreach (RemoteItemInfo item in SelectedItems)
+                {
+                    item.Selected = false;
+                }
+                SelectedItems.Clear();
             }
-            SelectedItems.Clear();
         }
     }
     #region Scrolling Item list
@@ -167,9 +173,9 @@ public partial class FileListViewModel : ObservableObjectPlus
     [ObservableProperty]
     public partial int LastVisibleItemIndex { get; set; }
 
-    partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < FileList.Count - 1;
+    partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value + 1 < FileList?.Count;
 
-    public Action<int, bool> ScrollItemsTo = null;
+    public Action<int, bool>? ScrollItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)

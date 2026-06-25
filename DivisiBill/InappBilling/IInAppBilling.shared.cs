@@ -44,7 +44,7 @@ public interface IInAppBilling : IDisposable
     /// <param name="obfuscatedProfileId">Android: Specifies an optional obfuscated string that is uniquely associated with the user's profile in your app.</param>
     /// <returns>Purchase details</returns>
     /// <exception cref="InAppBillingPurchaseException">If an error occurs during processing</exception>
-    Task<InAppBillingPurchase> PurchaseAsync(string productId, ItemType itemType, string obfuscatedAccountId = null, string obfuscatedProfileId = null, string subOfferToken = null, CancellationToken cancellationToken = default);
+    Task<InAppBillingPurchase?> PurchaseAsync(string productId, ItemType itemType, string? obfuscatedAccountId = null, string? obfuscatedProfileId = null, string? subOfferToken = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Consume a purchase with a purchase token.

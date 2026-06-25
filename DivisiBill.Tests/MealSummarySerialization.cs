@@ -6,8 +6,6 @@ namespace DivisiBill.Tests;
 [TestClass]
 public class MealSummarySerialization
 {
-    public MealSummarySerialization() => DivisiBill.App.Settings = new FakeAppSettings();
-
     [TestMethod]
     public void DeserializeTest()
     {

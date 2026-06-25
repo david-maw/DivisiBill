@@ -47,23 +47,32 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             AllPeople.Add(person);
         UpdateTime = DateTime.MinValue; // Note that the list contains only default values
     }
-    private static void AllPeople_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private static void AllPeople_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
         {
-            foreach (Person person in e.NewItems)
-                Aliases.Add(person.PersonGUID, person);
+            if (e.NewItems is not null)
+            {
+                foreach (Person person in e.NewItems)
+                    Aliases.Add(person.PersonGUID, person);
+            }
         }
         else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
         {
-            foreach (Person person in e.OldItems)
-                Aliases.Remove(person.PersonGUID);
+            if (e.OldItems is not null)
+            {
+                foreach (Person person in e.OldItems)
+                    Aliases.Remove(person.PersonGUID);
+            }
         }
         else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
         {
             Aliases.Clear();
-            foreach (Person person in e.NewItems)
-                Aliases.Add(person.PersonGUID, person);
+            if (e.NewItems is not null)
+            {
+                foreach (Person person in e.NewItems)
+                    Aliases.Add(person.PersonGUID, person);
+            }
         }
         else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
         {
@@ -93,9 +102,9 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
 
-    public static async Task<bool> LoadFromRemoteAsync(string name, bool replace)
+    public static async Task<bool> LoadFromRemoteAsync(string? name, bool replace)
     {
-        Stream stream = null;
+        Stream? stream = null;
         if (App.IsCloudAllowed)
             stream = await RemoteWs.GetItemStreamAsync(RemoteWs.PersonListTypeName, name);
         if (stream is null)
@@ -137,7 +146,12 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         return false;
     }
 
-    public static void InitializeFolders() => Directory.CreateDirectory(Path.GetDirectoryName(PersonPathName));
+    public static void InitializeFolders()
+    {
+        string? directoryName = Path.GetDirectoryName(PersonPathName);
+        if (directoryName is not null)
+            Directory.CreateDirectory(directoryName);
+    }
 
     public static async Task InitializeAsync()
     {
@@ -212,7 +226,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     private static readonly Dictionary<Guid, Person> Aliases = [];
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     internal static DateTime UpdateTime { get; set; }
 
@@ -220,28 +234,28 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     internal static bool IsSaved => IsDefaultList || App.Settings.PeopleUpdateTime == UpdateTime;
 
     public static Guid Updater { get; set; }
-    public static Person FindByNickname(string targetNickname) => AllPeople.FirstOrDefault(person => person.Nickname.Equals(targetNickname, StringComparison.OrdinalIgnoreCase));
+    public static Person? FindByNickname(string targetNickname) => AllPeople.FirstOrDefault(person => person.Nickname?.Equals(targetNickname, StringComparison.OrdinalIgnoreCase) ?? false);
 
-    public static Person FindByGuid(Guid PersonGUID)
+    public static Person? FindByGuid(Guid PersonGUID)
     {
-        Aliases.TryGetValue(PersonGUID, out Person p);
+        Aliases.TryGetValue(PersonGUID, out Person? p);
         return p;
     }
-    public int CompareTo(Person otherPerson) => string.Compare(DisplayName, otherPerson.DisplayName, ignoreCase: true);
+    public int CompareTo(Person? otherPerson) => string.Compare(DisplayName, otherPerson?.DisplayName, ignoreCase: true);
 
     private static readonly DataContractSerializer peopleSerializer = new(typeof(List<Person>));
     private static readonly DataContractSerializer aliasSerializer = new(typeof(Dictionary<Guid, Guid>));
 
 
-    public static List<Person> DeserializeList(Stream s)
+    public static List<Person>? DeserializeList(Stream s)
     {
         var reader = XmlReader.Create(s);
         while (reader.Read())
         {
             if (peopleSerializer.IsStartObject(reader))
             {
-                var newPeople = (List<Person>)peopleSerializer.ReadObject(reader);
-                newPeople.Sort(); // The list should already be sorted, but in case it is not, or the sort order changes, sort it here
+                var newPeople = (List<Person>?)peopleSerializer.ReadObject(reader);
+                newPeople?.Sort(); // The list should already be sorted, but in case it is not, or the sort order changes, sort it here
                 return newPeople;
             }
         }
@@ -263,35 +277,39 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             {
                 if (doReplace)
                     AllPeople.Clear(); // Discard the existing ones (will also clear Aliases)
-                var newPeople = (List<Person>)peopleSerializer.ReadObject(reader);
-                newPeople.Sort(); // The list should already be sorted, but in case it is not, or the sort order changes, sort it here
-                foreach (Person newPerson in newPeople)
+                var newPeople = (List<Person>?)peopleSerializer.ReadObject(reader);
+                if (newPeople is not null)
                 {
-                    if (newPerson.personGUID.Equals(Guid.Empty)) // Created by an earlier release with a bug
-                        newPerson.personGUID = Guid.NewGuid();
-                    if (Aliases.TryGetValue(newPerson.personGUID, out Person existingPerson))
+                    newPeople.Sort(); // The list should already be sorted, but in case it is not, or the sort order changes, sort it here
+                    foreach (Person newPerson in newPeople)
                     {
-                        existingPerson.Merge(newPerson);
-                    }
-                    else // we have not seen this person (identified by their GUID) yet
-                    {
-                        Person p = AllPeople.FirstOrDefault(newPerson.IsSame);
-                        if (p is null)
-                            newPerson.UpsertInAllPeople(); // This is a brand new person
-                        else
-                            Aliases.Add(newPerson.PersonGUID, p); // Someone we know, but with a different PersonGUID
+                        if (newPerson.personGUID.Equals(Guid.Empty)) // Created by an earlier release with a bug
+                            newPerson.personGUID = Guid.NewGuid();
+                        if (Aliases.TryGetValue(newPerson.personGUID, out Person? existingPerson))
+                            existingPerson.Merge(newPerson);
+                        else // we have not seen this person (identified by their GUID) yet
+                        {
+                            Person? p = AllPeople.FirstOrDefault(newPerson.IsSame);
+                            if (p is null)
+                                newPerson.UpsertInAllPeople(); // This is a brand new person
+                            else
+                                Aliases.Add(newPerson.PersonGUID, p); // Someone we know, but with a different PersonGUID
+                        }
                     }
                 }
             }
             if (aliasSerializer.IsStartObject(reader))
             {
-                var storedAliases = (Dictionary<Guid, Guid>)aliasSerializer.ReadObject(reader);
-                foreach (KeyValuePair<Guid, Guid> alias in storedAliases)
+                var storedAliases = (Dictionary<Guid, Guid>?)aliasSerializer.ReadObject(reader);
+                if (storedAliases is not null)
                 {
-                    Person p = FindByGuid(alias.Value);
-                    // Insert the person, but a bad alias list could contain them twice! 
-                    if (p is not null && !Aliases.ContainsKey(alias.Key))
-                        Aliases.Add(alias.Key, p);
+                    foreach (KeyValuePair<Guid, Guid> alias in storedAliases)
+                    {
+                        Person? p = FindByGuid(alias.Value);
+                        // Insert the person, but a bad alias list could contain them twice! 
+                        if (p is not null && !Aliases.ContainsKey(alias.Key))
+                            Aliases.Add(alias.Key, p);
+                    }
                 }
             }
         }
@@ -305,13 +323,13 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     /// Adds the current person into the AllPeople list if it isn't already there
     /// returns it or the corresponding Person that was already in the list
     /// </summary>
-    public Person PersonFromList()
+    public Person? PersonFromList()
     {
         if (Aliases.ContainsKey(personGUID))
             return FindByGuid(personGUID); // Another object with the same GUID
         else // we have not seen this person (identified by their GUID) yet
         {
-            Person p = AllPeople.FirstOrDefault(IsSame);
+            Person? p = AllPeople.FirstOrDefault(IsSame);
             if (p is null)
             {
                 if (personGUID.Equals(Guid.Empty))
@@ -350,7 +368,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     {
         get
         {
-            Dictionary<Guid, Person> storedAliases = new(Aliases);
+            Dictionary<Guid, Person> storedAliases = [with(Aliases)];
             foreach (Person person in AllPeople)
                 storedAliases.Remove(person.PersonGUID);
             field.Clear();
@@ -368,7 +386,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
                     && !Aliases.ContainsKey(entry.Key))
                 {
                     // What we would expect, there is no existing alias entry, or person with this guid
-                    Person person = FindByGuid(entry.Value);
+                    Person? person = FindByGuid(entry.Value);
                     if (person is not null)
                         Aliases.Add(entry.Key, person);
                     else
@@ -408,10 +426,10 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     }
     #region Person Data 
     #region Data Elements
-    private string firstName;
-    private string middleName;
-    private string lastName;
-    private string email;
+    private string? firstName;
+    private string? middleName;
+    private string? lastName;
+    private string? email;
     private Guid personGUID;
     #endregion
     #region Constructors
@@ -450,7 +468,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
            && SameString(middleName, p.middleName)
            && SameString(lastName, p.lastName)
            && SameString(email, p.email);
-    private static bool SameString(string s1, string s2) => (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2))
+    private static bool SameString(string? s1, string? s2) => (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2))
             || string.Equals(s1, s2, StringComparison.CurrentCulture);
 
     /// <summary>
@@ -490,9 +508,9 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     /// <param name="baseString"></param>
     /// <param name="includedString"></param>
     /// <returns></returns>
-    private static bool StringIncludes(string baseString, string includedString) => string.IsNullOrEmpty(includedString)
+    private static bool StringIncludes(string? baseString, string? includedString) => string.IsNullOrEmpty(includedString)
                   || (!string.IsNullOrEmpty(baseString)
-                    & baseString.Equals(includedString, StringComparison.CurrentCulture));
+                    && baseString is not null && baseString.Equals(includedString, StringComparison.CurrentCulture));
 
     private bool Includes(Person p) => SameString(nickname, p.nickname)
                 && StringIncludes(firstName, p.firstName)
@@ -537,19 +555,20 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     /// </summary>
     public static void MergeParticipants()
     {
-        if (Meal.CurrentMeal?.Costs is null)
+        if (Meal.CurrentMeal.Costs is null)
             return;
         foreach (PersonCost pc in Meal.CurrentMeal.Costs)
         {
             pc.Diner ??= new Person(pc.PersonGUID) { nickname = pc.Nickname, lastName = FromBill };
-            Person personInList = pc.Diner.PersonFromList();
-            pc.Diner = personInList;
+            Person? personInList = pc.Diner.PersonFromList();
+            if (personInList != null)
+                pc.Diner = personInList;
         }
     }
 
     public static void MergeSimilarPeople()
     {
-        Person[] people = AllPeople.OrderBy(p => p.Nickname).ThenBy(p => p.Complexity()).ToArray();
+        Person[] people = [.. AllPeople.OrderBy(p => p.Nickname).ThenBy(p => p.Complexity())];
         Person currentPerson = people[^1];
         for (int i = people.Length - 2; i >= 0; i--)
         {
@@ -567,7 +586,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
 
-    private static bool StringHasChanged(ref string oldString, string newString)
+    private static bool StringHasChanged(ref string? oldString, string? newString)
     {
         if (string.IsNullOrWhiteSpace(oldString) && string.IsNullOrWhiteSpace(newString))
             return false;
@@ -582,10 +601,10 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     // Move a person to its correct place in the sorted list of all people
     private void MoveToCorrectPlace() => AllPeople.Upsert(this);
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propChanged = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propChanged = null)
     {
         // Verify that it is in the list before moving it around 
-        if (AllPeople is not null && AllPeople.Contains(this))
+        if (AllPeople is not null && AllPeople.Contains(this) && propChanged is not null)
         {
             if (propChanged.Equals(nameof(DisplayName)))
                 MoveToCorrectPlace(); // The place in the list will have changed
@@ -611,8 +630,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
             }
         }
     }
-    public bool IsInUse => Meal.CurrentMeal.Costs.Any(pc => pc.Diner == this);
-    public string DisplayName
+    public bool IsInUse => Meal.CurrentMeal is not null && Meal.CurrentMeal.Costs.Any(pc => pc.Diner == this);
+    public string? DisplayName
     {
         get
         {
@@ -628,7 +647,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
 
-    public string FullName
+    public string? FullName
     {
         get
         {
@@ -644,7 +663,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
     [DataMember(EmitDefaultValue = false)]
-    public string FirstName
+    public string? FirstName
     {
         set
         {
@@ -663,7 +682,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         get => firstName;
     }
     [DataMember(EmitDefaultValue = false)]
-    public string MiddleName
+    public string? MiddleName
     {
         set
         {
@@ -680,7 +699,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         get => middleName;
     }
     [DataMember(EmitDefaultValue = false)]
-    public string LastName
+    public string? LastName
     {
         set
         {
@@ -697,13 +716,13 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         get => lastName;
     }
 
-    private string nickname;
+    private string? nickname;
     /// <summary>
     /// This is a simplified version of Nickname used so as not to waste storage space on 
     /// </summary>
     [DataMember(EmitDefaultValue = false, Name = "Nickname")]
     [XmlElement("Nickname")]
-    public string NicknameForPersistence
+    public string? NicknameForPersistence
     {
         set => nickname = value;
         get => nickname;
@@ -712,20 +731,20 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
     /// The actual property, used a run time
     /// </summary>
     [XmlIgnore]
-    public string Nickname
+    public string? Nickname
     {
         set
         {
             if (string.IsNullOrWhiteSpace(value))
                 value = null;
-            string s = value;
+            string? s = value;
             if (s is not null)
             {
                 s = s.Trim();
                 if (s.Equals(firstName, StringComparison.OrdinalIgnoreCase))
                     s = null;
             }
-            if (string.IsNullOrWhiteSpace(nickname) && s is null)
+            if (nickname is null || string.IsNullOrWhiteSpace(nickname) && s is null)
                 return;
             if (StringHasChanged(ref nickname, s))
             {
@@ -737,7 +756,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         get => string.IsNullOrWhiteSpace(nickname) ? string.IsNullOrWhiteSpace(firstName) ? "" : firstName : nickname;
     }
     [DataMember(EmitDefaultValue = false)]
-    public string Email
+    public string? Email
     {
         set
         {

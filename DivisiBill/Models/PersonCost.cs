@@ -20,7 +20,7 @@ public partial class PersonCost : ObservableObject
     /// diner's nickname takes precedence. If the nickname is null or consists only of whitespace, the property returns
     /// "Unknown" by default.</remarks>
     [XmlAttribute]
-    public string Nickname
+    public string? Nickname
     {
         set
         {
@@ -51,8 +51,8 @@ public partial class PersonCost : ObservableObject
     [NotifyPropertyChangedFor(nameof(DinerID))]
     [NotifyPropertyChangedFor(nameof(Nickname))]
     [XmlIgnore]
-    public partial Person Diner { get; set; }
-    partial void OnDinerChanged(Person value)
+    public partial Person? Diner { get; set; }
+    partial void OnDinerChanged(Person? value)
     {
         if (value is null) // we must be resetting the diner value
             Nickname = null; // make sure no old value has been left lying around

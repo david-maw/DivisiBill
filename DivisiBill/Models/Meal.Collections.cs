@@ -85,7 +85,7 @@ public partial class Meal
 
     #region Costs (list of PersonCost)
     #region Clearing and restoring the list of diners with costs
-    private List<PersonCost> savedCosts;
+    private List<PersonCost>? savedCosts;
 
     /// <summary>
     /// Indicates whether the last clear operation on costs can be undone.
@@ -100,6 +100,9 @@ public partial class Meal
         // The costs list is, by design, stored in DinerIndex order and consequently, so is the savedCosts list
         // So, iterate through savedCosts from last to first and you can make one pass through Costs
         // replacing or inserting items as needed
+
+        if (savedCosts is null)
+            return; // Nothing we can do
 
         if (CanUndoCosts)
         {
@@ -185,7 +188,7 @@ public partial class Meal
     /// <summary>
     /// Gets the next <see cref="PersonCost"/> in the list after the specified one, or the first if the current one is null.
     /// </summary>
-    public PersonCost GetNextPersonCost(PersonCost currentPc) => currentPc is null ? Costs.FirstOrDefault() : Costs.SkipWhile(pc => pc != currentPc).Skip(1).FirstOrDefault();
+    public PersonCost? GetNextPersonCost(PersonCost? currentPc) => currentPc is null ? Costs.FirstOrDefault() : Costs.SkipWhile(pc => pc != currentPc).Skip(1).FirstOrDefault();
     #endregion
     #region Manipulating cost list
     /// <summary>
@@ -277,7 +280,7 @@ public partial class Meal
         foreach (LineItem costItem in LineItems)
             costItem.SwapSharerID(newDinerID, oldDinerID);
         // Find if a PersonCost used to use this DinerID and if so give it the ID from this one
-        PersonCost previousPersonCost = Costs.FirstOrDefault(item => item.DinerID == newDinerID);
+        PersonCost? previousPersonCost = Costs.FirstOrDefault(item => item.DinerID == newDinerID);
         previousPersonCost?.DinerID = pc.DinerID;
         pc.DinerID = newDinerID;
     }
@@ -325,7 +328,7 @@ public partial class Meal
     /// </summary>
     /// <param name="p">The person to add.</param>
     /// <returns>The created <see cref="PersonCost"/>, or null if the person already exists or the maximum number of sharers is reached.</returns>
-    public PersonCost CostListAdd(Person p)
+    public PersonCost? CostListAdd(Person p)
     {
         if (Frozen) // If this is an untouched bill it might need reordering to eliminate gaps in cost numbers
             CostListResequence();

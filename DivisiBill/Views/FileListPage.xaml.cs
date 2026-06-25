@@ -1,5 +1,3 @@
-using DivisiBill.Services;
-
 namespace DivisiBill.Views;
 
 public partial class FileListPage : ContentPage
@@ -38,7 +36,7 @@ public partial class FileListPage : ContentPage
     #region Collection Scrolling
     private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
         => ItemsCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
-    private void OnCollectionViewScrolled(object sender, ItemsViewScrolledEventArgs e)
+    private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
         fileListViewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
         fileListViewModel.LastVisibleItemIndex = e.LastVisibleItemIndex;

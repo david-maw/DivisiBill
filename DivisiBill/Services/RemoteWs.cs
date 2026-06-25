@@ -18,12 +18,12 @@ public static class RemoteWs
     /// <summary>
     /// The layout of the data for each item delivered from the web service
     /// </summary>
-    private class WsDataItem(string name, long dataLength, string data, string summary = null)
+    private class WsDataItem(string name, long dataLength, string data, string? summary = null)
     {
         public string Name { get; set; } = name;
         public string Data { get; set; } = data;
         public long DataLength { get; set; } = dataLength;
-        public string Summary { get; set; } = summary;
+        public string? Summary { get; set; } = summary;
         public bool HasRemoteImage { get; set; } = false; // This is set to true if the image exists in blob storage
         public bool IsEncrypted { get; set; } = false; // This is set to true if the item is encrypted
     }
@@ -32,7 +32,7 @@ public static class RemoteWs
     /// </summary>
     /// <param name="itemTypeName">The type of item to retrieve (for example, "meal" or "venuelist"</param>
     /// <returns>Either a list of items, possibly empty, or null if something goes wrong (like no Internet access)</returns>
-    internal static async Task<List<RemoteItemInfo>> GetItemInfoListAsync(string itemTypeName)
+    internal static async Task<List<RemoteItemInfo>?> GetItemInfoListAsync(string itemTypeName)
     {
         const int MaxItems = 1000;
         if (string.IsNullOrWhiteSpace(itemTypeName))
@@ -46,10 +46,12 @@ public static class RemoteWs
                 Stream itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, MaxItems, latestName);
                 if (itemListJson is not null && itemListJson.Length > 0)
                 {
-                    List<WsDataItem> wsDataItems = JsonSerializer.Deserialize<List<WsDataItem>>(itemListJson);
+                    List<WsDataItem>? wsDataItems = JsonSerializer.Deserialize<List<WsDataItem>>(itemListJson);
+                    if (wsDataItems is null || wsDataItems.Count == 0)
+                        break; // Neither of these should happen but if they do, just return what we have so far
                     foreach (WsDataItem wsDataItem in wsDataItems)
                     {
-                        string description = wsDataItem.Summary;
+                        string? description = wsDataItem.Summary;
 
                         if (wsDataItem.IsEncrypted && !string.IsNullOrEmpty(wsDataItem.Summary))
                         {
@@ -68,15 +70,20 @@ public static class RemoteWs
                         {
                             Name = wsDataItem.Name,
                             Size = wsDataItem.DataLength,
-                            Description = description,
+                            Description = description ?? "",
                             HasRemoteImage = wsDataItem.HasRemoteImage,
                             IsEncrypted = wsDataItem.IsEncrypted,
                         });
                     }
-                    if (wsDataItems.Count < MaxItems) // A truncated list, indicates we're out of items
-                        break;
+                    if (wsDataItems.Count >= MaxItems && wsDataItems.Last()?.Name is not null) // A partial list, there may be more items
+                    {
+                        string? lastItemName = wsDataItems.Last()?.Name;
+                        if (lastItemName is null)
+                            break; // This should not happen but if it does, just return what we have so far
+                        latestName = lastItemName; // arrange for the next query to start where this one left off
+                    }
                     else
-                        latestName = wsDataItems.LastOrDefault()?.Name; // the next query starts where this left off
+                        break;
                 }
                 else
                     break;
@@ -99,7 +106,7 @@ public static class RemoteWs
         {
             await App.CloudAllowedSource.WaitWhilePausedAsync();
             string name = Utilities.NameFromDateTime(DateTime.Now);
-            string content = null;
+            string? content = null;
             using (StreamReader reader = new(stream, System.Text.Encoding.UTF8, true, 4096, true))
             {
                 content = reader.ReadToEnd();
@@ -117,7 +124,7 @@ public static class RemoteWs
     /// Get a specific (or the latest) item from the list in the cloud
     /// </summary>
     /// <returns>A Stream (wrapped in a Task because it is an async method) or null if nothing was found</returns>
-    internal static async Task<Stream> GetItemStreamAsync(string itemTypeName, string name)
+    internal static async Task<Stream?> GetItemStreamAsync(string itemTypeName, string? name)
     {
         try
         {
@@ -125,13 +132,13 @@ public static class RemoteWs
             if (string.IsNullOrWhiteSpace(name))
             {
                 Stream itemListJson = await CallWs.GetItemsStreamAsync(itemTypeName, 1);
-                List<WsDataItem> items = await JsonSerializer.DeserializeAsync<List<WsDataItem>>(itemListJson);
-                name = items.FirstOrDefault()?.Name;
+                List<WsDataItem>? items = await JsonSerializer.DeserializeAsync<List<WsDataItem>>(itemListJson);
+                name = items?.FirstOrDefault()?.Name;
                 if (string.IsNullOrWhiteSpace(name))
                     return null;
             }
 
-            Stream itemStream = await CallWs.GetItemDataAsStreamAsync(itemTypeName, name);
+            Stream? itemStream = await CallWs.GetItemDataAsStreamAsync(itemTypeName, name);
             return itemStream;
         }
         catch (Exception ex)
@@ -184,7 +191,7 @@ public static class RemoteWs
     /// <returns>True if the meal list was loaded</returns>
     public static async Task<bool> GetRemoteMealListAsync()
     {
-        List<RemoteItemInfo> remoteItems = null;
+        List<RemoteItemInfo>? remoteItems = null;
         remoteItems = await GetItemInfoListAsync(MealTypeName);
         if (remoteItems is null)
             return false;
@@ -206,7 +213,7 @@ public static class RemoteWs
         // Iterate through the remote items which are not known to us 
         foreach (RemoteItemInfo remoteItem in remoteItems.Where(ri => !existingRemoteMs.ContainsKey(ri.Name)))
         {
-            if (existingLocalMs.TryGetValue(remoteItem.Name, out MealSummary ms))
+            if (existingLocalMs.TryGetValue(remoteItem.Name, out MealSummary? ms))
             {
                 // This MealSummary is already stored locally so just flag it as being remote as well, add the summary to the remote list and move on
                 ms.IsRemote = true;
@@ -270,7 +277,7 @@ public static class RemoteWs
         // not have changed unless another copy of DivisiBill has changed them.
         foreach (RemoteItemInfo knownRemoteItem in remoteItems.Where(ri => existingRemoteMs.ContainsKey(ri.Name)))
         {
-            if (existingRemoteMs.TryGetValue(knownRemoteItem.Name, out MealSummary knownMs))
+            if (existingRemoteMs.TryGetValue(knownRemoteItem.Name, out MealSummary? knownMs))
             {
                 // This MealSummary already exists, just correct any attributes that might have changed
                 knownMs.Size = knownRemoteItem.Size;
@@ -308,7 +315,7 @@ public static class RemoteWs
             return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
         }
     }
-    internal static async Task<List<ImageItem>> GetImageListAsync()
+    internal static async Task<List<ImageItem>?> GetImageListAsync()
     {
         try
         {
@@ -358,12 +365,12 @@ public static class RemoteWs
 /// </summary>
 public partial class RemoteItemInfo : ObservableObject
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public DateTime CreatedDateTime => Utilities.DateTimeFromName(Name);
     public long Size { get; set; }
     public string CreatedDateTimeString => CreatedDateTime.ApproximateDateTime();
     public string SizeText => $"{Size / 1000.0:f1} kB";
-    public string Description { get; set; } // An alias for the Summary field
+    public string Description { get; set; } = string.Empty;  // An alias for the Summary field
     public bool HasRemoteImage { get; set; } = false; // This will be set to true if the image exists in blob storage
     public bool ReplaceRequested { get; set; } = false;
     [ObservableProperty]

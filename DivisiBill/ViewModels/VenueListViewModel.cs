@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
@@ -26,7 +24,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
         Meal.CurrentMealSummaryChanged += Meal_CurrentMealSummaryChanged;
     }
 
-    private void Meal_CurrentMealSummaryChanged(MealSummary oldSummary, MealSummary newSummary) => Venue.SetCurrentByName(newSummary?.VenueName);
+    private void Meal_CurrentMealSummaryChanged(MealSummary? oldSummary, MealSummary? newSummary) => Venue.SetCurrentByName(newSummary?.VenueName);
 
     ~VenueListViewModel()
     {
@@ -43,7 +41,8 @@ public partial class VenueListViewModel : ObservableObjectPlus
     private void Add()
     {
         CurrentItem = Venue.SelectOrAddVenue();
-        NavigateToDetails(CurrentItem);
+        if (CurrentItem is not null)
+            NavigateToDetails(CurrentItem);
     }
 
     [RelayCommand]
@@ -61,7 +60,7 @@ public partial class VenueListViewModel : ObservableObjectPlus
 
     [RelayCommand(CanExecute = nameof(CanDelete))]
     private async Task DeleteAsync(Venue v) => await DeleteVenueAsync(v);
-    private bool CanDelete(Venue v) => v is null || string.IsNullOrWhiteSpace(Meal.CurrentMeal?.VenueName) || !Meal.CurrentMeal.VenueName.Equals(v?.Name, StringComparison.OrdinalIgnoreCase);
+    private bool CanDelete(Venue v) => v is null || string.IsNullOrWhiteSpace(Meal.CurrentMeal.VenueName) || !Meal.CurrentMeal.VenueName.Equals(v?.Name, StringComparison.OrdinalIgnoreCase);
 
     [RelayCommand]
     private void ShowDetails(Venue venueParam)

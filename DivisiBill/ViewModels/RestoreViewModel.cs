@@ -1,4 +1,3 @@
-#nullable enable
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
@@ -20,12 +19,12 @@ public partial class RestoreViewModel : ObservableObject
     public async Task WaitForUpdatesAsync()
     {
         StreamRequest intentInfo = await App.Current.IntentQueue.DequeueAsync(CancellationToken.None);
-        (Archive archive, string errorMsg) = await Archive.DeserializeAnyAsync(intentInfo.FileStream, intentInfo.MimeType);
+        (Archive? archive, string errorMsg) = await Archive.DeserializeAnyAsync(intentInfo.FileStream, intentInfo.MimeType);
         if (archive is null)
             IntentDescription = $"DivisiBill could not open the archive: " + errorMsg;
         else
         {
-            IntentDescription = $"DivisiBill opened an archive containing {archive.AllMeals.Count} bills";
+            IntentDescription = $"DivisiBill opened an archive containing {archive.AllMeals?.Count ?? 0} bills";
             // Set dates based on all the meals in the archive
             DateTime NewStartDate = EarliestStartDate = archive.AllMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
             DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;

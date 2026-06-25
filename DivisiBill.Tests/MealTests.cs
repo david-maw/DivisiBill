@@ -6,7 +6,6 @@ namespace DivisiBill.Tests;
 [TestClass]
 public class MealTests
 {
-    public MealTests() => DivisiBill.App.Settings = new FakeAppSettings();
     /// <summary>
     /// Verify correct results of rate calculation (closest multiple of 0.0025)
     /// </summary>

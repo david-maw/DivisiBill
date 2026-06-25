@@ -45,16 +45,16 @@ public partial class App : Application, INotifyPropertyChanged
     // The AppFolderPath is silently mapped into something App specific, for example 
     //   ..AppData\Local\Packages\D9049CD2-5037-432D-BC7E-2E2FB39EBA1C_9zz4h110yvjzm\LocalCache\Local\DivisiBillDebug
     // The 'magic number' is the package.appxmanifest 'package family name'.
-    internal static Location MyLocation;
-    internal static Location GpsLocation; // The most recent location the GPS returned
-    private static Task LocationMonitorTask;
+    internal static Location? MyLocation;
+    internal static Location? GpsLocation; // The most recent location the GPS returned
+    private static Task? LocationMonitorTask;
     private static CancellationTokenSource LocationMonitorCancellationTokenSource = new();
     internal static CancellationTokenSource SaveProcessCancellationTokenSource = new();
     public static TaskCompletionSource<bool> InitializationComplete { get; set; } = new();// Allows processes to wait for initialization to complete before doing things that might interfere with it, such as persistence during shutdown
     public static readonly PauseTokenSource IsRunningSource = new();
     public static readonly PauseTokenSource CloudAllowedSource = new();
-    internal static CancellationTokenSource RequestBackupLoopStop;
-    internal static Task MainBackupLoopTask;
+    internal static CancellationTokenSource RequestBackupLoopStop = new();
+    internal static Task? MainBackupLoopTask;
     internal static bool IsTesting = AppDomain.CurrentDomain.FriendlyName.Equals("testhost");
     internal static int ScanOption = 2;
     internal static bool pauseInitialization = false;
@@ -96,7 +96,7 @@ public partial class App : Application, INotifyPropertyChanged
         Connectivity.ConnectivityChanged -= Connectivity_ConnectivityChanged;
     }
 
-    public static new App Current => (App)Application.Current;
+    public static new App Current => Application.Current as App ?? throw new InvalidOperationException("Application.Current is not of type App");
 
     /// <summary>
     /// Update all Entry controls so they initially select all text when focused
@@ -135,7 +135,7 @@ public partial class App : Application, INotifyPropertyChanged
         Utilities.DebugMsg($"In App.PersistAsNeeded; initialization completed = {InitializationComplete.Task.IsCompleted}");
         if (!InitializationComplete.Task.IsCompleted)
             return; // There's no knowing what state we're in, so don't do anything
-        Settings?.LastUse = DateTime.Now; // Note when we last did anything
+        Settings.LastUse = DateTime.Now; // Note when we last did anything
         try
         {
             if (!Venue.IsSaved)
@@ -187,7 +187,6 @@ public partial class App : Application, INotifyPropertyChanged
             {
                 Utilities.DebugMsg("App is not currently running, so we must do some initialization");
                 App.IsCloudAllowed = false; // We don't want to do anything that might involve the cloud
-                App.Settings = new AppSettings(); // App Settings access
                 // Create all the required folders, in case the app has never run before
                 Meal.InitializeFolders();
                 Person.InitializeFolders();
@@ -222,7 +221,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// was launched.</param>
     /// <returns>A Window instance representing the application's main user interface. The specific window returned depends on
     /// the activation state and platform launch context.</returns>
-    protected override Window CreateWindow(IActivationState activationState)
+    protected override Window CreateWindow(IActivationState? activationState)
     {
 #if ANDROID
         IsIntentLaunch = Platforms.Android.MainActivity.IsIntentLaunch;
@@ -246,7 +245,7 @@ public partial class App : Application, INotifyPropertyChanged
 
         void StoreWindowLocation(double x, double y, double w, double h)
         {
-            if (Utilities.IsWinUI)
+            if (Utilities.IsWinUI && Settings is not null)
                 MainThread.InvokeOnMainThreadAsync(() => Settings.InitialPosition = new Rect(x, y, w, h));
             // TODO: Only on the main thread to work around https://github.com/dotnet/maui/issues/27167
         }
@@ -255,7 +254,6 @@ public partial class App : Application, INotifyPropertyChanged
 
         Utilities.DebugMsg("In CreateWindow, assigning events");
 
-        App.Settings = new AppSettings();
         window.Created += (s, e) =>
         {
             InitializationComplete = new(); // Flag initialization as incomplete until we finish it
@@ -341,7 +339,7 @@ public partial class App : Application, INotifyPropertyChanged
     [Conditional("ANDROID")]
     public static void SetStatusBar()
     {
-        bool isDark = App.Current.UserAppTheme == AppTheme.Dark || (App.Current.UserAppTheme == AppTheme.Unspecified && Application.Current.RequestedTheme == AppTheme.Dark);
+        bool isDark = App.Current.UserAppTheme == AppTheme.Dark || (App.Current.UserAppTheme == AppTheme.Unspecified && App.Current.RequestedTheme == AppTheme.Dark);
         SetStatusBar(isDark ? Colors.Black : Colors.White, darkIcons: !isDark);
     }
     /// <summary>
@@ -370,7 +368,7 @@ public partial class App : Application, INotifyPropertyChanged
     #region Cloud Accessibility / Connectivity
     public static void EvaluateCloudAccessible()
     {
-        if (Settings is null)
+        if (Settings is FakeAppSettings)
             return; // We cannot do anything useful yet
         bool wifiIsPresent = Connectivity.ConnectionProfiles.Contains(ConnectionProfile.WiFi);
         // Evaluate accessibility for Meals, Venues and People
@@ -384,7 +382,7 @@ public partial class App : Application, INotifyPropertyChanged
             && wifiIsNotRequiredOrIsPresent; // WiFi is present if we require it
     }
 
-    private static async void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)
+    private static async void Connectivity_ConnectivityChanged(object? sender, ConnectivityChangedEventArgs? e)
     {
         EvaluateCloudAccessible();
         if (App.InitializationComplete.Task.IsCompleted && !LicenseChecked && Connectivity.NetworkAccess == NetworkAccess.Internet)
@@ -448,7 +446,7 @@ public partial class App : Application, INotifyPropertyChanged
     {
         if (appIsPaused is not null)
             IsRunningSource.IsPaused = (bool)appIsPaused;
-        IsCloudAllowed = appIsPaused != true && Settings is not null && Settings.IsCloudAccessAllowed && IsCloudAccessible;
+        IsCloudAllowed = appIsPaused != true && Settings.IsCloudAccessAllowed && IsCloudAccessible;
     }
     /// <summary>
     /// Requests to back up data to the cloud, checking various conditions like edition limitations and network access.
@@ -514,7 +512,7 @@ public partial class App : Application, INotifyPropertyChanged
     }
     #endregion
     #region Licensing
-    internal static event EventHandler ProEditionVerified;
+    internal static event EventHandler? ProEditionVerified;
     private static DateTime NextLicenseCheckTime = DateTime.MinValue;
 
     /// <summary>
@@ -627,18 +625,18 @@ public partial class App : Application, INotifyPropertyChanged
             // Nice, there's no message if we found a pro subscription because that is 
             if (IsLimited != wasLimited) // it changed, tell anyone who cares (usually the Settings ViewModel)
             {
-                ProEditionVerified?.Invoke(null, null);
+                ProEditionVerified?.Invoke(null, EventArgs.Empty);
             }
             Utilities.DebugMsg("Checking for OCR License");
             if (await Billing.GetHasOcrLicenseAsync() == 0)
                 await Billing.ConsumeDepletedOcrLicense();
             #endregion
             #region Validate and (if necessary update) the AccountId
-            static string NullIfEmpty(string s) => string.IsNullOrEmpty(s) ? null : s; // Local helper function to simplify expressions below
+            static string? NullIfEmpty(string? s) => string.IsNullOrEmpty(s) ? null : s; // Local helper function to simplify expressions below
 
-            string storedAccountId = NullIfEmpty(App.Settings.UserKey);
-            string proAccountId = NullIfEmpty(Billing.ProPurchase?.ObfuscatedAccountId);
-            string ocrAccountId = NullIfEmpty(Billing.OcrPurchase?.ObfuscatedAccountId);
+            string? storedAccountId = NullIfEmpty(App.Settings.UserKey);
+            string? proAccountId = NullIfEmpty(Billing.ProPurchase?.ObfuscatedAccountId);
+            string? ocrAccountId = NullIfEmpty(Billing.OcrPurchase?.ObfuscatedAccountId);
 
             if (proAccountId is null || ocrAccountId is null || proAccountId == ocrAccountId)
                 Utilities.DebugMsg("In CheckLicenses: ProAccountId and OcrAccountId are the same or at least one is null");
@@ -658,7 +656,7 @@ public partial class App : Application, INotifyPropertyChanged
                 // We have a saved AccountId already but make sure it is the same as the one in the licenses because if not that indicates a different user
                 // and in that case we need to use the one for the user, not the old one that we had persisted for some previous user
                 Utilities.DebugMsg($"In CheckLicenses: AccountId is already set to {storedAccountId.TruncatedTo(7)}");
-                string accountIdFromAnyLicense = NullIfEmpty(proAccountId ?? ocrAccountId);
+                string? accountIdFromAnyLicense = NullIfEmpty(proAccountId ?? ocrAccountId);
                 if (accountIdFromAnyLicense is null)
                     Utilities.DebugMsg("In CheckLicenses: No AccountId available from licenses so we'll just keep the stored one");
                 else if (!string.Equals(storedAccountId, accountIdFromAnyLicense))
@@ -712,7 +710,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
     /// <param name="navigationParameter">A <see cref="ShellNavigationQueryParameters"/> object</param>
     /// <returns>An awaitable task that's caused when navigation completes</returns>
-    public static Task PushAsync(string location, ShellNavigationQueryParameters navigationParameter = null) => Shell.Current is not null
+    public static Task PushAsync(string location, ShellNavigationQueryParameters? navigationParameter = null) => Shell.Current is not null
         ? navigationParameter is null
             ? Shell.Current.GoToAsync(location)
             : Shell.Current.GoToAsync(location, navigationParameter)
@@ -725,8 +723,7 @@ public partial class App : Application, INotifyPropertyChanged
     /// <param name="location">The URI to go to, usually a <see cref="Routes"/> constant</param>
     /// <param name="navigationParameters">Query string</param>
     /// <returns>An awaitable task that's caused when navigation completes</returns>
-    public static Task GoToAsync(string location, string navigationParameters = null) =>
-        PushAsync("//" + location, navigationParameters);
+    public static Task GoToAsync(string location, string? navigationParameters = null) => navigationParameters is null ? PushAsync("//" + location) : PushAsync("//" + location, navigationParameters);
 
     /// <summary>
     /// Shell navigation passing an absolute location and a name/object pair parameter.
@@ -798,7 +795,7 @@ public partial class App : Application, INotifyPropertyChanged
     }
     #endregion
     #region Location Handling
-    public static int GetDistanceTo(Location l) => MyLocation is null || l is null || MyLocation.Accuracy.GetValueOrDefault(Distances.Inaccurate) >= Distances.Inaccurate ? Distances.Inaccurate : MyLocation.GetDistanceTo(l);
+    public static int GetDistanceTo(Location? l) => MyLocation is null || l is null || MyLocation.Accuracy.GetValueOrDefault(Distances.Inaccurate) >= Distances.Inaccurate ? Distances.Inaccurate : MyLocation.GetDistanceTo(l);
     private static async Task TryGetMyLocationAsync(CancellationToken cancellationToken)
     {
         try
@@ -823,12 +820,12 @@ public partial class App : Application, INotifyPropertyChanged
     /// <summary>
     /// Location to use instead of the calculated one for test purposes 
     /// </summary>
-    public static Location FakeLocation
+    public static Location? FakeLocation
     {
         get => Settings.FakeLocation;
         set
         {
-            if (!Settings.FakeLocation.IsVeryCloseTo(value))
+            if (!Settings.FakeLocation?.IsVeryCloseTo(value) ?? false)
             {
                 Settings.FakeLocation = value;
                 if (value is null)
@@ -841,13 +838,13 @@ public partial class App : Application, INotifyPropertyChanged
     /// </summary>
     public static bool UseFakeLocation
     {
-        get => field;
+        get;
         set => field = value && Utilities.IsDebug && FakeLocation is not null;
     }
     /// <summary>
     /// The AccountId most recently used by the application
     /// </summary>
-    public static ISettings Settings { get; set; } = null;
+    public static ISettings Settings { get; set; } = new FakeAppSettings();
 
     /// <summary>
     /// Set, reset, or change the fake location to a specified value
@@ -874,7 +871,7 @@ public partial class App : Application, INotifyPropertyChanged
                 if (Utilities.GetDistanceBetween(MyLocation, FakeLocation) > 20) // do not report small changes 
                 {
                     MyLocation = FakeLocation;
-                    MyLocationChanged?.Invoke(null, null);
+                    MyLocationChanged?.Invoke(null, EventArgs.Empty);
                 }
                 return;
             }
@@ -884,7 +881,7 @@ public partial class App : Application, INotifyPropertyChanged
                 if (MyLocation != App.GpsLocation)
                 {
                     MyLocation = App.GpsLocation;
-                    MyLocationChanged?.Invoke(null, null);
+                    MyLocationChanged?.Invoke(null, EventArgs.Empty);
                 }
             }
         }
@@ -957,11 +954,12 @@ public partial class App : Application, INotifyPropertyChanged
         if (MonitoringLocationCounter.Decrement() == 0)
         {
             LocationMonitorCancellationTokenSource.Cancel();
-            await LocationMonitorTask;
+            if (LocationMonitorTask is not null)
+                await LocationMonitorTask;
         }
     }
 
-    public static event EventHandler MyLocationChanged;
+    public static event EventHandler? MyLocationChanged;
     #endregion
     #region Backup Loop
     public static void StartBackupLoop()
@@ -969,7 +967,6 @@ public partial class App : Application, INotifyPropertyChanged
         if (MainBackupLoopTask is null)
         {
             Utilities.DebugMsg("Main Backup Loop starting");
-            RequestBackupLoopStop = new CancellationTokenSource();
             MainBackupLoopTask = Task.Run(Saver.MainLoop);
             Utilities.DebugMsg("Main Backup Loop started");
         }
@@ -977,6 +974,8 @@ public partial class App : Application, INotifyPropertyChanged
 
     public static async void StopBackupLoop()
     {
+        if (MainBackupLoopTask is null)
+            return; // nothing to do
         using (RequestBackupLoopStop)
         using (MainBackupLoopTask)
         {

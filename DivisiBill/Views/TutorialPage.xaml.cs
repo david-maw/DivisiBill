@@ -20,48 +20,49 @@ public partial class TutorialPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         App.isTutorialMode = true;
+        OnPropertyChanged(nameof(IsNotLicensed));
         base.OnNavigatedTo(args);
     }
-    private async void OnDone(object sender, System.EventArgs e)
+    private async void OnDone(object? sender, System.EventArgs e)
     {
         App.isTutorialMode = false;
         await App.GoToHomeAsync();
     }
 
-    private void OnAddPeopleChanged(object sender, CheckedChangedEventArgs e)
+    private void OnAddPeopleChanged(object? sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
             Navigation.PushAsync(new PeopleListPage());
     }
-    private void OnAddVenueChanged(object sender, CheckedChangedEventArgs e)
+    private void OnAddVenueChanged(object? sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
             Navigation.PushAsync(new VenueListPage());
     }
-    private void OnLineItemsChanged(object sender, CheckedChangedEventArgs e)
+    private void OnLineItemsChanged(object? sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
             Navigation.PushAsync(new LineItemsPage());
     }
 
-    private void OnParticipantsChanged(object sender, CheckedChangedEventArgs e)
+    private void OnParticipantsChanged(object? sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
             Navigation.PushAsync(new TotalsPage());
     }
-    private void OnBillPropertiesChanged(object sender, CheckedChangedEventArgs e)
+    private void OnBillPropertiesChanged(object? sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
             Navigation.PushAsync(new PropertiesPage());
     }
-    private void OnTakePictureChanged(object sender, CheckedChangedEventArgs e)
+    private void OnTakePictureChanged(object? sender, CheckedChangedEventArgs e)
     {
         // This one is a bit tricky because we need to tell the image page to start the camera
         if (e.Value)
             App.PushAsync(Routes.ImagePage, "StartWithCamera", "true");
     }
 
-    private void OnBuyChanged(object sender, CheckedChangedEventArgs e)
+    private void OnBuyChanged(object? sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
             Navigation.PushAsync(new SettingsPage());

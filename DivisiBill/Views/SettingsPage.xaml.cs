@@ -5,11 +5,13 @@ namespace DivisiBill.Views;
 
 public partial class SettingsPage : ContentPage
 {
-    private SettingsViewModel svm = null;
+    private readonly SettingsViewModel svm;
     public SettingsPage()
     {
         InitializeComponent();
-        svm = BindingContext as ViewModels.SettingsViewModel;
+        svm = BindingContext is SettingsViewModel vm
+            ? vm
+            : throw new InvalidOperationException("SettingsPage must have a SettingsViewModel as its BindingContext");
     }
     protected override async void OnAppearing()
     {

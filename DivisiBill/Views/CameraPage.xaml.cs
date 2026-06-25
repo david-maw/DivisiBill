@@ -12,7 +12,9 @@ public partial class CameraPage : ContentPage
     {
         cameraProvider = cameraProviderParam;
         InitializeComponent();
-        viewModel = BindingContext as CameraViewModel;
+        viewModel = BindingContext is CameraViewModel vm
+            ? vm
+            : throw new InvalidOperationException("CameraPage must have a CameraViewModel as its BindingContext");
     }
     ~CameraPage()
     {
@@ -22,9 +24,9 @@ public partial class CameraPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await viewModel?.SetCameraAvailabilityAsync();
+        await viewModel.SetCameraAvailabilityAsync();
     }
-    private void OnPictureTaken(object sender, MediaCapturedEventArgs e)
+    private void OnPictureTaken(object? sender, MediaCapturedEventArgs e)
     {
         async void DoIt()
         {

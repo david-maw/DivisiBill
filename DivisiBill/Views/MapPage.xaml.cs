@@ -24,7 +24,7 @@ namespace DivisiBill.Views;
 public partial class MapPage : ContentPage
 {
     private readonly Pin nativePin = new() { Type = PinType.Place }; // No location or name yet
-    public readonly Microsoft.Maui.Controls.Maps.Map nativeMap; // Map control created in code-behind
+    public readonly Microsoft.Maui.Controls.Maps.Map? nativeMap; // Map control created in code-behind
     private readonly MapViewModel viewModel; // Our ViewModel, which is the BindingContext of the page
     public MapPage()
     {
@@ -154,12 +154,12 @@ public partial class MapPage : ContentPage
             // Center the map on the venue location if we have one
             Location mapCenter = viewModel.VenueLocation ?? (App.UseLocation ? App.MyLocation : null) ?? Venue.MiddleOfNowhere;
             // Move the map pin to the venue location if we know it 
-            if (viewModel.VenueLocation.IsAccurate())
+            if (viewModel.VenueLocation?.IsAccurate() ?? false)
                 MoveNativePin();
             // Calculate how big a sensibly scaled map should be, then size the map view appropriately
             MapSpan mapSpan = new(mapCenter, 0.01, 0.01);
             await Task.Delay(200); // Without this the MoveToRegion is ignored 
-            nativeMap.MoveToRegion(mapSpan);
+            nativeMap?.MoveToRegion(mapSpan);
         }
     }
 
@@ -182,7 +182,7 @@ public partial class MapPage : ContentPage
     /// services are enabled and the application is running in a WinUI environment.</remarks>
     /// <param name="sender">The source of the event, typically the object that triggered the location change.</param>
     /// <param name="e">An EventArgs object that contains no event data.</param>
-    private async void App_MyLocationChanged(object sender, EventArgs e)
+    private async void App_MyLocationChanged(object? sender, EventArgs e)
     {
         if (Utilities.IsWinUI && App.UseLocation)
             await googleMapsWebView.EvaluateJavaScriptAsync(App.MyLocation is null
@@ -199,9 +199,11 @@ public partial class MapPage : ContentPage
     /// <param name="_">An unused sender parameter required by the event handler signature.</param>
     /// <param name="e">The event data containing information about the map click, including the clicked
     /// location.</param>
-    private async void OnNativeMapClicked(object _, MapClickedEventArgs e)
+    private async void OnNativeMapClicked(object? _, MapClickedEventArgs e)
     {
         // A round number based on there being 20 distinct points across the screen
+        if (nativeMap?.VisibleRegion is null)
+            return; // This should never happen, but just in case, don't do anything if we don't have a visible region to work with
         double fingerWidth = Utilities.Simplified(nativeMap.VisibleRegion.Radius.Meters / 10.0);
         e.Location.Accuracy = fingerWidth;
         viewModel.VenueLocation = e.Location;
@@ -219,9 +221,11 @@ public partial class MapPage : ContentPage
     /// the map.</remarks>
     private void MoveNativePin()
     {
+        if (nativeMap is null)
+            return; // Just in case, don't do anything if we don't have a map to work with
         nativeMap.Pins.Remove(nativePin); // it might not be in the map if the location was previously unknown, but this just won't do anything then
         nativeMap.MapElements.Remove(nativeAccuracyCircle);
-        if (viewModel.VenueLocation.IsAccurate())
+        if (viewModel.VenueLocation?.IsAccurate() ?? false)
         {
             // Place the pin
             nativePin.Location = viewModel.VenueLocation;
@@ -240,7 +244,7 @@ public partial class MapPage : ContentPage
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="location">The new location data associated with the event.</param>
-    private void ViewModel_LocationChanged(object sender, Location location)
+    private void ViewModel_LocationChanged(object? sender, Location? location)
     {
         if (!Utilities.IsWinUI)
             MoveNativePin();
@@ -255,7 +259,7 @@ public partial class MapPage : ContentPage
     /// platforms, it resets the map view to the venue location if available.</remarks>
     /// <param name="sender">The source of the event that triggered the restore request.</param>
     /// <param name="e">An object that contains the event data.</param>
-    private async void ViewModel_RestoreRequested(object sender, EventArgs e)
+    private async void ViewModel_RestoreRequested(object? sender, EventArgs e)
     {
         if (Utilities.IsWinUI)
             await googleMapsWebView.EvaluateJavaScriptAsync("mapRestore()");
@@ -265,7 +269,7 @@ public partial class MapPage : ContentPage
             if (mapSpan is not null)
             {
                 await Task.Delay(200); // Without this the MoveToRegion is ignored 
-                nativeMap.MoveToRegion(mapSpan);
+                nativeMap?.MoveToRegion(mapSpan);
             }
         }
     }
@@ -277,7 +281,7 @@ public partial class MapPage : ContentPage
     /// environment, binding to the MapType property is used for the native map so there's nothing to do here.</remarks>
     /// <param name="sender">The source of the event that triggered the map type change.</param>
     /// <param name="mapType">The map type to apply. Specifies the desired map display mode.</param>
-    private async void ViewModel_MapTypeRequested(object sender, MapType mapType)
+    private async void ViewModel_MapTypeRequested(object? sender, MapType mapType)
     {
         if (Utilities.IsWinUI)
         {
@@ -294,7 +298,7 @@ public partial class MapPage : ContentPage
     /// can handle this using data binding.</remarks>
     /// <param name="sender">The source of the event that triggered the request.</param>
     /// <param name="e">An EventArgs object that contains the event data.</param>
-    private async void ViewModel_ClearLocationRequested(object sender, EventArgs e)
+    private async void ViewModel_ClearLocationRequested(object? sender, EventArgs e)
     {
         if (Utilities.IsWinUI)
             await googleMapsWebView.EvaluateJavaScriptAsync("clearMarker()");

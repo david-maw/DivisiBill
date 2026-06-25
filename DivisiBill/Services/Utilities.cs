@@ -9,6 +9,7 @@ using Sentry;
 using Sentry.Extensibility;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -198,8 +199,8 @@ public static partial class Utilities // Partial for regex generator
     /// <returns>True if an item was moved or inserted false if nothing changed></returns>
     internal static bool Upsert<T>(this IList<T> list, T targetItem) where T : class, IComparable<T>
     {
-        static int compareTo(T item1, T item2) => item1.CompareTo(item2);
-        return Upsert(list, targetItem, compareTo);
+        static int CompareTo(T item1, T item2) => item1.CompareTo(item2);
+        return Upsert(list, targetItem, CompareTo);
     }
 
     /// <summary>
@@ -235,7 +236,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="existingItem">The item in the list after which the new item will be inserted.
     /// If null or not found in the list, the new item is inserted at the start.</param>
     /// <param name="itemToInsert">The item to insert into the list. Cannot be null.</param>
-    public static void InsertAfter<T>(this IList<T> list, T existingItem, T itemToInsert) where T : class
+    public static void InsertAfter<T>(this IList<T> list, T? existingItem, T itemToInsert) where T : class
     {
         ArgumentNullException.ThrowIfNull(itemToInsert);
         if (existingItem is null)
@@ -261,10 +262,10 @@ public static partial class Utilities // Partial for regex generator
     /// Returns the last item (or null if the list is empty) if the selected item is not in the list
     /// Returns the first item (or null if the list is empty) if the selected item is null.
     /// </returns>
-    public static T Alternate<T>(this IReadOnlyCollection<T> collection, T selected) where T : class
+    public static T? Alternate<T>(this IReadOnlyCollection<T> collection, T selected) where T : class
     {
         bool found = false;
-        T alt = default;
+        T? alt = default;
 
         if (selected is null)
             return collection.FirstOrDefault();
@@ -290,7 +291,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="items"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static (T, int) FindItemAndIndex<T>(this IEnumerable<T> items, Predicate<T> predicate)
+    public static (T?, int) FindItemAndIndex<T>(this IEnumerable<T> items, Predicate<T> predicate)
     {
         int index = 0;
         foreach (T item in items)
@@ -308,7 +309,7 @@ public static partial class Utilities // Partial for regex generator
     /// <returns>text describing the current app build.</returns>
     internal static string GetAppInformation()
     {
-        static string ToNullString(string s) => string.IsNullOrWhiteSpace(s) ? "null" : s; // local helper for diagnostic messages
+        static string ToNullString(string? s) => string.IsNullOrWhiteSpace(s) ? "null" : s; // local helper for diagnostic messages
         StringBuilder s = new("DivisiBill ", 1000);
         s.AppendLine((App.IsLimited ? "Basic" : "Professional") + " Edition");
         s.AppendLine("Version " + VersionName + " build " + Revision + " at " + BuildTime);
@@ -330,7 +331,8 @@ public static partial class Utilities // Partial for regex generator
     }
 
     /// <summary>
-    /// Report an exception with optional explanatory text
+    /// Report an exception with optional explanatory text.
+    /// No Sentry message will be sent in a DEBUG build because it will be intercepted by SentryEventProcessor `, but the message will be sent in a release build if the user has enabled that in settings.
     /// </summary>
     /// <param name="comment"></param>
     /// <param name="ex"></param>
@@ -339,20 +341,21 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="callerFilePath"></param>
     /// <param name="methodName"></param>
     /// <param name="callerLineNumber"></param>
-    public static void ReportCrash(this Exception ex, string comment = "", Stream sourceStream = null, string streamName = null, [CallerFilePath] string callerFilePath = null, [CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
+    public static void ReportCrash(this Exception ex, string comment = "", Stream? sourceStream = null, string? streamName = null, [CallerFilePath] string? callerFilePath = null, [CallerMemberName] string? methodName = null, [CallerLineNumber] int callerLineNumber = 0)
     {
         string errText = $"Utilities.ReportCrash called from {methodName} ({callerFilePath} {callerLineNumber})";
         DebugMsg(errText + ", ex:" + ex);
 
         StringBuilder crashMsg = new(errText);
 
-        crashMsg.AppendLine($"\nUser key = {App.Settings?.UserKey}");
+        if (!string.IsNullOrWhiteSpace(App.Settings.UserKey))
+            crashMsg.AppendLine($"\nUser key = {App.Settings.UserKey}");
         if (string.IsNullOrEmpty(comment))
             crashMsg.AppendLine("No comment");
         else
             crashMsg.AppendLine("Comment:\n" + comment + "\n");
 
-        if (sourceStream is null && Meal.CurrentMeal?.Summary?.SnapshotStream is not null)
+        if (sourceStream is null && Meal.CurrentMeal.Summary?.SnapshotStream is not null)
         {
             sourceStream = Meal.CurrentMeal.Summary.SnapshotStream;
             streamName = Meal.CurrentMeal.FileName;
@@ -364,7 +367,7 @@ public static partial class Utilities // Partial for regex generator
             if (ex is XmlException xmlEx)
                 scope.Fingerprint = ["xml-error"]; // this seems to be ignored
             // These attachments appear in the Sentry UI in reverse of the order they appear here
-            if (Meal.CurrentMeal?.Summary is not null)
+            if (Meal.CurrentMeal.Summary is not null)
             {
                 if (File.Exists(Meal.CurrentMeal.FilePath))
                 {
@@ -440,7 +443,7 @@ public static partial class Utilities // Partial for regex generator
     /// </summary>
     public delegate void SendMsg(string msg);
 
-    public static event SendMsg StatusMsgInvoked;
+    public static event SendMsg? StatusMsgInvoked;
 
     private static readonly PauseTokenSource PauseBeforeMessageSource = new();
 
@@ -636,9 +639,9 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="message">The message body to show</param>
     /// <param name="accept">Text to acknowledge the message</param>
     /// <returns></returns>
-    public delegate Task DisplayAlertAsyncType(string title, string message, string accept = null);
+    public delegate Task DisplayAlertAsyncType(string title, string message, string? accept = null);
     internal static DisplayAlertAsyncType DisplayAlertAsync = ActualDisplayAlertAsync;
-    private static Task ActualDisplayAlertAsync(string title, string message, string accept = null)
+    private static Task ActualDisplayAlertAsync(string title, string message, string? accept = null)
     {
         RecordMsg("Alert to user: " + message);
         return MainThread.InvokeOnMainThreadAsync(() => Shell.Current.DisplayAlertAsync(title, message, "OK"));
@@ -687,26 +690,24 @@ public static partial class Utilities // Partial for regex generator
     [Conditional("DEBUG")]
     private static void LogFolderTree(string comment)
     {
-        int indent = 3;
-        void listSubdirectories(string parentPath)
+        void ListSubdirectories(string parentPath, ref int indent)
         {
             indent += 3;
             foreach (string path in Directory.EnumerateDirectories(parentPath))
             {
                 DebugMsg(new string(' ', indent) + $"{path} - created {Directory.GetCreationTime(path)}");
-                listSubdirectories(path);
+                ListSubdirectories(path, ref indent);
             }
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
             indent -= 3;
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
         }
 
+        int indent = 3;
         string folder = App.BaseFolderPath;
         DebugMsg($"DivisiBill Folder tree ({comment}):");
         if (Directory.Exists(folder))
         {
             DebugMsg($"   {folder} - created {Directory.GetCreationTime(folder)}");
-            listSubdirectories(folder);
+            ListSubdirectories(folder, ref indent);
         }
         else
             DebugMsg($"Folder {folder} not found");
@@ -839,7 +840,7 @@ public static partial class Utilities // Partial for regex generator
     /// </summary>
     /// <param name="value">The string to evaluate. If null, empty, or white-space, the method returns null.</param>
     /// <returns>The original string if it is not null, empty, or white-space; otherwise, null.</returns>
-    public static string NullIfWhiteSpace(this string value)
+    public static string? NullIfWhiteSpace(this string? value)
         => string.IsNullOrWhiteSpace(value) ? null : value;
 
 
@@ -849,7 +850,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="s">The string to evaluate.</param>
     /// <param name="count">The number of characters to return from the start of the string.</param>
     /// <returns>The first characters of the string, or the whole string if it is shorter than the specified count.</returns>
-    public static string First(this string s, int count)
+    public static string? First(this string? s, int count)
         => s is null ? null :
            s.Length <= count ? s :
            s[..count];
@@ -862,7 +863,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="maxLen">the length within which it should fit</param>
     /// <returns>The original string if it is short enough, otherwise a truncated version followed
     /// by an ellipsis.</returns>
-    internal static string TruncatedTo(this string fullString, int maxLen)
+    internal static string? TruncatedTo(this string? fullString, int maxLen)
     {
         // If the input is null/empty/whitespace, treat it as absent and return null
         if (string.IsNullOrWhiteSpace(fullString))
@@ -901,7 +902,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="s1">string to compare</param>
     /// <param name="s2">other string to compare</param>
     /// <returns>true if the strings are functionally equal, false if they differ</returns>
-    internal static bool StringFunctionallyEqual(string s1, string s2) => string.Equals(s1, s2) || (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2));
+    internal static bool StringFunctionallyEqual(string? s1, string? s2) => string.Equals(s1, s2) || (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2));
 
     /// <summary>
     /// Takes a number and returns the nearest 'simpler' one. A simpler number has all zeros, except the first digit
@@ -941,7 +942,7 @@ public static partial class Utilities // Partial for regex generator
 
     public static void EnumerateInheritance(object o)
     {
-        Type objectType = o.GetType();
+        Type? objectType = o.GetType();
         while (objectType is not null)
         {
             DebugMsg(objectType.ToString());
@@ -951,10 +952,10 @@ public static partial class Utilities // Partial for regex generator
 
     internal static string CurrencySymbol = System.Globalization.NumberFormatInfo.CurrentInfo.CurrencySymbol;
     internal static string EditionName => App.IsLimited ? "Basic" : "Professional";
-    private static readonly Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
-    internal static string VersionName { get; } = $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}";
-    internal static string DebugString { get; } = IsDebug ? "DEBUG" : null;
-    internal static string Revision { get; } = assemblyVersion.Revision.ToString();
+    private static readonly Version? assemblyVersion = Assembly.GetExecutingAssembly()?.GetName()?.Version;
+    internal static string VersionName { get; } = $"{assemblyVersion?.Major}.{assemblyVersion?.Minor}.{assemblyVersion?.Build}";
+    internal static string DebugString { get; } = IsDebug ? "DEBUG" : "";
+    internal static string Revision { get; } = assemblyVersion?.Revision.ToString() ?? string.Empty;
     internal static string BuildTime { get; } = DateTime.Parse(BuildEnvironment.BuildTimeString, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind).ToLocalTime().ToString();
     public static async Task<string> CopyStreamToTempFileAsync(Stream input)
     {
@@ -978,7 +979,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="location1"></param>
     /// <param name="location2"></param>
     /// <returns>Distance in meters</returns>
-    public static int GetDistanceBetween(this Location location1, Location location2)
+    public static int GetDistanceBetween(this Location? location1, Location? location2)
     {
         if (location1 is null || location2 is null)
             return Distances.Inaccurate;
@@ -989,7 +990,7 @@ public static partial class Utilities // Partial for regex generator
     }
 
     // Distance between 2 locations in meters, or a special value if the second is null
-    public static int GetDistanceTo(this Location location1, Location location2)
+    public static int GetDistanceTo(this Location? location1, Location? location2)
     {
         ArgumentNullException.ThrowIfNull(location1, nameof(location1));
 
@@ -1001,7 +1002,7 @@ public static partial class Utilities // Partial for regex generator
     /// <param name="location1"></param>
     /// <param name="location2"></param>
     /// <returns></returns>
-    public static bool IsVeryCloseTo(this Location location1, Location location2) => (location1?.GetDistanceTo(location2) < 1) || (location1, location2) is (null, null);
+    public static bool IsVeryCloseTo(this Location location1, Location? location2) => (location1?.GetDistanceTo(location2) < 1) || (location1, location2) is (null, null);
     /// <summary>
     /// Copy the few of basic location elements we care about
     /// </summary>
@@ -1018,14 +1019,15 @@ public static partial class Utilities // Partial for regex generator
         }
     }
     internal static bool IsValid(this Location location) => location is not null && App.UseLocation && location.Accuracy <= Distances.AccuracyLimit;
+
     internal static bool IsAccurate(this Location location) => location is not null && location.Accuracy.HasValue;
     /// <summary>
     /// Accuracy, but as either an integer (not double) number of meters or an "inaccurate" value
     /// </summary>
     /// <param name="location">The Location object to be evaluated</param>
     /// <returns>An integral distance from the current location, or an "inaccurate" value</returns>
-    public static int AccuracyOrDefault(this Location location) => location.IsAccurate() ? (int)Math.Round(location.Accuracy.Value) : Distances.Inaccurate;
-    internal static string MakeLocationText(Location location) => location is null || !location.IsValid() ? null :
+    public static int AccuracyOrDefault(this Location location) => location?.Accuracy is not null && location.IsAccurate() ? (int)Math.Round(location.Accuracy.Value) : Distances.Inaccurate;
+    internal static string? MakeLocationText(Location location) => location is null || !location.IsValid() ? null :
                 MakeLocationText(location.Latitude, location.Longitude, location.AccuracyOrDefault());
 
     internal static string MakeLocationText(double Latitude, double Longitude, int HorizontalAccuracy)
@@ -1125,14 +1127,16 @@ public class AwaitableQueue<T>
             return queue.Dequeue();
         }
     }
-    public bool TryDequeue(out T item)
+
+    public bool TryDequeue([NotNullWhen(true)] out T? item)
     {
         if (semaphore.Wait(0))
         {
             lock (queueLock)
             {
                 item = queue.Dequeue();
-                return true;
+                if (item is not null)
+                    return true;
             }
         }
         item = default;
@@ -1147,7 +1151,7 @@ public class SentryEventProcessor : ISentryEventProcessor
     public const string UserFeedbackTitle = "User Feedback";
     public const string PrematureNavigationTitle = "PrematureNavigation";
     private static int skipBreaks = 0; // Just set this to skip the next however many breaks
-    public SentryEvent Process(SentryEvent sentryEvent)
+    public SentryEvent? Process(SentryEvent sentryEvent)
     {
         Utilities.DebugMsg($"In SentryEventProcessor.Process, Event:\"{sentryEvent.Message}\", EventId: {sentryEvent.EventId}");
         if (Utilities.IsDebug)

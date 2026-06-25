@@ -45,7 +45,7 @@ public abstract class BaseInAppBilling : IInAppBilling, IDisposable
     /// <param name="obfuscatedProfileId">Specifies an optional obfuscated string that is uniquely associated with the user's profile in your app.</param>
     /// <returns>Purchase details</returns>
     /// <exception cref="InAppBillingPurchaseException">If an error occurs during processing</exception>
-    public abstract Task<InAppBillingPurchase> PurchaseAsync(string productId, ItemType itemType, string obfuscatedAccountId = null, string obfuscatedProfileId = null, string subOfferToken = null, CancellationToken cancellationToken = default);
+    public abstract Task<InAppBillingPurchase?> PurchaseAsync(string productId, ItemType itemType, string? obfuscatedAccountId = null, string? obfuscatedProfileId = null, string? subOfferToken = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Consume a purchase with a purchase token.

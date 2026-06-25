@@ -68,7 +68,7 @@ public partial class Meal : ObservableObjectPlus
     /// MealSummary from the list rather than creating a new one.
     /// </summary>
     /// <returns>The stored Meal or null if there wasn't one</returns>
-    public static Meal LoadFromApp(bool tryExistingSummary)
+    public static Meal? LoadFromApp(bool tryExistingSummary)
     {
         string myString = App.Settings.StoredMeal;
         if (string.IsNullOrWhiteSpace(myString))
@@ -79,13 +79,13 @@ public partial class Meal : ObservableObjectPlus
             MemoryStream s = new(buf);
             Meal m = LoadFromStream(s);
             DebugMsg("in Meal.LoadFromApp meal = " + m.Summary);
-            MealSummary existingMealSummary = tryExistingSummary ? LocalMealList.Where(ms => ms.Id.Equals(m.Summary.Id)).FirstOrDefault() : null;
+            MealSummary? existingMealSummary = tryExistingSummary ? LocalMealList.Where(ms => ms.Id.Equals(m.Summary.Id)).FirstOrDefault() : null;
             m.SavedToApp = true;
             m.SavedToFile = existingMealSummary is not null;
             if (m.SavedToFile)
             {
                 // The normal case where the meal is in local storage
-                m.Summary = existingMealSummary;
+                m.Summary = existingMealSummary!;
             }
             else
             {
@@ -115,7 +115,7 @@ public partial class Meal : ObservableObjectPlus
     /// otherwise, false.</param>
     /// <returns>A Meal object deserialized from the stream. If deserialization fails or the stream is empty, a placeholder Meal
     /// is returned with details indicating the failure.</returns>
-    public static Meal LoadFromStream(Stream sourceStream, MealSummary ms = null, bool setup = true)
+    public static Meal LoadFromStream(Stream? sourceStream, MealSummary? ms = null, bool setup = true)
     {
 
         if (sourceStream is null || sourceStream.Length == 0)
@@ -123,13 +123,15 @@ public partial class Meal : ObservableObjectPlus
             // There's nothing in the stream, so no point trying to deserialize it, return a fake MealSummary
             return new Meal() { VenueName = "Bad Bill", Size = -2, CreationReason = "Empty file" };
         }
-        Meal m;
+        Meal? m;
         try
         {
             Trace.Assert(sourceStream.Position == 0, "Source stream expected to be positioned at 0");
             DebugExamineStream(sourceStream);
             LineItem.NextItemNumber = 1;
-            m = (Meal)MealSerializer.Deserialize(sourceStream);
+            m = MealSerializer.Deserialize(sourceStream) as Meal;
+            if (m is null)
+                throw new InvalidOperationException("Deserialization returned null meal");
             if (ms is not null)
                 m.Summary = ms; // Discard the one that was created as part of the deserialize operation in favor of the passed one 
             if (m.Summary.SnapshotStream is null)
@@ -173,10 +175,10 @@ public partial class Meal : ObservableObjectPlus
         }
         return m;
     }
-    internal static Meal LoadFromSavedStream(MealSummary ms, bool setup = false)
+    internal static Meal? LoadFromSavedStream(MealSummary ms, bool setup = false)
     {
         ms.SnapshotStream.Position = 0;
-        Meal m = LoadFromStream(ms.SnapshotStream, ms, setup);
+        Meal? m = LoadFromStream(ms.SnapshotStream, ms, setup);
         if (m is null)
         {
             // The stream was bad so just return null
@@ -190,9 +192,9 @@ public partial class Meal : ObservableObjectPlus
         }
         return m;
     }
-    public static Meal LoadFromFile(MealSummary ms, bool setup = false)
+    public static Meal? LoadFromFile(MealSummary ms, bool setup = false)
     {
-        Meal m = null;
+        Meal? m = null;
         string TargetFileName = ms.FileName;
         try
         {
@@ -235,10 +237,10 @@ public partial class Meal : ObservableObjectPlus
     }
     // Move a suspect file into a different folder so it doesn't keep causing trouble
     public static void MoveSuspectFile(string TargetFileName) => File.Move(Path.Combine(MealFolderPath, TargetFileName), Path.Combine(SuspectFolderPath, TargetFileName));
-    public static async Task<Meal> LoadFromRemoteAsync(MealSummary ms, bool setup = false)
+    public static async Task<Meal?> LoadFromRemoteAsync(MealSummary ms, bool setup = false)
     {
-        Meal m = null;
-        using (Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, ms.Id))
+        Meal? m = null;
+        using (Stream? sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, ms.Id))
         {
             m = LoadFromStream(sourceStream, ms, setup);
             if (m is null || m.Size <= 0)
@@ -261,14 +263,14 @@ public partial class Meal : ObservableObjectPlus
         }
         return m;
     }
-    public static async Task<Meal> LoadAsync(MealSummary ms, bool setup = false)
+    public static async Task<Meal?> LoadAsync(MealSummary ms, bool setup = false)
     {
         if (App.IsCloudImageBackupAllowed && ms.IsRemote && !ms.IsLocal && ms.HasRemoteImage && !ms.HasImage) // it is a remote meal with a remote image we don't have
         {
             // Load the remote image as well
             await LoadImageFromRemoteAsync(ms);
         }
-        Meal m = ms.SnapshotValid
+        Meal? m = ms.SnapshotValid
             ? LoadFromSavedStream(ms, setup: setup)
             : ms.IsLocal ? LoadFromFile(ms, setup: setup) : ms.IsRemote ? await LoadFromRemoteAsync(ms, setup) : LoadFake(ms);
         return m;
@@ -426,7 +428,9 @@ public partial class Meal : ObservableObjectPlus
     public async Task SaveSnapshotAsync()
     {
         // First clone the Meal
-        Meal m = LoadFromApp(tryExistingSummary: false); // load up the meal with an independent summary
+        Meal? m = LoadFromApp(tryExistingSummary: false); // load up the meal with an independent summary
+        if (m is null)
+            throw new InvalidOperationException("Failed to load meal from app");
         // From now on we deal only with the cloned Meal
         m.SaveReason = "Command"; // Does not need to be preserved since all saves change it
         // Now make the creation time be now so the file is saved with a distinct name
@@ -473,7 +477,7 @@ public partial class Meal : ObservableObjectPlus
     /// rather than the continuation of an old one, then see if it is appropriate
     /// to save off the old version (meaning save it if it hasn't already been saved).
     /// </summary>
-    public static async Task<bool> TrySaveOldBillAsync([CallerMemberName] string methodName = null, [CallerLineNumber] int callerLineNumber = 0)
+    public static async Task<bool> TrySaveOldBillAsync([CallerMemberName] string? methodName = null, [CallerLineNumber] int callerLineNumber = 0)
     {
         Utilities.DebugMsg($"In TrySaveOldBillAsync, called from {methodName} at {callerLineNumber}");
         if (CurrentMeal is not null && CurrentMeal.TooOldToContinue && !CurrentMeal.Frozen) // The bill is old, start a new one
@@ -490,7 +494,7 @@ public partial class Meal : ObservableObjectPlus
     /// Creates a ZIP archive containing the current object's data as an XML file, and optionally includes an associated
     /// image if available.
     /// </summary>
-    /// <remarks>The ZIP archive is saved in the application's temp directory (see <see cref="Archive.ZipAsync"/>) and includes an XML file
+    /// <remarks>The ZIP archive is saved in the application's temp directory (see <see cref="Archive.CreateZipArchive"/>) and includes an XML file
     /// representing the object's data. If an image is associated with the object and exists on disk, it is also
     /// included in the archive. The method handles any exceptions internally and reports them, returning an empty
     /// string if an error occurs.</remarks>
@@ -502,7 +506,8 @@ public partial class Meal : ObservableObjectPlus
         {
             Archive archive = new([this], true);
             // Create the XML file in the cache directory
-            string zipFileFullname = archive.ZipAsync();
+            string zipFileFullname = archive.CreateZipArchive() ?? throw new InvalidOperationException("Failed to create zip archive");
+
             // At this point we have a zip archive file on disk containing a single XML file containing the archive data and possibly an image file too
             return zipFileFullname;
         }

@@ -17,9 +17,9 @@ public partial class AppSnackBarPage : CommunityToolkit.Maui.Views.Popup
         Closed -= AppSnackBarPage_Closed;
     }
 
-    private void AppSnackBarPage_Closed(object sender, EventArgs e) => isOpen = false;
+    private void AppSnackBarPage_Closed(object? sender, EventArgs e) => isOpen = false;
 
-    private async void AppSnackBarPage_Opened(object sender, EventArgs e)
+    private async void AppSnackBarPage_Opened(object? sender, EventArgs e)
     {
         isOpen = true;
         await Task.Delay(5_000);

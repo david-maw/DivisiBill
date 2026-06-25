@@ -16,7 +16,7 @@ namespace DivisiBill.Models;
 public partial class Meal
 {
     // Also see Saver.RemoteLoop
-    private static Task BackupTask = null;
+    private static Task? BackupTask = null;
     private static readonly CancellationTokenSource BackupCancellationTokenSource = new();
     private static readonly AwaitableQueue<MealSummary> backupQueue = new();
     private static readonly AwaitableQueue<MealSummary> imageBackupQueue = new();
@@ -45,7 +45,7 @@ public partial class Meal
     private static async Task BackupMissingAsync()
     {
         // This is where all the elapsed time goes, reaching out over the network
-        List<RemoteItemInfo> remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
+        List<RemoteItemInfo>? remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
         // We use HashSet types to store the data, but the performance difference pales compared to the network time above        
         HashSet<string> remoteMealNames = remoteFileInfoList is null ? [] : [.. remoteFileInfoList.Select(x => x.Name)];
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
@@ -108,7 +108,12 @@ public partial class Meal
         DebugMsg("Entered RecoverFromRemoteAsync, waiting for CloudAllowedSource");
         await App.CloudAllowedSource.WaitWhilePausedAsync();
         DebugMsg("In RecoverFromRemoteAsync, CloudAllowedSource no longer paused");
-        List<RemoteItemInfo> remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
+        List<RemoteItemInfo>? remoteFileInfoList = await RemoteWs.GetItemInfoListAsync(RemoteWs.MealTypeName);
+        if (remoteFileInfoList is null)
+        {
+            DebugMsg("In RecoverFromRemoteAsync, remoteFileInfoList is null");
+            return;
+        }
         IEnumerable<string> remoteMealNames = remoteFileInfoList.Select(x => x.Name);
         await App.InitializationComplete.Task; // Wait until LocalMealList is established
         // Get a dictionary of local file names
@@ -123,20 +128,12 @@ public partial class Meal
         ReportProgress(totalFiles, filesWithoutError, filesInError);
         foreach (RemoteItemInfo rfi in remoteOnlyFileInfoList)
         {
-            using Stream sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name);
+            using Stream? sourceStream = await RemoteWs.GetItemStreamAsync(RemoteWs.MealTypeName, rfi.Name);
             cancellationToken.ThrowIfCancellationRequested();
             try // if one file fails, just report it and go on to the next 
             {
                 Meal m = LoadFromStream(sourceStream);
-                if (m is null)
-                {
-                    // The stream was bad so do not store it
-                    DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned null for {rfi.Name}");
-                    filesInError++;
-                    if (Utilities.IsDebug)
-                        Debugger.Break();
-                }
-                else if (m.Size <= 0)
+                if (m.Size <= 0)
                 {
                     // The stream was bad so do not store it
                     DebugMsg($"In Meal.RecoverFromRemoteAsync: LoadFromStream returned a negative size for {rfi.Name}");
@@ -222,7 +219,7 @@ public partial class Meal
             bool backupImage = false;
 
             // Try to get from backupQueue first
-            if (backupQueue.TryDequeue(out MealSummary ms))
+            if (backupQueue.TryDequeue(out MealSummary? ms))
                 backupImage = false;
             // Then try image queues
             else if (imageBackupQueue.TryDequeue(out ms) || slowImageBackupQueue.TryDequeue(out ms))
@@ -290,7 +287,7 @@ public partial class Meal
             else
             {
                 // Backup the MealSummary to the cloud
-                Meal m = LoadFromFile(ms);
+                Meal? m = LoadFromFile(ms);
                 if (m is not null) // there's a small timing hole where the file might be removed while the request is in the queue
                 {
                     await m.SaveToRemoteAsync();
