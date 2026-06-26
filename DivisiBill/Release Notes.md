@@ -14,6 +14,8 @@ The restore operation now shows a message if any bills were not restored because
 
 Archive selection on Android  now identifies more files as archives.
 
+The meaning of the "Only Related People and Venues" option was reversed during a restore. This has been corrected and it now means that only people and venues that are referenced by the selected bills will be archived or restored. 
+
 ## Improve Camera Page Navigation
 
 After switching to the Camera page from most other pages it was impossible to just use a 'back' action to exit to the Image page. Doing so would just pop back to the camera page immediately. This has been corrected. Simply exiting the Camera page in these circumstances will bring up the image page with the image unchanged.

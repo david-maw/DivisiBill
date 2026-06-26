@@ -586,12 +586,12 @@ public class Archive
     {
         // Restore each object type except user specifiable defaults because
         // those are restored through a ViewModel and we want to stay ignorant of those.
-        // The rest are list object types, restore individual elements but only if an object of the same name does not exist
+        // The rest are list object types, restore individual elements but maybe only if an object of the same name does not exist
         // The presumption is that the lists are in whatever order is deemed correct for their item type
         try
         {
             App.IsCloudAllowed = false; // No backups while this is going on
-            if (!onlyRelatedParam)
+            if (onlyRelatedParam)
             {
                 // filter other lists to limit them to required items
                 List<Venue> FilteredVenues = [];
@@ -618,15 +618,13 @@ public class Archive
                     }
                 }
                 Venues = [.. FilteredVenues.Distinct()];
-                Venues.Sort();
                 Persons = [.. FilteredPersons.Distinct()];
-                Persons.Sort();
                 AliasGuids = [.. FilteredAliasGuids.DistinctBy(a => a.Key)];
-                AliasGuids.Sort();
             }
             if (Venues is not null)
             {
                 Utilities.DebugMsg($"In RestoreXmlAsync, restoring {Venues.Count} venues");
+                Venues.Sort();
                 if (DeleteBeforeRestore)
                     Venue.ForgetAllVenues();
                 Venue.MergeVenues(Venues, replace: OverwriteDuplicates);
@@ -636,11 +634,28 @@ public class Archive
                 Utilities.DebugMsg($"In RestoreXmlAsync, no venues to restore");
             if (Persons is not null)
             {
+                Persons.Sort();
                 if (DeleteBeforeRestore)
+                {
                     Person.AllPeople.Clear();
+                    Person.AliasGuidList.Clear();
+                }
                 Person.AddPeople(Persons, replace: OverwriteDuplicates);
-                if (AliasGuids is not null) // only handled if there are persons
-                    Person.AliasGuidList = AliasGuids;
+                if (AliasGuids is not null) // There may be some new bill entries that use an alias for a person that is not in
+                                            // the current list of all people. Still, we must filter the AliasGuids to only those
+                                            // that point to a PersonGUID that exists in the now current list of all people
+                {
+                    // Filter AliasGuids to only those that point to a PersonGUID that exists in the current list of all people
+                    var validAliasGuids = AliasGuids
+                        .Where(guidMappingEntry => Person.AllPeople
+                            .Select(person => person.PersonGUID)
+                            .Contains(guidMappingEntry.Value));
+                    // Merge the lists of AliasGuid entries, keeping only distinct entries and sorting by Key
+                    Person.AliasGuidList = [.. Person.AliasGuidList
+                        .Concat(validAliasGuids)
+                        .Distinct()
+                        .OrderBy(guidMappingEntry => guidMappingEntry)];
+                }
                 await Person.SaveSettingsAsync();
             }
             if (SelectedMealsCount > 0)
