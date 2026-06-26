@@ -177,7 +177,7 @@ internal partial class DataManagementViewModel : ObservableObject
             await Utilities.DisplayAlertAsync("Archiving Error", "No bills meet the archive criteria");
             return;
         }
-        string? zipFullName = archive.CreateZipArchive(SaveImages);
+        string? zipFullName = archive.CreateZipArchive(UseImages);
         if (string.IsNullOrWhiteSpace(zipFullName) || !File.Exists(zipFullName))
         {
             await Utilities.ShowAppSnackBarAsync("Archive Zip File Creation Failed");
@@ -361,7 +361,7 @@ internal partial class DataManagementViewModel : ObservableObject
             }
 
             // Restore the data items
-            (bool restoreWorked, string restoreFailureText) = await archive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated);
+            (bool restoreWorked, string restoreFailureText) = await archive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, UseImages);
 
             if (restoreWorked)
             {
@@ -406,7 +406,7 @@ internal partial class DataManagementViewModel : ObservableObject
     /// Indicates whether to save images during archiving operations. Defaults to false.
     /// </summary>
     [ObservableProperty]
-    public partial bool SaveImages { get; set; } = true;
+    public partial bool UseImages { get; set; } = true;
 
     /// <summary>
     /// Indicates whether all meals or only selected meals are candidates for archiving. Defaults to false.

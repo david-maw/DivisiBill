@@ -49,10 +49,6 @@
                                 <CheckBox IsChecked="{Binding OnlySelectedMeals}" />
                                 <Label Text="Only Selected Bills" VerticalOptions="Center" />
                             </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
-                                <CheckBox IsChecked="{Binding SaveImages}" />
-                                <Label Text="Store Bill Images" VerticalOptions="Center" />
-                            </HorizontalStackLayout>
                         </Grid>
                         <!--#endregion-->
                         <!--#region Select and Restore -->
@@ -109,11 +105,17 @@
                                 MinimumDate="{Binding StartDate}" />
                         </HorizontalStackLayout>
                         <!--#endregion-->
-                        <!--#region 'Only Related' Option-->
-                        <HorizontalStackLayout HorizontalOptions="Center" Margin="0,-20,0,0">
-                            <CheckBox IsChecked="{Binding OnlyRelated}" Margin="0,0,0,-10" />
-                            <Label Text="Only Related People and Venues" VerticalOptions="Center" LineBreakMode="WordWrap" Margin="0,0,0,-10"/>
-                        </HorizontalStackLayout>
+                        <!--#region Options For Both Archive and Restore  -->
+                        <Grid HorizontalOptions="Center" RowDefinitions="auto, auto" ColumnDefinitions="auto, auto">
+                            <!--#region 'Only Related' Option-->
+                            <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding OnlyRelated}" Margin="0,0,0,-10" />
+                            <Label Grid.Row="0" Grid.Column="1" Text="Related People and Venues" VerticalOptions="Center" LineBreakMode="WordWrap" Margin="0,0,0,-10"/>
+                            <!--#endregion-->
+                            <!--#region Archive/Restore Images-->
+                            <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding UseImages}" />
+                            <Label Grid.Row="1" Grid.Column="1" Text="Bill Images" VerticalOptions="Center" />
+                            <!--#endregion-->
+                        </Grid>
                         <!--#endregion-->
                     </VerticalStackLayout>
                 </Border>

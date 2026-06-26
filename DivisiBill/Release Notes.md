@@ -10,11 +10,13 @@ This was showing a list of bills by default, once again it shows a list of venue
 
 ## Improve Archive Restore
 
-The restore operation now shows a message if any bills were not restored because they were duplicated (another bill was created in the same second). The message says how many and what the first few were.
+The restore operation now shows a message if any bills were not restored because they were duplicated (another bill that was created in the same second is present). The message says how many and what the first few were.
 
 Archive selection on Android  now identifies more files as archives.
 
-The meaning of the "Only Related People and Venues" option was reversed during a restore. This has been corrected and it now means that only people and venues that are referenced by the selected bills will be archived or restored. 
+The meaning of the "Only Related People and Venues" option was reversed during a restore. This has been corrected and it now means that only people and venues that are referenced by the selected bills will be archived or restored.
+
+It is now possible to control both archive and restore of bill images independently (previously the control only applied to archiving, restore always restored images for selected bills if there were any).
 
 ## Improve Camera Page Navigation
 

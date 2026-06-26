@@ -713,7 +713,7 @@ public class Archive
     /// Restores data and bill images from a zip archive or just data from a simple XML archive.
     /// </summary>
     /// <remarks>User settings from the archive are ignored. Uses <see cref="RestoreXmlAsync"/> to restore data and If the archive contains images, any
-    /// images associated with restored meals are extracted. If an error occurs during restore or image extraction, a notification is
+    /// images associated with restored meals are extracted based on the <paramref name="useImages"/> parameter. If an error occurs during restore or image extraction, a notification is
     /// returned and the operation may be incomplete.</remarks>
     /// <param name="deleteBeforeRestore">Indicates whether existing data and images should be deleted before restoring from the archive. Set to <see
     /// langword="true"/> to remove all current items prior to restore; otherwise, restored items will be merged.</param>
@@ -721,18 +721,23 @@ public class Archive
     /// langword="true"/> to replace duplicates; otherwise, duplicates are skipped.</param>
     /// <param name="onlyRelated">Indicates whether only items related to the selected meals should be restored. Set to <see langword="true"/> to
     /// restore only related items; otherwise, all items in the archive are restored.</param>
-    /// 
+    /// <param name="useImages">Indicates whether images associated with restored meals should be extracted. Set to <see langword="true"/> to
+    /// extract images; otherwise, only data is restored.</param>
     ///<returns>A tuple containing a boolean indicating success or failure, and a string message with details about any failure.</returns>
     /// 
-    public async Task<(bool, string)> RestoreAnyAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated)
+    public async Task<(bool, string)> RestoreAnyAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated, bool useImages)
     {
         try
         {
             // Restore the data items
             await RestoreXmlAsync(deleteBeforeRestore, overwriteDuplicates, onlyRelated);
 
+            // Give the user the option to delete all the images even if there are none to restore
+            if (useImages && deleteBeforeRestore)
+                Meal.PermanentlyDeleteAllLocalImages();
+
             // If the archive was a zip and contains images, selectively extract images belonging to meals being restored
-            if (IsZipped && !string.IsNullOrWhiteSpace(ContainerFullName) && File.Exists(ContainerFullName))
+            if (useImages && IsZipped && !string.IsNullOrWhiteSpace(ContainerFullName) && File.Exists(ContainerFullName))
             {
                 try
                 {

@@ -331,6 +331,32 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     }
 
     /// <summary>
+    /// Permanently deletes all local meal images from storage, removing them without the possibility of recovery.
+    /// </summary>
+    /// <remarks>This method does not delete any associated meal records, use <see cref="PermanentlyDeleteAllLocalMeals"/>
+    /// for that. Use this method when a complete removal of local meal images is required, such as during
+    /// an archive restore operation.</remarks>
+    public static void PermanentlyDeleteAllLocalImages()
+    {
+        if (Directory.Exists(Meal.ImageFolderPath)) // It may not exist if this is a new install
+        {
+            var imageFiles = Directory.EnumerateFiles(Meal.ImageFolderPath, "*.jpg").ToList();
+
+            foreach (string imageFilePath in imageFiles)
+            {
+                try
+                {
+                    File.Delete(imageFilePath);
+                }
+                catch (Exception ex)
+                {
+                    ex.ReportCrash();
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Deletes data for a meal from local and/or remote storage asynchronously, based on the specified options.
     /// </summary>
     /// <remarks>If both <paramref name="doLocal"/> and <paramref name="doRemote"/> are <see

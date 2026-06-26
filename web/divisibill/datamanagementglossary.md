@@ -44,7 +44,15 @@ Select "Overwrite Duplicate Items" to overwrite items of the same name that alre
 
 ## Use Bills Between
 
-The Archive and Restore buttons operate only on bills in the specified date range (which by default is every bill to date).
+The Archive and Restore buttons operate only on bills in the specified date range. Once an archive is selected this defaults to every bill in it. If no archive is selected the default is from the date of the last bill used in the previous archive command to today's date. If you change the range, the number of bills will be updated to reflect the new range.
+
+## Related
+
+The archive and restore buttons operate only on venues or people that are used on the selected bills.
+
+## Use Images
+
+Set this option to have the archive and restore buttons operate on any images of the selected bills. By clearing this option the archive and restore buttons will ignore images, which will make the archive file smaller and faster to create and restore. By setting this option to "Yes" the archive and restore buttons will include images and if you also set the delete option, all existing images will be removed before a restore is initiated.
 
 ## Key Password
 

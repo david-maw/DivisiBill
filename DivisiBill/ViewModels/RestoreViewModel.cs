@@ -64,7 +64,7 @@ public partial class RestoreViewModel : ObservableObject
             // We never apply user settings from the archive - use the App Data Management Page Restore option for that.
 
             // Restore the data items
-            (bool restoreWorked, string restoreFailureText) = await SelectedArchive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated);
+            (bool restoreWorked, string restoreFailureText) = await SelectedArchive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, UseImages);
 
             if (restoreWorked)
             {
@@ -114,6 +114,13 @@ public partial class RestoreViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial bool OnlyRelated { get; set; } = false;
+
+    /// <summary>
+    /// Indicates whether only items referred to by meals being archived or restored should themselves be archived or restored.
+    /// Initialized to false by default.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool UseImages { get; set; } = true;
 
     /// <summary>
     /// Indicates whether to delete all items before commencing a restore operation. Defaults to false.
