@@ -149,14 +149,34 @@
 
   <!--Generate the file holding the build secrets on every build-->
   <!--First get the secrets from environment variables-->
-  <PropertyGroup>
-    <!--Set DivisiBillWsUri based on the build configuration-->
-    <DivisiBillWsUri Condition="$(Configuration) == release">$(DIVISIBILL_WS_URI_RELEASE)</DivisiBillWsUri>
-    <DivisiBillWsKey Condition="$(Configuration) == release">$(DIVISIBILL_WS_KEY_RELEASE)</DivisiBillWsKey>
+  <!--Set DivisiBillWsUri based on the build configuration-->
 
-    <DivisiBillWsUri Condition="$(Configuration) == alternate">$(DIVISIBILL_ALTERNATE_WS_URI)</DivisiBillWsUri>
-    <DivisiBillWsKey Condition="$(Configuration) == alternate">$(DIVISIBILL_ALTERNATE_WS_KEY)</DivisiBillWsKey>
-    <!--If it is not a build name we recognize just use the released configuration-->
+  <!--If it is a release build it's easy, just use the release environment variables-->
+  <PropertyGroup Condition="$(Configuration) == release">
+    <DivisiBillWsUri>$(DIVISIBILL_WS_URI_RELEASE)</DivisiBillWsUri>
+    <DivisiBillWsKey>$(DIVISIBILL_WS_KEY_RELEASE)</DivisiBillWsKey>
+  </PropertyGroup>
+
+  <!--If it is an alternate build we use the alternate environment variables-->
+  <PropertyGroup Condition="$(Configuration) == alternate">
+    <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_ALTERNATE_WS_URI)</DivisiBillWsUri>
+    <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_ALTERNATE_WS_KEY)</DivisiBillWsKey>
+  </PropertyGroup>
+
+  <!--If it is a debug build we need to check the target platform since the debug web service URI and key are allowed-->
+  <!--to differ for Android vs Windows-->
+  <PropertyGroup Condition="'$(Configuration)' == 'debug' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" >
+    <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI_DEBUGA)</DivisiBillWsUri>
+    <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_WS_KEY_DEBUGA)</DivisiBillWsKey>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'debug' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" >
+    <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI_DEBUGW)</DivisiBillWsUri>
+    <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_WS_KEY_DEBUGW)</DivisiBillWsKey>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--If nothing has been recognized so far just use the released configuration-->
     <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI)</DivisiBillWsUri>
     <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_WS_KEY)</DivisiBillWsKey>
     <BuildInfoText>
