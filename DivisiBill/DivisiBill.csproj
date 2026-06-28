@@ -29,6 +29,10 @@
     <ApplicationId>com.autoplus.divisibill</ApplicationId>
     <ApplicationIdGuid>852FA570-F1CD-41BE-A828-5C1DE6ED088F</ApplicationIdGuid>
 
+    <!-- Convenience Variable to determine the platform class (android, windows, etc.) based on the target framework.
+    This is used in various conditions throughout the project file because TargetPlatformIdentifier is unreliable. -->
+    <TargetOsPlatform>$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))</TargetOsPlatform>
+
     <!-- Versions -->
     <ApplicationDisplayVersion>6.3.32</ApplicationDisplayVersion>
     <ApplicationVersion>300</ApplicationVersion>
@@ -37,13 +41,12 @@
 
     <AssemblyVersion>$(ApplicationDisplayVersion).$(ApplicationVersion)</AssemblyVersion>
 
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion Condition="$(TargetOsPlatform) == android">34.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$(TargetOsPlatform) == windows">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$(TargetOsPlatform) == windows">10.0.19041.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-us</DefaultLanguage>
     <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
   </PropertyGroup>
-
 
   <!--Key for SixLabors licensing, set via environment variable on the build machine since it is needed at compile time for source generators and should not be checked into source control-->
   <PropertyGroup>
@@ -52,11 +55,17 @@
 
   <!--Set EmitCompilerGeneratedFiles to true and CompilerGeneratedFilesOutputPath to an existing path to enable source-generated files to be visible in the IDE-->
   <PropertyGroup>
-    <EmitCompilerGeneratedFiles Condition="'$(Configuration)'=='Debug'">true</EmitCompilerGeneratedFiles>
+    <EmitCompilerGeneratedFiles Condition="$(Configuration) == Debug">true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
-  <Target Name="DisplayCustomMessage" BeforeTargets="CopyFilesToOutputDirectory" Condition="'$(Configuration)'=='Debug'">
+  <!-- Handy Diagnostic Messages -->
+  <Target Name="ShowMessages" BeforeTargets="BeforeBuild;CoreCompile">
+    <Message Text="TargetOsPlatform = $(TargetOsPlatform) and GetTargetPlatformIdentifier = $([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))" Importance="low" />
+  </Target>
+
+  <!-- Display the web service to be used by the build -->
+  <Target Name="DisplayWebUri" BeforeTargets="CopyFilesToOutputDirectory" Condition="$(Configuration) == Debug">
     <Message Text="$(MSBuildProjectName) $(Configuration) build for $(TargetFramework), Web Service URI = $(DivisiBillWsUri)" Importance="high" />
   </Target>
 
@@ -66,14 +75,14 @@
   </PropertyGroup>
 
   <!--Turn on Android AOT compilation to Speed Up initialization-->
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)|$(Platform)'=='Release|android|AnyCPU'">
     <RunAOTCompilation>True</RunAOTCompilation>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- App Icon, see https://learn.microsoft.com/en-us/dotnet/core/tools/sdk-errors/netsdk1005 -->
-    <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Update="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
-    <MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
+    <MauiIcon Condition="$(TargetOsPlatform) != android" Update="Resources\AppIcon\appicon.svg"  ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
+    <MauiIcon Condition="$(TargetOsPlatform) == android" Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
 
     <!-- Splash Screen -->
     <MauiSplashScreen Include="Resources\Splash\appiconfg.svg" Color="Red" />
@@ -97,6 +106,7 @@
     <MauiAsset Remove="..\web\divisibill\**\*.md" />
   </ItemGroup>
 
+  <!--Release Notes-->
   <ItemGroup>
     <!--The release notes are in a different folder but go along with the other help files at run time-->
     <MauiAsset Include="Release Notes.html" LogicalName="help\releasenotes.html" />
@@ -105,6 +115,7 @@
     </MauiAsset>
   </ItemGroup>
 
+  <!--Nuget Packages-->
   <ItemGroup>
     <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
     <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.2" />
@@ -120,18 +131,18 @@
     <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.70" />
     <PackageReference Include="Sentry.Maui" Version="6.6.0" />
     <!--Sentry.Profiling 4.10.0 is not supported on Android-->
-    <PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'" Include="Sentry.Profiling" Version="6.6.0" />
+    <PackageReference Condition="'$(TargetOsPlatform)' != 'android'" Include="Sentry.Profiling" Version="6.6.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="4.0.0" />
     <PackageReference Include="SkiaSharp" Version="3.119.4" />
   </ItemGroup>
 
-  <!--Add In-App Billing package for Android-->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+  <!--Add In-App Billing package, but only for Android-->
+  <ItemGroup Condition="'$(TargetOsPlatform)' == 'android'">
     <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.1.0" />
   </ItemGroup>
 
   <!-- Sentry setup for PDB Upload -->
-  <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(SENTRY_UPLOAD)' == 'true' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(DIVISIBILL_SENTRY_DSN)' != ''">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)|$(SENTRY_UPLOAD)' == 'Release|android|true' and '$(DIVISIBILL_SENTRY_DSN)' != ''">
 
     <!-- Configure Sentry org and project -->
     <SentryOrg>autoplus</SentryOrg>
@@ -164,13 +175,13 @@
   </PropertyGroup>
 
   <!--If it is a debug build we need to check the target platform since the debug web service URI and key are allowed-->
-  <!--to differ for Android vs Windows-->
-  <PropertyGroup Condition="'$(Configuration)' == 'debug' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'" >
+  <!--to differ for Android and Windows-->
+  <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)' == 'debug|android'">
     <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI_DEBUGA)</DivisiBillWsUri>
     <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_WS_KEY_DEBUGA)</DivisiBillWsKey>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'debug' and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" >
+  <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)' == 'debug|windows'">
     <DivisiBillWsUri Condition="'$(DivisiBillWsUri)' == ''">$(DIVISIBILL_WS_URI_DEBUGW)</DivisiBillWsUri>
     <DivisiBillWsKey Condition="'$(DivisiBillWsKey)' == ''">$(DIVISIBILL_WS_KEY_DEBUGW)</DivisiBillWsKey>
   </PropertyGroup>
@@ -231,6 +242,7 @@ namespace DivisiBill.Generated
 ]]>
     </BuildEnvironmentText>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-windows10.0.19041.0|AnyCPU'" />
 
   <Target Name="AddBuildEnvironment" BeforeTargets="BeforeBuild;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="ForceBuildEveryTime">
     <Message Text="AddBuildEnvironment was invoked for file $(BuildInfoFilePath)" Importance="low" />
