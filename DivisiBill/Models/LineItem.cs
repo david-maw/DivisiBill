@@ -48,7 +48,7 @@ public partial class LineItem : ObservableObject
     /// <summary>
     /// Backing collection tracking whether each potential diner shares this item.
     /// </summary>
-    private ObservableCollection<bool> sharedBy = [with(Enumerable.Repeat(false, maxSharers))];
+    private readonly ObservableCollection<bool> sharedBy = [with(Enumerable.Repeat(false, maxSharers))];
 
     /// <summary>
     /// Next default item number used when creating unnamed items.
@@ -195,8 +195,8 @@ public partial class LineItem : ObservableObject
     /// <param name="count">The number of shares to allocate to this sharer, should be 9 or less</param>
     public void SetShares(DinerID sharerID, byte count)
     {
-        if (sharerID == DinerID.none)
-            throw new Exception("Bad sharer ID");
+        if (sharerID == DinerID.none || sharerID >= DinerID.limit)
+            throw new Exception("Bad sharer ID " + (int)sharerID);
 
         int sharerInx = sharerID.ToIndex();
         bool extraChanged;
@@ -422,7 +422,7 @@ public partial class LineItem : ObservableObject
         {
             DinerID maxDiner = GetMaxDiner();
             StringBuilder sb = new(SharedBy.Count);
-            for (DinerID diner = DinerID.first; diner <= maxDiner; diner++)
+            for (DinerID diner = DinerID.first; diner < DinerID.limit; diner++)
             {
                 sb.Append((char)('0' + GetShares(diner)));
             }
@@ -439,7 +439,7 @@ public partial class LineItem : ObservableObject
             for (DinerID diner = DinerID.first; diner < DinerID.limit; diner++)
             {
                 if (inx >= value.Length)
-                    break;
+                    break; // Old data might be shorter than the limit
                 byte shares = (byte)(value[inx] - '0');
                 if (shares > 0)
                     SetShares(diner, shares);

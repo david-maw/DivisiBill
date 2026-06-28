@@ -164,14 +164,15 @@ public partial class PersonCost : ObservableObject
     [NotifyPropertyChangedFor(nameof(DinerIDText))]
     [XmlIgnore]
     public partial LineItem.DinerID DinerID { get; set; }
-    partial void OnDinerIDChanged(LineItem.DinerID value) => DinerIndexStored = (uint)value;
 
     // This is used to persist the DinerID value, to stay compatible with older stored meals.
     // So the thing called DinerIndex in the persisted XML is actually the DinerID value
     [XmlAttribute(AttributeName = "DinerIndex")]
-    [ObservableProperty]
-    public partial uint DinerIndexStored { get; set; }
-    partial void OnDinerIndexStoredChanged(uint value) => DinerID = (LineItem.DinerID)value;
+    public uint DinerIndexStored
+    {
+        get => (uint)DinerID;
+        set => DinerID = (LineItem.DinerID)value;
+    }
 
     // Diner ID values start at 1, this starts at 0 and is used as an array index usually
     [XmlIgnore]
@@ -179,6 +180,4 @@ public partial class PersonCost : ObservableObject
 
     [XmlIgnore]
     public string DinerIDText => ((char)('①' + DinerIndex)).ToString();
-
-    public void SwapDinerID(PersonCost pc) => (pc.DinerID, DinerID) = (DinerID, pc.DinerID);
 }
