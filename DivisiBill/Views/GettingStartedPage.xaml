@@ -14,7 +14,7 @@
     <!--  This layout is intentionally similar to an empty SplashPage, so that the transition from one to the other is not jarring to the user  -->
     <Grid
         Margin="0,50,0,0"
-        RowDefinitions="auto, 1*,1.5*,auto,auto,3*"
+        RowDefinitions="auto, 0.3*,1.1*,auto,auto,3*"
         SafeAreaEdges="none">
         <!--Headline-->
         <Label Text="Starting DivisiBill, please wait..." FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
@@ -23,8 +23,7 @@
         
         <!--#endregion-->
         <!--#region DivisiBill Icon -->
-        <Image Grid.Row="2" Source="divisibillfg.png" Margin="10"
-                WidthRequest="250" HeightRequest="{Binding WidthRequest, Source={RelativeSource Self}, x:DataType=Image}" >
+        <Image Grid.Row="2" Source="divisibillfg.png" Margin="10">
 
 
 
