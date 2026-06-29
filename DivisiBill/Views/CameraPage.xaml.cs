@@ -26,10 +26,21 @@ public partial class CameraPage : ContentPage
         base.OnAppearing();
         await viewModel.SetCameraAvailabilityAsync();
 
-        // Initialize available cameras
+        // Initialize available cameras - wait briefly for the camera provider to enumerate cameras
         if (viewModel.IsCameraAvailable)
         {
+            // Give the CameraView a moment to initialize cameras
+            // This is necessary because AvailableCameras may be null on first access
+            await Task.Delay(100);
+
             viewModel.AvailableCameras = cameraProvider.AvailableCameras;
+
+            // If still null after the delay, try again after another brief wait
+            if (viewModel.AvailableCameras is null)
+            {
+                await Task.Delay(200);
+                viewModel.AvailableCameras = cameraProvider.AvailableCameras;
+            }
 
             // Select the rear camera by default if available, otherwise the first camera
             if (viewModel.AvailableCameras is not null && viewModel.AvailableCameras.Count > 0)

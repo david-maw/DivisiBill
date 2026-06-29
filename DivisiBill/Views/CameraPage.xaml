@@ -8,10 +8,22 @@
              BindingContext="{vm:CameraViewModel}"
              Shell.FlyoutBehavior="Disabled"
              Title="Camera">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:BoolToObjectConverter
+                x:Key="FlashIconConverter"
+                FalseObject="{StaticResource GlyphFlashOff}"
+                TrueObject="{StaticResource GlyphFlashOn}" />
+            <toolkit:BoolToObjectConverter
+                x:Key="LightIconConverter"
+                FalseObject="{StaticResource GlyphFlashlightOff}"
+                TrueObject="{StaticResource GlyphFlashlightOn}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.ToolbarItems>
-        <!--<ToolbarItem IconImageSource="{Binding LightGlyph}" Command="{Binding ChangeLightModeCommand}"/>-->
+        <ToolbarItem IconImageSource="{Binding IsLightOn, Converter={StaticResource LightIconConverter}}" Command="{Binding ChangeLightModeCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphImages}" Command="{Binding BrowseCommand}"/>
-        <ToolbarItem IconImageSource="{Binding FlashGlyph}" Command="{Binding ChangeFlashModeCommand}"/>
+        <ToolbarItem IconImageSource="{Binding IsFlashOn, Converter={StaticResource FlashIconConverter}}" Command="{Binding ChangeFlashModeCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphCameraSwitch}" Command="{Binding SwitchCameraCommand}"/>
     </ContentPage.ToolbarItems>
     <!--It's a grid but everything is in the same row and column-->

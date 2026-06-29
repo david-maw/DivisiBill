@@ -30,11 +30,14 @@ public partial class CameraViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    public partial CameraInfo SelectedCamera { get; set; }
-    partial void OnSelectedCameraChanged(CameraInfo value)
+    [NotifyCanExecuteChangedFor(nameof(ChangeFlashModeCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ChangeLightModeCommand))]
+    public partial CameraInfo? SelectedCamera { get; set; } = null;
+    partial void OnSelectedCameraChanged(CameraInfo? value)
     {
         if (value is not null)
         {
+            IsFlashAvailable = value.IsFlashSupported;
             var resolutions = value.SupportedResolutions.OrderByDescending(res => res.Width).ThenByDescending(res => res.Height).ToArray();
             if (resolutions.Length > 0)
             {
@@ -43,6 +46,11 @@ public partial class CameraViewModel : ObservableObject
                     resolution = resolutions.First();
                 ImageCaptureResolution = resolution;
             }
+        }
+        else
+        {
+            ImageCaptureResolution = Size.Zero;
+            IsFlashAvailable = false;
         }
     }
     [ObservableProperty]
@@ -73,38 +81,26 @@ public partial class CameraViewModel : ObservableObject
         }
     }
     #region Controlling the light (which is also the Camera Flash)
-    /// <summary>
-    /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
-    /// Because this doesn't seem to work on android there's no UI for it
-    /// </summary>
-    [ObservableProperty]
-    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)App.Current.Resources["GlyphFlashlightOn"];
-
     [ObservableProperty]
     public partial bool IsLightOn { get; set; } = false;
 
-    partial void OnIsLightOnChanged(bool value)
-    {
-        LightGlyph = (FontImageSource)(value ? App.Current.Resources["GlyphFlashlightOff"] : App.Current.Resources["GlyphFlashlightOn"]);
-    }
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsFlashAvailable))]
     private void ChangeLightMode() => IsLightOn = !IsLightOn;
     #endregion
     #region Controlling the Camera Flash
-    /// <summary>
-    /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
-    /// </summary>
-    [ObservableProperty]
-    public partial FontImageSource FlashGlyph { get; set; } = (FontImageSource)App.Current.Resources["GlyphFlashOn"];
-
     [ObservableProperty]
     public partial CameraFlashMode FlashMode { get; set; } = CameraFlashMode.Off;
 
-    [RelayCommand]
+    public bool IsFlashAvailable { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool IsFlashOn { get; set; } = false;
+
+    [RelayCommand(CanExecute = nameof(IsFlashAvailable))]
     private void ChangeFlashMode()
     {
         FlashMode = FlashMode == CameraFlashMode.Off ? CameraFlashMode.On : CameraFlashMode.Off;
-        FlashGlyph = (FontImageSource)(FlashMode == CameraFlashMode.Off ? App.Current.Resources["GlyphFlashOn"] : App.Current.Resources["GlyphFlashOff"]);
+        IsFlashOn = FlashMode == CameraFlashMode.On;
     }
 
     [RelayCommand(CanExecute = nameof(CanSwitchCamera))]
