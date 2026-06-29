@@ -38,6 +38,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     {
         // Kludge to work around ApplyQueryAttributes being fired too late, this gives it an opportunity to fire, see: https://github.com/dotnet/maui/issues/24241 - which is closed.
         // Despite that, it describes this problem and there doesn't seem to be any indication that it is better in .NET 10, so this workaround is still needed
+        IsLightSupported = await Flashlight.IsSupportedAsync();
         await Task.Yield();
         if (startWithCamera)
         {
@@ -215,7 +216,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
 
             using (FileStream outputStream = File.Create(tempPath))
             {
-                if (Microsoft.Maui.Devices.DeviceInfo.Platform == DevicePlatform.Android)
+                if (DeviceInfo.Platform == DevicePlatform.Android)
                     SkiaSharpRotate(sourcePath, outputStream, 90);
                 else
                     await ImageSharpRotate(sourcePath, outputStream, 90);
@@ -237,20 +238,27 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         }
     }
     #region Controlling the Camera Flash
-    /// <summary>
-    /// The glyph to use for the flash command - note it is inverted because it is showing what the glyph will do, not what the current state is
-    /// </summary>
-    [ObservableProperty]
-    public partial FontImageSource LightGlyph { get; set; } = (FontImageSource)App.Current.Resources["GlyphFlashlightOn"];
+
+    public bool IsLightSupported
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                ChangeLightModeCommand.NotifyCanExecuteChanged();
+            }
+        }
+    } = false;
 
     [ObservableProperty]
     public partial bool IsLightOn { get; set; } = false;
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsLightSupported))]
     private async Task ChangeLightMode()
     {
         IsLightOn = !IsLightOn;
-        LightGlyph = (FontImageSource)(IsLightOn ? App.Current.Resources["GlyphFlashlightOff"] : App.Current.Resources["GlyphFlashlightOn"]);
         try
         {
             if (await Flashlight.IsSupportedAsync())

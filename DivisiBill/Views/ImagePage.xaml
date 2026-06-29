@@ -11,8 +11,16 @@
              x:Class="DivisiBill.Views.ImagePage"
              Title="Image"
              x:DataType="vm:ImageViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:BoolToObjectConverter
+                x:Key="LightIconConverter"
+                FalseObject="{StaticResource GlyphFlashlightOff}"
+                TrueObject="{StaticResource GlyphFlashlightOn}" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="{Binding LightGlyph}" Command="{Binding ChangeLightModeCommand}" x:Name="FlashlightTbi"/>
+        <ToolbarItem IconImageSource="{Binding IsLightOn, Converter={StaticResource LightIconConverter}}" Command="{Binding ChangeLightModeCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphRotate90}" Command="{Binding RotateRightCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphOCR}" Command="{Binding OcrCommand}"/>
         <ToolbarItem Text = "Delete"   Command="{Binding DeleteCommand}" Order="Secondary"/>
