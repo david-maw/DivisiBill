@@ -16,11 +16,6 @@ public partial class CameraPage : ContentPage
             ? vm
             : throw new InvalidOperationException("CameraPage must have a CameraViewModel as its BindingContext");
     }
-    ~CameraPage()
-    {
-        // For debug of lifetime
-        Utilities.DebugMsg("In ~CameraPage");
-    }
     protected override async void OnAppearing()
     {
         base.OnAppearing();

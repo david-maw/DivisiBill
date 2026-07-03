@@ -590,8 +590,8 @@ of icon fonts made it easier by allowing the use of font based icons, which are 
 
 The icon font currently used is "Material Design Icons" stored in a TrueType font file
    ...\DivisiBill\Resources\Fonts\materialdesignicons-webfont.ttf
+There's more information on this font at https://materialdesignicons.com/ - visit this site to select new icons.
 The most current version of this file is at https://github.com/Templarian/MaterialDesign-Webfont. 
-There's more information on this font at https://materialdesignicons.com/.
 
 For easier reuse individual icons are called out in the application resource directory in App.xaml.
 

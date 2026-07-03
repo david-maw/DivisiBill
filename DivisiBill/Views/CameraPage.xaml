@@ -24,7 +24,7 @@
         <ToolbarItem IconImageSource="{Binding IsLightOn, Converter={StaticResource LightIconConverter}}" Command="{Binding ChangeLightModeCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphImages}" Command="{Binding BrowseCommand}"/>
         <ToolbarItem IconImageSource="{Binding IsFlashOn, Converter={StaticResource FlashIconConverter}}" Command="{Binding ChangeFlashModeCommand}"/>
-        <ToolbarItem IconImageSource="{StaticResource GlyphCameraSwitch}" Command="{Binding SwitchCameraCommand}"/>
+        <ToolbarItem IconImageSource="{StaticResource GlyphCameraFlip}" Command="{Binding SwitchCameraCommand}"/>
     </ContentPage.ToolbarItems>
     <!--It's a grid but everything is in the same row and column-->
     <Grid>

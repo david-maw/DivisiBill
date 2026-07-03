@@ -78,6 +78,7 @@
             <FontImageSource x:Key="GlyphBack"                  Color="White" Glyph="&#xF004D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--arrow-left-->
             <FontImageSource x:Key="GlyphCamera"                Color="White" Glyph="&#xF0D5D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--camera-outline-->
             <FontImageSource x:Key="GlyphCameraSwitch"          Color="White" Glyph="&#xF0D5E;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--camera-switch-outline-->
+            <FontImageSource x:Key="GlyphCameraFlip"            Color="White" Glyph="&#xF15DA;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--camera-flip-outline-->
             <FontImageSource x:Key="GlyphCancel"                Color="White" Glyph="&#xF073A;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--cancel-->
             <FontImageSource x:Key="GlyphCheck"                 Color="White" Glyph="&#xF012C;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--check-->
             <FontImageSource x:Key="GlyphClose"                 Color="White" Glyph="&#xF0156;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--close-->
