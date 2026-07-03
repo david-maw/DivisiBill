@@ -1,5 +1,4 @@
 using CommunityToolkit.Maui.Core;
-using DivisiBill.Services;
 using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
@@ -30,19 +29,15 @@ public partial class CameraPage : ContentPage
 
             viewModel.AvailableCameras = cameraProvider.AvailableCameras;
 
-            // If still null after the delay, try again after another brief wait
+            // If still null after the delay, try again after a longer wait
             if (viewModel.AvailableCameras is null)
             {
-                await Task.Delay(200);
+                await Task.Delay(500);
                 viewModel.AvailableCameras = cameraProvider.AvailableCameras;
             }
 
-            // Select the rear camera by default if available, otherwise the first camera
-            if (viewModel.AvailableCameras is not null && viewModel.AvailableCameras.Count > 0)
-            {
-                viewModel.SelectedCamera = viewModel.AvailableCameras.FirstOrDefault(c => c.Position == CameraPosition.Rear)
-                                        ?? viewModel.AvailableCameras[0];
-            }
+            // Select the default camera
+            await viewModel.SwitchCamera(initialize: true);
         }
     }
     private void OnPictureTaken(object? sender, MediaCapturedEventArgs e)

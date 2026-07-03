@@ -35,7 +35,19 @@
                             MediaCaptured="OnPictureTaken"
                             SelectedCamera="{Binding SelectedCamera}"
                             ImageCaptureResolution="{Binding ImageCaptureResolution}"/>
-        <!--Have to specify x:DataType until issue https://github.com/dotnet/maui/issues/21834 is implemented -->
+        <Border Stroke="Transparent"
+                StrokeShape="RoundRectangle 10,10,10,10"
+                BackgroundColor="Black"
+                Padding="15"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                IsVisible="{Binding CameraInfo, Converter={StaticResource NotNullOrEmpty}}">
+            <Label Text="{Binding CameraInfo}"
+                   FontSize="{StaticResource FontSizeBody}"
+                   TextColor="White"
+                   HorizontalTextAlignment="Center"/>
+        </Border>
+        <!--Have to specify x:DataType below until issue https://github.com/dotnet/maui/issues/21834 is implemented -->
         <Ellipse Stroke="Red"
                  Fill="White"
                  StrokeThickness="5"

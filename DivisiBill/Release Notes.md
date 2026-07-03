@@ -24,7 +24,11 @@ After switching to the Camera page from most other pages it was impossible to ju
 
 ## Allow Camera Switching
 
-If more than one camera is available the Camera page allows the user to switch between cameras.
+If more than one camera is available the Camera page allows the user to switch between cameras, the camera name is shown on the page.
+
+## Flashlight Option on Camera Page
+
+The camera page now has a flashlight toggle icon to turn the camera light on or off. The icon is only enabled if the camera supports a flashlight.
 
 # Version 6.3.31
 

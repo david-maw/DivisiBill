@@ -16,6 +16,12 @@ public partial class CameraViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsCameraAvailable { get; set; }
 
+    /// <summary>
+    /// The message text to display that will fade away
+    /// </summary>
+    [ObservableProperty]
+    public partial string CameraInfo { get; set; }
+
     private IReadOnlyList<CameraInfo>? availableCameras;
     public IReadOnlyList<CameraInfo>? AvailableCameras
     {
@@ -102,21 +108,35 @@ public partial class CameraViewModel : ObservableObject
         FlashMode = FlashMode == CameraFlashMode.Off ? CameraFlashMode.On : CameraFlashMode.Off;
         IsFlashOn = FlashMode == CameraFlashMode.On;
     }
-
-    [RelayCommand(CanExecute = nameof(CanSwitchCamera))]
-    private void SwitchCamera()
-    {
-        if (AvailableCameras is null || AvailableCameras.Count <= 1 || SelectedCamera is null)
-            return;
-
-        int currentIndex = AvailableCameras.ToList().IndexOf(SelectedCamera);
-        int nextIndex = (currentIndex + 1) % AvailableCameras.Count;
-        SelectedCamera = AvailableCameras[nextIndex];
-    }
-
-    private bool CanSwitchCamera() => AvailableCameras is not null && AvailableCameras.Count > 1;
     #endregion
     #region Commands
+    [RelayCommand(CanExecute = nameof(CanSwitchCamera))]
+    public async Task SwitchCamera()
+    {
+        await SwitchCamera(false);
+    }
+
+    public async Task SwitchCamera(bool initialize)
+    {
+        if (AvailableCameras is null || AvailableCameras.Count <= 0)
+            return;
+        if (initialize)
+        {
+            SelectedCamera = null; // Seems to be necessary to make the new selection work
+            await Task.Delay(50); // Allow time for the camera to switch
+        }
+        if (SelectedCamera is null)
+            SelectedCamera = AvailableCameras.FirstOrDefault(c => c.Position == CameraPosition.Rear) ?? AvailableCameras.Last();
+        else if (AvailableCameras.Count > 1)
+        {
+            int currentIndex = AvailableCameras.ToList().IndexOf(SelectedCamera);
+            int nextIndex = (currentIndex + 1) % AvailableCameras.Count;
+            SelectedCamera = AvailableCameras[nextIndex];
+        }
+        CameraInfo = SelectedCamera.Name;
+    }
+
+    public bool CanSwitchCamera => AvailableCameras is not null && AvailableCameras.Count > 1;
     /// <summary>
     /// Initiate a UI to allow the user to browse existing images for a suitable bill image. If one is selected
     /// return its data stream to the calling page <see cref="ViewModels.ImageViewModel"/> and <see cref="ImageViewModel"/>

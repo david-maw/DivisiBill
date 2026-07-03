@@ -21,7 +21,9 @@
 <h2 id="improve-camera-page-navigation">Improve Camera Page Navigation</h2>
 <p>After switching to the Camera page from most other pages it was impossible to just use a 'back' action to exit to the Image page. Doing so would just pop back to the camera page immediately. This has been corrected. Simply exiting the Camera page in these circumstances will bring up the image page with the image unchanged.</p>
 <h2 id="allow-camera-switching">Allow Camera Switching</h2>
-<p>If more than one camera is available the Camera page allows the user to switch between cameras.</p>
+<p>If more than one camera is available the Camera page allows the user to switch between cameras, the camera name is shown on the page.</p>
+<h2 id="flashlight-option-on-camera-page">Flashlight Option on Camera Page</h2>
+<p>The camera page now has a flashlight toggle icon to turn the camera light on or off. The icon is only enabled if the camera supports a flashlight.</p>
 <h1 id="version-6331">Version 6.3.31</h1>
 <h2 id="improve-help-page-navigation">Improve Help Page Navigation</h2>
 <p>Moving back from the help pages could briefly show a blank page before returning to the app. This happened because the Android WebView retains an internal <code>about:blank</code> history entry inserted by MAUI. The history is now cleared after the help page loads, so back navigation exits the help pages cleanly.</p>
