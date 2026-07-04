@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:DivisiBill.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:services="clr-namespace:DivisiBill.Services"
              x:Class="DivisiBill.Views.CameraPage"
              x:DataType="vm:CameraViewModel"
              BindingContext="{vm:CameraViewModel}"
@@ -28,6 +29,7 @@
     </ContentPage.ToolbarItems>
     <!--It's a grid but everything is in the same row and column-->
     <Grid>
+        <!--#region Camera View -->
         <toolkit:CameraView x:Name="MyCamera"
                             IsVisible="{Binding IsCameraAvailable}"
                             CameraFlashMode="{Binding FlashMode}"
@@ -35,18 +37,25 @@
                             MediaCaptured="OnPictureTaken"
                             SelectedCamera="{Binding SelectedCamera}"
                             ImageCaptureResolution="{Binding ImageCaptureResolution}"/>
+        <!--#endregion-->
+        <!--#region Camera Name -->
         <Border Stroke="Transparent"
                 StrokeShape="RoundRectangle 10,10,10,10"
                 BackgroundColor="Black"
                 Padding="15"
                 HorizontalOptions="Center"
                 VerticalOptions="Start"
-                IsVisible="{Binding CameraInfo, Converter={StaticResource NotNullOrEmpty}}">
+                IsVisible="{Binding IsMsgVisible, Mode=TwoWay}"> <!--Two way to trigger fadeBehavior-->
+            <Border.Behaviors>
+                <services:FadeBehavior/>
+            </Border.Behaviors>
             <Label Text="{Binding CameraInfo}"
                    FontSize="{StaticResource FontSizeBody}"
                    TextColor="White"
                    HorizontalTextAlignment="Center"/>
         </Border>
+        <!--#endregion-->
+        <!--#region Shutter Button -->
         <!--Have to specify x:DataType below until issue https://github.com/dotnet/maui/issues/21834 is implemented -->
         <Ellipse Stroke="Red"
                  Fill="White"
@@ -62,10 +71,13 @@
                                       CommandParameter="{Binding Token}"/>
             </Ellipse.GestureRecognizers>
         </Ellipse>
+        <!--#endregion-->
+        <!--#region "No Camera" Alternative -->
         <Label Text="No camera available"
                FontSize="{StaticResource FontSizeHeader}"
                IsVisible="{Binding IsCameraAvailable, Converter={StaticResource Not}}"
                HorizontalOptions="Center"
                VerticalOptions="Center"/>
+        <!--#endregion-->
     </Grid>
 </ContentPage>

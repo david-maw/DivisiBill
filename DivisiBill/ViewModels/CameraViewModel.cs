@@ -108,6 +108,9 @@ public partial class CameraViewModel : ObservableObject
         FlashMode = FlashMode == CameraFlashMode.Off ? CameraFlashMode.On : CameraFlashMode.Off;
         IsFlashOn = FlashMode == CameraFlashMode.On;
     }
+
+    [ObservableProperty]
+    public partial bool IsMsgVisible { get; set; } = false;
     #endregion
     #region Commands
     [RelayCommand(CanExecute = nameof(CanSwitchCamera))]
@@ -118,6 +121,7 @@ public partial class CameraViewModel : ObservableObject
 
     public async Task SwitchCamera(bool initialize)
     {
+        IsMsgVisible = false;
         if (AvailableCameras is null || AvailableCameras.Count <= 0)
             return;
         if (initialize)
@@ -134,6 +138,7 @@ public partial class CameraViewModel : ObservableObject
             SelectedCamera = AvailableCameras[nextIndex];
         }
         CameraInfo = SelectedCamera.Name;
+        IsMsgVisible = true;
     }
 
     public bool CanSwitchCamera => AvailableCameras is not null && AvailableCameras.Count > 1;
