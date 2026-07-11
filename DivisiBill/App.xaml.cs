@@ -578,7 +578,7 @@ public partial class App : Application, INotifyPropertyChanged
         if (!WsUriDefined)
             return false; // Web services are disabled, perhaps this is a new build environment, do nothing at all
 
-        bool wasLimited = App.IsLimited;
+        bool wasLimited = App.IsLimited; // Set earlier by a full license check 
 
         if (!mandatory && !wasLimited && DateTime.Now < NextMandatoryCheckTime) // Don't check for a subscription expiring yet
         {
@@ -623,6 +623,9 @@ public partial class App : Application, INotifyPropertyChanged
                     if (!Settings.HadProSubscription && !App.Settings.FirstUse)
                         await Utilities.ShowAppSnackBarAsync("Pro subscription check now returns a pro subscription");
                     Settings.HadProSubscription = true;
+                    // As long as the App stays in memory we don't need to check for a subscription expiring more often than
+                    // every few days, so set the next mandatory check time accordingly
+                    NextMandatoryCheckTime = DateTime.Now + mandatoryCheckPeriod;
                     break;
                 case Billing.BillingStatusType.noInternet:
                     await Utilities.DisplayAlertAsync("No Internet", "Pro subscription check failed because no Internet connection was found");
@@ -675,11 +678,9 @@ public partial class App : Application, INotifyPropertyChanged
             }
             else if (IsLimited && !wasLimited) // Downgrade, an unusual case but not impossible
                 await Utilities.DisplayAlertAsync("Removed", "The professional subscription for DivisiBill has ended");
-            // Nice, there's no message if we found a pro subscription because that is 
             if (IsLimited != wasLimited) // it changed, tell anyone who cares (usually the Settings ViewModel)
             {
                 ProEditionVerified?.Invoke(null, EventArgs.Empty);
-                NextMandatoryCheckTime = DateTime.Now + mandatoryCheckPeriod;
                 PeriodicCheckForProEditionTask ??= Task.Run(() => PeriodicCheckForProEdition(LicenseProcessCancellationTokenSource.Token));
             }
             Utilities.DebugMsg("Checking for OCR License");
