@@ -86,7 +86,7 @@ public partial class SplashPage : ContentPage
         App.EvaluateCloudAccessible(); // Set initial values
         App.HandleActivityChanges();
         // Licensing needs Internet access but should work even if backup would require WiFi 
-        if (Connectivity.NetworkAccess == NetworkAccess.Internet && App.WsUriDefined)
+        if ((Connectivity.NetworkAccess == NetworkAccess.Internet || Utilities.IsWinUI) && App.WsUriDefined)
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
             bool licenseCheckWorked = await App.CheckLicenses(true);

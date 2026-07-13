@@ -658,11 +658,7 @@ internal static class Billing
             Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, purchase signature was invalid, returning null");
             return (BillingStatusType.notVerified, null);
         }
-        if (Connectivity.NetworkAccess != NetworkAccess.Internet)
-        {
-            Utilities.DebugMsg("In GetInAppBillingPurchaseFakeAsync, no Internet, returning null");
-            return (BillingStatusType.noInternet, null);
-        }
+        // No need to check for Internet, since the fake validation does not need to reach out to the Play Store API
         try
         {
             InAppBillingPurchase fakePurchase = new() { OriginalJson = androidJson, Signature = signatureB64, ProductId = productId, State = PurchaseState.Purchased };

@@ -592,7 +592,7 @@ public partial class App : Application, INotifyPropertyChanged
         // Ensure we have network access - this can fail with an RPC error on Windows if we're returning from searching for an image
         try
         {
-            if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+            if (Connectivity.NetworkAccess != NetworkAccess.Internet && !Utilities.IsWinUI)
             {
                 Utilities.DebugMsg("App.CheckLicenses early exit - no Internet");
                 return false; // Nothing useful can be done
