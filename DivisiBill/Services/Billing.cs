@@ -187,6 +187,7 @@ internal static class Billing
     {
         Debug.Assert(App.Settings is not null);
         ProPurchase = await PurchaseItemAsync(ProSubscriptionId, App.Settings.UserKey, isSubscription: true);
+        App.RequireCheckForProEdition(); // So that the next check will be a thorough one and will pick up any subscription change
         if (ProPurchase is null)
             Utilities.DebugMsg("In Billing.PurchaseProSubscriptionAsync, PurchaseItemAsync returned null");
         else
@@ -599,6 +600,43 @@ internal static class Billing
             await CloseBilling();
         }
         return false;
+    }
+
+    /// <summary>
+    /// Get the price of a purchase (product or subscription) without initiating a purchase flow.
+    /// This is useful for displaying the price of a product before the user decides to buy it.
+    /// </summary>
+    /// <param name="productId">The product ID</param>
+    /// <param name="itemType">The type of item (e.g., subscription, consumable)</param>
+    /// <returns>The price of the item, or null if it cannot be retrieved</returns>
+    internal static async Task<string?> GetItemPriceAsync(string productId, ItemType itemType)
+    {
+        if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+        {
+            // No Internet, don't even bother trying
+            return null;
+        }
+        (BillingStatusType _, IInAppBilling? Interface) = await OpenBilling();
+        if (Interface is null)
+        {
+            //we are off line or can't connect, don't try to do anything
+            return null;
+        }
+        try
+        {
+            string? price = await Interface.GetPriceAsync(productId, itemType);
+
+            return price;
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+        }
+        finally
+        {
+            await CloseBilling();
+        }
+        return null;
     }
     #endregion
     #region Validate Existing Licenses

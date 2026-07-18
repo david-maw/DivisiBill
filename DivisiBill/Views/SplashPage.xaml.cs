@@ -89,7 +89,7 @@ public partial class SplashPage : ContentPage
         if ((Connectivity.NetworkAccess == NetworkAccess.Internet || Utilities.IsWinUI) && App.WsUriDefined)
         {
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
-            bool licenseCheckWorked = await App.CheckLicenses(true);
+            bool licenseCheckWorked = await App.CheckLicenses();
             if (licenseCheckWorked)
                 await StatusMsgAsync("License check completed without errors");
             else

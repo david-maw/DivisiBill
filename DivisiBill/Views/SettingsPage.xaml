@@ -44,8 +44,8 @@
                 <Label Text="Pro Edition Verification Incomplete" FontSize="{StaticResource FontSizeMedium}" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
             </VerticalStackLayout>
-            <!--#endregion-->
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+            <!--#endregion-->
             <!--#region Meal Values -->
             <Grid ColumnDefinitions="*,*" RowDefinitions="auto, auto, auto, auto" ColumnSpacing="10" RowSpacing="10" Margin="30,10,30,10">
                 <!--#region Default Settings -->
@@ -119,31 +119,23 @@
                             <FormattedString>
                                 <Span Text="Tap " FontSize="{StaticResource FontSizeLarge}"/>
                                 <Span Text="here" TextDecorations="Underline" FontAttributes="Bold" FontSize="{StaticResource FontSizeLarge}" TextColor="{StaticResource MediumSpringGreen}"/>
-                                <Span Text=" for subscription help" FontSize="{StaticResource FontSizeLarge}"/>
+                                <Span Text=" for license help" FontSize="{StaticResource FontSizeLarge}"/>
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
                     <!--#region Pro Subscription -->
-                    <!--Either gives help on the subscription or lets you manipulate it-->
-                    <Button Text="Pro Subscription Information" Command="{Binding LicensingHelpCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{Binding Path=NeedsSubscriptionHelp}"/>
-                    <VerticalStackLayout IsVisible="{Binding NeedsSubscriptionHelp, Converter={StaticResource Not}}">
-                        <Button Text="Purchase Pro Subscription" Command="{Binding PurchaseUpgradeCommand}" HorizontalOptions="Center" IsVisible="{Binding HasProSubscription, Converter={StaticResource Not}}"/>
-                        <Button Text="Modify Pro Subscription" Command="{Binding RemoveUpgradeCommand}" HorizontalOptions="Center" Margin="5" IsVisible="{Binding Path=HasProSubscription}"/>
-                        <!--The following button is used for testing pro licenses only and is not normally shown-->
-                        <Button Text="*Purchase Pro License*" Command="{Binding PurchaseProLicenseCommand}" HorizontalOptions="Center" IsVisible="False"/>
-                        <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
-                        <Label Text="{Binding ProSubscriptionId, StringFormat='Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
-                    </VerticalStackLayout>
+                    <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
+                    <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
                     <!--#endregion-->
                     <!--#region OCR Scan License -->
-                    <BoxView HeightRequest="2" HorizontalOptions="Fill" Margin="0, 5, 0, 0" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
                     <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" Margin="0, 5, 0, 5" HorizontalOptions="Center"/>
-                    <Button Text="Purchase additional OCR Scans" Command="{Binding PurchaseOcrScansCommand}"
-                            HorizontalOptions="Center" IsVisible="{Binding Path=IsOcrPurchaseAllowed}"/>
                     <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
-                    <Label Text="{Binding OcrLicenseId, StringFormat='Latest Order# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
+                    <Label Text="{Binding OcrLicenseId, StringFormat='OCR Order# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
                     <!--#endregion-->
-                </VerticalStackLayout>
+                    <!--Manipulate Licenses (Subscription or In-App Purchases) -->
+                        <Button Text="Change Licenses" Command="{Binding ChangeLicensesCommand}" HorizontalOptions="Center" Margin="5"/>
+                    <!--#endregion-->
+              </VerticalStackLayout>
                 <Label Text="No license information is available" IsVisible="{Binding LicenseChecked, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
                 <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Fill" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
             </Grid>

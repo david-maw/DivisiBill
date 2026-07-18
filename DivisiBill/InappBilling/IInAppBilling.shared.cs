@@ -54,4 +54,14 @@ public interface IInAppBilling : IDisposable
     /// <returns>If consumed successful</returns>
     /// <exception cref="InAppBillingPurchaseException">If an error occurs during processing</exception>
     Task<bool> ConsumePurchaseAsync(string productId, string transactionIdentifier, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get the price of a purchase (product or subscription) without initiating a purchase flow.
+    /// This is useful for displaying the price of a product before the user decides to buy it.
+    /// </summary>
+    /// <param name="productId">Product Id</param>
+    /// <param name="itemType">Type of product</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Price of the product</returns>
+    Task<string?> GetPriceAsync(string productId, ItemType itemType, CancellationToken cancellationToken = default);
 }

@@ -45,12 +45,15 @@ internal static class CallWs
     /// <returns></returns>
     public static async Task<HttpResponseMessage> CallUncertainWebServiceAsync(Func<CancellationTokenSource, Task<HttpResponseMessage>> webCall)
     {
+        static bool IsClientProblem(HttpStatusCode statusCode) => statusCode == HttpStatusCode.BadRequest || statusCode == HttpStatusCode.Unauthorized || statusCode == HttpStatusCode.Forbidden || statusCode == HttpStatusCode.NotFound;
         var webStopwatch = Stopwatch.StartNew();
         CancellationTokenSource tokenSource = new();
         Task<HttpResponseMessage> webCallTask = webCall(tokenSource);
         await webCallTask.OrDelay(5000); // If it responds quickly, don't even bother to show a dialog
         // Call the web service and wait for a response or until the user gives up 
         if (webCallTask.IsCompleted && webCallTask.Result.IsSuccessStatusCode)
+            return webCallTask.Result;
+        else if (webCallTask.IsCompleted && IsClientProblem(webCallTask.Result.StatusCode))
             return webCallTask.Result;
         else
         { // The call did not complete successfully in a timely manner, so show a popup to let the user know and give them a chance to abandon or retry it
@@ -152,8 +155,7 @@ internal static class CallWs
         }
     }
     #endregion
-    #region Get Version
-
+    #region Get Version and Status
     internal static string? MostRecentVersionInfo { get; set; } = null;
 
     /// <summary>
@@ -188,6 +190,40 @@ internal static class CallWs
             Utilities.DebugMsg("GetVersion failed, exception = " + ex);
         }
         return WsVersionChecked;
+    }
+    internal static string? MostRecentStatusInfo { get; set; } = null;
+
+    /// <summary>
+    /// Get the status of various server-side components
+    /// </summary>
+    /// <returns>A string containing the various status in use on the server</returns>
+    internal static async Task<bool> StatusAsync()
+    {
+        bool WsStatusChecked = false;
+        try
+        {
+            HttpResponseMessage response = await client.GetAsync("status/1");
+            if (response is not null && response.IsSuccessStatusCode)
+            {
+                MostRecentStatusInfo = await response.Content.ReadAsStringAsync();
+                // Detect the weird failure which just returns an OK result but no data
+                if (string.IsNullOrEmpty(MostRecentStatusInfo))
+                { // This is a failure, return a NotFound status
+                    Utilities.DebugMsg("StatusAsync returned OK but no data, returning NotFound");
+                }
+                else
+                    WsStatusChecked = true;
+            }
+            else if (response is null)
+                Utilities.DebugMsg("StatusAsync failed, no task returned");
+            else
+                Utilities.DebugMsg("StatusAsync failed, status code = " + response.StatusCode);
+        }
+        catch (Exception ex)
+        {
+            Utilities.DebugMsg("StatusAsync failed, exception = " + ex);
+        }
+        return WsStatusChecked;
     }
     #endregion
     #region Purchase and Verify

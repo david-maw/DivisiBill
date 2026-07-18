@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Maui.Extensions;
+﻿// Ignore Spelling: Fi
+
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
@@ -7,6 +9,7 @@ namespace DivisiBill.ViewModels;
 
 public partial class SettingsViewModel : ObservableObjectPlus
 {
+    #region Initialization
     private readonly Application currentApp;
     private static MealViewModel? Mvm => App.Current?.Resources is { } r && r.TryGetValue("MealViewModel", out object? obj) ? obj as MealViewModel : null;
     public SettingsViewModel()
@@ -31,10 +34,8 @@ public partial class SettingsViewModel : ObservableObjectPlus
         OnPropertyChanged(nameof(InternetEnabled));
         OnPropertyChanged(nameof(InternetEnabledAndLicensed));
     }
-
     private void App_MyLocationChanged(object? sender, EventArgs e) => OnPropertyChanged(nameof(AppLocation));
     private void App_ProEditionVerified(object? sender, EventArgs e) => RefreshValues();
-
     public void RefreshValues()
     {
         // These are the values which are held externally and might change while we're on another page
@@ -65,7 +66,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
             DefaultTaxRatePercentage = Mvm.DefaultTaxRatePercentage;
         }
     }
-
     public void OnNavigatedTo()
     {
         RefreshValues();
@@ -80,7 +80,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
             }
         }
     }
-
+    #endregion
     #region Commands
     [RelayCommand]
     private async Task ChangePassword() => _ = await Shell.Current.ShowPopupAsync<bool>(new Controls.ChangePasswordPopup());
@@ -98,87 +98,12 @@ public partial class SettingsViewModel : ObservableObjectPlus
     private async Task OpenAutoPlusAsync() => await Launcher.OpenAsync(new Uri("http://www.autopl.us"));
 
     [RelayCommand]
-    private async Task PurchaseOcrScansAsync()
-    {
-        IsBusy = true;
-        int scans = await Billing.PurchaseOcrLicenseAsync();
-        Utilities.DebugMsg("OCR licenses purchased, total remaining scans = " + scans);
-        IsBusy = false;
-        if (scans == -1)
-            await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire any additional OCR licenses");
-        else if (scans < 0)
-            await Utilities.DisplayAlertAsync("Error", "The purchase could not be verified. You did not acquire any additional OCR licenses");
-        else
-            await Utilities.DisplayAlertAsync("Thank You", $"You now have {scans} OCR scans left");
-        RefreshValues();
-    }
+    private async Task LicensingHelp() => await App.PushAsync($"{Routes.HelpPage}?page=licensing");
 
     [RelayCommand]
-    private async Task LicensingHelp()
+    private async Task ChangeLicensesAsync()
     {
-        NeedsSubscriptionHelp = false; // Only once the user has looked at it once are they allowed to actually get one
-        await App.PushAsync($"{Routes.HelpPage}?page=licensing");
-    }
-
-    [RelayCommand]
-    private async Task PurchaseUpgradeAsync()
-    {
-        if (Billing.HasOldProProductId)
-        {
-            await Utilities.DisplayAlertAsync("Tester", "You have a perpetual professional license and do not need a subscription");
-            return;
-        }
-        App.Settings.HadProSubscription = true; // Avoid the "professional license found" warning on returning
-        IsBusy = true;
-        bool subscriptionPurchased = await Billing.PurchaseProSubscriptionAsync();
-        IsBusy = false;
-        Utilities.DebugMsg("In PurchaseUpgradeAsync, PurchaseProSubscriptionAsync returned " + subscriptionPurchased);
-        IsLimited = !subscriptionPurchased;
-        if (IsLimited)
-            await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire a professional subscription");
-        else
-        {
-            await Utilities.DisplayAlertAsync("Thank You",
-                $"You have purchased a professional subscription. You may now set the 'Allow Cloud Backup' option.");
-            RefreshValues();
-        }
-    }
-
-    [RelayCommand]
-    private async Task RemoveUpgradeAsync()
-    {
-        if (Billing.HasOldProProductId)
-        {
-            await Utilities.DisplayAlertAsync("Tester", "You have a perpetual professional license which cannot be modified");
-            return;
-        }
-        await Launcher.OpenAsync(new Uri("https://play.google.com/store/account/subscriptions"
-            + $"?sku={Billing.ProSubscriptionId}&package={Billing.ExpectedPackageName}"));
-    }
-
-    [RelayCommand]
-
-    private async Task PurchaseProLicenseAsync()
-    {
-        if (Utilities.IsWinUI)
-        {
-            await Utilities.DisplayAlertAsync("Not Supported", "In-app purchases are not supported on Windows");
-            return;
-        }
-        App.Settings.HadProSubscription = true; // Avoid the "professional license found" warning on returning
-        IsBusy = true;
-        bool licensePurchased = await Billing.PurchaseProLicenseAsync();
-        IsBusy = false;
-        Utilities.DebugMsg("In PurchaseProLicenseAsync, PurchaseProSubscriptionAsync returned " + licensePurchased);
-        IsLimited = !licensePurchased;
-        if (IsLimited)
-            await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire a professional license");
-        else
-        {
-            await Utilities.DisplayAlertAsync("Thank You",
-                $"You have purchased a professional license. You may now set the 'Allow Cloud Backup' option.");
-            RefreshValues();
-        }
+        await App.PushAsync(Routes.LicensesPage);
     }
 
     [RelayCommand]
@@ -203,8 +128,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
     partial void OnIsLimitedChanged(bool value)
     {
         App.IsLimited = value;
-        if (!value)
-            NeedsSubscriptionHelp = false;
     }
 
     public bool IsOcrPurchaseAllowed => ScansLeft < Billing.ScansWarningLevel; // Includes the case where the user has purchased no scans yet
@@ -220,9 +143,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
             }
         }
     }
-
-    [ObservableProperty]
-    public partial bool NeedsSubscriptionHelp { get; set; } = true;
     #endregion
     #region Persistent Properties
     [ObservableProperty]

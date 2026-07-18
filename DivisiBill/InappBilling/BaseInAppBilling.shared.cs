@@ -57,6 +57,16 @@ public abstract class BaseInAppBilling : IInAppBilling, IDisposable
     public abstract Task<bool> ConsumePurchaseAsync(string productId, string transactionIdentifier, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Get the price of a product or subscription. This is useful for displaying the price to the user before
+    /// they make a purchase.
+    /// </summary>
+    /// <param name="productId">Product Id</param>
+    /// <param name="itemType">Type of product</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Price of the product</returns>
+    public abstract Task<string?> GetPriceAsync(string productId, ItemType itemType, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Dispose of class and parent classes
     /// </summary>
     public void Dispose()

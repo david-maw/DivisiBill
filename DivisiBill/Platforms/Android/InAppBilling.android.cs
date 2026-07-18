@@ -2,6 +2,7 @@ using Android.App;
 using Android.BillingClient.Api;
 using Android.Content;
 using DivisiBill.InAppBilling;
+using DivisiBill.Services;
 using static Android.BillingClient.Api.BillingClient;
 using BillingResponseCode = Android.BillingClient.Api.BillingResponseCode;
 
@@ -50,10 +51,10 @@ public class InAppBillingImplementation : BaseInAppBilling
     /// <returns>If Success</returns>
     public override Task<bool> ConnectAsync(bool enablePendingPurchases = true, CancellationToken cancellationToken = default)
     {
-        tcsPurchase?.TrySetCanceled();
+        tcsPurchase?.TrySetCanceled(cancellationToken);
         tcsPurchase = null;
 
-        tcsConnect?.TrySetCanceled();
+        tcsConnect?.TrySetCanceled(cancellationToken);
         tcsConnect = new TaskCompletionSource<bool>();
 
         using CancellationTokenRegistration _ = cancellationToken.Register(() => tcsConnect?.TrySetCanceled());
@@ -141,7 +142,7 @@ public class InAppBillingImplementation : BaseInAppBilling
 
         ParseBillingResult(purchasesResult.Result);
 
-        return purchasesResult.Purchases?.Select(p => p.ToIABPurchase()) ?? Enumerable.Empty<InAppBillingPurchase>();
+        return purchasesResult.Purchases?.Select(p => p.ToIABPurchase()) ?? [];
     }
 
     /// <summary>
@@ -186,24 +187,43 @@ public class InAppBillingImplementation : BaseInAppBilling
         return null;
     }
 
-    private async Task<InAppBillingPurchase?> PurchaseAsync(string productSku, string itemType, string? obfuscatedAccountId = null, string? obfuscatedProfileId = null, string? subOfferToken = null, CancellationToken cancellationToken = default)
+    private async Task<InAppBillingPurchase?> PurchaseAsync(string productSku, string productType, string? obfuscatedAccountId = null, string? obfuscatedProfileId = null, string? subOfferToken = null, CancellationToken cancellationToken = default)
     {
 
         QueryProductDetailsParams.Product productList = QueryProductDetailsParams.Product.NewBuilder()
-            .SetProductType(itemType)
+            .SetProductType(productType)
             .SetProductId(productSku)
             .Build();
 
-        QueryProductDetailsParams.Builder skuDetailsParams = QueryProductDetailsParams.NewBuilder().SetProductList(new[] { productList });
+        QueryProductDetailsParams.Builder skuDetailsParams = QueryProductDetailsParams.NewBuilder().SetProductList([productList]);
 
         QueryProductDetailsResult skuDetailsResult = await BillingClient!.QueryProductDetailsAsync(skuDetailsParams.Build());
 
-        //ParseBillingResult(skuDetailsResult.Result);
+        // In Billing Library 5+, accessing ProductDetailsList throws ArgumentException when the product doesn't exist
+        // rather than returning an empty list. We need to catch this and provide a better error message.
+        ProductDetails? skuDetails;
+        try
+        {
+            skuDetails = skuDetailsResult.ProductDetailsList?.FirstOrDefault();
+        }
+        catch (ArgumentException)
+        {
+            // The library throws ArgumentException when accessing an empty ProductDetailsList
+            // This happens when the product doesn't exist in Google Play Console
+            skuDetails = null;
+        }
 
-        ProductDetails skuDetails = skuDetailsResult.ProductDetailsList.FirstOrDefault() ?? throw new ArgumentException($"{productSku} does not exist");
+        if (skuDetails == null)
+        {
+            throw new InAppBillingPurchaseException(
+                PurchaseError.ItemUnavailable,
+                $"{(productType == ProductType.Subs ? "Subscription" : "Product")} '{productSku}' is not available. " +
+                    "Ensure the product is configured in Google Play Console and you're using a test account if testing in debug mode.");
+        }
+
         BillingFlowParams.ProductDetailsParams productDetailsParamsList;
 
-        if (itemType == ProductType.Subs)
+        if (productType == ProductType.Subs)
         {
             string t = subOfferToken ?? skuDetails.GetSubscriptionOfferDetails()?.FirstOrDefault()?.OfferToken ?? string.Empty;
 
@@ -219,7 +239,7 @@ public class InAppBillingImplementation : BaseInAppBilling
         }
 
         BillingFlowParams.Builder billingFlowParams = BillingFlowParams.NewBuilder()
-            .SetProductDetailsParamsList(new[] { productDetailsParamsList });
+            .SetProductDetailsParamsList([productDetailsParamsList]);
 
         if (!string.IsNullOrWhiteSpace(obfuscatedAccountId))
             billingFlowParams.SetObfuscatedAccountId(obfuscatedAccountId);
@@ -245,7 +265,7 @@ public class InAppBillingImplementation : BaseInAppBilling
         //for some reason the data didn't come back
         if (androidPurchase is null)
         {
-            IEnumerable<InAppBillingPurchase> purchases = await GetPurchasesAsync(itemType == ProductType.Inapp ? ItemType.InAppPurchase : ItemType.Subscription, cancellationToken);
+            IEnumerable<InAppBillingPurchase> purchases = await GetPurchasesAsync(productType == ProductType.Inapp ? ItemType.InAppPurchase : ItemType.Subscription, cancellationToken);
             return purchases.FirstOrDefault(p => productSku.Equals(p.ProductId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -276,6 +296,59 @@ public class InAppBillingImplementation : BaseInAppBilling
 
 
         return ParseBillingResult(result.BillingResult);
+    }
+
+    public override async Task<string?> GetPriceAsync(string productId, ItemType itemType, CancellationToken cancellationToken = default)
+    {
+        if (BillingClient == null || !IsConnected)
+        {
+            throw new InAppBillingPurchaseException(PurchaseError.ServiceUnavailable, "You are not connected to the Google Play App store.");
+        }
+
+
+        QueryProductDetailsParams.Product productList = QueryProductDetailsParams.Product.NewBuilder()
+            .SetProductType(itemType == ItemType.InAppPurchase ? ProductType.Inapp : ProductType.Subs)
+            .SetProductId(productId)
+            .Build();
+
+        QueryProductDetailsParams.Builder skuDetailsParams = QueryProductDetailsParams.NewBuilder().SetProductList([productList]);
+
+        QueryProductDetailsResult skuDetailsResult = await BillingClient!.QueryProductDetailsAsync(skuDetailsParams.Build());
+
+        if (skuDetailsResult is null)
+        {
+            Utilities.DebugMsg($"GetPriceAsync(\"{productId}\", {itemType}): No product details result returned from Google Play");
+            return null;
+        }
+
+        if (skuDetailsResult.ProductDetailsList is null)
+        {
+            Utilities.DebugMsg($"GetPriceAsync(\"{productId}\", {itemType}): No product details returned from Google Play" +
+               $", ResponseCode={skuDetailsResult.Result.ResponseCode}, DebugMessage={skuDetailsResult.Result.DebugMessage}");
+            return null;
+        }
+
+        var productDetails = skuDetailsResult.ProductDetailsList.FirstOrDefault();
+
+        if (productDetails == null)
+        {
+            Utilities.DebugMsg($"GetPriceAsync(\"{productId}\", {itemType}): No product details found");
+            return null;
+        }
+
+        string? price;
+
+        if (itemType == ItemType.Subscription)
+        {
+            var pricingPhase = productDetails.GetSubscriptionOfferDetails()?.FirstOrDefault()?.PricingPhases.PricingPhaseList.FirstOrDefault();
+            price = pricingPhase?.FormattedPrice;
+        }
+        else
+        {
+            price = productDetails.GetOneTimePurchaseOfferDetails()?.FormattedPrice;
+        }
+
+        return price;
     }
 
     private static bool ParseBillingResult(BillingResult result, bool ignoreInvalidProducts = false)

@@ -563,6 +563,12 @@ public partial class App : Application, INotifyPropertyChanged
         }
         Utilities.DebugMsg($"Exit App.PeriodicCheckForProEdition");
     }
+
+    internal static void RequireCheckForProEdition()
+    {
+        NextMandatoryCheckTime = DateTime.MinValue; // Force a check next time we enter CheckLicenses
+    }
+
     /// <summary>
     /// Checks the licensing status of the application, including whether a professional subscription is active
     /// and whether an OCR license is available. This method also handles user notifications regarding subscription
@@ -675,7 +681,7 @@ public partial class App : Application, INotifyPropertyChanged
                         "have DivisiBill people or venue lists backed up to the cloud they will be restored automatically.",
                         "Turn it on", "Leave it off");
             }
-            else if (IsLimited && !wasLimited) // Downgrade, an unusual case but not impossible
+            else if (IsLimited && !wasLimited && !isPurchasing) // Downgrade, an unusual case but not impossible
                 await Utilities.DisplayAlertAsync("Removed", "The professional subscription for DivisiBill has ended");
             if (IsLimited != wasLimited) // it changed, tell anyone who cares (usually the Settings ViewModel)
             {

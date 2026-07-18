@@ -80,6 +80,16 @@ public class InAppBillingImplementation : BaseInAppBilling
             _ => false,
         };
     }
+
+    /// <summary>
+    /// Get the price of a product or subscription. This is useful for displaying the price to the user before
+    /// they make a purchase. Since we don't support in in Windows, just return null.
+    /// </summary>
+    /// <param name="productId">Product Id</param>
+    /// <param name="itemType">Type of product</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Price of the product</returns>
+    public override async Task<string?> GetPriceAsync(string productId, ItemType itemType, CancellationToken cancellationToken = default) => null;
 }
 
 /// <summary>

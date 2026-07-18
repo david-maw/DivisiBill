@@ -81,7 +81,7 @@
 
   <ItemGroup>
     <!-- App Icon, see https://learn.microsoft.com/en-us/dotnet/core/tools/sdk-errors/netsdk1005 -->
-    <MauiIcon Condition="$(TargetOsPlatform) != android" Update="Resources\AppIcon\appicon.svg"  ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
+    <MauiIcon Condition="$(TargetOsPlatform) != android" Update="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
     <MauiIcon Condition="$(TargetOsPlatform) == android" Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="Red" />
 
     <!-- Splash Screen -->
@@ -138,7 +138,7 @@
 
   <!--Add In-App Billing package, but only for Android-->
   <ItemGroup Condition="'$(TargetOsPlatform)' == 'android'">
-    <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="8.1.0" />
+    <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="9.1.0.1" />
   </ItemGroup>
 
   <!-- Sentry setup for PDB Upload -->

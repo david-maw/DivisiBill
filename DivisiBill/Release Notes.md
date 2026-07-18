@@ -2,7 +2,7 @@
 
 ## Improved License Checking
 
-Licenses are now checked periodically in the background so unless DivisiBill is not used in more than a week it should be possible to speed initialization by leaving it running. Normally no license check will be needed when it is revisited.
+Licenses are now checked periodically in the background so unless a licensed DivisiBill is not used in more than a week it should be possible to speed initialization by leaving it running. Normally no license check will be needed when it is revisited. You can force a license check by shutting it down and restarting it.
 
 ## List Saved Bills by Name
 
@@ -29,6 +29,10 @@ If more than one camera is available the Camera page allows the user to switch b
 ## Flashlight Option on Camera Page
 
 The camera page now has a flashlight toggle icon to turn the camera light on or off. The icon is only enabled if the camera supports a flashlight.
+
+## New Licenses Page
+
+Purchasing a Professional Subscription or OCR license is now initiated by using the button on the Settings page, which directs the user to a dedicated licenses page that defines exactly what an OCR license or a subscription does and costs.
 
 # Version 6.3.31
 

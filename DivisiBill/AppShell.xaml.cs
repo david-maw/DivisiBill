@@ -20,6 +20,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(Routes.ScanPage, typeof(ScanPage));
         Routing.RegisterRoute(Routes.VenueEditPage, typeof(VenueEditPage));
         Routing.RegisterRoute(Routes.VenueListByNamePage, typeof(VenueListByNamePage));
+        Routing.RegisterRoute(Routes.LicensesPage, typeof(LicensesPage));
     }
     protected override async void OnAppearing()
     {
