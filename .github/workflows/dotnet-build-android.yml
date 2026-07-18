@@ -20,13 +20,13 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
     # Install the .NET Core workload
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.0.x
 
@@ -63,7 +63,7 @@ jobs:
 
     # Upload Just the Signed Artifacts (apk and aab) to github storage
     - name: Upload Android Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
           path: DivisiBill/bin/Release/net10.0-android/*Signed.a*
 
@@ -74,5 +74,5 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.autoplus.divisibill
         releaseFiles: DivisiBill/bin/Release/net10.0-android/*Signed.aab
-        track: alpha
+        tracks: alpha
         changesNotSentForReview: false
