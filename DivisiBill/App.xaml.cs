@@ -65,8 +65,9 @@ public partial class App : Application, INotifyPropertyChanged
     internal static int ScanOption = 2;
     internal static bool pauseInitialization = false;
     internal static bool isTutorialMode = false;
-    private const int WindowWidth = 600;
-    private const int WindowHeight = 1200;
+    internal static bool isPurchasing = false;
+    private const int WindowWidth = 400;
+    private const int WindowHeight = 800;
     #endregion
     #region Initialization
     public App()
@@ -249,7 +250,7 @@ public partial class App : Application, INotifyPropertyChanged
             return result;
         }
 
-        void StoreWindowLocation(double x, double y, double w, double h)
+        static void StoreWindowLocation(double x, double y, double w, double h)
         {
             if (Utilities.IsWinUI && Settings is not null)
                 Settings.InitialPosition = new Rect(x, y, w, h);
@@ -318,19 +319,17 @@ public partial class App : Application, INotifyPropertyChanged
         // Set the App window to a sensible (phone like) size during initialization
         if (DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet)
         {
+            // Ensure the window is placed sensibly and is of a reasonable size. Multi-monitor Windows systems
+            // make this non-trivial, but this is a reasonable attempt to avoid putting the window off-screen or
+            // making it too large to fit despite monitor changes or different monitor sizes.
             Rect position = Settings.InitialPosition;
-            if (position.IsEmpty)
-            {
-                window.Height = WindowHeight;
-                window.Width = WindowWidth;
-            }
-            else
-            {
-                window.X = position.X;
-                window.Y = position.Y;
-                window.Height = position.Height;
-                window.Width = position.Width;
-            }
+            position = position.IsEmpty ? new Rect(10, 10, WindowWidth, WindowHeight)
+                : WindowPositionValidator.EnsureVisiblePosition(position);
+
+            window.X = position.X;
+            window.Y = position.Y;
+            window.Height = position.Height;
+            window.Width = position.Width;
         }
 
         return window;
