@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -843,6 +844,28 @@ public static partial class Utilities // Partial for regex generator
     public static string? NullIfWhiteSpace(this string? value)
         => string.IsNullOrWhiteSpace(value) ? null : value;
 
+    /// <summary>
+    /// Given a JSON string and a field name, return the value of that field as a string, or an empty string 
+    /// if the field is not present.
+    /// </summary>
+    /// <param name="jsonString">The JSON string to parse.</param>
+    /// <param name="fieldName">The name of the field to retrieve.</param>
+    /// <returns>The value of the specified field as a string, or an empty string if the field is not present.</returns>
+    public static T? GetJsonFieldValue<T>(string jsonString, string fieldName)
+    {
+        if (JsonDocument.Parse(jsonString).RootElement.TryGetProperty(fieldName, out JsonElement fieldValue))
+        {
+            try
+            {
+                return fieldValue.Deserialize<T>();
+            }
+            catch
+            {
+                return default;
+            }
+        }
+        return default;
+    }
 
     /// <summary>
     /// Return the at most the first N characters of a string
