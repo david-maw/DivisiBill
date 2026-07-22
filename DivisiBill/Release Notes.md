@@ -34,6 +34,10 @@ The camera page now has a flashlight toggle icon to turn the camera light on or 
 
 Purchasing a Professional Subscription or OCR license is now initiated by using the button on the Settings page, which directs the user to a dedicated licenses page that defines exactly what an OCR license or a subscription does and costs.
 
+## Assign Location When Using a Venue
+
+Venues with no assigned location were not getting one assigned when they were used and the current location was known. This has been corrected.
+
 # Version 6.3.31
 
 ## Improve Help Page Navigation
