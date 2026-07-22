@@ -457,7 +457,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             using var canvas = new SKCanvas(rotatedBitmap);
             canvas.Translate(rotatedBitmap.Width, 0);
             canvas.RotateDegrees(degrees);
-            canvas.DrawBitmap(sourceBitmap, 0, 0);
+            canvas.DrawBitmap(sourceBitmap, 0, 0, new SKSamplingOptions(SKFilterMode.Linear));
         }
         else
             rotatedBitmap = sourceBitmap;

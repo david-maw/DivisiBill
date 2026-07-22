@@ -122,18 +122,18 @@
     <PackageReference Include="CommunityToolkit.Maui.Camera" Version="6.1.0" />
     <PackageReference Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
     <PackageReference Include="epj.RouteGenerator" Version="1.0.5" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.70" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.70" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.80" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.80" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.10" />
     <PackageReference Include="CommunityToolkit.Common" Version="8.4.2" />
-    <PackageReference Include="CommunityToolkit.Maui" Version="14.2.0" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="14.2.2" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.70" />
-    <PackageReference Include="Sentry.Maui" Version="6.6.0" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.80" />
+    <PackageReference Include="Sentry.Maui" Version="6.7.0" />
     <!--Sentry.Profiling 4.10.0 is not supported on Android-->
-    <PackageReference Condition="'$(TargetOsPlatform)' != 'android'" Include="Sentry.Profiling" Version="6.6.0" />
+    <PackageReference Condition="'$(TargetOsPlatform)' != 'android'" Include="Sentry.Profiling" Version="6.7.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="4.0.0" />
-    <PackageReference Include="SkiaSharp" Version="3.119.4" />
+    <PackageReference Include="SkiaSharp" Version="4.150.1" />
   </ItemGroup>
 
   <!--Add In-App Billing package, but only for Android-->
