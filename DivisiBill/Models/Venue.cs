@@ -254,13 +254,9 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         }
         // allVenuesDictionary is now fully populated with what will become the new list so populate AllVenues with it
         foreach (KeyValuePair<string, Venue> keyValuePair in allVenuesDictionary)
-        {
-            Venue venue = keyValuePair.Value;
-            venue.IsLocationValid = App.UseLocation && venue.Accuracy <= Distances.AccuracyLimit;
-            allVenues.Add(venue); // Because allVenuesDictionary is a SortedDictionary it delivers in alphabetic order so we simply add it at the end of this list
-        }
+            allVenues.Add(keyValuePair.Value); // Because allVenuesDictionary is a SortedDictionary it delivers in alphabetic order so we simply add it at the end of this list
         // Now we deal with the list of venues by location by sorting the AllVenues list by location and then adding them in order to AllVenuesByDistance 
-        // Future Distance updates will cause the venue to be relocated to the correct spot in the list
+        // Future venue location updates will cause the venue to be relocated to the correct spot in the list
         List<Venue> listByDistance = [.. allVenues.ToList()];
         listByDistance.Sort((v1, v2) => v1.CompareDistanceTo(v2));
         foreach (Venue v in listByDistance)
@@ -419,7 +415,18 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         Utilities.DebugExamineStream(s);
     }
 
+    /// <summary>
+    /// Returns a reference to the list of all venues, sorted by name. If a venue's name 
+    /// is changed that venue is moved to a new location in the list. 
+    /// </summary>
     public static ObservableCollection<Venue> AllVenues { get; } = allVenues;
+
+    /// <summary>
+    /// Returns a reference to the list of all venues, sorted by distance. It refers to the same set of objects as 
+    /// <see cref="AllVenues"/> AllVenues, but sorted by distance from the current location. The list is invalidated when
+    /// the distance to all venues changes, because the app current location has changed. If a single venue's location 
+    /// is changed that venue is moved to a new location in the list. 
+    /// </summary>
     public static ObservableCollection<Venue> AllVenuesByDistance { get; } = allVenuesByDistance;
 
     internal static DateTime UpdateTime { get; set; }
@@ -439,7 +446,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         bool useNewLocation;
         if (newLocation is not null && newLocation.IsValid())
         {   // We have a pretty accurate location for this venue, so perhaps it's better
-            if (IsLocationValid) // We currently have a location, so decide if the new one is better
+            if (IsLocationUsable) // We currently have a location, so decide if the new one is better
             {
                 double distanceBetweenVenues = newLocation.GetDistanceTo(Location);
                 bool newLocationIsClose = distanceBetweenVenues < newLocation.Accuracy || distanceBetweenVenues < Accuracy;
@@ -456,17 +463,24 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         }
     }
 
+    /// <summary>
+    /// Gets or sets the location of the venue. If the location is not usable (i.e., has a valid latitude 
+    /// and longitude and an accuracy within acceptable limits), it returns null. When setting the location, 
+    /// if the new location is null or not usable, it marks the location as unusable and updates the update time.
+    /// If the new location is different from the current one, it updates the latitude, longitude, accuracy, 
+    /// marks the location as usable, calculates the distance to the new location, and updates the update time.
+    /// </summary>
     [XmlIgnore]
     public Location? Location
     {
-        get => (Latitude == 0.0 && Longitude == 0.0) || !IsLocationValid
+        get => (Latitude == 0.0 && Longitude == 0.0) || !IsLocationUsable
                 ? null
                 : new Location(Latitude, Longitude) { Accuracy = Accuracy };
         set
         {
             if (value is null || !App.UseLocation || value.Accuracy is <= 0 or >= Distances.AccuracyLimit)
             {
-                IsLocationValid = false;
+                IsLocationUsable = false;
                 UpdateTime = DateTime.Now;
             }
             else if (Latitude != value.Latitude || Longitude != value.Longitude || Accuracy != value.AccuracyOrDefault())
@@ -474,7 +488,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
                 Latitude = value.Latitude;
                 Longitude = value.Longitude;
                 Accuracy = value.AccuracyOrDefault();
-                IsLocationValid = true;
+                IsLocationUsable = true;
                 Distance = App.GetDistanceTo(Location);
                 UpdateTime = DateTime.Now;
             }
@@ -543,22 +557,20 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     private double Longitude { get; set; } = 0.0;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the current location meets the required validation criteria.
+    /// Indicates whether the location is usable (i.e., has a valid latitude and longitude and an accuracy within
+    /// acceptable limits) AND the app is allowed to use location. If the location is not usable, it returns false.
     /// </summary>
-    /// <remarks>Use this property to determine if the location information provided is considered valid
-    /// according to the application's validation rules. This property is typically used to enable or disable actions
-    /// that require a valid location.</remarks>
     [ObservableProperty]
     [XmlIgnore]
-    public partial bool IsLocationValid { get; private set; }
-    partial void OnIsLocationValidChanged(bool value)
+    public partial bool IsLocationUsable { get; private set; } = false;
+    partial void OnIsLocationUsableChanged(bool value)
     {
         if (value)
         {
-            if (App.UseLocation && Accuracy <= Distances.AccuracyLimit)
+            if (App.UseLocation && Accuracy is > 0 and <= Distances.AccuracyLimit)
                 Distance = App.GetDistanceTo(Location);
             else
-                IsLocationValid = false;
+                IsLocationUsable = false;
         }
         else
         {
@@ -571,7 +583,10 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         }
     }
 
-
+    /// <summary>
+    /// Indicates the accuracy of the location in meters. A value of 0 indicates that the location is not usable.
+    /// The accuracy must be greater than 0 and less than Distances.Inaccurate to be considered valid.
+    /// </summary>
     [ObservableProperty]
     [XmlAttribute, DefaultValue(0)]
     public partial int Accuracy { get; set; } = 0;
@@ -580,7 +595,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     {
         if (newValue >= 0)
             Accuracy = newValue is > 0 and < Distances.Inaccurate ? newValue : 0;
-        IsLocationValid = App.UseLocation && Accuracy is > 0 and <= Distances.AccuracyLimit;
+        IsLocationUsable = App.UseLocation && Accuracy is > 0 and <= Distances.AccuracyLimit;
     }
     public bool Forget() => allVenues.Remove(this) && allVenuesByDistance.Remove(this);
     public static void ForgetAllVenues()

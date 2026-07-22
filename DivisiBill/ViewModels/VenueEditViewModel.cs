@@ -42,7 +42,7 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
     {
         Name = ActiveVenue.Name;
         Notes = ActiveVenue.Notes ?? string.Empty;
-        Location = ActiveVenue.IsLocationValid ? ActiveVenue.Location : null;
+        Location = ActiveVenue.Location;
     }
     public async void OnNavigatedTo()
     {
