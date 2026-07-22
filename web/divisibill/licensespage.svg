@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="svg836"
+   width="1080"
+   height="2220"
+   viewBox="0 0 1080 2220"
+   sodipodi:docname="licensespage.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata31">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs840" />
+  <sodipodi:namedview
+     id="namedview838"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="0.72572936"
+     inkscape:cx="519.4774"
+     inkscape:cy="1257.3558"
+     inkscape:window-width="1427"
+     inkscape:window-height="865"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g842"
+     inkscape:document-rotation="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g842">
+    <image
+       xlink:href="licensespage.png"
+       inkscape:label="licenses page"
+       id="image844"
+       style="fill:#00ff00;fill-opacity:0.25;image-rendering:optimizeQuality"
+       preserveAspectRatio="xMidYMid"
+       height="2220"
+       width="1080" />
+    <a
+       xlink:href="licensesglossary.html#purchase-scans"
+       transform="matrix(0.59827698,0,0,1.3156387,211.23443,-167.87845)"
+       inkscape:label="wifi"
+       xlink:title="Buy more OCR scans"
+       target="_parent"
+       id="a938-2">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-8"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1279.5219" />
+    </a>
+    <a
+       xlink:href="licensesglossary.html#subscribe"
+       transform="matrix(0.49279487,0,0,1.4454978,278.23739,-1298.0068)"
+       inkscape:label="wifi"
+       xlink:title="Change Professional Subscription"
+       target="_parent"
+       id="a938-8-9-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect846-9-1-9"
+         width="1031.8726"
+         height="88.446213"
+         x="35.378487"
+         y="1469.5219" />
+    </a>
+    <a
+       xlink:href="licensesglossary.html#scans"
+       transform="matrix(0.60741334,0,0,0.28646397,221.37297,1026.5738)"
+       inkscape:label="scans"
+       xlink:title="Number of purchased scans remaining"
+       target="_parent"
+       id="a941-8">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+    <a
+       xlink:href="licensesglossary.html#cancel"
+       transform="matrix(1.0553081,0,0,0.49105019,-25.173899,950.39732)"
+       inkscape:label="scans"
+       xlink:title="Leave the page without doing anything"
+       target="_parent"
+       id="a941-8-9">
+      <rect
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
+         id="rect848-5-4"
+         width="896.255"
+         height="247.6494"
+         x="85.498009"
+         y="1441.6733" />
+    </a>
+  </g>
+</svg>

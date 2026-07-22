@@ -58,25 +58,17 @@ Tap this button to clear the password used to encrypt data stored in the cloud a
 
 Tap here to open up the [licensing help](licensing.html) and learn more about Pro and OCR licenses.
 
-## Modify Button
-
-If you are using the Professional Edition, this button opens up a web site to permit you to view, modify or cancel that subscription.
-
-## Subscribe
-
-This allows you to purchase a Professional Edition subscription to enable cloud operations in DivisiBill; without a subscription, you should use manual archive/restore instead. For more details, see [this](licensing.html) page.
-
 ## Status
 
-This shows you your Pro Subscription order number. In the Basic Edition this area is replaced by a "Subscribe" button.
+This shows you your Pro Subscription order number if you have one.
 
 ## Scans
 
-All versions of DivisiBill allow you to purchase "scans" to extract information from a picture of a printed bill, using cloud-based OCR scanning from the [Image](imagepage.html) page. Each OCR operation costs one scan; when the number of scans remaining reaches zero, you must buy more before another OCR operation will be allowed. (For more details see [this](licensing.html) page.) If you have scans remaining, this area will show you how many are left and the purchasing order number; otherwise it will show a button to order additional scans.
+All versions of DivisiBill allow you to purchase "scans" to extract information from a picture of a printed bill, using cloud-based OCR scanning from the [Image](imagepage.html) page. Each OCR operation costs one scan; when the number of scans remaining reaches zero, you must buy more before another OCR operation will be allowed. (For more details see [this](licensing.html) page.) If you have scans remaining, this area will show you how many are left and the purchasing order number. Use the "Change Licenses" button to order additional scans or purchase a Professional Edition subscription.
 
-## Purchase Scans
+## Change Licenses
 
-This button is only visible when you have a small number of scans remaining, tap it to purchase more scans.
+This takes you to the [Optional Licenses](licensespage.html) page, where you can purchase OCR scans or a Professional Edition subscription to enable cloud operations in DivisiBill; without a subscription, you should use manual archive/restore instead. For more details, see [this](licensing.html) page.
 
 ## Send Crash Data
 

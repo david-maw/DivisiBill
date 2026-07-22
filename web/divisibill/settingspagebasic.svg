@@ -6,7 +6,7 @@
    height="2220"
    viewBox="0 0 1080 2220"
    sodipodi:docname="settingspagebasic.svg"
-   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -38,13 +38,13 @@
      inkscape:pagecheckerboard="1"
      showgrid="false"
      inkscape:zoom="0.50925926"
-     inkscape:cx="540"
+     inkscape:cx="539.01818"
      inkscape:cy="1109.4545"
-     inkscape:window-width="1200"
-     inkscape:window-height="1520"
-     inkscape:window-x="1762"
-     inkscape:window-y="40"
-     inkscape:window-maximized="0"
+     inkscape:window-width="1440"
+     inkscape:window-height="878"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
      inkscape:current-layer="g842"
      inkscape:document-rotation="0"
      inkscape:showpageshadow="2"
@@ -76,11 +76,11 @@
          width="896.255"
          height="247.6494"
          x="85.498009"
-         y="1441.6733" />
+         y="1074.1135" />
     </a>
     <a
        xlink:href="settingsglossary.html#ask-after-restart"
-       transform="matrix(0.47214279,0,0,0.38088847,524.10022,1054.5367)"
+       transform="matrix(0.47214279,0,0,0.38088847,524.10022,914.5367)"
        inkscape:label="scans"
        xlink:title="Ask about sending telemetry after restart"
        target="_parent"
@@ -94,8 +94,8 @@
          y="1420.6699" />
     </a>
     <a
-       xlink:href="settingsglossary.html#subscribe"
-       transform="matrix(1.9487983,0,0,0.93003522,-507.70492,312.38246)"
+       xlink:href="settingsglossary.html#change-licenses"
+       transform="matrix(1.2256645,0,0,0.86065561,-114.19219,462.96883)"
        inkscape:label="upgrade"
        xlink:title="Buy a Professional Subscription"
        target="_parent"
@@ -110,7 +110,7 @@
     </a>
     <a
        xlink:href="settingsglossary.html#scans"
-       transform="matrix(2.091926,0,0,0.83227571,-588.58439,641.10129)"
+       transform="matrix(1.5590907,0,0,0.51312952,-295.21711,716.82402)"
        inkscape:label="upgrade"
        xlink:title="OCR Scans Remaining"
        target="_parent"
