@@ -37,7 +37,7 @@ public partial class CameraViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ChangeFlashModeCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ChangeLightModeCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ChangeTorchModeCommand))]
     public partial CameraInfo? SelectedCamera { get; set; } = null;
     partial void OnSelectedCameraChanged(CameraInfo? value)
     {
@@ -63,7 +63,7 @@ public partial class CameraViewModel : ObservableObject
     public partial Size ImageCaptureResolution { get; set; }
     public CancellationToken Token => IsCameraAvailable ? CancellationToken.None : CancellationToken.None;
     #endregion
-    internal async Task SetCameraAvailabilityAsync()
+    internal async Task SetCameraPermissionAsync()
     {
         try
         {
@@ -79,24 +79,28 @@ public partial class CameraViewModel : ObservableObject
         catch (Exception ex)
         {
             IsCameraAvailable = false;
-            await Utilities.DisplayAlertAsync("Camera Availability", "Could not check camera availability: " + ex.Message, "cancel");
+            await Utilities.DisplayAlertAsync("Camera Permission", "Fault checking camera permission: " + ex.Message, "cancel");
         }
         finally
         {
             IsBusy = false;
         }
     }
-    #region Controlling the light (which is also the Camera Flash)
+    #region Controlling the torch (which is also the Camera Flash)
     [ObservableProperty]
-    public partial bool IsLightOn { get; set; } = false;
+    public partial bool IsTorchOn { get; set; } = false;
 
     [RelayCommand(CanExecute = nameof(IsFlashAvailable))]
-    private void ChangeLightMode() => IsLightOn = !IsLightOn;
+    private void ChangeTorchMode() => IsTorchOn = !IsTorchOn;
     #endregion
     #region Controlling the Camera Flash
     [ObservableProperty]
     public partial CameraFlashMode FlashMode { get; set; } = CameraFlashMode.Off;
 
+    /// <summary>
+    /// A boolean property to indicate whether the selected camera supports flash.
+    /// This is used to enable or disable the flash and torch controls in the UI.
+    /// </summary>
     public bool IsFlashAvailable { get; set; } = false;
 
     [ObservableProperty]
@@ -130,7 +134,7 @@ public partial class CameraViewModel : ObservableObject
             await Task.Delay(50); // Allow time for the camera to switch
         }
         if (SelectedCamera is null)
-            SelectedCamera = AvailableCameras.FirstOrDefault(c => c.Position == CameraPosition.Rear) ?? AvailableCameras.Last();
+            SelectedCamera = AvailableCameras.FirstOrDefault(c => c.Position == CameraPosition.Rear) ?? AvailableCameras[^1];
         else if (AvailableCameras.Count > 1)
         {
             int currentIndex = AvailableCameras.ToList().IndexOf(SelectedCamera);

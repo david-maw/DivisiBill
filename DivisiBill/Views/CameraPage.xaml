@@ -22,7 +22,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="{Binding IsLightOn, Converter={StaticResource LightIconConverter}}" Command="{Binding ChangeLightModeCommand}"/>
+        <ToolbarItem IconImageSource="{Binding IsTorchOn, Converter={StaticResource LightIconConverter}}" Command="{Binding ChangeTorchModeCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphImages}" Command="{Binding BrowseCommand}"/>
         <ToolbarItem IconImageSource="{Binding IsFlashOn, Converter={StaticResource FlashIconConverter}}" Command="{Binding ChangeFlashModeCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphCameraFlip}" Command="{Binding SwitchCameraCommand}"/>
@@ -33,7 +33,7 @@
         <toolkit:CameraView x:Name="MyCamera"
                             IsVisible="{Binding IsCameraAvailable}"
                             CameraFlashMode="{Binding FlashMode}"
-                            IsTorchOn="{Binding IsLightOn}"
+                            IsTorchOn="{Binding IsTorchOn}"
                             MediaCaptured="OnPictureTaken"
                             SelectedCamera="{Binding SelectedCamera}"
                             ImageCaptureResolution="{Binding ImageCaptureResolution}"/>

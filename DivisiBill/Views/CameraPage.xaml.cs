@@ -18,7 +18,7 @@ public partial class CameraPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await viewModel.SetCameraAvailabilityAsync();
+        await viewModel.SetCameraPermissionAsync();
 
         // Initialize available cameras - wait briefly for the camera provider to enumerate cameras
         if (viewModel.IsCameraAvailable)
