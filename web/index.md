@@ -40,7 +40,10 @@ DivisiBill is open source software. The source is hosted on GitHub [here](https:
 ## What is AutoPlus Software?
 
 AutoPlus Software is a company originally formed to market a body shop management tool
-called AutoPlus. That product went out of support years ago, but the name lives on.
+called AutoPlus. That product went out of support years ago, but the name lives on. As well as DivisiBill, AutoPlus Software has a number of other products, all free and open-source. Sources are in GitHub and Android versions are available in the Play Store. The applications are:
+
+- **when** - A countdown calendar app, in the Play Store [here](https://play.google.com/store/apps/details?id=com.autoplus.when) or the source is in github [here](https://github.com/david-maw/when)
+- **Event Tracker** - An event reminder app, designed to help you manage taking medications which require time between them, in the Play Store [here](https://play.google.com/store/apps/details?id=com.autoplus.eventsnoozeapp) or the source is in github [here](https://github.com/david-maw/EventSnoozeApp)
 
 ## What's With the Logo?
 
