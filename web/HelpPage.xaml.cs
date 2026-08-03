@@ -110,8 +110,8 @@ public partial class HelpPage : ContentPage
 
     public ICommand BackCommand { get; }
 
-    private async void OnIndexIconClicked(object sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages');alert('History depth: ' + history.length);location.replace('venueeditpage.html');alert('Navigated. History depth: ' + history.length);");
-    private void OnExitIconClicked(object sender, EventArgs e) => ReturnToApp();
+    private async void OnIndexIconClicked(object? sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages');alert('History depth: ' + history.length);location.replace('venueeditpage.html');alert('Navigated. History depth: ' + history.length);");
+    private void OnExitIconClicked(object? sender, EventArgs e) => ReturnToApp();
 
     private void ReturnToApp() => Shell.Current.Navigation.PopAsync();
 }

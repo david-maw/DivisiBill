@@ -7,12 +7,12 @@ public partial class AppShell : Shell
         InitializeComponent();
         Routing.RegisterRoute(nameof(HelpPage), typeof(HelpPage));
     }
-    private async void OnHelpIndexClicked(object sender, EventArgs e)
+    private async void OnHelpIndexClicked(object? sender, EventArgs e)
     {
         Shell.Current.FlyoutIsPresented = false;
         await Shell.Current.GoToAsync($"{nameof(HelpPage)}?page=index");
     }
-    private void OnHelpClicked(object sender, EventArgs e)
+    private void OnHelpClicked(object? sender, EventArgs e)
     {
         Shell.Current.FlyoutIsPresented = false;
         var targetType = CurrentPage.GetType();
