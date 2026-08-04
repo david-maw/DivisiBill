@@ -1,3 +1,9 @@
+# Version 6.3.33
+
+## Failure to Purchase Licenses
+
+Attempts to buy subscriptions or OCR licenses always failed, this version corrects that.
+
 # Version 6.3.32
 
 ## Improved License Checking
