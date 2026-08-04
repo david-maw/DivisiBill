@@ -1,3 +1,7 @@
+
+#if WINDOWS
+#define UseGoogleMaps
+#endif
 using CommunityToolkit.Maui.Alerts;
 using DivisiBill.Models;
 using DivisiBill.Services;
@@ -5,7 +9,7 @@ using DivisiBill.ViewModels;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
-#if WINDOWS
+#if UseGoogleMaps
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 #endif
@@ -26,6 +30,7 @@ public partial class MapPage : ContentPage
     private readonly Pin nativePin = new() { Type = PinType.Place }; // No location or name yet
     public readonly Microsoft.Maui.Controls.Maps.Map? nativeMap = null; // Map control created in code-behind
     private readonly MapViewModel viewModel; // Our ViewModel, which is the BindingContext of the page
+    private readonly bool useGoogleMaps = Utilities.IsWinUI; // Centralize the logic here so we don't have to check it repeatedly
     public MapPage()
     {
         InitializeComponent();
@@ -37,7 +42,7 @@ public partial class MapPage : ContentPage
         viewModel.MapTypeRequested += ViewModel_MapTypeRequested;
         viewModel.ClearLocationRequested += ViewModel_ClearLocationRequested;
 
-#if WINDOWS
+#if UseGoogleMaps
         /// Handle changes to the WebView handler to set up message communication between JavaScript
         /// and the view model using WebView2.
         googleMapsWebView.HandlerChanged += (sender, e) =>
@@ -97,7 +102,7 @@ public partial class MapPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        if (Utilities.IsWinUI)
+        if (useGoogleMaps)
         {
             App.MyLocationChanged += App_MyLocationChanged;
             await App.StartMonitoringLocation();
@@ -112,7 +117,7 @@ public partial class MapPage : ContentPage
     /// framework when the page is being removed from the navigation stack or otherwise hidden.</remarks>
     protected override async void OnDisappearing()
     {
-        if (Utilities.IsWinUI)
+        if (useGoogleMaps)
         {
             App.MyLocationChanged -= App_MyLocationChanged;
             await App.StopMonitoringLocation();
@@ -139,9 +144,9 @@ public partial class MapPage : ContentPage
         // but on other platforms we can initialize the map immediately. Where possible use a runtime check of the platform
         // rather than compile-time directives so code is always checked for syntax. We still have to use compile-time
         // directives to avoid referencing WebView2 types on platforms where they are not supported.
-        if (Utilities.IsWinUI) // The windows code using Google maps in a web page
+        if (useGoogleMaps) // The windows code using Google maps in a web page
         {
-#if WINDOWS
+#if UseGoogleMaps
             if (googleMapsWebView.Handler?.PlatformView is WebView2 wv2)
                 await wv2.EnsureCoreWebView2Async();
 #endif
@@ -184,7 +189,7 @@ public partial class MapPage : ContentPage
     /// <param name="e">An EventArgs object that contains no event data.</param>
     private async void App_MyLocationChanged(object? sender, EventArgs e)
     {
-        if (Utilities.IsWinUI && App.UseLocation)
+        if (useGoogleMaps && App.UseLocation)
             await googleMapsWebView.EvaluateJavaScriptAsync(App.MyLocation is null
                 ? "clearCurrentLocation();"
                 : $"showCurrentLocation({App.MyLocation.Latitude:F5}, {App.MyLocation.Longitude:F5}, {App.MyLocation.Accuracy ?? 0:F0});");
@@ -246,10 +251,8 @@ public partial class MapPage : ContentPage
     /// <param name="location">The new location data associated with the event.</param>
     private void ViewModel_LocationChanged(object? sender, Location? location)
     {
-        if (!Utilities.IsWinUI)
+        if (!useGoogleMaps) // The Google Map is updated directly via JavaScript, so we need only handle the native map.
             MoveNativePin();
-        // On Windows the map is updated directly from the ViewModel via JavaScript,
-        // so we don't need to do anything here.
     }
 
     /// <summary>
@@ -261,7 +264,7 @@ public partial class MapPage : ContentPage
     /// <param name="e">An object that contains the event data.</param>
     private async void ViewModel_RestoreRequested(object? sender, EventArgs e)
     {
-        if (Utilities.IsWinUI)
+        if (useGoogleMaps)
             await googleMapsWebView.EvaluateJavaScriptAsync("mapRestore()");
         else if (viewModel.VenueLocation is not null)
         {
@@ -283,7 +286,7 @@ public partial class MapPage : ContentPage
     /// <param name="mapType">The map type to apply. Specifies the desired map display mode.</param>
     private async void ViewModel_MapTypeRequested(object? sender, MapType mapType)
     {
-        if (Utilities.IsWinUI)
+        if (useGoogleMaps)
         {
             string mapTypeString = mapType == MapType.Satellite ? "satellite" : "roadmap";
             await googleMapsWebView.EvaluateJavaScriptAsync($"changeMapType('{mapTypeString}')");
@@ -300,7 +303,7 @@ public partial class MapPage : ContentPage
     /// <param name="e">An EventArgs object that contains the event data.</param>
     private async void ViewModel_ClearLocationRequested(object? sender, EventArgs e)
     {
-        if (Utilities.IsWinUI)
+        if (useGoogleMaps)
             await googleMapsWebView.EvaluateJavaScriptAsync("clearMarker()");
     }
     #endregion
