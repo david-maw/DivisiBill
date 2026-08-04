@@ -11,12 +11,11 @@ public partial class LicensesPage : ContentPage
     public LicensesPage()
     {
         InitializeComponent();
-        BindingContext = new SubscriptionViewModel();
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        ((SubscriptionViewModel)BindingContext).Refresh();
+        ((LicensesViewModel)BindingContext).Refresh();
     }
 }

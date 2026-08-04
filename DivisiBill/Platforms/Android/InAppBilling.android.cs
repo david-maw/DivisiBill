@@ -324,7 +324,7 @@ public class InAppBillingImplementation : BaseInAppBilling
         if (skuDetailsResult.ProductDetailsList is null)
         {
             Utilities.DebugMsg($"GetPriceAsync(\"{productId}\", {itemType}): No product details returned from Google Play" +
-               $", ResponseCode={skuDetailsResult.Result.ResponseCode}, DebugMessage={skuDetailsResult.Result.DebugMessage}");
+               $", Result={skuDetailsResult}");
             return null;
         }
 

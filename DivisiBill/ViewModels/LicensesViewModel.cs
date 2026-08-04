@@ -9,11 +9,11 @@ namespace DivisiBill.ViewModels;
 /// ViewModel for the Subscription page that manages subscription status and related operations.
 /// Handles displaying subscription information, managing upgrades, and license details.
 /// </summary>
-public partial class SubscriptionViewModel : ObservableObject
+public partial class LicensesViewModel : ObservableObject
 {
     #region Initialization
     private readonly IInAppBilling inAppBilling;
-    public SubscriptionViewModel()
+    public LicensesViewModel()
     {
         inAppBilling = CrossInAppBilling.Current;
         _ = LoadPrices();
@@ -160,6 +160,7 @@ public partial class SubscriptionViewModel : ObservableObject
         {
             await Utilities.DisplayAlertAsync("Thank You",
                 $"You have purchased a professional license. You may now set the 'Allow Cloud Backup' option.");
+            await App.PopAsync(); // Go back to the Settings page
         }
     }
 
@@ -173,7 +174,10 @@ public partial class SubscriptionViewModel : ObservableObject
         else if (scans < 0)
             await Utilities.DisplayAlertAsync("Error", "The purchase could not be verified. You did not acquire any additional OCR licenses");
         else
+        {
             await Utilities.DisplayAlertAsync("Thank You", $"You now have {scans} OCR scans left");
+            await App.PopAsync(); // Go back to the Settings page
+        }
     }
     /// <summary>
     /// Exits the page and does nothing
@@ -181,7 +185,7 @@ public partial class SubscriptionViewModel : ObservableObject
     [RelayCommand]
     private async Task Cancel()
     {
-        await App.PopAsync();
+        await App.PopAsync(); // Go back to the Settings page
     }
     #endregion
 }
