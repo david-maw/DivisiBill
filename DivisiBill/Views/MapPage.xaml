@@ -34,14 +34,8 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <maps:Map x:Name="nativeMap" controls:ColumnLayout.Fill="True"
-                  IsEnabled="{OnPlatform true, WinUI=false}"
-                  IsVisible="{OnPlatform true, WinUI=false}"
-                  MapClicked="OnNativeMapClicked"
-                  IsShowingUser="{Binding MapIsShowingUser}"
-                  MapType="{Binding CurrentMapType}"/>
 
-        <WebView x:Name="googleMapsWebView" controls:ColumnLayout.Fill="True" controls:ColumnLayout.SameRow="True"
+        <WebView x:Name="googleMapsWebView" controls:ColumnLayout.Fill="True"
                  Source="{Binding GoogleMapSource}"
                  IsEnabled="{OnPlatform false, WinUI=true}"
                  IsVisible="{OnPlatform false, WinUI=true}"/>

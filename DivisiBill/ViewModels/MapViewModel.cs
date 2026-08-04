@@ -82,7 +82,8 @@ public partial class MapViewModel : ObservableObject
     // The name of the venue is displayed in the UI but does not affect any map functionality,
     // so it does not need to be updated when the location changes.
     // It is only set from the MapSettings when the page is initialized.
-    public string VenueName { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string VenueName { get; private set; } = string.Empty;
 
     // The venue location is the core piece of data that this ViewModel manages.
     // When it changes, we need to update the distance and for a native map notify the view so
