@@ -201,10 +201,11 @@ public class InAppBillingImplementation : BaseInAppBilling
 
         // In Billing Library 5+, accessing ProductDetailsList throws ArgumentException when the product doesn't exist
         // rather than returning an empty list. We need to catch this and provide a better error message.
+        // Somewhere after v8.1.0 and before v8.3.0.2, ProductDetailsList was renamed to ProductDetails
         ProductDetails? skuDetails;
         try
         {
-            skuDetails = skuDetailsResult.ProductDetailsList?.FirstOrDefault();
+            skuDetails = skuDetailsResult.ProductDetails?.FirstOrDefault();
         }
         catch (ArgumentException)
         {
@@ -321,14 +322,18 @@ public class InAppBillingImplementation : BaseInAppBilling
             return null;
         }
 
-        if (skuDetailsResult.ProductDetailsList is null)
+        ParseBillingResult(skuDetailsResult.Result); // Throws an exception if the result is not ok
+
+        if (skuDetailsResult.ProductDetails is null || skuDetailsResult.ProductDetails.Count == 0)
         {
             Utilities.DebugMsg($"GetPriceAsync(\"{productId}\", {itemType}): No product details returned from Google Play" +
-               $", Result={skuDetailsResult}");
+               $", Result={skuDetailsResult.Result}");
             return null;
         }
 
-        var productDetails = skuDetailsResult.ProductDetailsList.FirstOrDefault();
+        // Somewhere after v8.1.0 and before v8.3.0.2, ProductDetailsList was renamed to ProductDetails
+
+        var productDetails = skuDetailsResult.ProductDetails[0];
 
         if (productDetails == null)
         {
