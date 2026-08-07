@@ -28,7 +28,6 @@ namespace DivisiBill.Views;
 public partial class MapPage : ContentPage
 {
     private readonly Pin nativePin = new() { Type = PinType.Place }; // No location or name yet
-    public readonly Microsoft.Maui.Controls.Maps.Map? nativeMap = null; // Map control created in code-behind
     private readonly MapViewModel viewModel; // Our ViewModel, which is the BindingContext of the page
     private readonly bool useGoogleMaps = Utilities.IsWinUI; // Centralize the logic here so we don't have to check it repeatedly
     public MapPage()
@@ -64,33 +63,6 @@ public partial class MapPage : ContentPage
                 };
             }
         };
-#else
-        // Create a map and use it to replace the WebView on non-Windows platforms - the WebView is used on
-        // Windows because the native map control is not supported, so we use a Google Maps instead.
-        // On other platforms, like Android, we can use the native map control which will be on Windows one day.
-        // This has to be done in code, not XAML, because the Map control fails at runtime on Windows even
-        // if it is invisible or disabled, see https://github.com/dotnet/maui/issues/34483
-
-        // Create the Map control
-        nativeMap = new Microsoft.Maui.Controls.Maps.Map();
-
-        // Assign event handler for map clicks to allow the user to select a location
-        nativeMap.MapClicked += OnNativeMapClicked;
-
-        // Set the map to occupy the same row as the (invisible) WebView, so it will be in the same place in the layout
-        DivisiBill.Controls.ColumnLayout.SetSameRow(nativeMap, true);
-
-        // Bind IsShowingUser property
-        nativeMap.SetBinding(Microsoft.Maui.Controls.Maps.Map.IsShowingUserProperty,
-            new Binding(nameof(viewModel.MapIsShowingUser), source: viewModel, mode: BindingMode.OneTime));
-
-        // Bind MapType property
-        nativeMap.SetBinding(Microsoft.Maui.Controls.Maps.Map.MapTypeProperty,
-            new Binding(nameof(viewModel.CurrentMapType), source: viewModel, mode: BindingMode.OneWay));
-
-        // Insert the map after the WebView)
-        (_, int index) = rootLayout.Children.FindItemAndIndex((view) => view == googleMapsWebView);
-        rootLayout.Children.Insert(index + 1, nativeMap);
 #endif
     }
     #region Page Appearing/Disappearing
@@ -164,7 +136,7 @@ public partial class MapPage : ContentPage
             // Calculate how big a sensibly scaled map should be, then size the map view appropriately
             MapSpan mapSpan = new(mapCenter, 0.01, 0.01);
             await Task.Delay(200); // Without this the MoveToRegion is ignored 
-            nativeMap?.MoveToRegion(mapSpan);
+            nativeMap.MoveToRegion(mapSpan);
         }
     }
 
@@ -272,7 +244,7 @@ public partial class MapPage : ContentPage
             if (mapSpan is not null)
             {
                 await Task.Delay(200); // Without this the MoveToRegion is ignored 
-                nativeMap?.MoveToRegion(mapSpan);
+                nativeMap.MoveToRegion(mapSpan);
             }
         }
     }
