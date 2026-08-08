@@ -114,7 +114,15 @@ public partial class SplashPage : ContentPage
         else
         {
             await StatusMsgAsync("Starting backup to remote");
-            Meal.StartBackupToRemote(); // it will pause until cloud access allowed
+            try
+            {
+                Meal.StartBackupToRemote(); // it will pause until cloud access allowed
+            }
+            catch (Exception ex)
+            {
+                // rare, but just in case, we don't want to crash the app if the automated backup process fails, we just continue without it
+                await StatusMsgAsync("Starting backup to remote faulted, continuing without automatic remote backup:" + ex.Message);
+            }
         }
         if (App.Settings.IsCloudAccessAllowed)
         {
