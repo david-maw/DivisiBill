@@ -20,6 +20,7 @@ internal static class CallWs
     #region Shared
     private const string PurchaseHeaderName = "divisibill-android-purchase";
     private const string TokenHeaderName = "divisibill-token";
+    internal const string SignatureHeaderName = "divisibill-signature";
     private const string KeyHeaderName = "x-functions-key";
     private static readonly string KeyString = Generated.BuildInfo.DivisiBillWsKey;
     public static readonly TimeSpan CallTimeout = TimeSpan.FromSeconds(30);
@@ -32,7 +33,7 @@ internal static class CallWs
     {
         if (!App.WsUriDefined)
             throw new ArgumentNullException("App.WsUriDefined");
-        if (!string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillWsKey))
+        if (!string.IsNullOrWhiteSpace(KeyString))
             UpsertHttpClientHeader(KeyHeaderName, KeyString);
     }
     #endregion
@@ -292,6 +293,7 @@ internal static class CallWs
                     if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.OldProProductId))
                     {
                         UpsertHttpClientHeader(PurchaseHeaderName, purchase.OriginalJson); // This will be the license used from now on
+                        UpsertHttpClientHeader(SignatureHeaderName, purchase.Signature);
                         response.StoreTokenHeader();
                     }
                     return s;

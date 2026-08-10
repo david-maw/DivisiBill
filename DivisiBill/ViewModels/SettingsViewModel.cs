@@ -256,6 +256,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public string? OcrLicenseId => Billing.OcrPurchase?.Id;
     public string BaseAddress => App.WsUriDefined ? CallWs.BaseAddress?.ToString() ?? "" : "";
     public string LastUse => App.Settings.LastUse.ToString();
+    public string UserKey => App.Settings.UserKey;
     public bool Dark
     {
         set

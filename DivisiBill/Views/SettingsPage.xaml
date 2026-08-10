@@ -132,10 +132,10 @@
                     <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
                     <Label Text="{Binding OcrLicenseId, StringFormat='OCR Order# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
                     <!--#endregion-->
-                    <!--Manipulate Licenses (Subscription or In-App Purchases) -->
+                    <!--#region Manipulate Licenses (Subscription or In-App Purchases) -->
                         <Button Text="Change Licenses" Command="{Binding ChangeLicensesCommand}" HorizontalOptions="Center" Margin="5"/>
                     <!--#endregion-->
-              </VerticalStackLayout>
+                </VerticalStackLayout>
                 <Label Text="No license information is available" IsVisible="{Binding LicenseChecked, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
                 <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Fill" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
             </Grid>
@@ -158,6 +158,9 @@
                 <!--#region Show Base Folder Path -->
                 <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{x:Static DivisiBill:App.BaseFolderPath}"/>
                 <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{Binding BaseAddress}"/>
+                <!--#endregion-->
+                <!--#region Show UserKey (license ObfuscatedAccountId) -->
+                <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{Binding UserKey}" LineBreakMode="TailTruncation"/>
                 <!--#endregion-->
                 <!--#region Show Last Use -->
                 <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{Binding LastUse,StringFormat='Prior Use: {0}'}"/>
