@@ -709,14 +709,19 @@ public partial class App : Application, INotifyPropertyChanged
                 // Probably a clean install, so the AccountId has not been set yet, generate a token if we must, but prefer to use an existing one
                 // There are some peculiar license keys which were allocated before we started using ObfuscatedAccountId, since they are used for testing
                 // we handle that case here.
-                Utilities.DebugMsg("In CheckLicenses: There is no stored AccountId");
                 App.Settings.UserKey = proAccountId ?? ocrAccountId ?? Utilities.GenerateToken();
+                if (string.IsNullOrEmpty(proAccountId))
+                    Utilities.DebugMsg("In CheckLicenses: There was no stored AccountId so we used one from the pro purchase: " + App.Settings.UserKey.TruncatedTo(7));
+                else if (!string.IsNullOrEmpty(ocrAccountId))
+                    Utilities.DebugMsg("In CheckLicenses: There was no stored AccountId so we used one from the OCR purchase: " + App.Settings.UserKey.TruncatedTo(7));
+                else
+                    Utilities.DebugMsg("In CheckLicenses: There was no stored AccountId or one available from licenses, so we generated a new one" + App.Settings.UserKey.TruncatedTo(7));
             }
             else
             {
                 // We have a saved AccountId already but make sure it is the same as the one in the licenses because if not that indicates a different user
                 // and in that case we need to use the one for the user, not the old one that we had persisted for some previous user
-                Utilities.DebugMsg($"In CheckLicenses: AccountId is already set to {storedAccountId.TruncatedTo(7)}");
+                Utilities.DebugMsg($"In CheckLicenses: stored AccountId is already set to {storedAccountId.TruncatedTo(7)}");
                 string? accountIdFromAnyLicense = NullIfEmpty(proAccountId ?? ocrAccountId);
                 if (accountIdFromAnyLicense is null)
                     Utilities.DebugMsg("In CheckLicenses: No AccountId available from licenses so we'll just keep the stored one");
@@ -726,12 +731,12 @@ public partial class App : Application, INotifyPropertyChanged
                     Utilities.DebugMsg($"In CheckLicenses: The AccountId from the licenses {accountIdFromAnyLicense.TruncatedTo(7)} overrides the stored one {storedAccountId.TruncatedTo(7)}");
                     App.Settings.UserKey = accountIdFromAnyLicense;
                 }
-                else if (ocrAccountId is null)
-                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the Pro license matches and there is no OCR AccountId");
-                else if (proAccountId is null)
-                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license matches and there is no Pro AccountId");
+                else if (!string.IsNullOrEmpty(proAccountId))
+                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the Pro license matches the stored one");
+                else if (!string.IsNullOrEmpty(ocrAccountId))
+                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license matches the stored one and there is no Pro AccountId");
                 else
-                    Utilities.DebugMsg("In CheckLicenses: The AccountId of the OCR license does not match, it will be ignored");
+                    Utilities.DebugMsg("In CheckLicenses: Some sort of logic error occurred.");
             }
             #endregion
 

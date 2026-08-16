@@ -11,12 +11,12 @@ namespace DivisiBill.Services;
 /// <summary>
 /// <para>The billing class handles matters related to in-app billing. It relies on the former InAppBilling plug-in
 /// (now the DivisiBill.InAppBilling folder) and the DivisiBill web service. For the purposes of this
-/// discussion the license may be for a product or a subscription.</para>
+/// discussion the purchase may be for an in-app product or a subscription.</para>
 /// 
-/// <para>Professional licenses (usually subscriptions) enable cloud features, OCR licenses enable scans, 
-/// you can buy an OCR license whenever your scan counts drop below a small threshold. Buying one adds a
+/// <para>Professional purchases (usually subscriptions) enable cloud features, OCR purchases enable scans, 
+/// you can buy an OCR purchase whenever your scan counts drop below a small threshold. Buying one adds a
 /// fixed number of scans which then decrement as you perform OCR scans on individual bills. When the scan count
-/// reaches zero we notify the store that the license has been consumed and you must buy another before more 
+/// reaches zero we notify the store that the purchase has been consumed and you must buy another before more 
 /// scans are allowed. The tracking is mostly done by the web service, but we keep a local copy of how many scans
 /// we think are left for convenience, even though the web service value is definitive.</para>
 /// 
@@ -27,7 +27,8 @@ namespace DivisiBill.Services;
 /// can be rejected. The web service also checks that the license is not yet in its list of known licenses. If that
 /// validation passes, the license is stored in a table (so it's now a known one) and a value is returned to the caller
 /// to tell it to acknowledge the license with the store. If it is an OCR license we also return a count of OCR scans it
-/// enables the user to consume, and persist the new total including unused scans from any previous licenses.</para>
+/// enables the user to consume and persist the new total (including unused scans) from any previous licenses for the same
+/// purchaser.</para>
 /// 
 /// <para>In the unlikely event that a purchase is interrupted in the middle the user might end up with a legitimate license
 /// we've never seen. In that case the license is added to our store just as if it had gone through the normal purchase flow.</para>
@@ -161,7 +162,7 @@ internal static class Billing
                     (billingResult, ProPurchase) = await GetInAppBillingPurchaseAsync(ProSubscriptionId, isSubscription: true);
                     if (billingResult == BillingStatusType.ok && ProPurchase is not null && ProPurchase.State == PurchaseState.Purchased)
                     {
-                        Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found proPurchase " + ProPurchase.Id);
+                        Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found subscription " + ProPurchase.Id);
                         return BillingStatusType.ok; // No error
                     }
                     #endregion
@@ -317,7 +318,7 @@ internal static class Billing
         return false;
     }
     /// <summary>
-    /// Remove a Pro license from the store (but not from our list of used licenses) once it has no scans attached any more
+    /// Remove a Pro license from the store (but not from our list of used licenses). Usually because it is being replaced.
     /// </summary>
     internal static async Task ConsumeProLicenseAsync()
     {
