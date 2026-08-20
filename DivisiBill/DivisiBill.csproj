@@ -17,7 +17,8 @@
     <UseMaterial3>true</UseMaterial3>
     <Nullable>enable</Nullable>
     <!--Suppress NU1608 warnings for AndroidX package version mismatches - these are resolved correctly by NuGet-->
-    <NoWarn>$(NoWarn);NU1608</NoWarn>
+    <!--Suppress NU1105 since this is a non-packable project-->
+    <NoWarn>$(NoWarn);NU1608;NU1105</NoWarn>
 
     <!--Set packable false to eliminate a NU1105 warning since we never need to put this in a nuget package-->
     <IsPackable>false</IsPackable>
