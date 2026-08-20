@@ -456,10 +456,10 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
             else // Removed local copy
                 Meal.LocalMealList.Remove(this);
         }
-        if (isRemote is not null) // added to cloud
+        if (isRemote is not null) // added to or removed from cloud
         {
-            IsRemote = isRemote == true;
-            if (isRemote == true)
+            IsRemote = (isRemote == true);
+            if (IsRemote)
                 TryAddTo(Meal.RemoteMealList);
             else // removed from cloud
                 Meal.RemoteMealList.Remove(this);
@@ -635,18 +635,8 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     /// Add the current item to the specified list iff it is not already there. Assumes the list is in descending order by CreationTime
     /// </summary>
     /// <param name="list"></param>
-    /// <returns></returns>
-    public bool TryAddTo(Collection<MealSummary> list)
-    {
-        (MealSummary? ms, int inx) = list.FindItemAndIndex((item) => item.CreationTime <= CreationTime);
-        if (ms is null)
-            list.Add(this);
-        else if (ms.CreationTime == CreationTime)
-            return false; // Nothing to do, it is already in the list
-        else
-            list.Insert(inx, this);
-        return true; // Item added
-    }
+    /// <returns>true if the item was added, false if it was already there</returns>
+    public bool TryAddTo(Collection<MealSummary> list) => list.Upsert(this, (ms1, ms2) => ms1.CompareCreationTimeTo(ms2));
     public int CompareTo(MealSummary? otherMs) => CompareCreationTimeTo(otherMs);
 
     /// <summary>

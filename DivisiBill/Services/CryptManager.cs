@@ -573,8 +573,7 @@ internal class CryptManager
     /// </summary>
     /// <param name="password">Password used to decrypt private keys.</param>
     /// <param name="zipStream">Input stream containing the zip archive.</param>
-    /// <returns>Task representing the restore operation and an integer representing th
-    /// number of keys restored.</returns>
+    /// <returns>Task representing the restore operation and an integer representing the number of keys restored.</returns>
     public static async Task<(int, int)> RestorePrivateKeysFromZipAsync(string password, Stream zipStream)
     {
         ArgumentNullException.ThrowIfNull(password);
