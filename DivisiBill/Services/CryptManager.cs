@@ -375,9 +375,10 @@ internal class CryptManager
     /// the data is malformed or authentication fails.</remarks>
     /// <param name="encrypted">A read-only span containing the encrypted data to decrypt. The data must be formatted with the expected header,
     /// fingerprint, encrypted key, nonce, ciphertext, and authentication tag.</param>
-    /// <returns>A byte array containing the decrypted plaintext. The array will be empty if the original plaintext was empty.</returns>
+    /// <returns>A byte array containing the decrypted plaintext. The array will be empty if the original plaintext was empty or the RSA private 
+    /// key cannot be found.</returns>
     /// <exception cref="InvalidDataException">Thrown if the input data is missing required header fields, has an unrecognized signature or version, contains
-    /// invalid lengths, the RSA private key cannot be found or does not match the fingerprint, or if any other format
+    /// invalid lengths, or does not match the fingerprint, or if any other format
     /// or cryptographic validation fails.</exception>
     public static byte[] DecryptToBytes(ReadOnlySpan<byte> encrypted, RSA? rsaParameter = null)
     {
@@ -429,7 +430,7 @@ internal class CryptManager
                 : rsaParameter;
 
             if (rsa is null)
-                throw new InvalidDataException($"No RSA private key found for fingerprint {fingerprintHex}.");
+                return Array.Empty<byte>(); //In place of throw new InvalidDataException($"No RSA private key found for fingerprint {fingerprintHex}.");
 
             byte[] localFingerprint = ComputeRsaFingerprint(rsa);
             if (!CryptographicOperations.FixedTimeEquals(storedFingerprint, localFingerprint))

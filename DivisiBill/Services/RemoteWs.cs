@@ -58,11 +58,16 @@ public static class RemoteWs
                             try
                             {
                                 description = await CryptManager.DecryptB64StringAsync(wsDataItem.Summary);
+                                if (string.IsNullOrEmpty(description))
+                                {
+                                    Utilities.RecordMsg($"No key to decrypt {itemTypeName}:{wsDataItem.Name}");
+                                    continue;
+                                }
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                // If decryption fails, ignore this entry
-                                Utilities.RecordMsg($"Unable to decrypt {itemTypeName}:{wsDataItem.Name}");
+                                // If decryption faults, ignore this entry
+                                Utilities.RecordMsg($"Unable to decrypt {itemTypeName}:{wsDataItem.Name}: {ex.Message}");
                                 continue;
                             }
                         }
