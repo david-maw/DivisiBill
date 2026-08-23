@@ -1,3 +1,9 @@
+# Version 6.3.34
+
+## No User Visible Changes
+
+This release enhances security and improves various diagnostics but there are no user visible changes.
+
 # Version 6.3.33
 
 ## Failure to Purchase Licenses
