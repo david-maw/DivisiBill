@@ -283,13 +283,13 @@ internal static class CallWs
                 };
                 FormUrlEncodedContent content = new(formData);
                 Utilities.DebugMsg("In VerifyPurchase, awaiting VerifyAndroidPurchase");
-                // validate the license by calling a web service
+                // validate the purchase by calling a web service
                 HttpResponseMessage response = await CallUncertainWebServiceAsync((CancellationTokenSource cts) => client.PostAsync("VerifyAndroidPurchase", content, cts.Token));
                 if (response.IsSuccessStatusCode && purchase.ProductId is not null)
                 {
                     string s = await response.Content.ReadAsStringAsync();
                     Utilities.RecordMsg("In VerifyPurchase, VerifyAndroidPurchase returned ok and \"" + s + "\"");
-                    // If this is a pro license, pass it to future web service calls for authorization
+                    // If this is a pro purchase, pass it to future web service calls for authorization
                     if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.OldProProductId))
                     {
                         UpsertHttpClientHeader(PurchaseHeaderName, purchase.OriginalJson); // This will be the license used from now on

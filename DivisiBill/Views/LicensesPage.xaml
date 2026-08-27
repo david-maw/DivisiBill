@@ -7,82 +7,108 @@
              x:Class="DivisiBill.Views.LicensesPage"
              Title="Optional Licenses">
 
-    <VerticalStackLayout Padding="20" Spacing="5">
-        <!-- Header -->
-        <Label 
-            Text="Professional Subscription"
-            FontSize="{StaticResource FontSizeTitle}"
-            FontAttributes="Bold"
-            HorizontalOptions="Center"/>
-
-        <!--#region License Error Reporting -->
-        <VerticalStackLayout IsVisible="{Binding Path=LicenseChecked, Converter={StaticResource Not}}">
-            <Label Text="Pro Edition Verification Incomplete" FontSize="{StaticResource FontSizeMedium}" FontAttributes="Bold" HorizontalOptions="Center"/>
-            <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
-        </VerticalStackLayout>
-        <!--#endregion-->
-        <!-- #region Pro Features -->
-        <Border Stroke="{StaticResource Primary}" StrokeShape="RoundRectangle 10"  Padding="20,10" StrokeThickness="2">
-            <VerticalStackLayout Spacing="8">
-                <Label 
-                    Text="Professional Edition Features"
+    <ScrollView>
+        <VerticalStackLayout Spacing="5" Margin="5">
+            <!--#region License Error Reporting -->
+            <VerticalStackLayout IsVisible="{Binding Path=LicenseChecked, Converter={StaticResource Not}}">
+                <Label Text="Pro Edition Verification Incomplete" FontSize="{StaticResource FontSizeMedium}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <!--#endregion-->
+            <!-- #region Pro Subscription Features -->
+            <Border Stroke="{StaticResource Primary}" StrokeShape="RoundRectangle 10"  Padding="20,10" StrokeThickness="2">
+                <VerticalStackLayout Spacing="5">
+                    <Label 
+                    Text="Pro Edition Subscription Features"
                     HorizontalOptions="Center"
                     FontSize="{StaticResource FontSizeMedium}"
                     FontAttributes="Bold"/>
 
-                <Label Text="✓ Adds Automated Cloud Backup"/>
-                <Label Text="✓ Allows Cloud Restore"/>
-                <Label Text="✓ Subscription Renews Automatically"/>
-                <Label Text="{Binding SubscriptionPrice, StringFormat='✓ Cost {0} Per Year'}"/>
-            </VerticalStackLayout>
-        </Border>
-        <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
-        <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
+                    <Label Text="✓ Adds Automated Cloud Backup"/>
+                    <Label Text="✓ Allows Cloud Restore"/>
+                    <Label Text="✓ Subscription Renews Automatically"/>
+                    <Label Text="{Binding SubscriptionPrice, StringFormat='✓ Cost {0} Per Year'}"/>
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
+            <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription# {0}'}"
+            IsVisible="{Binding ProSubscriptionId, Converter={StaticResource IsNotNull}}"
+            HorizontalOptions="Center"/>
 
-        <!-- Manage Subscription Button (if subscribed) -->
-        <Button 
-            Text="Manage Subscription"
+            <!-- Manage Subscription Button (if subscribed) -->
+            <Button 
+            Text="Manage Subscription" HorizontalOptions="Center"
             Command="{Binding ManageSubscriptionCommand}"
-            IsVisible="{Binding IsLimited,Converter={StaticResource Not}}"/>
+            IsVisible="{Binding ProSubscriptionId,Converter={StaticResource IsNotNull}}"/>
 
-        <!-- Upgrade Button (if not subscribed) -->
-        <Button 
-            Text="Subscribe to Professional"
+            <!-- Upgrade Button (if not subscribed) -->
+            <Button 
+            Text="Subscribe to Pro" HorizontalOptions="Center"
             Command="{Binding PurchaseProSubscriptionCommand}"
-            IsVisible="{Binding IsLimited}"/>
+            IsVisible="{Binding ProSubscriptionId,Converter={StaticResource IsNull}}"/>
+            <!--#endregion-->
+            <!-- #region Pro Purchase Features -->
+            <Border Stroke="{StaticResource Primary}" StrokeShape="RoundRectangle 10"  Padding="20,10" StrokeThickness="2">
+                <VerticalStackLayout Spacing="5">
+                    <Label 
+                    Text="Pro Edition License Features"
+                    HorizontalOptions="Center"
+                    FontSize="{StaticResource FontSizeMedium}"
+                    FontAttributes="Bold"/>
 
-        <!--The following button is used for testing pro licenses only and is not normally shown-->
-        <Button Text="*Purchase Pro License*" Command="{Binding PurchaseProLicenseCommand}" HorizontalOptions="Center" IsVisible="False"/>
-        <!--#endregion-->
-        <!-- #region OCR Features -->
-        <Border Stroke="{StaticResource Primary}" StrokeShape="RoundRectangle 10" Padding="20,10" StrokeThickness="2" Margin="0,20,0,0">
-            <VerticalStackLayout Spacing="8">
-                <Label 
+                    <Label Text="✓ Same Features as subscription:"/>
+                    <Label Text="{Binding ProPurchasePrice, StringFormat='✓ Cost {0} one time charge'}"/>
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
+            <Label Text="{Binding ProPurchaseId, StringFormat='Pro License# {0}'}"
+            IsVisible="{Binding ProPurchaseId,Converter={StaticResource IsNotNull}}"
+            HorizontalOptions="Center"/>
+
+            <!-- Delete Pro License Button (if you have one) -->
+            <Button 
+            Text="Delete Pro License" HorizontalOptions="Center"
+            Command="{Binding DeleteProLicenseCommand}"
+            BackgroundColor="{AppThemeBinding Dark=DarkRed, Light=Pink}"
+            IsVisible="{Binding ProPurchaseId,Converter={StaticResource IsNotNull}}"/>
+
+            <!-- Purchase Button (if you don't already have one) -->
+            <Button 
+            Text="Purchase Pro License" HorizontalOptions="Center"
+            Command="{Binding PurchaseProLicenseCommand}"
+            IsVisible="{Binding ProPurchaseId,Converter={StaticResource IsNull}}"/>
+
+            <!--#endregion-->
+            <!-- #region OCR Features -->
+            <Border Stroke="{StaticResource Primary}" StrokeShape="RoundRectangle 10" Padding="20,10" StrokeThickness="2" Margin="0,0,0,0">
+                <VerticalStackLayout Spacing="5">
+                    <Label 
                     Text="OCR License"
                     HorizontalOptions="Center"
                     FontSize="{StaticResource FontSizeMedium}"
                     FontAttributes="Bold"/>
 
-                <Label Text="✓ Adds Bill Scanning Capability"/>
-                <Label Text="{Binding ScansPerOcr, StringFormat='✓ Each License Adds {0} Scans'}"/>
-                <Label Text="{Binding ScansWarningLevel, StringFormat='✓ Available Whenever you have &lt; {0} left'}"/>
-                <Label Text="{Binding OcrPrice, StringFormat='✓ Cost {0} Per License'}"/>
-            </VerticalStackLayout>
-        </Border>
+                    <Label Text="✓ Adds Bill Scanning Capability"/>
+                    <Label Text="{Binding ScansPerOcr, StringFormat='✓ Each License Adds {0} Scans'}"/>
+                    <Label Text="{Binding ScansWarningLevel, StringFormat='✓ Available Whenever you have &lt; {0} left'}"/>
+                    <Label Text="{Binding OcrPrice, StringFormat='✓ Cost {0} Per License'}"/>
+                </VerticalStackLayout>
+            </Border>
 
-        <!--#region OCR Scan License -->
-        <Label Text="{Binding OcrLicenseId, StringFormat='OCR Order# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
-        <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" HorizontalOptions="Center"/>
-        <Button Text="Purchase additional OCR Scans" Command="{Binding PurchaseOcrScansCommand}"
+            <Label Text="{Binding OcrLicenseId, StringFormat='OCR License# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
+            <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" HorizontalOptions="Center"/>
+            <Button Text="Purchase additional OCR Scans" Command="{Binding PurchaseOcrScansCommand}"
                             HorizontalOptions="Center" IsEnabled="{Binding Path=IsOcrPurchaseAllowed}"/>
-        <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
-        <!--#endregion-->
+            <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
+            <!--#endregion-->
 
-        <!-- Cancel Button (just exits page) -->
-        <Button 
+            <!-- Cancel Button (just exits page) -->
+            <Button 
             Text="Cancel"
             Command="{Binding CancelCommand}"
+            HorizontalOptions="Center"
             Margin="0,5,0,0"/>
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

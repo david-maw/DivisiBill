@@ -10,9 +10,17 @@ This allows you to purchase a Professional Edition subscription to enable cloud 
 
 If you have already purchased the Professional Edition, this button replaces the subscribe button and opens up a web site to permit you to view, modify or cancel your subscription.
 
+## Purchase
+
+This allows you to purchase a perpetual Professional Edition license to enable cloud operations in DivisiBill; it provides exactly the same features as a subscription but instead of an annual fee you make a one-time payment. Once you purchased a license, this button is replaced by the "Delete" button.
+
+## Delete
+
+This allows you to delete your perpetual Professional Edition license - there is no obvious reason why you might want to do this but the capability exists.
+
 ## Status
 
-This shows you your Pro Subscription order number if you have purchased the Professional Edition.
+This shows you your purchase order number if you have purchased OCR scans (there's a similar display for professional licenses or subscriptions).
 
 ## Scans
 
@@ -20,7 +28,7 @@ All versions of DivisiBill allow you to purchase "scans" to extract information 
 
 ## Purchase Scans
 
-This button is only visible when you have a small number of scans remaining, tap it to purchase more scans.
+This button is only enabled when you have a small number of scans remaining, tap it to purchase more scans.
 
 ## Cancel
 

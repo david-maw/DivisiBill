@@ -22,6 +22,7 @@ public partial class LicensesViewModel : ObservableObject
     private async Task LoadPrices()
     {
         await LoadSubscriptionPrice();
+        await LoadProPurchasePrice();
         await LoadOcrPrice();
         bool statusChecked = await CallWs.StatusAsync();
         if (statusChecked && !string.IsNullOrEmpty(CallWs.MostRecentStatusInfo))
@@ -41,12 +42,14 @@ public partial class LicensesViewModel : ObservableObject
     public void Refresh()
     {
         IsLimited = App.IsLimited;
+        OnPropertyChanged(nameof(ProPurchaseId));
+        OnPropertyChanged(nameof(ProSubscriptionId));
+        OnPropertyChanged(nameof(OcrLicenseId));
     }
     #endregion
     #region Properties
     [ObservableProperty]
     public partial string? SubscriptionPrice { get; set; } = "Loading...";
-
     private async Task LoadSubscriptionPrice()
     {
         try
@@ -60,6 +63,7 @@ public partial class LicensesViewModel : ObservableObject
         }
         SubscriptionPrice ??= $"{0.99:C}"; // Safe default value, in case server value missing or invalid
     }
+
     [ObservableProperty]
     public partial string? OcrPrice { get; set; } = "Loading...";
 
@@ -77,6 +81,22 @@ public partial class LicensesViewModel : ObservableObject
         OcrPrice ??= $"{0.99:C}"; // Safe default value, in case server value missing or invalid
     }
     [ObservableProperty]
+    public partial string? ProPurchasePrice { get; set; } = "Loading...";
+    private async Task LoadProPurchasePrice()
+    {
+        try
+        {
+            ProPurchasePrice = await Billing.GetItemPriceAsync(Billing.OldProProductId, ItemType.InAppPurchase);
+        }
+        catch (Exception ex)
+        {
+            Utilities.DebugMsg($"Failed to load pricing: {ex.Message}");
+            ProPurchasePrice = "Contact Support";
+        }
+        ProPurchasePrice ??= $"{99.99:C}"; // Safe default value, in case server value missing or invalid
+    }
+
+    [ObservableProperty]
     public partial bool IsLimited { get; set; }
 
     partial void OnIsLimitedChanged(bool value)
@@ -90,7 +110,8 @@ public partial class LicensesViewModel : ObservableObject
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;
     public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
-    public string? ProSubscriptionId => Billing.ProPurchase?.Id;
+    public string? ProSubscriptionId => Billing.ProPurchase?.ProductId == Billing.ProSubscriptionId ? Billing.ProPurchase.Id : null;
+    public string? ProPurchaseId => Billing.ProPurchase?.ProductId == Billing.OldProProductId ? Billing.ProPurchase.Id : null;
     public int ScansLeft => Billing.ScansLeft;
     public bool HasOcrLicense => Billing.OcrPurchase is not null;
     public bool InvalidOcrLicense => Billing.OcrPurchase is not null && Billing.OcrPurchase.State != InAppBilling.PurchaseState.Purchased;
@@ -160,6 +181,29 @@ public partial class LicensesViewModel : ObservableObject
         {
             await Utilities.DisplayAlertAsync("Thank You",
                 $"You have purchased a professional license. You may now set the 'Allow Cloud Backup' option.");
+            await App.PopAsync(); // Go back to the Settings page
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteProLicenseAsync()
+    {
+        // Confirm the deletion with the user
+        bool confirmDeletion = await Utilities.AskAsync("Confirm Deletion",
+            "Are you sure you want to delete your professional license? This action cannot be undone.");
+        if (!confirmDeletion)
+            return;
+        bool deleted = await Billing.ConsumeProLicenseAsync();
+        Utilities.DebugMsg("In DeleteProLicenseAsync, ConsumeProLicenseAsync returned " + deleted);
+        if (!deleted)
+            await Utilities.DisplayAlertAsync("Error", "The deletion failed. You still have a professional license");
+        else
+        {
+            await Utilities.DisplayAlertAsync("Thank You",
+                $"You have deleted your professional license. You may no longer use the 'Allow Cloud Backup' option.");
+            App.Settings.HadProSubscription = false; // Avoid the "professional license not found" warning on returning to the app, the user already knows they deleted their license
+            App.Settings.IsCloudAccessAllowed = false; // Disable cloud access since the user no longer has a professional license
+            App.IsLimited = true; // Set the app to limited mode since the user no longer has a professional license
             await App.PopAsync(); // Go back to the Settings page
         }
     }

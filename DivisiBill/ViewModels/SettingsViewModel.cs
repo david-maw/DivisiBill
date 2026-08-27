@@ -125,10 +125,6 @@ public partial class SettingsViewModel : ObservableObjectPlus
     #region Transient Properties
     [ObservableProperty]
     public partial bool IsLimited { get; set; } = true; // Be sure to react to it being set false
-    partial void OnIsLimitedChanged(bool value)
-    {
-        App.IsLimited = value;
-    }
 
     public bool IsOcrPurchaseAllowed => ScansLeft < Billing.ScansWarningLevel; // Includes the case where the user has purchased no scans yet
     public int ScanOption

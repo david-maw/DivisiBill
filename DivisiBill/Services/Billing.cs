@@ -221,7 +221,7 @@ internal static class Billing
         {
             if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestProJsonB64))
             {
-                Utilities.DebugMsg("In GetHasProSubscriptionAsync, DivisiBillTestProJsonB64 was empty");
+                Utilities.DebugMsg("In GetHasProLicenseAsync, DivisiBillTestProJsonB64 was empty");
                 ProPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
                 return BillingStatusType.notLicensing; // a specific error so it can be handled silently 
             }
@@ -262,31 +262,32 @@ internal static class Billing
                 try
                 {
                     #region Old Style Pro Product (used for Testing)
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, trying old style pro product");
+                    Utilities.DebugMsg("In GetHasProLicenseAsync, trying old style pro product");
                     (billingResultOld, ProPurchase) = await GetInAppBillingPurchaseAsync(OldProProductId, isSubscription: false);
                     if (billingResultOld == BillingStatusType.ok && ProPurchase is not null && ProPurchase.State == PurchaseState.Purchased)
                     {
-                        Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found old style pro product " + ProPurchase.Id);
+                        Utilities.DebugMsg("Exiting GetHasProLicenseAsync, found old style pro product " + ProPurchase.Id);
                         HasOldProProductId = true;
                         return BillingStatusType.ok; // No error
                     }
                     else if (billingResultOld >= BillingStatusType.noInternet)
                         return billingResultOld;
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, did not find old style pro product");
+                    Utilities.DebugMsg("In GetHasProLicenseAsync, did not find old style pro product");
                     #endregion
                 }
                 catch (Exception ex)
                 {
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, threw an exception:" + ex);
+                    Utilities.DebugMsg("In GetHasProLicenseAsync, threw an exception:" + ex);
                 }
                 // If the old style license was not found (the normal case) return the status of the subscription
                 return billingResultOld;
             }
             else
-                Utilities.DebugMsg("In GetHasProSubscriptionAsync, unsupported environment, treated as NO PRO SUBSCRIPTION was found");
+                Utilities.DebugMsg("In GetHasProLicenseAsync, unsupported environment, treated as NO PRO LICENSE was found");
 
         return BillingStatusType.notFound;
     }
+
     /// <summary>
     /// Purchase a pro license from an app store then check it against our web service to make sure it is legitimate.
     /// </summary>
@@ -317,13 +318,14 @@ internal static class Billing
         Utilities.DebugMsg("Returning FALSE from Billing.PurchaseProLicenseAsync");
         return false;
     }
+
     /// <summary>
     /// Remove a Pro license from the store (but not from our list of used licenses). Usually because it is being replaced.
     /// </summary>
-    internal static async Task ConsumeProLicenseAsync()
+    internal static async Task<bool> ConsumeProLicenseAsync()
     {
         if (Utilities.IsWinUI)
-            return; // Not implemented for Windows 
+            return false; // Not implemented for Windows 
         BillingStatusType test = await GetHasProLicenseAsync();
         Utilities.DebugMsg("In ConsumeDepletedProLicense, license purchase test returned " + test);
         if (ProPurchase is not null && ProPurchase.ProductId is not null && ProPurchase.PurchaseToken is not null)
@@ -331,11 +333,16 @@ internal static class Billing
             // Notify the store that it can forget about this item, and allow the user to purchase another.
             bool consumed = await ConsumeItemAsync(ProPurchase.ProductId, ProPurchase.PurchaseToken);
             if (consumed)
-                Utilities.DebugMsg("In ConsumeDepletedProLicense, consumed a license, Order ID = " + ProPurchase.Id);
+            {
+                Utilities.DebugMsg("In ConsumeDepletedProLicense, consumed a pro license, Order ID = " + ProPurchase.Id);
+                HasOldProProductId = false;
+                ProPurchase = null;
+            }
             else
                 Utilities.DebugMsg("In ConsumeDepletedProLicense, failed to consume a license, Order ID = " + ProPurchase.Id);
-            ProPurchase = null;
+            return consumed;
         }
+        return false;
     }
     #endregion
     #region OCR License
