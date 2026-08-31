@@ -11,10 +11,54 @@ using System.Xml.Serialization;
 namespace DivisiBill.Models;
 
 // Primarily needed because List<Tuple<Guid, Guid>> in Xamarin Forms breaks XmlSerializer
-public class GuidMappingEntry // needed because the XmlSerializer fails with List<Tuple<Guid,Guid>>
+public class GuidMappingEntry : IComparable<GuidMappingEntry>, IEquatable<GuidMappingEntry> // needed because the XmlSerializer fails with List<Tuple<Guid,Guid>>
 {
     public Guid Key { get; set; }
     public Guid Value { get; set; }
+
+    /// <summary>
+    /// Compares this GuidMappingEntry with another based on the Key property only.
+    /// </summary>
+    /// <param name="other">The GuidMappingEntry to compare with. Can be null.</param>
+    /// <returns>A value indicating the relative order: negative if this Key is less than other's Key,
+    /// zero if equal, positive if greater.</returns>
+    public int CompareTo(GuidMappingEntry? other)
+    {
+        if (other is null)
+            return 1;
+        return Key.CompareTo(other.Key);
+    }
+
+    /// <summary>
+    /// Determines whether this GuidMappingEntry is equal to another based on the Key property only.
+    /// </summary>
+    /// <param name="other">The GuidMappingEntry to compare with. Can be null.</param>
+    /// <returns>true if both objects have the same Key; otherwise, false.</returns>
+    public bool Equals(GuidMappingEntry? other)
+    {
+        if (other is null)
+            return false;
+        return Key.Equals(other.Key);
+    }
+
+    /// <summary>
+    /// Returns the hash code for this GuidMappingEntry based on the Key property only.
+    /// </summary>
+    /// <returns>The hash code of the Key.</returns>
+    public override int GetHashCode()
+    {
+        return Key.GetHashCode();
+    }
+
+    /// <summary>
+    /// Determines whether this GuidMappingEntry is equal to another object based on the Key property only.
+    /// </summary>
+    /// <param name="obj">The object to compare with. Can be null.</param>
+    /// <returns>true if obj is a GuidMappingEntry with the same Key; otherwise, false.</returns>
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as GuidMappingEntry);
+    }
 }
 
 [DataContract(Name = "Person", Namespace = "http://schemas.datacontract.org/2004/07/DivisiBill.DataStore")]
