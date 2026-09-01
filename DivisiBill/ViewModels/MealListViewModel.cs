@@ -1105,19 +1105,23 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             }
             SelectedMealSummariesCount = mealList.Count(ms => ms.FileSelected);
 
-            string priorVenue = "";
-            int priorDistance = 0;
-            if (App.MyLocation is not null)
-            { // Set the distance for each venue}
+            if (App.MyLocation is null) // Just flag the distances as unknown
+                foreach (MealSummary ms in mealList) ms.Distance = Distances.Unknown;
+            else
+            { // Set the distance for each venue
+                Dictionary<string, int> venueDistanceCache = [];
                 foreach (MealSummary ms in mealList)
                 {
-                    if (ms.VenueName == priorVenue)
-                        ms.Distance = priorDistance;
+                    if (venueDistanceCache.TryGetValue(ms.VenueName, out int cachedDistance))
+                        ms.Distance = cachedDistance;
                     else
                     {
-                        priorVenue = ms.VenueName;
                         var v = Venue.FindVenueByName(ms.VenueName);
-                        priorDistance = ms.Distance = v is null ? Distances.Unknown : v.SimplifiedDistance;
+                        int distance = v is null
+                            ? Distances.Unknown
+                            : v.SimplifiedDistance;
+                        venueDistanceCache[ms.VenueName] = distance;
+                        ms.Distance = distance;
                     }
                 }
             }
