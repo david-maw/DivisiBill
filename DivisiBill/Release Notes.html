@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<h1 id="version-6335">Version 6.3.35</h1>
+<h2 id="add-support-for-one-time-pro-license-purchase">Add Support for One-time Pro License Purchase</h2>
+<p>It is now possible to acquire a one-time Pro license instead of an annual subscription. The one-time license enables exactly the same features as a subscription and is valid for the current version and all future versions of DivisiBill. These are especially useful for license testing, which is not a concern for most users, for whom a subscription is a much better deal.</p>
+<h2 id="speed-up-initialization">Speed Up Initialization</h2>
+<p>Location evaluation is now done in parallel with application initialization since it is not needed right away. This shortens the elapsed startup time by several seconds.</p>
+<h2 id="correct-minor-location-issue">Correct Minor Location Issue</h2>
+<p>When location was not in use remote-only bills showed as &quot;close&quot; instead of showing nothing at all, this has been corrected.</p>
+<h2 id="correct-archiverestore">Correct Archive/Restore</h2>
+<p>Restoring from an archive containing alias entries (which is rare) could fail, this change corrects that.</p>
+<h2 id="improve-initial-handling">Improve Initial Handling</h2>
+<p>The behavior of DivisiBill after a clean install has been tidied up. A variety of minor issues have been eliminated.</p>
 <h1 id="version-6334">Version 6.3.34</h1>
 <h2 id="no-user-visible-changes">No User Visible Changes</h2>
 <p>This release enhances security and improves various diagnostics but there are no user visible changes.</p>
