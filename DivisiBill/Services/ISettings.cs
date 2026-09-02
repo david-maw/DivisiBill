@@ -60,6 +60,12 @@ public interface ISettings
     bool MealSavedToRemote { get; set; }
 
     /// <summary>
+    /// Indicates whether the meal in StoredMeal is a fake meal used for testing. This is used to determine if the app should behave as if it
+    /// is in a real meal or not when restoring state.
+    /// </summary>
+    bool MealIsFake { get; set; }
+
+    /// <summary>
     /// Is Internet access permitted to be used for backup
     /// </summary>
     bool IsCloudAccessAllowed { get; set; }

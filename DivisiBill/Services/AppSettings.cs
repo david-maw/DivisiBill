@@ -150,6 +150,11 @@ public class AppSettings : ISettings
         get => Preferences.Get(nameof(MealSavedToRemote), true);
         set => SetPreference(nameof(MealSavedToRemote), value);
     }
+    public bool MealIsFake
+    {
+        get => Preferences.Get(nameof(MealIsFake), false);
+        set => SetPreference(nameof(MealIsFake), value);
+    }
     public bool IsCloudAccessAllowed
     {
         get => Preferences.Get(nameof(IsCloudAccessAllowed), false) && !App.IsLimited;

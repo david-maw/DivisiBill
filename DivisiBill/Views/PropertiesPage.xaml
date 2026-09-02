@@ -63,15 +63,15 @@
                 Text="Default Bill"/>
             <Label
                 HorizontalOptions="Center"
+                IsVisible="{Binding IsFake}"
+                Text="This bill is a fake one created by the system"/>
+            <Label
+                HorizontalOptions="Center"
                 IsVisible="{Binding IsDefault, Converter={StaticResource Not}}"
                 Text="{Binding CreationTime, StringFormat='Created {}', Converter={StaticResource ApproximateDateTime}}"/>
             <Label
                 HorizontalOptions="Center"
                 IsVisible="{Binding IsLastChangeTimeDifferent}"
-                Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
-            <Label
-                HorizontalOptions="Center"
-                IsVisible="{Binding IsLastChangeTimeDifferent,Converter={StaticResource Not}}"
                 Text="{Binding LastChangeTimeText, StringFormat='Updated {0}'}"/>
             <Label
                 HorizontalOptions="Center"
@@ -84,7 +84,7 @@
                 FontSize="{StaticResource FontSizeSmall}"
                 HorizontalOptions="Center"
                 IsVisible="{x:Static services:Utilities.IsDebug}"
-                Text="{Binding DefaultFileName, StringFormat='Stored in {0}'}"/>
+                Text="{Binding Id, StringFormat='ID: {0}'}"/>
             <Label
                 FontSize="{StaticResource FontSizeSmall}"
                 HorizontalOptions="Center"

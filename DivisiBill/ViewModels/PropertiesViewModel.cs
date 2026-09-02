@@ -74,6 +74,8 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     public bool IsLastChangeTimeDifferent => !Utilities.WithinOneSecond(CreationTime, LastChangeTime);
     public string DiagnosticInfo => Meal.CurrentMeal?.DiagnosticInfo ?? string.Empty;
     public string DefaultFileName => IsDefault ? "" : Meal.CurrentMeal.FileName;
+    public bool IsFake => Meal.CurrentMeal.Summary.IsFake;
+    public string Id => Meal.CurrentMeal.Summary.Id;
     #endregion
     #region Tip
     public int TipRate

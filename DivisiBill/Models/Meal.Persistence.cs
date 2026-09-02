@@ -91,7 +91,8 @@ public partial class Meal : ObservableObjectPlus
             {
                 // An unusual case where the meal probably came from remote storage though it's possibly a test meal which is not stored at all
                 m.SavedToRemote = App.Settings.MealSavedToRemote;
-                m.Summary.IsRemote = m.SavedToRemote;
+                m.Summary.IsRemote = !App.Settings.MealIsFake && m.SavedToRemote;
+
             }
             m.Frozen = App.Settings.MealFrozen;
             m.MonitorChanges = true; // From now on take notice of changes
@@ -315,6 +316,7 @@ public partial class Meal : ObservableObjectPlus
         App.Settings.MealFrozen = Frozen;
         App.Settings.MealSavedToRemote = SavedToRemote;
         App.Settings.MealSavedToFile = SavedToFile;
+        App.Settings.MealIsFake = Summary.IsFake;
         SavedToApp = true;
         // No need to save the bill image if there is one, it is already in the internal store 
     }
