@@ -72,6 +72,12 @@ public partial class SplashPage : ContentPage
     public static async Task InitializeApp()
     {
         await StatusMsgAsync("Commencing initialization, tap the icon above to pause");
+        // Start location evaluation in parallel since it can take several seconds.
+        App.UseLocation = await HasLocationPermissionAsync();
+        if (App.UseLocation)
+            _ = App.InitializeLocationAsync(); // Fire-and-forget, it will set App.Location when it is done
+        else
+            await StatusMsgAsync("Location permission denied, location will not be used");
         Shell.Current.Navigating += PreventPrematureNavigation;
         Meal.InitializeFolders();
         if (App.SentryAllowed && App.Settings.SendCrashAsk)
@@ -101,9 +107,6 @@ public partial class SplashPage : ContentPage
             await StatusMsgAsync("Skipped Check for Licenses, web services not allowed");
         else
             await StatusMsgAsync("Skipped Check for Licenses, no Internet");
-        await StatusMsgAsync("Checking location");
-        App.UseLocation = await HasLocationPermissionAsync();
-        await App.InitializeLocationAsync();
         DebugMsg("BaseFolderPath = " + App.BaseFolderPath);
         CryptManager.PasswordSalt = App.Settings.UserKey; // may be empty
         if (CryptManager.HasStoredPassword && !CryptManager.HasStoredRsa)
