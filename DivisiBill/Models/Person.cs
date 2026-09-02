@@ -79,11 +79,11 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         // This list is intentionally not in alphabetical order so as to validate sorting in AllPeople
         List<Person> defaultPeople = [
             new("8C720F0B-7062-4482-B55E-E7E19DCF3791") {FirstName = "John",       LastName = "Smith"},
-            new("8C720F0B-7062-4482-B55E-E7E19DCF3792") {FirstName = "Robert",     LastName = "Smith",                  Nickname="Bob"},
-            new("8C720F0B-7062-4482-B55E-E7E19DCF3793") {FirstName = "Thomas",     LastName = "Green",                  Nickname="Tom" },
+            new("8C720F0B-7062-4482-B55E-E7E19DCF3792") {FirstName = "Robert",     LastName = "Smith",                  Nickname = "Bob"},
+            new("8C720F0B-7062-4482-B55E-E7E19DCF3793") {FirstName = "Thomas",     LastName = "Green",                  Nickname = "Tom" },
             new("8C720F0B-7062-4482-B55E-E7E19DCF3794") {FirstName = "Craig",      LastName = "Brown"},
-            new("8C720F0B-7062-4482-B55E-E7E19DCF3795") {                                                               Nickname = "Support",     Email = "support@autopl.us"},
-            new("8C720F0B-7062-4482-B55E-E7E19DCF3796") {FirstName = "Evangeline", LastName = "Throatwarbler-Mangrove", Nickname="Evie"}
+            new("8C720F0B-7062-4482-B55E-E7E19DCF3795") {FirstName = "Support",                                         Nickname = "Support",     Email = "support@autopl.us"},
+            new("8C720F0B-7062-4482-B55E-E7E19DCF3796") {FirstName = "Evangeline", LastName = "Throatwarbler-Mangrove", Nickname = "Evie"}
         ];
         defaultPeople.Sort();
         AllPeople.Clear();

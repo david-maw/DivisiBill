@@ -93,6 +93,7 @@ public partial class Meal : ObservableObjectPlus
                     InitialMeal = fake; // We wait to assign it until the meal id fully formed and has a venue name
                     LocalMealList.Insert(0, InitialMeal.Summary); // ensure it is in the local meal list
                 }
+                Meal.LocalMealList.Upsert(InitialMeal.Summary); // Ensure the current meal is in the list, even if it is fake.
                 CurrentMeal = InitialMeal;
                 App.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel
                 SnapshotNeeded.IsPaused = true;

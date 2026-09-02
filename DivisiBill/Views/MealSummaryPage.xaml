@@ -17,6 +17,7 @@
     </ContentPage.ToolbarItems>
 
     <controls:ColumnLayout Spacing="2" Padding="5">
+        <Label Text="This bill is a fake one created by the system" IsVisible="{Binding Path=IsFake}" HorizontalTextAlignment="Center"/>
         <!--#region Venue -->
         <Label Text="{Binding VenueName}" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
@@ -57,7 +58,6 @@
         <VerticalStackLayout IsVisible="{Binding ShowStorage}">
             <Label Text="This bill is stored locally" IsVisible="{Binding Path=IsLocal}" HorizontalTextAlignment="Center"/>
             <Label Text="This bill is stored remotely" IsVisible="{Binding Path=IsRemote}" HorizontalTextAlignment="Center"/>
-            <Label Text="This bill is not stored anywhere" IsVisible="{Binding Path=IsFake}" HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
         <!--#endregion-->
         <!--#region Error Reporting -->
