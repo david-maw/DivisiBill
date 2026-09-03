@@ -891,7 +891,7 @@ public partial class App : Application, INotifyPropertyChanged
         get => Settings.FakeLocation;
         set
         {
-            if (!Settings.FakeLocation?.IsVeryCloseTo(value) ?? false)
+            if (!Settings.FakeLocation?.IsVeryCloseTo(value) ?? true)
             {
                 Settings.FakeLocation = value;
                 if (value is null)

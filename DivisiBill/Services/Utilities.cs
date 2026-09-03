@@ -1079,7 +1079,7 @@ public static class Distances
     public const int Close = 10; // Anything within 10 meters is just 'close' 
     public const int AccuracyLimit = // In meters, no location less accurate than this is acceptable
 #if WINDOWS
-        8000; // Because the desktop location accuracy without GPS is 7990
+        16000; // Because the desktop location accuracy without GPS is large (13000+)
 #else
         1000; // 1000 meters seems like a reasonable limit 
 #endif
