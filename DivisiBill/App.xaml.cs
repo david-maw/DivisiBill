@@ -928,7 +928,6 @@ public partial class App : Application, INotifyPropertyChanged
             await TryGetMyLocationAsync(LocationMonitorCancellationTokenSource.Token);
             if (MyLocation is not null)
             {
-                await App.InitializationComplete.Task; // let initialization complete because the venues are not there until then
                 await Venue.UpdateAllDistances();
             }
         }

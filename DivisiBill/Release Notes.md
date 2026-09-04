@@ -1,8 +1,8 @@
 # Version 6.3.36
 
-## Nothing to say yet
+## Select Default Bill Correctly
 
-Watch this space...
+If the current bill is too old to continue with when starting the app, we select the most recent bill from the closest venue to the current location. This means we must wait for the current location discovery process to complete before doing that. The previous release did not always wait long enough, so the wrong default bill could be selected.
 
 # Version 6.3.35
 

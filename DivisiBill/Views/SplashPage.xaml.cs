@@ -73,9 +73,11 @@ public partial class SplashPage : ContentPage
     {
         await StatusMsgAsync("Commencing initialization, tap the icon above to pause");
         // Start location evaluation in parallel since it can take several seconds.
+        Utilities.DebugMsg("Starting location detection process asynchronously");
+        Task InitializeLocationTask = Task.CompletedTask;
         App.UseLocation = await HasLocationPermissionAsync();
         if (App.UseLocation)
-            _ = App.InitializeLocationAsync(); // Fire-and-forget, it will set App.Location when it is done
+            InitializeLocationTask = App.InitializeLocationAsync(); // Fire-and-forget, it will set App.Location when it is done
         else
             await StatusMsgAsync("Location permission denied, location will not be used");
         Shell.Current.Navigating += PreventPrematureNavigation;
@@ -142,14 +144,24 @@ public partial class SplashPage : ContentPage
         await Person.InitializeAsync();
         await StatusMsgAsync("Awaiting Venue Initialization");
         await Venue.InitializeAsync();
-        await Meal.InitializeAsync();
+        await StatusMsgAsync("Awaiting Bill list Initialization");
+        await Meal.InitializeLocalMealList();
         await StatusMsgAsync($"Meal lists initialized, local meal count = {Meal.LocalMealList.Count}");
         // Give the interested user enough time to pause and read the messages
-        for (int i = 3; i > 0; i--)
+        for (int i = 2; i > 0; i--)
         {
             await StatusMsgAsync("Initialization completing " + i);
             await Task.Delay(1000);
         }
+        // If we are using location, wait for discovery to complete.
+        // This can take several seconds, so we started it at the beginning of initialization.
+        if (App.UseLocation)
+        {
+            await StatusMsgAsync("Awaiting location discovery");
+            await InitializeLocationTask;
+            await StatusMsgAsync("Location discovery complete");
+        }
+        await Meal.SelectDefaultMeal();
         await StatusMsgAsync("Initialization complete");
         await Task.Delay(1000);
         PauseBeforeMessage = false; // Just to be sure it wasn't set at the last possible second

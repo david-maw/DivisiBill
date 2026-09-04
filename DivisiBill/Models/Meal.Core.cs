@@ -42,71 +42,89 @@ public partial class Meal : ObservableObjectPlus
     }
 
     private static bool classIsInitialized = false;
-    public static async Task InitializeAsync()
+
+    /// <summary>
+    /// Initializes the local meal list by retrieving stored meals from local storage. If no meals are found 
+    /// and the application is in debug mode, a set of fake meals is created for testing purposes.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task InitializeLocalMealList()
     {
-
-        if (!classIsInitialized)
+        try
         {
-            try
+            await StatusMsgAsync("Initializing local bill list");
+            await GetLocalMealListAsync();
+            if (LocalMealList.Count == 0 && Utilities.IsDebug)
             {
-                classIsInitialized = true;
-                await StatusMsgAsync("Starting Meal.InitializeAsync");
-                await GetLocalMealListAsync();
-                ;
-                if (LocalMealList.Count == 0 && Utilities.IsDebug)
-                {
-                    await StatusMsgAsync("Creating fake bill list so we have something to work with");
-                    CreateFakeStoredBills();
-                }
-                Meal? AppMeal = LoadFromApp(tryExistingSummary: true); // load the meal but use an existing summary if there is one
-                Meal? InitialMeal = null;
+                await StatusMsgAsync("Creating fake bill list so we have something to work with");
+                CreateFakeStoredBills();
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            await StatusMsgAsync("Meal.InitializeLocalMealList faulted: " + ex.Message);
+            await Task.Delay(5000); // enough time to read the message
+        }
+    }
 
-                if (!App.RecentlyUsed && AppMeal is not null && AppMeal.TooOldToContinue)
+    /// <summary>
+    /// Selects the default meal to be used by the application, loading it from local storage or creating a new one if necessary.
+    /// If the current meal is too old to be continued, use the current location to find the closest meal and use that instead.
+    /// If no suitable meal is found, create a new fake meal.
+    /// </summary>
+    public static async Task SelectDefaultMeal()
+    {
+        try
+        {
+            Meal? AppMeal = LoadFromApp(tryExistingSummary: true); // load the meal but use an existing summary if there is one
+            Meal? InitialMeal = null;
+
+            if (!App.RecentlyUsed && AppMeal is not null && AppMeal.TooOldToContinue && App.UseLocation)
+            {
+                // Update all the MealSummary Distance values and determine which bill is closest so we can use it instead of the old one
+                MealSummary? closestMealSummary = null;
+                Venue? closestVenue = null;
+                string priorVenuename = string.Empty;
+                foreach (MealSummary ms in LocalMealList)
                 {
-                    // Determine which mealSummary is closest so we can use it instead of the old one
-                    MealSummary? closestMealSummary = null;
-                    Venue? closestVenue = null;
-                    foreach (MealSummary ms in LocalMealList)
+                    if (ms.VenueName.Equals(priorVenuename, StringComparison.OrdinalIgnoreCase))
+                        continue; // don't consider older meals for the same venue
+                    var v = Venue.FindVenueByName(ms.VenueName);
+                    ms.Distance = v is null ? Distances.Unknown : v.Distance;
+                    if (v is not null && (closestVenue is null || closestVenue.CompareDistanceTo(v) > 0))
                     {
-                        if (App.UseLocation)
-                        {
-                            var v = Venue.FindVenueByName(ms.VenueName);
-                            ms.Distance = v is null ? Distances.Unknown : v.Distance;
-                            if (v is not null && (closestVenue is null || closestVenue.CompareDistanceTo(v) > 0))
-                            {
-                                closestMealSummary = ms;
-                                closestVenue = v;
-                            }
-                        }
+                        closestMealSummary = ms;
+                        closestVenue = v;
                     }
-                    if (closestMealSummary is not null && AppMeal.Summary.CompareDistanceTo(closestMealSummary) > 0)
-
-                        InitialMeal = LoadFromFile(closestMealSummary, true);
+                    priorVenuename = ms.VenueName;
                 }
-                InitialMeal ??= AppMeal;
-                if (InitialMeal is null)
-                {
-
-                    Meal fake = new();
-                    fake.LoadFakeSettings();
-                    fake.Summary.CreationTime = DateTime.Now;
-                    InitialMeal = fake; // We wait to assign it until the meal id fully formed and has a venue name
-                    LocalMealList.Insert(0, InitialMeal.Summary); // ensure it is in the local meal list
-                }
-                Meal.LocalMealList.Upsert(InitialMeal.Summary); // Ensure the current meal is in the list, even if it is fake.
-                CurrentMeal = InitialMeal;
-                App.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel
-                SnapshotNeeded.IsPaused = true;
-                App.StartBackupLoop();
-                bool saved = await TrySaveOldBillAsync();
-                Utilities.DebugMsg("Completed TrySaveOldBillAsync, returned" + (saved ? " saved" : " not saved"));
+                if (closestMealSummary is not null && AppMeal.Summary.CompareDistanceTo(closestMealSummary) > 0)
+                    InitialMeal = LoadFromFile(closestMealSummary, true);
             }
-            catch (Exception ex)
+            InitialMeal ??= AppMeal;
+            if (InitialMeal is null)
             {
-                ex.ReportCrash();
-                await StatusMsgAsync("Meal.InitializeAsync faulted: " + ex.Message);
-                await Task.Delay(10000); // enough time to read the message
+
+                Meal fake = new();
+                fake.LoadFakeSettings();
+                fake.Summary.CreationTime = DateTime.Now;
+                InitialMeal = fake; // We wait to assign it until the meal id fully formed and has a venue name
+                LocalMealList.Insert(0, InitialMeal.Summary); // ensure it is in the local meal list
             }
+            Meal.LocalMealList.Upsert(InitialMeal.Summary); // Ensure the current meal is in the list, even if it is fake.
+            CurrentMeal = InitialMeal;
+            App.Current.Resources["MealViewModel"] = new ViewModels.MealViewModel(); // Reinitialize MealViewModel
+            SnapshotNeeded.IsPaused = true;
+            App.StartBackupLoop();
+            bool saved = await TrySaveOldBillAsync();
+            Utilities.DebugMsg("Completed TrySaveOldBillAsync, returned" + (saved ? " saved" : " not saved"));
+        }
+        catch (Exception ex)
+        {
+            ex.ReportCrash();
+            await StatusMsgAsync("Meal.SelectDefaultMeal faulted: " + ex.Message);
+            await Task.Delay(5000); // enough time to read the message
         }
     }
 
