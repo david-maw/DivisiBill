@@ -41,8 +41,6 @@ public partial class Meal : ObservableObjectPlus
         MonitorChanges = false;
     }
 
-    private static bool classIsInitialized = false;
-
     /// <summary>
     /// Initializes the local meal list by retrieving stored meals from local storage. If no meals are found 
     /// and the application is in debug mode, a set of fake meals is created for testing purposes.

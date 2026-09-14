@@ -233,6 +233,8 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
+    readonly List<string> ArchiveFileTypes = ["text/xml", "application/xml", "application/zip"];
+    readonly List<string> ArchiveFileExtensions = ["*.xml", "*.zip"];
     /// <summary>
     /// Command that lets the user pick an archive file (zip or xml). This command deserializes the archive into SelectedArchive.
     /// It does not extract images; images are restored later by RestoreArchiveAsync and only for meals actually restored.
@@ -247,8 +249,8 @@ internal partial class DataManagementViewModel : ObservableObject
                 PickerTitle = "Please select an archive file",
                 FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                 {
-                        { DevicePlatform.Android, [ "text/xml", "application/xml", "application/zip" ] },
-                        { DevicePlatform.WinUI, [ "*.xml", "*.zip" ] },
+                        { DevicePlatform.Android, ArchiveFileTypes },
+                        { DevicePlatform.WinUI, ArchiveFileExtensions },
                 }),
             });
             if (result is not null)
@@ -551,6 +553,9 @@ internal partial class DataManagementViewModel : ObservableObject
         }
     }
 
+    readonly List<string> KeyArchiveFileTypes = ["text/xml", "application/xml", "application/zip"];
+    readonly List<string> KeyArchiveFileExtensions = ["*.xml", "*.zip"];
+
     /// <summary>
     /// Command to restore keys from a selected file using CryptManager.
     /// </summary>
@@ -562,8 +567,8 @@ internal partial class DataManagementViewModel : ObservableObject
             PickerTitle = "Select key archive file",
             FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
-                { DevicePlatform.Android, [ "application/zip" ] },
-                { DevicePlatform.WinUI, [ ".zip" ] },
+                { DevicePlatform.Android, KeyArchiveFileTypes },
+                { DevicePlatform.WinUI, KeyArchiveFileExtensions },
             }),
         });
 

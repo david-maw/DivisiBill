@@ -331,6 +331,8 @@ public static partial class Utilities // Partial for regex generator
         return s.ToString();
     }
 
+    static readonly List<string> xmlErrorFingerprint = ["xml-error"];
+
     /// <summary>
     /// Report an exception with optional explanatory text.
     /// No Sentry message will be sent in a DEBUG build because it will be intercepted by SentryEventProcessor `, but the message will be sent in a release build if the user has enabled that in settings.
@@ -366,7 +368,7 @@ public static partial class Utilities // Partial for regex generator
         SentrySdk.CaptureException(ex, scope =>
         {
             if (ex is XmlException xmlEx)
-                scope.Fingerprint = ["xml-error"]; // this seems to be ignored
+                scope.Fingerprint = xmlErrorFingerprint; // this seems to be ignored
             // These attachments appear in the Sentry UI in reverse of the order they appear here
             if (Meal.CurrentMeal.Summary is not null)
             {
@@ -555,9 +557,8 @@ public static partial class Utilities // Partial for regex generator
             long savedPosition = streamParameter.Position;
             streamParameter.Position = 0;
             StreamReader sr = new(streamParameter);
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
             string myString = sr.ReadToEnd();
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
+            _ = myString; // so the debugger can step in and examine it without warning IDE0059
             streamParameter.Position = savedPosition;
         }
     }
