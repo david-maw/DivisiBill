@@ -139,7 +139,8 @@ internal partial class DataManagementViewModel : ObservableObject
                 .Where(ms => // A meal that is already selected (if we are selecting) and within date range if there is one
                     (!OnlySelectedMeals || ms.FileSelected) &&
                     ms.CreationTime >= startDateTime &&
-                    ms.CreationTime <= finishDateTime
+                    ms.CreationTime <= finishDateTime &&
+                    ms.IsLocal
                 )
                 .OrderByDescending(ms => ms.CreationTime)
                 .Select(ms => Meal.LoadFromFile(ms));

@@ -68,7 +68,7 @@ public partial class Meal
         foreach (string mealName in localOnlyMealNames)
         {
             MealSummary ms = LocalMealList.First(foundMs => mealName.Equals(foundMs.Id));
-            if (!ms.IsFake)
+            if (ms.IsLocal)
                 QueueForBackup(ms);
         }
         // If we are backing up images, queue each image that is local but not remote for transmission
