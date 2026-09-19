@@ -120,7 +120,8 @@ public partial class App : Application, INotifyPropertyChanged
 #elif WINDOWS
             handler.PlatformView.GotFocus += (s, e) =>
             {
-                handler.PlatformView.SelectAll();
+                if (s is Microsoft.UI.Xaml.Controls.TextBox textBox)
+                    textBox.SelectAll();
             };
 #endif
         });

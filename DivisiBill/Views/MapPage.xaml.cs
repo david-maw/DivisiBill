@@ -78,7 +78,8 @@ public partial class MapPage : ContentPage
         {
             App.MyLocationChanged += App_MyLocationChanged;
             await App.StartMonitoringLocation();
-        }
+            rootLayout.Children.Remove(nativeMap); // The native map is not used on Windows, so remove it from the
+        }                                          // layout to avoid unnecessary resource usage and a fault at exit
     }
 
     /// <summary>
