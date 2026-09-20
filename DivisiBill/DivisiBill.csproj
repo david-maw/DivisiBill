@@ -133,13 +133,14 @@
     <!--Sentry.Profiling 4.10.0 is not supported on Android-->
     <PackageReference Condition="'$(TargetOsPlatform)' != 'android'" Include="Sentry.Profiling" Version="6.11.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="4.1.2" />
-    <PackageReference Include="SkiaSharp" Version="4.152.0" />
+    <PackageReference Include="SkiaSharp" Version="4.152.1" />
     <!--Force hashing level to fix build warning-->
     <PackageReference Include="System.IO.Hashing" Version="10.0.12" />
   </ItemGroup>
 
   <!--Add In-App Billing package, but only for Android-->
   <ItemGroup Condition="'$(TargetOsPlatform)' == 'android'">
+    <!-- Updating this past 9.1.0.1 causes build errors as of Sept 2026 -->
     <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="9.1.0.1" />
   </ItemGroup>
 
