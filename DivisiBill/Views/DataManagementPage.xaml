@@ -91,14 +91,13 @@
                         </Grid>
                         <!--#endregion-->
                         <!--#region Date Range -->
-                        <!--One or other of the following labels shows-->
                         <Label Text="{Binding MealsText}" FontAttributes="Bold" HorizontalOptions="Center"/>
-                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,-20,0,0">
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="0" Margin="0,-20,0,0">
                             <DatePicker
                                 Date="{Binding StartDate}"
                                 MaximumDate="{Binding FinishDate}"
                                 MinimumDate="{Binding EarliestStartDate}" />
-                            <Label Text="and" VerticalOptions="Center" />
+                            <Label Text="to" VerticalOptions="Center" />
                             <DatePicker
                                 Date="{Binding FinishDate}"
                                 MaximumDate="{Binding LatestFinishDate}"

@@ -21,7 +21,7 @@ internal partial class DataManagementViewModel : ObservableObject
             if (OnlySelectedMeals || StartDate > EarliestStartDate)
                 SelectMealsToArchive();
             else
-                SelectedMealsCount = Meal.LocalMealList?.Count ?? 0; // the easy case, all meals are selected
+                SelectedMealsCount = Meal.LocalMealList?.Count(ms => ms.IsLocal) ?? 0; // the easy case, all meals are selected
         }
     }
 
@@ -46,9 +46,9 @@ internal partial class DataManagementViewModel : ObservableObject
         })
         : (SelectedMealsCount switch
         {
-            0 => "No bills match the selected date range",
+            0 => "No bills match the date range",
             1 => $"One bill (for \"{SelectedArchive.SelectedMeals[0].VenueName}\") matches",
-            _ => $"{SelectedMealsCount} bills match the selected date range"
+            _ => $"{SelectedMealsCount} bills match the date range"
         });
 
     [ObservableProperty]
