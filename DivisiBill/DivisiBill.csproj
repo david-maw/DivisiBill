@@ -10,7 +10,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
     <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
-    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+    <MauiXamlInflator Condition="'$(Configuration)|$(TargetOsPlatform)' == 'debug|windows'">Runtime</MauiXamlInflator>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies> <!--Because serialization assemblies do not play well with MAUI-->
     <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
