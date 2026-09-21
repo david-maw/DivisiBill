@@ -1,10 +1,10 @@
 ﻿# Welcome
 
-When you first run DivisiBill after installation, it will start by showing you this "Welcome" help. After you exit from the help system, DivisiBill will show the startup screen (illustrated below) which (among other things) will check to see what licenses you have (they are optional so you might not have any).
+When you first run DivisiBill after installation, it will start by showing you this "Welcome" page. This is just one of many help pages you can view. Once you exit from the help system, DivisiBill will show the startup screen illustrated below which, among other things, will check to see what licenses you have (they are optional so you might not have any).
 
-If this is your first time using DivisiBill **watch the quick demo** [here](demo.html) (scroll down to see the whole image). The general model is you start from an old bill and edit it to describe a new one. DivisiBill will save changed bills automatically. After the startup screen (see below) new users are taken to the tutorial screen (there's a picture of it below too) which makes it a bit easier to figure out the steps you need to take to enter a bill.  
+If this is your first time using DivisiBill **watch the quick demo** [here](demo.html). The general model is that you start from an old bill and edit it to describe a new one. DivisiBill will save changed bills automatically. After the startup screen (see below) new users are taken to the tutorial screen (there's a picture of it below too) which makes it a bit easier to figure out the steps you need to take to enter a bill.
 
-If you have already purchased a Professional Edition subscription, DivisiBill will show a "Cloud Access" pop-up to ask whether you want to enable cloud storage. Cloud storage is disabled by default, but if you already have DivisiBill data stored in the cloud, enabling it at this point will permit DivisiBill to reload your most recent lists of venues and people automatically. You can also enable cloud storage later. Once cloud storage is enabled, individual bills can be used or copied from the cloud, and bills, stored lists of people or venues are saved automatically when they change and can be downloaded and either merged with, or replace current items.
+If you have already purchased a Professional Edition subscription, DivisiBill will show a "Cloud Access" pop-up to ask whether you want to enable cloud storage. Cloud storage is disabled by default, but if you already have DivisiBill data stored in the cloud, enabling it at this point will permit DivisiBill to reload your most recent lists of venues and people automatically. You can also enable cloud storage later. Once cloud storage is enabled, individual bills can be used or copied from the cloud, and bills, stored lists of people or venues are saved automatically when they change and can be downloaded and either merged with, or replace current items. If you like you can elect to encrypt all your cloud data so nobody else can read it. If you don't have a Professional Edition subscription, you can still use DivisiBill, you just won't be able to use cloud storage.
 
 Next, DivisiBill will show a pop-up asking for permission to access to your location in order to determine if you're at a venue you previously stored. The app will work without this permission, but it will be unable to look for existing bills for your current location.
 
@@ -19,7 +19,7 @@ Once initialization has been completed (typically in a few seconds) the next pag
 
 As you gain experience you can elect not to use the tutorial page and just go directly to the 
  [Items](lineitemspage.html) page, which will contain a bill. If no existing bill is suitable, DivisiBill loads up a sample one for "Queasy Diner" with a half dozen typical items you might find on a restaurant bill. 
-These items include an appetizer that's shared equally, meals for
+These items include an appetizer that's shared equally, meals for 
 each participant, wine shared unequally, and finally a discount shared equally.
 
 You can get an idea how each item is shared by looking at the different symbols in the left column
@@ -35,7 +35,7 @@ or on the name of the venue to return to the [Items](lineitemspage.html) page.
 There are many other pages in DivisiBill (see the [index](index.html#pages)), but they all exist in support of
 these two.
 
-If there has been a previous crash a dialog will pop up (see it [here](crashpage.html)) asking you whether you want to send it to support or not and whether or not you want to be asked again should another crash happen.
+If there has been a previous crash a dialog will pop up (see it [here](crashpage.html)) asking you whether you want to send information about it to support or not, and whether or not you want to be asked again should another crash happen.
 
 ## General User Interface Hints
 
@@ -49,7 +49,7 @@ Swiping left deletes the item; you can usually get an item back if you deleted i
 The operating system "back" button returns to the previous page, or to the Items page if there is no previous page.
 If you are already on the Items page, the "back" button pops up a warning and if you press "back" again, closes the program.
 
-If you close DivisiBill and re-run it fairly soon, it will open the last bill you were working on, after that time it will try and find a bill for a nearby venue and present that as a starting point. If you
+If you close DivisiBill and re-run it fairly soon thereafter (currently a couple of hours), it will open the last bill you were working on, after that time it will try and find a bill for a nearby venue and present that as a starting point. If you
 leave a bill unchanged for more than a couple of hours, that bill will be saved the next time the program starts, and a 
 new bill with the same content as the previous one will be created. (You can see creation and update times in the
 [Bill Properties](propertiespage.html) page.) If you choose to reload a saved
