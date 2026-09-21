@@ -1175,9 +1175,9 @@ public class SentryEventProcessor : ISentryEventProcessor
     public const string UserFeedbackTitle = "User Feedback";
     public const string PrematureNavigationTitle = "PrematureNavigation";
     private static int skipBreaks = 0; // Just set this to skip the next however many breaks
-    public SentryEvent? Process(SentryEvent sentryEvent)
+    public SentryEvent? Process(SentryEvent? sentryEvent)
     {
-        Utilities.DebugMsg($"In SentryEventProcessor.Process, Event:\"{sentryEvent.Message}\", EventId: {sentryEvent.EventId}");
+        Utilities.DebugMsg($"In SentryEventProcessor.Process, Event:\"{sentryEvent?.Message?.Formatted}\", EventId: {sentryEvent?.EventId}");
         if (Utilities.IsDebug)
         {
             // Never report anything on a debug build but you can put a breakpoint here to look at them
@@ -1189,7 +1189,7 @@ public class SentryEventProcessor : ISentryEventProcessor
             return null;
         }
         // Some messages get reported regardless of general telemetry settings
-        bool mustSendMessage = !string.IsNullOrWhiteSpace(sentryEvent.Message?.Message)
+        bool mustSendMessage = !string.IsNullOrWhiteSpace(sentryEvent?.Message?.Message)
             && (sentryEvent.Message.Message.Equals(UserFeedbackTitle)
                 || sentryEvent.Message.Message.Equals(PrematureNavigationTitle));
         if (mustSendMessage || (App.Settings is not null && App.Settings.SendCrashYes))
