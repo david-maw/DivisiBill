@@ -2,9 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
-using SixLabors.ImageSharp.Processing;
 using SkiaSharp;
 
 namespace DivisiBill.ViewModels;
@@ -215,12 +212,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
             string tempPath = Path.Combine(Path.GetTempPath(), $"rotate_{Guid.NewGuid()}.jpg");
 
             using (FileStream outputStream = File.Create(tempPath))
-            {
-                if (DeviceInfo.Platform == DevicePlatform.Android)
-                    SkiaSharpRotate(sourcePath, outputStream, 90);
-                else
-                    await ImageSharpRotate(sourcePath, outputStream, 90);
-            }
+                SkiaSharpRotate(sourcePath, outputStream, 90);
 
             File.Copy(tempPath, Meal.TempImageFilePath, true);
             File.Delete(tempPath);
@@ -342,12 +334,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         using (FileStream newStream = File.Create(Meal.TempImageFilePath))
         {
             if (stream.Length > 200_000) // Arbitrary upper limit on file size below which we just use it as is 
-            {
-                if (Microsoft.Maui.Devices.DeviceInfo.Platform == DevicePlatform.Android)
-                    SkiaConvert(stream, newStream);
-                else
-                    await ImageSharpConvert(stream, newStream);
-            }
+                SkiaConvert(stream, newStream);
             else // It is a small file, just copy it directly
                 await stream.CopyToAsync(newStream);
         }
@@ -360,41 +347,9 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     #endregion
     #region Image Shrinking (gray scale and scaling)
     /// <summary>
-    /// Convert an image to a smaller, gray scale version of itself to save space, this code runs very slowly (20s+) on Android
-    /// in .NET 8 RC2 at least, so there we use the SkiaSharp version for now. It doesn't compress as well, but it's close enough.
-    /// </summary>
-    /// <param name="stream">Stream containing the original image data (either from and image picker or camera)</param>
-    /// <param name="newStream">The stream to put the new (reduced size, gray scale) data in</param>
-    private static async Task ImageSharpConvert(Stream stream, FileStream newStream)
-    {
-        using SixLabors.ImageSharp.Image image = await SixLabors.ImageSharp.Image.LoadAsync(stream);
-        // We have to do a little dance here because it is possible that the EXIF orientation data says to rotate this image by 90 degrees
-        // meaning the bitmap width is actually the height of the final image and vice versa
-        int exifOrientation = 0;
-        if (image.Metadata.ExifProfile is not null)
-        {
-            foreach (IExifValue item in image.Metadata.ExifProfile.Values)
-                if (item.Tag == SixLabors.ImageSharp.Metadata.Profiles.Exif.ExifTag.Orientation)
-                {
-                    exifOrientation = (ushort)(item.GetValue() ?? 0);
-                    break;
-                }
-        }
-        int newBitmapWidth = 0, newBitmapHeight = 0;
-        if (exifOrientation > 4) // 6 is common but 5,7 & 8 all transpose width and height
-            newBitmapWidth = 1000;
-        else
-            newBitmapHeight = 1000;
-        image.Mutate(x => x
-            .Resize(newBitmapWidth, newBitmapHeight) // Set the width because setting height works strangely
-            .Grayscale());
-        await image.SaveAsync(newStream, new JpegEncoder() { ColorType = JpegColorType.Luminance });
-    }
-
-    /// <summary>
-    /// Convert an image to a smaller, gray scale version of itself to save space, this code runs reasonably quickly (around a second 
-    /// typically) on Android in .NET 8 RC2 at least, so we use it i place of the ImageSharp version for now. It doesn't compress as well,
-    /// but it's close enough.
+    /// Convert an image to a smaller, gray scale version of itself to save space, we used to use ImageSharp because it compressed this code runs very slowly (20s+) on Android
+    /// better but in 2026 it started requiring a key, which is free for DivisiBill, being open source, but does require anyone who clones it to have a key
+    /// we use the SkiaSharp version instead. It doesn't compress as well, but it's close enough.
     /// </summary>
     /// <param name="stream">Stream containing the original image data (either from and image picker or camera)</param>
     /// <param name="newStream">The stream to put the new (reduced size, gray scale) data in</param>
@@ -421,21 +376,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     #endregion
     #region Image Rotation
     /// <summary>
-    /// Rotate an image using ImageSharp (fast on Windows, slow on Android)
-    /// </summary>
-    /// <param name="imagePath">Path to a file containing the original image data</param>
-    /// <param name="outputStream">The stream to put the rotated image data in</param>
-    /// <param name="degrees">The degrees to rotate (e.g., -90 for counter-clockwise, 90 for clockwise)</param>
-    private static async Task ImageSharpRotate(string imagePath, FileStream outputStream, float degrees)
-    {
-        using FileStream inputStream = File.OpenRead(imagePath);
-        using SixLabors.ImageSharp.Image image = await SixLabors.ImageSharp.Image.LoadAsync(inputStream);
-        image.Mutate(x => x.Rotate(degrees));
-        await image.SaveAsync(outputStream, new JpegEncoder() { ColorType = JpegColorType.Luminance });
-    }
-
-    /// <summary>
-    /// Rotate an image using SkiaSharp (fast on Android, slow on Windows)
+    /// Rotate an image using SkiaSharp (fast on Android, slow on Windows but doesn't require a license)
     /// </summary>
     /// <param name="imagePath">Path to a file containing the original image data</param>
     /// <param name="outputStream">The stream to put the rotated image data in</param>
