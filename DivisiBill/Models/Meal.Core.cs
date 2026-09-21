@@ -647,6 +647,7 @@ public partial class Meal : ObservableObjectPlus
         CreateFakeLineItems();
         TaxRate = 0.0775;
         TipRate = 0.20;
+        TipOnTax = true;
         Frozen = true;
         FinalizeSetup();
     }
