@@ -137,6 +137,10 @@ public partial class Venue : ObservableObject, IComparable<Venue>
             {
                 ex.ReportCrash();
             }
+            finally
+            {
+                stream?.Dispose();
+            }
         return false;
     }
     public static void InitializeFolders()
