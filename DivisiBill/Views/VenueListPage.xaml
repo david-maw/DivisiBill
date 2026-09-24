@@ -8,6 +8,7 @@
              xmlns:services="clr-namespace:DivisiBill.Services"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:DivisiBill.Controls"
+             BindingContext="{vm:VenueListViewModel}"
              x:Name="Page"
              x:DataType="vm:VenueListViewModel"
              x:Class="DivisiBill.Views.VenueListPage"
@@ -95,9 +96,9 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphLoad}" Command="{Binding AssignCommand}" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Command="{Binding AddCommand}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteCommand}" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
-        <ToolbarItem Text="Map"       Clicked="OnShowMap"                           Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
-        <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"        Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
-        <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}" Order="Secondary"/>
+        <ToolbarItem Text="Map"       Command="{Binding ShowMapCommand}" CommandParameter="{Binding CurrentItem}" Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
+        <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"                                      Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
+        <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}"                               Order="Secondary"/>
     </ContentPage.ToolbarItems>
     <controls:ColumnLayout>
         <!--#region List of Venues -->

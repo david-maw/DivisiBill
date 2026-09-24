@@ -1,5 +1,3 @@
-﻿// Ignore Spelling: Haptic Awaitable
-
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Generated;
@@ -62,18 +60,62 @@ public static partial class Utilities // Partial for regex generator
         }
         return randomString.ToString();
     }
+
     /// <summary>
-    /// Insert an item in an ordered list of items or move it if it is already there but should be in a different
-    /// place in the list. 
-    /// The list is ordered based on a compare function passed as a parameter. 
-    /// This would be a lot easier if it were not for the 'move' case where the item is already in the list but in
-    /// the wrong place so the list may initially have one element out of order.
+    /// Sort an ObservableCollection in-place using the provided Comparison. The collection is reordered using
+    /// ObservableCollection.Move so collection-change notifications remain minimal.
     /// </summary>
-    /// <typeparam name="T">The object type we're working with</typeparam>
-    /// <param name="list">The list on which we are operating</param>
-    /// <param name="targetItem">The item to insert or move</param>
-    /// <param name="compareTo">The comparison function to determine where the item should be</param>
-    /// <returns>True if an item was moved or inserted false if nothing changed></returns>
+    internal static void Sort<T>(this ObservableCollection<T> collection, Comparison<T> comparison)
+    {
+        if (collection is null || comparison is null)
+            return;
+        if (collection.Count < 2)
+            return;
+
+        // Make a sorted copy of the items (stable sort)
+        List<T> sorted = [.. collection];
+        sorted.Sort(comparison);
+
+        // Reorder the original collection to match the sorted list using Move where necessary
+        for (int i = 0; i < sorted.Count; i++)
+        {
+            T desired = sorted[i];
+            int currentIndex = collection.IndexOf(desired);
+            if (currentIndex >= 0 && currentIndex != i)
+                collection.Move(currentIndex, i);
+        }
+    }
+
+    /// <summary>
+    /// Sort an ObservableCollection in-place using the default IComparable implementation of T.
+    /// </summary>
+    internal static void Sort<T>(this ObservableCollection<T> collection) where T : IComparable<T>
+    {
+        if (collection is null)
+            return;
+        Sort<T>(collection, (x, y) => x.CompareTo(y));
+    }
+
+    /// <summary>
+    /// Sort an ObservableCollection in-place using an IComparer of T.
+    /// </summary>
+    internal static void Sort<T>(this ObservableCollection<T> collection, IComparer<T> comparer)
+    {
+        if (collection is null || comparer is null)
+            return;
+        Sort<T>(collection, comparer.Compare);
+    }    /// <summary>
+         /// Insert an item in an ordered list of items or move it if it is already there but should be in a different
+         /// place in the list. 
+         /// The list is ordered based on a compare function passed as a parameter. 
+         /// This would be a lot easier if it were not for the 'move' case where the item is already in the list but in
+         /// the wrong place so the list may initially have one element out of order.
+         /// </summary>
+         /// <typeparam name="T">The object type we're working with</typeparam>
+         /// <param name="list">The list on which we are operating</param>
+         /// <param name="targetItem">The item to insert or move</param>
+         /// <param name="compareTo">The comparison function to determine where the item should be</param>
+         /// <returns>True if an item was moved or inserted false if nothing changed></returns>
     internal static bool Upsert<T>(this IList<T> list, T targetItem, Func<T, T, int> compareTo) where T : class
     {
         // First, handle the trivial cases
@@ -1097,7 +1139,7 @@ public static class Distances
         distance <= Close ? Close
         : (distance < 1000 ? distance
         : (distance >= Inaccurate ? Inaccurate
-        : (distance + 50) / 100 * 100));
+        : (distance + 500) / 1000 * 1000));
     /// <summary>
     /// Show distance text
     /// </summary>

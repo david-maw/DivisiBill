@@ -182,7 +182,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         }
         if (failed)
             File.Delete(VenueFullName);
-        // Initiate backup to cloud if it is permitted, do not wait for result
+        // Backup to cloud if it is permitted
         if (remote && App.IsCloudAllowed)
         {
             stream.Position = 0;
@@ -276,23 +276,10 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     /// <returns>true if inserted, false if not (because it was a duplicate)</returns>
     private bool InsertInAllVenues()
     {
-        int index = -1, newIndex = -1;
-        foreach (Venue item in allVenues)
-        {
-            index++;
-            int i = CompareTo(item);
-            if (i == 0)
-                return false;
-            else if (i < 0)
-            {
-                newIndex = index;
-                break;
-            }
-        }
-        if (newIndex < 0)
-            allVenues.Add(this); // Item should go at end
-        else
-            allVenues.Insert(newIndex, this);
+        (_, int newIndex) = FindVenueAndIndexInAllVenues(Name);
+        if (newIndex >= 0)
+            return false; // Duplicate found
+        allVenues.Insert(~newIndex, this);
         return true;
     }
 
@@ -305,26 +292,60 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         if (!allVenuesByDistanceIsSorted)
             return false;
 
-        // Use binary search to find the correct insertion point
+        int targetIndex = FindIndexInAllVenuesByDistance();
+        if (targetIndex >= 0)
+            return false; // A venue of that name is already present
+        allVenuesByDistance.Insert(~targetIndex, this);
+        return true;
+    }
+
+    /// <summary>
+    /// Finds the index of this venue in the sorted list of all venues by distance. If the venue is not found, 
+    /// it returns a negative number indicating where it should be placed (offset by 1) - the bitwise
+    /// complement of the insertion point.
+    /// </summary>
+    /// <returns></returns>
+    public int FindIndexInAllVenuesByDistance()
+    {
         int low = 0;
         int high = allVenuesByDistance.Count - 1;
-
         while (low <= high)
         {
             int mid = (low + high) >> 1;
             int comparison = CompareDistanceTo(allVenuesByDistance[mid]);
-
             if (comparison == 0)
-                return false; // Duplicate found
-
+                return mid; // Found
             if (comparison < 0)
                 high = mid - 1;
             else
                 low = mid + 1;
         }
+        return ~low; // Not found, return bitwise complement of the insertion point
+    }
 
-        allVenuesByDistance.Insert(low, this);
-        return true;
+    /// <summary>
+    /// Finds the index of this venue in the sorted list of all venues. If the venue is not found, 
+    /// it returns a negative number indicating where it should be placed (offset by 1) - the bitwise
+    /// complement of the insertion point.
+    /// </summary>
+    /// <returns></returns>
+    public static (Venue?, int) FindVenueAndIndexInAllVenues(string desiredName)
+    {
+        int low = 0;
+        int high = allVenues.Count - 1;
+        while (low <= high)
+        {
+            int mid = (low + high) >> 1;
+            var midVenue = allVenues[mid];
+            int comparison = desiredName.CompareTo(midVenue.Name);
+            if (comparison == 0)
+                return (midVenue, mid); // Found
+            if (comparison < 0)
+                high = mid - 1;
+            else
+                low = mid + 1;
+    }
+        return (null, ~low); // Not found, return bitwise complement of the insertion point
     }
 
     /// <summary>
@@ -337,11 +358,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         foreach (Venue v in allVenuesByDistance)
             v.Distance = Distances.Simplified(App.GetDistanceTo(v.Location));
         await Task.Yield();
-        List<Venue> sortableList = [.. allVenuesByDistance];
-        sortableList.Sort(CompareDistances);
-        allVenuesByDistance.Clear();
-        foreach (Venue v in sortableList)
-            allVenuesByDistance.Add(v);
+        allVenuesByDistance.Sort((x, y) => x.CompareDistanceTo(y));
         allVenuesByDistanceIsSorted = true;
     }
 
@@ -353,45 +370,51 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     /// <returns>Reference to the venue with the specified name</returns>
     public static Venue SelectOrAddVenue(string? VenueName = null, string? notesParam = null)
     {
-        if (allVenues is null) // initializing
+        if (AllVenues is null) // initializing
             return new Venue(); // Should never happen
         Venue v = new() { Name = VenueName ?? "New", Notes = notesParam ?? string.Empty };
         if (VenueName is null)
             v.Location = App.MyLocation; // Assign current location only to a newly created venue with no name
         // Find out where in the sorted list this venue should go, can't use BinarySearch method because it is
-        // not defined for ObserveableList<T>
-        int low = 0;
-        int high = allVenues.Count - 1;
-
-        while (low <= high)
-        {
-            int mid = (low + high) >> 1;
-            int comparison = v.CompareTo(allVenues[mid]);
-
-            if (comparison == 0)
-                return allVenues[mid];
-
-            if (comparison < 0)
-                high = mid - 1;
-            else
-                low = mid + 1;
-        }
-        // If we get to here it was not found in AllVenues
-        allVenues.Insert(low, v);
+        (var existingVenue, int newIndex) = FindVenueAndIndexInAllVenues(v.Name);
+        if (existingVenue is not null)
+            return existingVenue; // Duplicate found
+        // If we get to here it was not found in AllVenues and ~newIndex is the index where it should be
+        // inserted to keep the list sorted
+        AllVenues.Insert(~newIndex, v);
         v.InsertInAllVenuesByDistance();
         return v;
     }
 
     public static Venue? FindVenueByName(string? desiredName)
-    {
-        if (string.IsNullOrWhiteSpace(desiredName) || !(allVenues?.Count > 0)) // the current venue has been renamed or we're initializing or there just aren't any venues
-            return null;
-        Venue? v = allVenues.Where(v1 => v1.Name.Equals(desiredName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-        return v;
-    }
+        => string.IsNullOrWhiteSpace(desiredName) || !(allVenues?.Count > 0)
+            ? null
+            : FindVenueAndIndexInAllVenues(desiredName).Item1;
     public static void SetCurrentByName(string? desiredName) => Current = FindVenueByName(desiredName);
+
+    /// <summary>
+    /// Compares this venue to another venue by name, ignoring case.
+    /// If the other venue is null, it returns a positive value.
+    /// </summary>
+    /// <param name="otherVenue"></param>
+    /// <returns></returns>
     public int CompareTo(Venue? otherVenue) => string.Compare(Name, otherVenue?.Name, ignoreCase: true);
+
+    /// <summary>
+    /// Compares two venues by their distance from the current location.
+    /// If the distances are equal, it falls back to comparing by name.
+    /// </summary>
+    /// <param name="item1"></param>
+    /// <param name="item2"></param>
+    /// <returns></returns>
     public static int CompareDistances(Venue item1, Venue item2) => item1.CompareDistanceTo(item2);
+
+    /// <summary>
+    /// Compares the distance of this venue to another venue.
+    /// If the distances are equal, it falls back to comparing by name.
+    /// </summary>
+    /// <param name="otherVenue"></param>
+    /// <returns></returns>
     public int CompareDistanceTo(Venue? otherVenue)
     {
         if (this == otherVenue)
@@ -509,7 +532,8 @@ public partial class Venue : ObservableObject, IComparable<Venue>
         if (allVenuesByDistanceIsSorted & allVenuesByDistance.Contains(this))
             MoveToCorrectPlaceByDistance();
         DistanceChanged?.Invoke(this, new VenueDistanceChangedEventArgs(this, oldValue, newValue));
-        UpdateTime = DateTime.Now;
+        // Note that we do not change UpdateTime here because the distance is not a persisted value,
+        // it is calculated from the location and the current location
     }
 
     [XmlIgnore]

@@ -1,20 +1,19 @@
 using DivisiBill.Models;
 using DivisiBill.Services;
 
+using ScrollableObject = DivisiBill.ViewModels.VenueListViewModel.ScrollableObject;
+
 namespace DivisiBill.Views;
 
 public partial class VenueListPage : ContentPage
 {
     protected ViewModels.VenueListViewModel context;
-    private MapSettings? mapSettings = null;
-
+    #region Page LifeCycle
     public VenueListPage()
     {
         InitializeComponent();
-        context = new ViewModels.VenueListViewModel(
-            NavigateToDetails: async (v) => await App.PushAsync(Routes.VenueEditPage, "Venue", v),
-            NavigateToHome: async () => { await App.GoToHomeAsync(); });
-        BindingContext = context;
+        context = BindingContext as ViewModels.VenueListViewModel
+            ?? throw new InvalidOperationException("BindingContext must be a VenueListViewModel");
         context.ScrollItemsTo = ScrollItemsTo;
     }
     ~VenueListPage() { context.ScrollItemsTo = null; }
@@ -26,35 +25,10 @@ public partial class VenueListPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        await Task.CompletedTask; // Just to avoid warning about async with no await on a Windows build
         Shell.Current.FlyoutBehavior = Shell.Current.Navigation.NavigationStack.Count > 1 // we got here by navigation
             ? FlyoutBehavior.Disabled
             : FlyoutBehavior.Flyout;
-        if (mapSettings is not null && mapSettings.VenueLocationHasChanged)
-        {
-            mapSettings.VenueLocationHasChanged = false; // don't execute this code again unnecessarily
-            var v = Venue.FindVenueByName(mapSettings.VenueName);
-            v?.Location = mapSettings.VenueLocation;
-        }
-        if (context.CurrentItem is null)
-        {
-            // For convenience, select the venue for the current meal if it exists
-            if (!string.IsNullOrWhiteSpace(Meal.CurrentMeal.VenueName))
-            {
-                context.CurrentItem = Venue.FindVenueByName(Meal.CurrentMeal.VenueName);
-                if (context.CurrentItem is not null)
-                    CurrentCollectionView.ScrollTo(context.CurrentItem);
-            }
-        }
-        context.ShowVenuesHint = App.Settings.ShowVenuesHint;
-
-        await Task.Delay(200); // Without the delay the scroll doesn't work
-
-        try
-        {
-            CurrentCollectionView.ScrollTo(context.CurrentItem);
-        }
-        catch (Exception) { } // Don't care if the selection fails
+        await context.OnNavigatedTo();
     }
     protected override async void OnDisappearing()
     {
@@ -66,19 +40,23 @@ public partial class VenueListPage : ContentPage
         await App.StopMonitoringLocation();
         Utilities.DebugMsg($"Leave VenueListPage.OnDisappearing");
     }
-
-    private async void OnShowMap(object? sender, EventArgs e)
+    #endregion
+    #region Collection Scrolling
+    private void ScrollItemsTo(ScrollableObject obj, ScrollToPosition position)
     {
-        Venue? v = (sender is BindableObject b && b.BindingContext is Venue venue) ? venue : context.CurrentItem;
-        if (v is not null)
+        switch (obj)
         {
-            mapSettings = new(v.Name, v.Location);
-            await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
+            case Venue venue:
+                int index = context.VenueList.IndexOf(venue);
+                if (index >= 0)
+                    CurrentCollectionView.ScrollTo(index, position: position);
+                break;
+            case int i:
+                CurrentCollectionView.ScrollTo(i, position: position);
+                break;
         }
     }
-    #region Collection Scrolling
-    private void ScrollItemsTo(int index, bool toEnd) // Passed in to viewModel
-        => CurrentCollectionView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+
     private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
         context.FirstVisibleItemIndex = e.FirstVisibleItemIndex;

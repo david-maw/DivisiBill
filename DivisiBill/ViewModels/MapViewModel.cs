@@ -33,7 +33,7 @@ public partial class MapViewModel : ObservableObject
     /// </summary>
     public MapSettings? MapSettings
     {
-        get => field;
+        get;
         set
         {
             if (field != value)
