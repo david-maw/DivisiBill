@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<h1 id="version-6337">Version 6.3.37</h1>
+<h2 id="do-not-delete-ocr-license-prematurely">Do Not Delete OCR License Prematurely</h2>
+<p>If DivisiBill was restarted and found an OCR license with no scans left, it would delete it. The deletion is not necessary until a new license is purchased so it is now deferred until then.</p>
+<h2 id="venue-list-improvements">Venue List Improvements</h2>
+<p>Sometimes the venue list would scroll up and down by itself. It's not clear what triggers this but the mechanism used to select the initial venue has been changed to try and eliminate it.</p>
+<h2 id="set-tipontax-on-default-bill">Set TipOnTax on Default Bill</h2>
+<p>The default bill created after a new install of DivisiBill now has TipOnTax set, just so it doesn't show a &quot;non default&quot; warning.</p>
+<h2 id="stop-using-imagesharp">Stop Using ImageSharp</h2>
+<p>It works perfectly well on Windows but requires a license at build time, which is unacceptable for an open source project.</p>
+<h2 id="do-not-include-fake-bills-in-archive-count">Do Not Include Fake Bills in Archive Count</h2>
+<p>When archiving bills, the count of bills to be archived now excludes any fake bills that were created because there were no bills stored on disk. Previously they were included in the count but could not actually be archived, which was not intended.</p>
 <h1 id="version-6336">Version 6.3.36</h1>
 <h2 id="select-default-bill-correctly">Select Default Bill Correctly</h2>
 <p>If the current bill is too old to continue with when starting the app, we select the most recent bill from the closest venue to the current location. This means we must wait for the current location discovery process to complete before doing that. The previous release did not always wait long enough, so the wrong default bill could be selected.</p>

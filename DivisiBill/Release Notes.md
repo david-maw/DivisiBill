@@ -1,3 +1,25 @@
+# Version 6.3.37
+
+## Do Not Delete OCR License Prematurely
+
+If DivisiBill was restarted and found an OCR license with no scans left, it would delete it. The deletion is not necessary until a new license is purchased so it is now deferred until then.
+
+## Venue List Improvements
+
+Sometimes the venue list would scroll up and down by itself. It's not clear what triggers this but the mechanism used to select the initial venue has been changed to try and eliminate it.
+
+## Set TipOnTax on Default Bill
+
+The default bill created after a new install of DivisiBill now has TipOnTax set, just so it doesn't show a "non default" warning.
+
+## Stop Using ImageSharp
+
+It works perfectly well on Windows but requires a license at build time, which is unacceptable for an open source project.
+
+## Do Not Include Fake Bills in Archive Count
+
+When archiving bills, the count of bills to be archived now excludes any fake bills that were created because there were no bills stored on disk. Previously they were included in the count but could not actually be archived, which was not intended.
+
 # Version 6.3.36
 
 ## Select Default Bill Correctly
