@@ -60,7 +60,7 @@
                     <Label Text="{Binding ProPurchasePrice, StringFormat='✓ Cost {0} one time charge'}"/>
                 </VerticalStackLayout>
             </Border>
-            <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
+            <Label Text="Unverified Pro Purchase Found" FontAttributes="Bold" IsVisible="{Binding InvalidProPurchase}" HorizontalOptions="Center"/>
             <Label Text="{Binding ProPurchaseId, StringFormat='Pro License# {0}'}"
             IsVisible="{Binding ProPurchaseId,Converter={StaticResource IsNotNull}}"
             HorizontalOptions="Center"/>

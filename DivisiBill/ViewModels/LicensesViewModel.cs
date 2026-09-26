@@ -109,7 +109,8 @@ public partial class LicensesViewModel : ObservableObject
     public bool WsUriDefined => App.WsUriDefined;
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;
-    public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
+    public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase?.ProductId == Billing.ProSubscriptionId && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
+    public bool InvalidProPurchase => Billing.ProPurchase is not null && Billing.ProPurchase?.ProductId == Billing.OldProProductId && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? ProSubscriptionId => Billing.ProPurchase?.ProductId == Billing.ProSubscriptionId ? Billing.ProPurchase.Id : null;
     public string? ProPurchaseId => Billing.ProPurchase?.ProductId == Billing.OldProProductId ? Billing.ProPurchase.Id : null;
     public int ScansLeft => Billing.ScansLeft;

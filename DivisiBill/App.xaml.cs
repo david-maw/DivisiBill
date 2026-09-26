@@ -690,8 +690,7 @@ public partial class App : Application, INotifyPropertyChanged
                 PeriodicCheckForProEditionTask ??= Task.Run(() => PeriodicCheckForProEdition(LicenseProcessCancellationTokenSource.Token));
             }
             Utilities.DebugMsg("Checking for OCR License");
-            if (await Billing.GetHasOcrLicenseAsync() == 0)
-                await Billing.ConsumeDepletedOcrLicense();
+            await Billing.GetHasOcrLicenseAsync();
             #endregion
             #region Validate and (if necessary update) the AccountId
             static string? NullIfEmpty(string? s) => string.IsNullOrEmpty(s) ? null : s; // Local helper function to simplify expressions below

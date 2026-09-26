@@ -77,7 +77,7 @@
             <!--#region Cloud UI -->
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <!--#region Basic Edition or Internet Inaccessible -->
-            <Label Text="Pro subscription backup is unavailable" HorizontalOptions="Center"
+            <Label Text="Cloud backup is unavailable" HorizontalOptions="Center"
                    IsVisible="{Binding InternetEnabledAndLicensed, Converter={StaticResource Not}}"/>
             <!--#endregion-->
             <!--#region Pro Subscription and Internet Accessible (Cloud Access and Use) -->
@@ -124,8 +124,7 @@
                         </Label.FormattedText>
                     </Label>
                     <!--#region Pro Subscription -->
-                    <Label Text="Unverified Pro Subscription Found" FontAttributes="Bold" IsVisible="{Binding InvalidProSubscription}" HorizontalOptions="Center"/>
-                    <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Order# {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
+                    <Label Text="Unverified Pro Order Found" FontAttributes="Bold" IsVisible="{Binding InvalidProLicense}" HorizontalOptions="Center"/>
                     <!--#endregion-->
                     <!--#region OCR Scan License -->
                     <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" Margin="0, 5, 0, 5" HorizontalOptions="Center"/>

@@ -44,7 +44,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
         OnPropertyChanged(nameof(InternetEnabledAndLicensed));
         OnPropertyChanged(nameof(LicenseChecked));
         OnPropertyChanged(nameof(HasProSubscription));
-        OnPropertyChanged(nameof(InvalidProSubscription));
+        OnPropertyChanged(nameof(InvalidProLicense));
         OnPropertyChanged(nameof(ProSubscriptionId));
         OnPropertyChanged(nameof(ScansLeft));
         OnPropertyChanged(nameof(IsOcrPurchaseAllowed));
@@ -244,7 +244,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public bool WsUriDefined => App.WsUriDefined;
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;
-    public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
+    public bool InvalidProLicense => Billing.ProPurchase is not null && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? ProSubscriptionId => Billing.ProPurchase?.Id;
     public int ScansLeft => Billing.ScansLeft;
     public bool HasOcrLicense => Billing.OcrPurchase is not null;

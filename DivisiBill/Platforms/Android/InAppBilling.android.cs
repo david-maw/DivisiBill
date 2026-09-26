@@ -73,13 +73,12 @@ public class InAppBillingImplementation : BaseInAppBilling
         }
 
         BillingClient.StartConnection(OnSetupFinished, OnDisconnected);
-        // TODO: stop trying
 
         return tcsConnect.Task;
 
         void OnSetupFinished(BillingResult billingResult)
         {
-            Console.WriteLine($"Billing Setup Finished : {billingResult.ResponseCode} - {billingResult.DebugMessage}");
+            Utilities.DebugMsg($"Billing Setup Finished : {billingResult.ResponseCode} - {billingResult.DebugMessage}");
             IsConnected = billingResult.ResponseCode == BillingResponseCode.Ok;
             tcsConnect?.TrySetResult(IsConnected);
         }
