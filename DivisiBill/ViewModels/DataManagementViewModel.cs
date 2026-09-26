@@ -264,29 +264,29 @@ internal partial class DataManagementViewModel : ObservableObject
                 // App.Current.IntentQueue.Enqueue(new Services.StreamRequest(File.OpenRead(result.FullPath), result.ContentType));
                 // await Shell.Current.Navigation.PushModalAsync(new Views.RestorePage());
 
-                (Archive? archive, string message) = await Archive.DeserializeAnyAsync(result.FullPath);
-                if (archive is null)
+                var archiveRes = await Archive.DeserializeAnyAsync(result.FullPath);
+                switch (archiveRes)
                 {
-                    IsBusy = false;
-                    if (string.IsNullOrWhiteSpace(message))
-                        message = "Archive deserialization failed: Unknown error";
-                    await Utilities.ShowAppSnackBarAsync(message);
-                    return;
-                }
-
-                // Set dates based on all the meals in the archive
-                DateTime NewStartDate = EarliestStartDate = archive.AllMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
-                DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
-
-                SelectedArchive = archive;
-                SelectedMealsCount = archive.AllMeals is null ? 0 : archive.AllMeals.Count;
-                if (SelectedMealsCount > 0)
-                {
-                    StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
-                    FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
+                    case string errorMessage:
+                        IsBusy = false;
+                        string message = string.IsNullOrWhiteSpace(errorMessage) ? "Archive deserialization failed: Unknown error" : errorMessage;
+                        await Utilities.ShowAppSnackBarAsync(message);
+                        return;
+                    case Archive archive:
+                        // Set dates based on all the meals in the archive
+                        DateTime NewStartDate = EarliestStartDate = archive.AllMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
+                        DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
+                        SelectedArchive = archive;
+                        SelectedMealsCount = archive.AllMeals is null ? 0 : archive.AllMeals.Count;
+                        if (SelectedMealsCount > 0)
+                        {
+                            StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
+                            FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
+                        }
+                        break;
                 }
             }
-            else
+            else // FilePicker returned null, which means the user canceled or something went wrong.
             {
                 SelectedArchive = null;
                 // Set dates based on all the local meals (initially all are selected)
@@ -364,9 +364,9 @@ internal partial class DataManagementViewModel : ObservableObject
             }
 
             // Restore the data items
-            (bool restoreWorked, string restoreFailureText) = await archive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, UseImages);
+            string restoreRes = await archive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, UseImages);
 
-            if (restoreWorked)
+            if (string.IsNullOrWhiteSpace(restoreRes))
             {
                 // Navigate to meal list after restore
                 await App.GoToAsync(Routes.MealListByAgePage);
@@ -375,10 +375,8 @@ internal partial class DataManagementViewModel : ObservableObject
                 SelectedArchive = null;
                 SelectedMealsCount = 0;
             }
-            else if (restoreFailureText != null)
-                await Utilities.ShowAppSnackBarAsync($"Restore completed with issues: {restoreFailureText}");
             else
-                await Utilities.ShowAppSnackBarAsync("Restore failed");
+                await Utilities.ShowAppSnackBarAsync($"Restore completed with issues: {restoreRes}");
         }
         catch (Exception ex)
         {

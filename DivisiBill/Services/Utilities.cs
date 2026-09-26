@@ -328,25 +328,6 @@ public static partial class Utilities // Partial for regex generator
     }
 
     /// <summary>
-    /// Find an item and its index in an IEnumerable, usually it's easiest if this is a list.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static (T?, int) FindItemAndIndex<T>(this IEnumerable<T> items, Predicate<T> predicate)
-    {
-        int index = 0;
-        foreach (T item in items)
-        {
-            if (predicate(item))
-                return (item, index);
-            index++;
-        }
-        return (default, -1);
-    }
-
-    /// <summary>
     /// Return a block of text describing the current app build. Used for diagnostic messages.
     /// </summary>
     /// <returns>text describing the current app build.</returns>

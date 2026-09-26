@@ -19,23 +19,26 @@ public partial class RestoreViewModel : ObservableObject
     public async Task WaitForUpdatesAsync()
     {
         StreamRequest intentInfo = await App.Current.IntentQueue.DequeueAsync(CancellationToken.None);
-        (Archive? archive, string errorMsg) = await Archive.DeserializeAnyAsync(intentInfo.FileStream, intentInfo.MimeType);
-        if (archive is null)
-            IntentDescription = $"DivisiBill could not open the archive: " + errorMsg;
-        else
+        var archiveRes = await Archive.DeserializeAnyAsync(intentInfo.FileStream, intentInfo.MimeType);
+        switch (archiveRes)
         {
-            IntentDescription = $"DivisiBill opened an archive containing {archive.AllMeals?.Count ?? 0} bills";
-            // Set dates based on all the meals in the archive
-            DateTime NewStartDate = EarliestStartDate = archive.AllMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
-            DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
+            case string errorMessage:
+                IntentDescription = $"DivisiBill could not open the archive: " + errorMessage;
+                break;
+            case Archive archive:
+                IntentDescription = $"DivisiBill opened an archive containing {archive.AllMeals?.Count ?? 0} bills";
+                // Set dates based on all the meals in the archive
+                DateTime NewStartDate = EarliestStartDate = archive.AllMeals?.LastOrDefault()?.CreationTime ?? DateTime.Now;
+                DateTime NewFinishDate = LatestFinishDate = archive.AllMeals?.FirstOrDefault()?.CreationTime ?? DateTime.Now;
 
-            SelectedArchive = archive;
-            SelectedMealsCount = archive.AllMeals is null ? 0 : archive.AllMeals.Count;
-            if (SelectedMealsCount > 0)
-            {
-                StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
-                FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
-            }
+                SelectedArchive = archive;
+                SelectedMealsCount = archive.AllMeals is null ? 0 : archive.AllMeals.Count;
+                if (SelectedMealsCount > 0)
+                {
+                    StartDate = NewStartDate; // Note that setting this date will change the contents of SelectedMeals
+                    FinishDate = NewFinishDate; // Note that setting this date will change the contents of SelectedMeals
+                }
+                break;
         }
     }
     // Text describing how the app was launched and intent details
@@ -64,9 +67,9 @@ public partial class RestoreViewModel : ObservableObject
             // We never apply user settings from the archive - use the App Data Management Page Restore option for that.
 
             // Restore the data items
-            (bool restoreWorked, string restoreFailureText) = await SelectedArchive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, UseImages);
+            string restoreRes = await SelectedArchive.RestoreAnyAsync(DeleteBeforeRestore, OverwriteDuplicates, OnlyRelated, UseImages);
 
-            if (restoreWorked)
+            if (string.IsNullOrWhiteSpace(restoreRes))
             {
                 Services.Utilities.DebugMsg($"RestoreArchiveAsync: Restore successful, restored {SelectedMealsCount} meals");
                 IntentDescription = SelectedMealsCount switch
@@ -81,7 +84,8 @@ public partial class RestoreViewModel : ObservableObject
             else
             {
                 SelectedArchive.ClearDateRange(); // disable restore
-                IntentDescription = restoreFailureText != null ? $"Restore had a problem: {restoreFailureText}" : "Restore failed";
+                var err = restoreRes is string s ? s : string.Empty;
+                IntentDescription = !string.IsNullOrWhiteSpace(err) ? $"Restore had a problem: {err}" : "Restore failed";
             }
         }
         catch (Exception ex)

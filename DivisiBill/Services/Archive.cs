@@ -22,6 +22,7 @@ public class Archive
     /// </summary>
     /// <remarks>This class encapsulates various user preferences, such as default rates for tips and taxes,
     /// display hints, and filtering options. It is used to persist and retrieve user settings to or from an Archive.</remarks>
+    public readonly union ArchiveOrError(Archive, string);
     public class UserSettingsClass
     {
         public int DefaultTipRate { get; set; }
@@ -332,7 +333,7 @@ public class Archive
     /// <returns>A tuple containing the deserialized <see cref="Archive"/> object or a string describing any error that
     /// occurred. If deserialization is successful, the error string is empty. If the archive type is unsupported or an
     /// error occurs, the <see cref="Archive"/> is <see langword="null"/> and the error string provides details.</returns>
-    public static async Task<(Archive?, string)> DeserializeAnyAsync(Stream stream, string mimeType)
+    public static async Task<ArchiveOrError> DeserializeAnyAsync(Stream stream, string mimeType)
     {
         StreamType archiveType = StreamType.Unknown;
         if (mimeType.Equals("application/zip", StringComparison.OrdinalIgnoreCase) ||
@@ -369,35 +370,35 @@ public class Archive
                     _ => StreamType.Unknown
                 };
                 if (archiveType == StreamType.Unknown)
-                    return (null, "Unsupported XML archive type");
+                    return "Unsupported XML archive type";
                 else
                 {
                     stream.Position = savedPosition;
-                    return (DeserializeFromXmlStream(stream, archiveType), "");
+                    var deserialized = DeserializeFromXmlStream(stream, archiveType);
+                    return deserialized is null ? "Failed to deserialize archive" : deserialized;
                 }
             }
             catch (Exception)
             {
-                return (null, "Failed to read archive as an XML stream");
+                return "Failed to read archive as an XML stream";
             }
         }
         else
-            return (null, "Unsupported archive MIME type");
+            return "Unsupported archive MIME type";
     }
 
     /// <summary>
     /// Deserializes an archive from the specified file, supporting both zip and xml formats. Returns the deserialized
-    /// archive and a status message indicating success or the reason for failure.
+    /// archive or the reason for failure.
     /// </summary>
     /// <remarks>If a zip file is provided, the method searches for the first .xml entry and attempts to
     /// deserialize it as an archive. Persistent storage is not restored from the archive during deserialization, that may
     /// occur later if requested, see <see cref="RestoreAnyAsync"/>. The status message is empty on success; otherwise, it contains an error
     /// description. The method disposes of any streams or archives it opens.</remarks>
     /// <param name="archiveContainerName">The full path to the archive file to deserialize. Must be a .zip or .xml file.</param>
-    /// <returns>A tuple containing the deserialized <see cref="Archive"/> object and a status message. If deserialization fails,
-    /// the archive will be <see langword="null"/> and the status message will describe the error.</returns>
+    /// <returns>A union containing either the deserialized <see cref="Archive"/> object or the reason for failure in a string.</returns>
     /// <param name="streamContent"></param>
-    public static async Task<(Archive?, string)> DeserializeAnyAsync(string archiveContainerName, StreamType streamContent = StreamType.Unknown)
+    public static async Task<ArchiveOrError> DeserializeAnyAsync(string archiveContainerName, StreamType streamContent = StreamType.Unknown)
     {
         if (streamContent == StreamType.Unknown)
             streamContent = Path.GetExtension(archiveContainerName).ToLower() switch
@@ -435,7 +436,7 @@ public class Archive
                     catch (Exception ex)
                     {
                         ex.ReportCrash();
-                        return (null, "In DeserializeAny: Failed to open archive file");
+                        return "In DeserializeAny: Failed to open archive file";
                     }
                     if (zipArchive is not null)
                     {
@@ -447,16 +448,16 @@ public class Archive
                             streamContent = StreamType.XmlArchive;
                         }
                         else
-                            return (null, "zip file contents unexpected");
+                            return "zip file contents unexpected";
                         // We do not extract images here; image extraction will be performed later during restore for only the meals that were restored.
                     }
                     else
-                        return (null, "Archive file is not a valid zip file");
+                        return "Archive file is not a valid zip file";
                     break;
                 default:
-                    return (null, "In DeserializeAny: unsupported stream content type");
+                    return "In DeserializeAny: unsupported stream content type";
                 case StreamType.Unknown:
-                    return (null, "Archive file must be a .zip or .xml file containing archive data");
+                    return "Archive file must be a .zip or .xml file containing archive data";
             }
 
             // By this point we have an archive name and a stream to the archive (XML content)
@@ -467,22 +468,21 @@ public class Archive
                 {
                     archive.ContainerFullName = archiveContainerName;
                     archive.IsZipped = zipArchive is not null;
+                    return archive;
                 }
-
-                return archive switch
+                else
                 {
-                    null => (null, "Failed to deserialize archive"),
-                    _ => (archive, "")
-                };
+                    return "Failed to deserialize archive";
+                }
             }
             else
-                return (null, "In DeserializeAny: no archive stream was found");
+                return "In DeserializeAny: no archive stream was found";
         }
         catch (Exception ex)
         {
             ex.ReportCrash();
             // The user canceled or something went wrong
-            return (null, "Restore Faulted, Archive was unusable");
+            return "Restore Faulted, Archive was unusable";
         }
         finally
         {
@@ -725,7 +725,7 @@ public class Archive
     /// extract images; otherwise, only data is restored.</param>
     ///<returns>A tuple containing a boolean indicating success or failure, and a string message with details about any failure.</returns>
     /// 
-    public async Task<(bool, string)> RestoreAnyAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated, bool useImages)
+    public async Task<string> RestoreAnyAsync(bool deleteBeforeRestore, bool overwriteDuplicates, bool onlyRelated, bool useImages)
     {
         try
         {
@@ -788,16 +788,16 @@ public class Archive
                 catch (Exception ex)
                 {
                     ex.ReportCrash();
-                    return (false, "Failed to extract some images from archive");
+                    return "Failed to extract some images from archive";
                 }
             }
         }
         catch (Exception ex)
         {
             ex.ReportCrash();
-            return (false, "Restore Faulted, Archive was unusable");
+            return "Restore Faulted, Archive was unusable";
         }
-        return (true, string.Empty);
+        return string.Empty;
     }
 
     /// <summary>

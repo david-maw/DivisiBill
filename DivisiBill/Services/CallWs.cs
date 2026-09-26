@@ -271,7 +271,7 @@ internal static class CallWs
     /// <returns>The contents of the returned verification message or null if verification failed</returns>
     internal static async Task<string?> VerifyPurchase(InAppBillingPurchase purchase)
     {
-        Utilities.DebugMsg("In VerifyPurchase for " + purchase.Id);
+        Utilities.DebugMsg($"In VerifyPurchase for {purchase.Id} ({purchase.ProductId})");
         if ((DeviceInfo.Platform == DevicePlatform.Android || (DeviceInfo.Platform == DevicePlatform.WinUI && Utilities.IsDebug)) && purchase.OriginalJson is not null && purchase.Signature is not null)
         {
             try

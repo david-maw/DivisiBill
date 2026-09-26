@@ -212,13 +212,10 @@ public partial class LicensesViewModel : ObservableObject
     [RelayCommand]
     private async Task PurchaseOcrScansAsync()
     {
-        int scans = await Billing.PurchaseOcrLicenseAsync();
-        Utilities.DebugMsg("OCR licenses purchased, total remaining scans = " + scans);
-        if (scans == -1)
-            await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire any additional OCR licenses");
-        else if (scans < 0)
-            await Utilities.DisplayAlertAsync("Error", "The purchase could not be verified. You did not acquire any additional OCR licenses");
-        else
+        var purchaseResult = await Billing.PurchaseOcrLicenseAsync();
+        if (purchaseResult is string purchaseError)
+            await Utilities.DisplayAlertAsync("Error", "You did not acquire any additional OCR licenses. The purchase failed: " + purchaseError);
+        else if (purchaseResult is int scans)
         {
             await Utilities.DisplayAlertAsync("Thank You", $"You now have {scans} OCR scans left");
             await App.PopAsync(); // Go back to the Settings page
