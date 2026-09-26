@@ -12,8 +12,6 @@ public partial class MealListPage : ContentPage
     {
         InitializeComponent();
         viewModel = BindingContext as MealListViewModel ?? throw new InvalidOperationException("BindingContext must be of type MealListViewModel");
-        viewModel.UseMealParam = UseMeal;
-        viewModel.ShowDetailsParam = ShowSummary;
         viewModel.ScrollItemsTo = ScrollItemsTo;
     }
 

@@ -13,9 +13,6 @@ namespace DivisiBill.ViewModels;
 /// </summary>
 public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributable
 {
-    public Func<MealSummary?, Task>? UseMealParam { get; set; }
-    public Func<MealSummary?, Task>? ShowDetailsParam { get; set; }
-
     public MealListViewModel()
     {
         Meal.LocalMealList.CollectionChanged += LocalMealList_CollectionChanged;
@@ -88,6 +85,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     private Meal? lastCurrentShown = null;
     public void OnNavigatedTo()
     {
+        // If the current meal has changed since the last time we showed it, then select it again but allowing
+        // for windows quirks
         if (Meal.CurrentMeal != lastCurrentShown)
         {
             if (IsGrouped && expandedGroup is not null)
@@ -275,17 +274,23 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     private void ChangeList() => IsSelectableList = !IsSelectableList;
 
     /// <summary>
-    /// Call the passed-in ShowDetails function to show details of this MealSummary to the user 
-    /// - this will probably switch to a new page to show a detail view.
+    /// Show details of this MealSummary to the user by switching to a new page to show a detail view.
     /// </summary>
     /// <param name="ms">The MealSummary to show</param>
     /// <returns></returns>
     [RelayCommand]
-    private async Task InvokeShowDetails(MealSummary? ms)
+    private async Task ShowDetails(MealSummary ms)
     {
-        ms = BestMealSummary(ms);
-        if (ms is not null && ShowDetailsParam is not null)
-            await ShowDetailsParam.Invoke(ms);
+        Meal? m = ms.IsForCurrentMeal ? Meal.CurrentMeal : await Meal.LoadAsync(ms, true);
+        ShellNavigationQueryParameters navigationParameter = new()
+        {
+            { "ShowStorage", ShowLocalMeals && ShowRemoteMeals }
+        };
+        if (m is not null)
+            navigationParameter.Add("Meal", m);
+        else
+            navigationParameter.Add("MealSummary", ms);
+        await App.PushAsync(Routes.MealSummaryPage, navigationParameter);
     }
 
     /// <summary>
@@ -369,16 +374,25 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     /// </summary>
     /// <param name="ms">The MealSummary for the Meal which is to be made current</param>
     [RelayCommand]
-    private async Task InvokeUseMeal(MealSummary ms)
+    private async Task UseMeal(MealSummary ms)
     {
-        if (UseMealParam is not null)
-        {
-            // Clear out the navigation stack in case we were pushed here so the user never navigates back to a pushed page
-            var nav = Shell.Current.Navigation;
+        // Clear out the navigation stack in case we were pushed here so the user never navigates back to a pushed page
+        var nav = Shell.Current.Navigation;
 
-            for (int i = nav.NavigationStack.Count - 1; i > 0; i--)
-                nav.RemovePage(nav.NavigationStack[i]);
-            await UseMealParam.Invoke(BestMealSummary(ms));
+        for (int i = nav.NavigationStack.Count - 1; i > 0; i--)
+            nav.RemovePage(nav.NavigationStack[i]);
+        if (ms.IsForCurrentMeal)
+            await Utilities.ShowAppSnackBarAsync("The assignment is unnecessary, this is already the current bill");
+        else
+        {
+            Meal? m = await Meal.LoadAsync(ms, true);
+            if (m is null)
+                await Utilities.ShowAppSnackBarAsync("Warning: Bill could not be loaded");
+            else
+            {
+                await m.BecomeCurrentMealAsync();
+                await App.GoToHomeAsync();
+            }
         }
     }
 

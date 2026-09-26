@@ -33,7 +33,7 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem
                                 BackgroundColor="PaleGreen"
-                                Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                Command="{Binding UseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                                 CommandParameter="{Binding}"
                                 IconImageSource="{StaticResource GlyphLoad}" />
                         </SwipeItems>
@@ -188,7 +188,7 @@
                             Grid.RowSpan="2"
                             Grid.Column="1"
                             BackgroundColor="{StaticResource TransparentGreen}"
-                            Command="{Binding InvokeUseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            Command="{Binding UseMealCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                             CommandParameter="{Binding x:DataType=models:MealSummary}"
                             IsVisible="{OnPlatform Default=false,
                             WinUI=true}" />
@@ -240,7 +240,7 @@
                             CommandParameter="{Binding}"
                             NumberOfTapsRequired="1" />
                         <TapGestureRecognizer
-                            Command="{Binding InvokeShowDetailsCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                            Command="{Binding ShowDetailsCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
                             CommandParameter="{Binding}"
                             NumberOfTapsRequired="2" />
                     </ImageButton.GestureRecognizers>
@@ -270,9 +270,9 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphList}"                                    Command="{Binding ChangeListCommand}" />
         <ToolbarItem IconImageSource="{StaticResource GlyphDel}"                                     Command="{Binding DeleteMealCommand}"
                      IsEnabled="{Binding IsAnyMealSelected}" />
-        <ToolbarItem Text="Use"                                                                      Command="{Binding InvokeUseMealCommand}"          Order="Secondary"
+        <ToolbarItem Text="Use"                     CommandParameter="{Binding SelectedMealSummary}" Command="{Binding UseMealCommand}"          Order="Secondary"
                      IsEnabled="{Binding SelectedMealSummary, Converter={StaticResource IsNotNull}}" />
-        <ToolbarItem Text="Show Details"                                                             Command="{Binding InvokeShowDetailsCommand}"      Order="Secondary"
+        <ToolbarItem Text="Show Details"            CommandParameter="{Binding SelectedMealSummary}" Command="{Binding ShowDetailsCommand}"      Order="Secondary"
                      IsEnabled="{Binding SelectedMealSummary, Converter={StaticResource IsNotNull}}" />
         <ToolbarItem Text="Download"                                                                 Command="{Binding DownloadCommand}"               Order="Secondary" />
         <ToolbarItem Text="Delete Local"                                                             Command="{Binding DeleteLocalMealsCommand}"       Order="Secondary" />
