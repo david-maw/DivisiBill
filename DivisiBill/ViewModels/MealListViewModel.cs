@@ -120,13 +120,18 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                             group.MealSummaries.Remove(ms);
                             if (group.Count == 0)
                                 MealSummaryGroups.Remove(group);
-                            else if (group.CreationTime == ms.CreationTime)
+                            else
                             {
-                                group.CreationTime = group.MealSummaries[0].CreationTime;
-                                if (UpsertIntoMealSummaryGroupList(group))
+                                if (group.SelectedCount > 0 && ms.FileSelected)
+                                    group.SelectedCount--;
+                                if (group.CreationTime == ms.CreationTime)
                                 {
-                                    int index = MealSummaryGroups.IndexOf(group);
-                                    ScrollItemsTo?.Invoke(index, ScrollToPosition.Start);
+                                    group.CreationTime = group.MealSummaries[0].CreationTime;
+                                    if (UpsertIntoMealSummaryGroupList(group))
+                                    {
+                                        int index = MealSummaryGroups.IndexOf(group);
+                                        ScrollItemsTo?.Invoke(index, ScrollToPosition.Start);
+                                    }
                                 }
                             }
                         }
@@ -148,6 +153,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                         MealSummaryGroup? group = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
                         if (group is not null)
                         {
+                            if (ms.FileSelected)
+                                group.SelectedCount++;
                             group.MealSummaries.Upsert(ms, MealSummary.CompareCreationTimeTo);
                             if (group.CreationTime < ms.CreationTime)
                             {
@@ -200,6 +207,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                         MealSummaryGroup? group = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
                         if (group is not null)
                         {
+                            if (group.SelectedCount > 0 && ms.FileSelected)
+                                group.SelectedCount--;
                             group.MealSummaries.Remove(ms);
                             if (group.Count == 0)
                                 MealSummaryGroups.Remove(group);
@@ -227,6 +236,8 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                         MealSummaryGroup? group = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
                         if (group is not null)
                         {
+                            if (ms.FileSelected)
+                                group.SelectedCount++;
                             if (group.CreationTime < ms.CreationTime)
                                 group.CreationTime = ms.CreationTime;
                             group.MealSummaries.Upsert(ms, MealSummary.CompareCreationTimeTo);
@@ -806,6 +817,14 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
         }
     }
 
+    /// <summary>
+    /// Select or deselect a meal summary, either replacing the current single selection or managing multiple selection.
+    /// Multiple selection is done when IsSelectableList is true and simply toggles the FileSelected property of
+    /// the meal summary. Single selection is done by setting the SelectedMealSummary property to the meal summary.
+    /// If the list is grouped, and single selection is current then select the group instead of just the individual
+    /// meal summary.
+    /// </summary>
+    /// <param name="ms">The meal summary to select or deselect.</param>
     [RelayCommand]
     private void SelectMeal(MealSummary ms)
     {
@@ -813,14 +832,21 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             return;
         if (IsSelectableList)
         {
+            // Multiple selection, so toggle the FileSelected property and update the count of selected meal summaries
             ms.FileSelected = !ms.FileSelected;
             SelectedMealSummariesCount += ms.FileSelected ? 1 : -1;
         }
-        else if (IsGrouped)
+        if (IsGrouped)
         {
-            // find what group we are in and either deselect it if it is selected, or select it
+            // find what group we are in and do one of two things depending if we're doing single or multiple selection:
+            // for single select or deselect it, if IsGrouped then increment/decrement the group SelectedCount.
             MealSummaryGroup? thisGroup = MealSummaryGroups.FirstOrDefault(g => g.VenueName == ms.VenueName);
-            SelectedGroup = SelectedGroup == thisGroup ? null : thisGroup;
+            if (thisGroup is null)
+                return; // should never happen, but just in case
+            if (IsSelectableList)
+                thisGroup.SelectedCount += ms.FileSelected ? 1 : -1;
+            else
+                SelectedGroup = SelectedGroup == thisGroup ? null : thisGroup;
         }
         else
             SelectedMealSummary = SelectedMealSummary == ms ? null : ms;
@@ -1182,9 +1208,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             foreach (MealSummary mealSummary in MealList.OrderBy(ms => ms.VenueName).ThenByDescending(ms => ms.CreationTime))
             {
                 if (workingVenueName.Equals(mealSummary.VenueName))
-                {
                     mealSummaryGroup.MealSummaries.Add(mealSummary);
-                }
                 else
                 {
                     // The group changes, so store the current group and start a new one
@@ -1192,8 +1216,13 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                     {
                         Groups.Add(mealSummaryGroup);
                         mealSummaryGroup.Count = mealSummaryGroup.MealSummaries.Count;
+                        mealSummaryGroup.SelectedCount = mealSummaryGroup.MealSummaries.Count(ms => ms.FileSelected);
                     }
-                    mealSummaryGroup = new(mealSummary);
+                    mealSummaryGroup = new(mealSummary)
+                    {
+                        SelectedCount = mealSummary.FileSelected ? 1 : 0
+                    };
+
                     workingVenueName = mealSummary.VenueName;
                 }
                 if (mealSummary.IsForCurrentMeal)
@@ -1204,6 +1233,7 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
             {
                 Groups.Add(mealSummaryGroup);
                 mealSummaryGroup.Count = mealSummaryGroup.MealSummaries.Count;
+                mealSummaryGroup.SelectedCount = mealSummaryGroup.MealSummaries.Count(ms => ms.FileSelected);
             }
             mealSummaryGroups = SortOrder switch
             {

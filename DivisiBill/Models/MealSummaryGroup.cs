@@ -35,18 +35,23 @@ public partial class MealSummaryGroup : ObservableObject
         {
             case NotifyCollectionChangedAction.Add:
                 Count += e.NewItems?.Count ?? 0;
+                SelectedCount += (e.NewItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0;
                 break;
 
             case NotifyCollectionChangedAction.Remove:
                 Count -= e.OldItems?.Count ?? 0;
+                SelectedCount -= (e.OldItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0;
                 break;
 
             case NotifyCollectionChangedAction.Replace:
                 Count += (e.NewItems?.Count ?? 0) - (e.OldItems?.Count ?? 0);
+                SelectedCount += (e.NewItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0
+                               - (e.OldItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0;
                 break;
 
             case NotifyCollectionChangedAction.Reset:
                 Count = MealSummaries.Count;
+                SelectedCount = MealSummaries.Count(ms => ms.FileSelected);
                 break;
         }
     }
@@ -71,7 +76,11 @@ public partial class MealSummaryGroup : ObservableObject
     public partial int Count { get; set; } = 0;
 
     public bool CountLarge => Count > maxMeals;
-    public string CountText => Count <= maxMeals ? $"{Count}" : $"{maxMeals} of {Count}";
+    public string CountText => SelectedCount > 0 ? $"{SelectedCount} of {Count}" : $"{Count}";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CountText))]
+    public partial int SelectedCount { get; set; } = 0;
 
     [ObservableProperty]
     public partial bool IsForCurrentMeal { get; set; } = false;
@@ -142,5 +151,5 @@ public partial class MealSummaryGroup : ObservableObject
     }
     public static int CompareDistanceTo(MealSummaryGroup thisGroup, MealSummaryGroup otherGroup) => thisGroup.CompareDistanceTo(otherGroup);
     #endregion
-    private string GetDebuggerDisplay => $"{VenueName} ({Count})";
+    private string GetDebuggerDisplay => $"{VenueName} ({SelectedCount} of {Count})";
 }
