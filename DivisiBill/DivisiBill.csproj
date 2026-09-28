@@ -118,29 +118,29 @@
 
   <!--Nuget Packages-->
   <ItemGroup>
-    <PackageReference Include="BouncyCastle.Cryptography" Version="2.7.0" />
-    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.2" />
-    <PackageReference Include="CommunityToolkit.Maui.Camera" Version="6.1.0" />
-    <PackageReference Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
-    <PackageReference Include="epj.RouteGenerator" Version="1.0.5" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.101" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
-    <PackageReference Include="CommunityToolkit.Common" Version="8.4.2" />
-    <PackageReference Include="CommunityToolkit.Maui" Version="15.0.1" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.101" />
-    <PackageReference Include="Sentry.Maui" Version="6.11.0" />
-    <!--Sentry.Profiling 4.10.0 is not supported on Android-->
-    <PackageReference Condition="'$(TargetOsPlatform)' != 'android'" Include="Sentry.Profiling" Version="6.11.0" />
-    <PackageReference Include="SkiaSharp" Version="4.152.1" />
+    <PackageReference Include="BouncyCastle.Cryptography" />
+    <PackageReference Include="CommunityToolkit.Diagnostics" />
+    <PackageReference Include="CommunityToolkit.Maui.Camera" />
+    <PackageReference Include="CommunityToolkit.Maui.Maps" />
+    <PackageReference Include="epj.RouteGenerator" />
+    <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
+    <PackageReference Include="CommunityToolkit.Common" />
+    <PackageReference Include="CommunityToolkit.Maui" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" />
+    <PackageReference Include="Sentry.Maui" />
+    <!--Sentry.Profiling is not supported on Android-->
+    <PackageReference Condition="'$(TargetOsPlatform)' != 'android'" Include="Sentry.Profiling" />
+    <PackageReference Include="SkiaSharp" />
     <!--Force hashing level to fix build warning in .NET 11 RC1-->
-    <PackageReference Include="System.IO.Hashing" Version="10.0.12" />
+    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
   <!--Add In-App Billing package, but only for Android-->
   <ItemGroup Condition="'$(TargetOsPlatform)' == 'android'">
     <!-- Updating this past 9.1.0.1 causes build errors as of Sept 2026 -->
-    <PackageReference Include="Xamarin.Android.Google.BillingClient" Version="9.1.0.1" />
+    <PackageReference Include="Xamarin.Android.Google.BillingClient" />
   </ItemGroup>
 
   <!-- Sentry setup for PDB Upload -->
