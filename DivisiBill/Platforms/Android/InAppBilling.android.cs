@@ -78,7 +78,10 @@ public class InAppBillingImplementation : BaseInAppBilling
 
         void OnSetupFinished(BillingResult billingResult)
         {
-            Utilities.DebugMsg($"Billing Setup Finished : {billingResult.ResponseCode} - {billingResult.DebugMessage}");
+            if (billingResult.ResponseCode == BillingResponseCode.Ok)
+                Utilities.DebugMsg($"Billing Setup Completed Without Error");
+            else
+                Utilities.DebugMsg($"Billing Setup Finished : {billingResult.ResponseCode} - {billingResult.DebugMessage}");
             IsConnected = billingResult.ResponseCode == BillingResponseCode.Ok;
             tcsConnect?.TrySetResult(IsConnected);
         }

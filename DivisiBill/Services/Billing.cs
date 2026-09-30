@@ -11,7 +11,7 @@ namespace DivisiBill.Services;
 /// <summary>
 /// <para>The billing class handles matters related to in-app billing. It relies on the former InAppBilling plug-in
 /// (now the DivisiBill.InAppBilling folder) and the DivisiBill web service. For the purposes of this
-/// discussion the purchase may be for an in-app product or a subscription.</para>
+/// discussion the purchase (aka license) may be for an in-app product or a subscription.</para>
 /// 
 /// <para>Professional purchases (usually subscriptions) enable cloud features, OCR purchases enable scans, 
 /// you can buy an OCR purchase whenever your scan counts drop below a small threshold. Buying one adds a
@@ -33,7 +33,7 @@ namespace DivisiBill.Services;
 /// <para>In the unlikely event that a purchase is interrupted in the middle the user might end up with a legitimate license
 /// we've never seen. In that case the license is added to our store just as if it had gone through the normal purchase flow.</para>
 /// 
-/// <para>The pro license is checked at startup and intermittently thereafter <see cref="GetHasProSubscriptionAsync"/>. 
+/// <para>The pro license is checked at startup and intermittently thereafter <see cref="GetHasProLicenseAsync"/>. 
 /// The OCR license management is mostly in the web service but it is occasionally checked 
 /// <see cref="GetHasOcrLicenseAsync"/> against the web service to get the count of remaining scans for that license. 
 /// The number of scans left is decremented whenever a scan is done by the web service and once the number left drops below a
@@ -75,38 +75,44 @@ internal static class Billing
 
     private static string? GetJsonFieldValue(string jsonString, string fieldName) => JsonDocument.Parse(jsonString).RootElement.TryGetProperty(fieldName, out JsonElement fieldValue) ? fieldValue.GetString() : string.Empty;
     #endregion
-    #region Pro License
+    #region Pro License (Product or Subscription)
     public const string ProSubscriptionId = "pro.subscription";
-    public const string OldProProductId = "pro.upgrade"; // a product, not a subscription, kept around to simplify testing because it does not expire
+    public const string ProProductId = "pro.upgrade"; // a product, not a subscription, kept around to simplify testing because it does not expire
     /// <summary>
-    /// The last known Pro purchase, either a subscription or a product. This is set by <see cref="GetHasProSubscriptionAsync"/> but
+    /// The last known Pro purchase, either a subscription or a product. This is set by <see cref="GetHasProLicenseAsync"/> but
     /// may be null if no purchase has been found. If the purchase could not be verified it will be set but its state will be PurchaseState.Failed.
     /// If the purchase was found and verified it will be set and its state will be PurchaseState.Purchased.
     /// </summary>
     internal static InAppBillingPurchase? ProPurchase { get; private set; } = null;
-    internal static bool HasOldProProductId { get; private set; } = false;
 
     /// <summary>
-    /// Check the license service for a pro subscription (or the test pro product) and return a value indicating the outcome.
+    /// True if ProPurchase is referring to a Pro product license, false if it is a subscription license.
+    /// It is just a shorthand for ProPurchase being both set and for ProProductId, it is set in a variety of places
+    /// but primarily by <see cref="GetHasProLicenseAsync"/>.
+    /// </summary>
+    internal static bool ProPurchaseIsProduct { get; private set; } = false;
+
+    /// <summary>
+    /// Check the license service for a pro subscription or pro product and return a value indicating the outcome.
     /// </summary>
     /// <returns>
     /// One of the BillingStatus enumerated types
     /// <list type="table">
-    ///  <item>ok - everything worked, the subscription is good</item>
-    ///  <item>notFound - no evidence of the subscription - normal for users who have not purchased it</item>
-    ///  <item>notVerified - we found a subscription (Android handed us one when asked) but could not verify it was legitimate</item>
+    ///  <item>ok - everything worked, the license is good</item>
+    ///  <item>notFound - no evidence of the license - normal for users who have not purchased it</item>
+    ///  <item>notVerified - we found a license (Android handed us one when asked) but could not verify it was legitimate</item>
     /// </list>
     /// </returns>
-    internal static async Task<BillingStatusType> GetHasProSubscriptionAsync()
+    internal static async Task<BillingStatusType> GetHasProLicenseAsync()
     {
         ProPurchase = null; // For safety because whatever we had before is irrelevant
-        HasOldProProductId = false; // For safety because whatever we had before is irrelevant
+        ProPurchaseIsProduct = false; // For safety because whatever we had before is irrelevant
 #if DEBUG
         if (DeviceInfo.Platform == DevicePlatform.WinUI)
         {
             if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestProJsonB64))
             {
-                Utilities.DebugMsg("In GetHasProSubscriptionAsync, DivisiBillTestProJsonB64 was empty");
+                Utilities.DebugMsg("In GetHasProLicenseAsync, DivisiBillTestProJsonB64 was empty");
                 ProPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
                 return BillingStatusType.notLicensing; // a specific error so it can be handled silently 
             }
@@ -120,7 +126,7 @@ internal static class Billing
                     case string resultString:
                         ProPurchase = new InAppBillingPurchase()
                         {
-                            ProductId = OldProProductId, // temporary
+                            ProductId = ProProductId, // temporary
                             State = PurchaseState.Failed,
                             Id = GetJsonFieldValue(json, "orderId"),
                             ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
@@ -130,16 +136,16 @@ internal static class Billing
                         if (int.TryParse(resultString, out int scans) && scans >= 0)
                         {
                             ProPurchase.State = PurchaseState.Purchased;
-                            HasOldProProductId = true;
+                            ProPurchaseIsProduct = true;
                             return BillingStatusType.ok; // No error
                         }
                         else
                         {
-                            Utilities.DebugMsg("In GetHasProSubscriptionAsync, failed to parse scans from web service result: " + resultString);
+                            Utilities.DebugMsg("In GetHasProLicenseAsync, failed to parse scans from web service result: " + resultString);
                             return BillingStatusType.notVerified;
                         }
                     case Billing.BillingStatusType fakeFail:
-                        Utilities.DebugMsg("In GetHasProSubscriptionAsync, GetInAppBillingPurchaseFakeAsync returned " + fakeFail);
+                        Utilities.DebugMsg("In GetHasProLicenseAsync, GetInAppBillingPurchaseFakeAsync returned " + fakeFail);
                         return fakeFail;
                 }
             }
@@ -152,49 +158,50 @@ internal static class Billing
                 try
                 {
                     #region Pro Product (used primarily for Testing)
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, trying pro product");
-                    var oldRes = await GetInAppBillingPurchaseAsync(OldProProductId, isSubscription: false);
+                    Utilities.DebugMsg("In GetHasProLicenseAsync, trying pro product");
+                    var oldRes = await GetInAppBillingPurchaseAsync(ProProductId, isSubscription: false);
                     switch (oldRes)
                     {
                         case Billing.BillingStatusType billingStatus:
-                            Utilities.DebugMsg("In GetHasProSubscriptionAsync, did not find pro product, result = " + billingStatus);
+                            Utilities.DebugMsg("In GetHasProLicenseAsync, did not find pro product, result = " + billingStatus);
                             if (billingStatus >= BillingStatusType.noInternet) // A catastrophic error, no point going on
                                 return billingStatus;
                             else
                                 billingResultOld = billingStatus; // Remember it for later
                             break;
                         case InAppBillingPurchase billingPurchase:
-                            HasOldProProductId = true;
+                            ProPurchaseIsProduct = true;
                             ProPurchase = billingPurchase;
                             if (billingPurchase.State == PurchaseState.Purchased)
                             {
-                                Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found old style pro product " + billingPurchase.Id);
+                                Utilities.DebugMsg("Exiting GetHasProLicenseAsync, found pro product " + billingPurchase.Id);
+                                ProPurchase = billingPurchase;
                                 billingResultOld = BillingStatusType.ok;
                                 return BillingStatusType.ok; // No error
                             }
                             else
                             {
-                                Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found pro product not purchased " + billingPurchase.Id);
+                                Utilities.DebugMsg("Exiting GetHasProLicenseAsync, found pro product not purchased " + billingPurchase.Id);
                                 billingResultOld = BillingStatusType.notVerified;
                                 // Don't return yet, we want to check for a subscription too
                             }
                             break;
                     }
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, did not find usable pro product");
+                    Utilities.DebugMsg("In GetHasProLicenseAsync, did not find usable pro product");
                     #endregion
                     #region Pro Subscription
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, awaiting GetInAppBillingPurchaseAsync(ProSubscriptionId)");
+                    Utilities.DebugMsg("In GetHasProLicenseAsync, awaiting GetInAppBillingPurchaseAsync(ProSubscriptionId)");
                     var newRes = await GetInAppBillingPurchaseAsync(ProSubscriptionId, isSubscription: true);
                     switch (newRes)
                     {
                         case Billing.BillingStatusType billingStatus:
-                            Utilities.DebugMsg("In GetHasProSubscriptionAsync, did not find pro subscription, result = " + billingStatus);
+                            Utilities.DebugMsg("In GetHasProLicenseAsync, did not find pro subscription, result = " + billingStatus);
                             // If the old style license was not found (the normal case) return the status of the subscription
                             return billingResultOld == BillingStatusType.notFound ? billingStatus : billingResultOld;
                         case InAppBillingPurchase billingPurchase:
                             if (billingPurchase.State == PurchaseState.Purchased)
                             {
-                                Utilities.DebugMsg("Exiting GetHasProSubscriptionAsync, found pro subscription " + billingPurchase.Id);
+                                Utilities.DebugMsg("Exiting GetHasProLicenseAsync, found pro subscription " + billingPurchase.Id);
                                 ProPurchase = billingPurchase;
                                 return BillingStatusType.ok; // No error
                             }
@@ -204,11 +211,11 @@ internal static class Billing
                 }
                 catch (Exception ex)
                 {
-                    Utilities.DebugMsg("In GetHasProSubscriptionAsync, threw an exception:" + ex);
+                    Utilities.DebugMsg("In GetHasProLicenseAsync, threw an exception:" + ex);
                 }
             }
             else
-                Utilities.DebugMsg("In GetHasProSubscriptionAsync, unsupported environment, treated as NO PRO SUBSCRIPTION was found");
+                Utilities.DebugMsg("In GetHasProLicenseAsync, unsupported environment, treated as NO PRO SUBSCRIPTION was found");
 
         return BillingStatusType.notFound;
     }
@@ -240,12 +247,18 @@ internal static class Billing
         return false;
     }
     #endregion
-    #region Old Pro Product Purchase (for testing only)
+    #region Pro Subscription License
+    // There's no need for a GetHasProSubscription because the subscription is checked at startup and intermittently thereafter by GetHasProLicenseAsync,
+    // which checks for both a product and a subscription. The ProPurchase property will be set to the last known Pro purchase, either a subscription or a
+    // product, and ProPurchaseIsProduct will indicate whether it is a product or not. 
+    #endregion
+    #region Pro Product License (usually for testing)
     /// <summary>
-    /// Check whether the user has a Pro license, if it is valid, and if it has scans left
+    /// Check whether the user has a Pro product license (as opposed to a subscription) and if it is valid.
     /// </summary>
-    /// <returns>Scans remaining or a negative number if the license was invalid</returns>
-    internal static async Task<BillingStatusType> GetHasProLicenseAsync()
+    /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="BillingStatusType"/>
+    /// indicating the status of the Pro product license.</returns>
+    internal static async Task<BillingStatusType> GetHasProProductAsync()
     {
         ProPurchase = null; // For safety because whatever we had before is irrelevant
 #if DEBUG
@@ -253,7 +266,7 @@ internal static class Billing
         {
             if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestProJsonB64))
             {
-                Utilities.DebugMsg("In GetHasProLicenseAsync, DivisiBillTestProJsonB64 was empty");
+                Utilities.DebugMsg("In GetHasProProductAsync, DivisiBillTestProJsonB64 was empty");
                 ProPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
                 return BillingStatusType.notLicensing; // a specific error so it can be handled silently 
             }
@@ -267,7 +280,7 @@ internal static class Billing
                     case string resultString:
                         ProPurchase = new InAppBillingPurchase()
                         {
-                            ProductId = OldProProductId, // temporary
+                            ProductId = ProProductId, // temporary
                             State = PurchaseState.Failed,
                             Id = GetJsonFieldValue(json, "orderId"),
                             ObfuscatedAccountId = GetJsonFieldValue(json, "obfuscatedAccountId"),
@@ -277,7 +290,7 @@ internal static class Billing
                         if (int.TryParse(resultString, out int scans) && scans >= 0)
                         {
                             ProPurchase.State = PurchaseState.Purchased;
-                            HasOldProProductId = true;
+                            ProPurchaseIsProduct = true;
                             return BillingStatusType.ok; // No error
                         }
                         else
@@ -293,26 +306,26 @@ internal static class Billing
             {
                 try
                 {
-                    #region Old Style Pro Product (used for Testing)
-                    Utilities.DebugMsg("In GetHasProLicenseAsync, trying old style pro product");
-                    var oldProductRes = await GetInAppBillingPurchaseAsync(OldProProductId, isSubscription: false);
+                    #region Pro Product (used for Testing)
+                    Utilities.DebugMsg("In GetHasProProductAsync, trying pro product");
+                    var oldProductRes = await GetInAppBillingPurchaseAsync(ProProductId, isSubscription: false);
                     switch (oldProductRes)
                     {
-                        case InAppBillingPurchase oldProdSucc:
-                            if (oldProdSucc.State == PurchaseState.Purchased)
+                        case InAppBillingPurchase proProductPurchase:
+                            if (proProductPurchase.State == PurchaseState.Purchased)
                             {
-                                Utilities.DebugMsg("Exiting GetHasProLicenseAsync, found old style pro product " + oldProdSucc.Id);
-                                ProPurchase = oldProdSucc;
-                                HasOldProProductId = true;
+                                Utilities.DebugMsg("Exiting GetHasProProductAsync, found pro product " + proProductPurchase.Id);
+                                ProPurchase = proProductPurchase;
+                                ProPurchaseIsProduct = true;
                                 return BillingStatusType.ok; // No error
                             }
                             else
                             {
-                                Utilities.DebugMsg("In GetHasProLicenseAsync, found old style pro product but state was " + oldProdSucc.State);
+                                Utilities.DebugMsg("In GetHasProProductAsync, found pro product but state was " + proProductPurchase.State);
                                 return BillingStatusType.notFound;
                             }
                         case Billing.BillingStatusType oldProdFail:
-                            Utilities.DebugMsg("In GetHasProLicenseAsync, did not find old style pro product");
+                            Utilities.DebugMsg("In GetHasProProductAsync, did not find pro product");
                             return oldProdFail;
                     }
                     ;
@@ -320,57 +333,58 @@ internal static class Billing
                 }
                 catch (Exception ex)
                 {
-                    Utilities.DebugMsg("In GetHasProLicenseAsync, threw an exception:" + ex);
+                    Utilities.DebugMsg("In GetHasProProductAsync, threw an exception:" + ex);
                 }
                 // If something went wrong with the old style license check report a fault
                 return BillingStatusType.connectionFaulted;
             }
             else
             {
-                Utilities.DebugMsg("In GetHasProLicenseAsync, unsupported environment, treated as NO PRO LICENSE was found");
+                Utilities.DebugMsg("In GetHasProProductAsync, unsupported environment, treated as NO PRO LICENSE was found");
             }
         return BillingStatusType.notFound;
     }
 
     /// <summary>
-    /// Purchase a pro license from an app store then check it against our web service to make sure it is legitimate.
+    /// Purchase a pro product from an app store then check it against our web service to make sure it is legitimate.
     /// </summary>
-    /// <returns>Scans remaining or a negative number if the purchase failed</returns>
-    internal static async Task<bool> PurchaseProLicenseAsync()
+    /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the purchase was successful.</returns>
+    internal static async Task<bool> PurchaseProProductAsync()
     {
         Debug.Assert(App.Settings is not null);
-        if (await GetHasProLicenseAsync() == BillingStatusType.ok)
+        if (await GetHasProProductAsync() == BillingStatusType.ok)
             await ConsumeProLicenseAsync();
-        ProPurchase = await PurchaseItemAsync(OldProProductId, App.Settings.UserKey);
+        ProPurchase = await PurchaseItemAsync(ProProductId, App.Settings.UserKey);
         if (ProPurchase is null)
-            Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, PurchaseItemAsync returned null");
+            Utilities.DebugMsg("In Billing.PurchaseProProductAsync, PurchaseItemAsync returned null");
         else
         {
             string? validationResult = await CallWs.VerifyPurchase(ProPurchase);
             if (validationResult is null)
-                Utilities.DebugMsg("In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase returned null");
+                Utilities.DebugMsg("In Billing.PurchaseProProductAsync, CallWs.VerifyPurchase returned null");
             else if (!int.TryParse(validationResult, out int result))
-                Utilities.DebugMsg($"In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase did not return an integer ({validationResult}), meaning error");
+                Utilities.DebugMsg($"In Billing.PurchaseProProductAsync, CallWs.VerifyPurchase did not return an integer ({validationResult}), meaning error");
             else if (result < 0)
-                Utilities.DebugMsg($"In Billing.PurchaseProLicenseAsync, CallWs.VerifyPurchase returned a negative number {result}, meaning error");
+                Utilities.DebugMsg($"In Billing.PurchaseProProductAsync, CallWs.VerifyPurchase returned a negative number {result}, meaning error");
             else
             {
-                HasOldProProductId = true;
+                ProPurchaseIsProduct = true;
                 return true;
             }
         }
-        Utilities.DebugMsg("Returning FALSE from Billing.PurchaseProLicenseAsync");
+        Utilities.DebugMsg("Returning FALSE from Billing.PurchaseProProductAsync");
         return false;
     }
 
     /// <summary>
-    /// Remove a Pro license from the store (but not from our list of used licenses). Usually because it is being replaced.
+    /// Remove a Pro product license from the store (but not from our list of used licenses). Usually because it is being replaced.
     /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the license was successfully consumed.</returns>
     internal static async Task<bool> ConsumeProLicenseAsync()
     {
         if (Utilities.IsWinUI)
             return false; // Not implemented for Windows 
-        BillingStatusType test = await GetHasProLicenseAsync();
+        BillingStatusType test = await GetHasProProductAsync();
         Utilities.DebugMsg("In ConsumeDepletedProLicense, license purchase test returned " + test);
         if (ProPurchase is not null && ProPurchase.ProductId is not null && ProPurchase.PurchaseToken is not null)
         {
@@ -379,7 +393,7 @@ internal static class Billing
             if (consumed)
             {
                 Utilities.DebugMsg("In ConsumeDepletedProLicense, consumed a pro license, Order ID = " + ProPurchase.Id);
-                HasOldProProductId = false;
+                ProPurchaseIsProduct = false;
                 ProPurchase = null;
             }
             else
@@ -416,7 +430,7 @@ internal static class Billing
         {
             if (string.IsNullOrWhiteSpace(Generated.BuildInfo.DivisiBillTestOcrJsonB64))
             {
-                Utilities.DebugMsg("In GetHasProSubscriptionAsync, DivisiBillTestProJsonB64 was empty");
+                Utilities.DebugMsg("In GetHasProLicenseAsync, DivisiBillTestProJsonB64 was empty");
                 OcrPurchase = new InAppBillingPurchase() { State = PurchaseState.Failed };
                 return -1; // error 
             }

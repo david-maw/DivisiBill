@@ -86,7 +86,7 @@ public partial class LicensesViewModel : ObservableObject
     {
         try
         {
-            ProPurchasePrice = await Billing.GetItemPriceAsync(Billing.OldProProductId, ItemType.InAppPurchase);
+            ProPurchasePrice = await Billing.GetItemPriceAsync(Billing.ProProductId, ItemType.InAppPurchase);
         }
         catch (Exception ex)
         {
@@ -106,15 +106,11 @@ public partial class LicensesViewModel : ObservableObject
 
     [ObservableProperty]
     public partial int ScansPerOcr { get; private set; } = 30; // Safe default value, will be updated from server status
-    public bool WsUriDefined => App.WsUriDefined;
-    public bool LicenseChecked => App.LicenseChecked;
-    public bool HasProSubscription => Billing.ProPurchase is not null;
-    public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase?.ProductId == Billing.ProSubscriptionId && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
-    public bool InvalidProPurchase => Billing.ProPurchase is not null && Billing.ProPurchase?.ProductId == Billing.OldProProductId && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
+    public bool InvalidProSubscription => Billing.ProPurchase is not null && Billing.ProPurchase.ProductId == Billing.ProSubscriptionId && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
+    public bool InvalidProPurchase => Billing.ProPurchase is not null && Billing.ProPurchase.ProductId == Billing.ProProductId && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? ProSubscriptionId => Billing.ProPurchase?.ProductId == Billing.ProSubscriptionId ? Billing.ProPurchase.Id : null;
-    public string? ProPurchaseId => Billing.ProPurchase?.ProductId == Billing.OldProProductId ? Billing.ProPurchase.Id : null;
+    public string? ProPurchaseId => Billing.ProPurchase?.ProductId == Billing.ProProductId ? Billing.ProPurchase.Id : null;
     public int ScansLeft => Billing.ScansLeft;
-    public bool HasOcrLicense => Billing.OcrPurchase is not null;
     public bool InvalidOcrLicense => Billing.OcrPurchase is not null && Billing.OcrPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? OcrLicenseId => Billing.OcrPurchase?.Id;
     public int ScansWarningLevel => Billing.ScansWarningLevel;
@@ -124,7 +120,7 @@ public partial class LicensesViewModel : ObservableObject
     [RelayCommand]
     private async Task PurchaseProSubscriptionAsync()
     {
-        if (Billing.HasOldProProductId)
+        if (Billing.ProPurchaseIsProduct)
         {
             await Utilities.DisplayAlertAsync("Tester", "You have a perpetual professional license and do not need a subscription");
             return;
@@ -154,7 +150,7 @@ public partial class LicensesViewModel : ObservableObject
     [RelayCommand]
     private async Task ManageSubscription()
     {
-        if (Billing.HasOldProProductId)
+        if (Billing.ProPurchaseIsProduct)
         {
             await Utilities.DisplayAlertAsync("Tester", "You have a perpetual professional license which cannot be modified");
             return;
@@ -173,8 +169,8 @@ public partial class LicensesViewModel : ObservableObject
             return;
         }
         App.Settings.HadProSubscription = true; // Avoid the "professional license found" warning on returning
-        bool licensePurchased = await Billing.PurchaseProLicenseAsync();
-        Utilities.DebugMsg("In PurchaseProLicenseAsync, PurchaseProSubscriptionAsync returned " + licensePurchased);
+        bool licensePurchased = await Billing.PurchaseProProductAsync();
+        Utilities.DebugMsg("In PurchaseProProductAsync, PurchaseProSubscriptionAsync returned " + licensePurchased);
         IsLimited = !licensePurchased;
         if (IsLimited)
             await Utilities.DisplayAlertAsync("Error", "The purchase failed. You did not acquire a professional license");

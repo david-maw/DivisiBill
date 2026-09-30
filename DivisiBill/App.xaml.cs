@@ -620,7 +620,7 @@ public partial class App : Application, INotifyPropertyChanged
         {
             Utilities.DebugMsg("In CheckLicenses, WsVersionChecked == true");
             // Check whether the license store knows about us
-            Billing.BillingStatusType billingStatus = await Billing.GetHasProSubscriptionAsync();
+            Billing.BillingStatusType billingStatus = await Billing.GetHasProLicenseAsync();
             LicenseChecked = true;
             switch (billingStatus)
             {

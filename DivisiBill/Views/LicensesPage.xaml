@@ -9,12 +9,6 @@
 
     <ScrollView>
         <VerticalStackLayout Spacing="5" Margin="5">
-            <!--#region License Error Reporting -->
-            <VerticalStackLayout IsVisible="{Binding Path=LicenseChecked, Converter={StaticResource Not}}">
-                <Label Text="Pro Edition Verification Incomplete" FontSize="{StaticResource FontSizeMedium}" FontAttributes="Bold" HorizontalOptions="Center"/>
-                <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
-            </VerticalStackLayout>
-            <!--#endregion-->
             <!-- #region Pro Subscription Features -->
             <Border Stroke="{StaticResource Primary}" StrokeShape="RoundRectangle 10"  Padding="20,10" StrokeThickness="2">
                 <VerticalStackLayout Spacing="5">
@@ -95,7 +89,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Label Text="{Binding OcrLicenseId, StringFormat='OCR License# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
+            <Label Text="{Binding OcrLicenseId, StringFormat='OCR License# {0}'}" IsVisible="{Binding OcrLicenseId, Converter={StaticResource IsNotNull}}" HorizontalOptions="Center"/>
             <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" HorizontalOptions="Center"/>
             <Button Text="Purchase additional OCR Scans" Command="{Binding PurchaseOcrScansCommand}"
                             HorizontalOptions="Center" IsEnabled="{Binding Path=IsOcrPurchaseAllowed}"/>

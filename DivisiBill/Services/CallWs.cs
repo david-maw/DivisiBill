@@ -290,7 +290,7 @@ internal static class CallWs
                     string s = await response.Content.ReadAsStringAsync();
                     Utilities.RecordMsg("In VerifyPurchase, VerifyAndroidPurchase returned ok and \"" + s + "\"");
                     // If this is a pro purchase, pass it to future web service calls for authorization
-                    if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.OldProProductId))
+                    if (purchase.ProductId.Equals(Billing.ProSubscriptionId) || purchase.ProductId.Equals(Billing.ProProductId))
                     {
                         UpsertHttpClientHeader(PurchaseHeaderName, purchase.OriginalJson); // This will be the license used from now on
                         UpsertHttpClientHeader(SignatureHeaderName, purchase.Signature);
