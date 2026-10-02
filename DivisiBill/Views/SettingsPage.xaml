@@ -39,13 +39,6 @@
             <!--Show the current location of the device the app is running on -->
             <Label Text="{Binding Path=AppLocation, StringFormat='Current Location={0}', Converter={StaticResource LocationToText}, TargetNullValue='Location Unknown'}" HorizontalOptions="Center" IsVisible="{Binding UseLocation}"/>
             <!--#endregion-->
-            <!--#region License Error Reporting -->
-            <VerticalStackLayout IsVisible="{Binding Path=LicenseChecked, Converter={StaticResource Not}}">
-                <Label Text="Pro Edition Verification Incomplete" FontSize="{StaticResource FontSizeMedium}" FontAttributes="Bold" HorizontalOptions="Center"/>
-                <Label Text="{Binding ProSubscriptionId, StringFormat='Pro Subscription: {0}'}" IsVisible="{Binding HasProSubscription}" HorizontalOptions="Center"/>
-            </VerticalStackLayout>
-            <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <!--#endregion-->
             <!--#region Meal Values -->
             <Grid ColumnDefinitions="*,*" RowDefinitions="auto, auto, auto, auto" ColumnSpacing="10" RowSpacing="10" Margin="30,10,30,10">
                 <!--#region Default Settings -->
@@ -105,10 +98,14 @@
             </HorizontalStackLayout>
             <!--#endregion-->
             <!--#endregion-->
-            <!--#region In App Purchases -->
+            <!--#region Licenses -->
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Margin="0, 5, 0, 0" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
-            <Label Text="Pro subscription and OCR feature not available" IsVisible="{Binding WsUriDefined, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
-            <Label Text="Program built without web services" IsVisible="{Binding WsUriDefined, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
+            <!--Show the following if the program was built without web services (no Pro subscription or OCR features)-->
+            <VerticalStackLayout IsVisible="{Binding WsUriDefined, Converter={StaticResource Not}}">
+                <Label Text="Pro and OCR licenses not available" HorizontalOptions="Center"/>
+                <Label Text="Program built without web services" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <!--Show the following if the program WAS built with web services (Pro subscription and OCR features available)-->
             <Grid IsVisible="{Binding WsUriDefined}">
                 <VerticalStackLayout IsVisible="{Binding LicenseChecked}">
                     <Label HorizontalOptions="Center" Margin="0,5" >
@@ -123,19 +120,20 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <!--#region Pro Subscription -->
+                    <!--#region License Error Reporting -->
+                    <Label Text="WARNIN: License Verification Incomplete" IsVisible="{Binding Path=LicenseChecked, Converter={StaticResource Not}}" 
+                        FontSize="{StaticResource FontSizeMedium}" FontAttributes="Bold" HorizontalOptions="Center"/>
                     <Label Text="Unverified Pro Order Found" FontAttributes="Bold" IsVisible="{Binding InvalidProLicense}" HorizontalOptions="Center"/>
+                    <Label Text="Unverified OCR Order Found" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
                     <!--#endregion-->
-                    <!--#region OCR Scan License -->
+                    <!--#region OCR Scans -->
                     <Label Text="{Binding ScansLeft, StringFormat='You have {0} OCR Scans Left'}" Margin="0, 5, 0, 5" HorizontalOptions="Center"/>
-                    <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
-                    <Label Text="{Binding OcrLicenseId, StringFormat='OCR Order# {0}'}" IsVisible="{Binding HasOcrLicense}" HorizontalOptions="Center"/>
                     <!--#endregion-->
                     <!--#region Manipulate Licenses (Subscription or In-App Purchases) -->
                         <Button Text="Change Licenses" Command="{Binding ChangeLicensesCommand}" HorizontalOptions="Center" Margin="5"/>
                     <!--#endregion-->
                 </VerticalStackLayout>
-                <Label Text="No license information is available" IsVisible="{Binding LicenseChecked, Converter={StaticResource Not}}" HorizontalOptions="Center"/>
+                <!--Busy Indicator-->
                 <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Fill" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"/>
             </Grid>
             <!--#endregion-->

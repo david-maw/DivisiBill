@@ -45,10 +45,8 @@ public partial class SettingsViewModel : ObservableObjectPlus
         OnPropertyChanged(nameof(LicenseChecked));
         OnPropertyChanged(nameof(HasProSubscription));
         OnPropertyChanged(nameof(InvalidProLicense));
-        OnPropertyChanged(nameof(ProSubscriptionId));
         OnPropertyChanged(nameof(ScansLeft));
         OnPropertyChanged(nameof(IsOcrPurchaseAllowed));
-        OnPropertyChanged(nameof(HasOcrLicense));
         OnPropertyChanged(nameof(InvalidOcrLicense));
         OnPropertyChanged(nameof(OcrLicenseId));
         // These are fake location related and they should change whenever it does 
@@ -245,9 +243,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public bool LicenseChecked => App.LicenseChecked;
     public bool HasProSubscription => Billing.ProPurchase is not null;
     public bool InvalidProLicense => Billing.ProPurchase is not null && Billing.ProPurchase.State != InAppBilling.PurchaseState.Purchased;
-    public string? ProSubscriptionId => Billing.ProPurchase?.Id;
     public int ScansLeft => Billing.ScansLeft;
-    public bool HasOcrLicense => Billing.OcrPurchase is not null;
     public bool InvalidOcrLicense => Billing.OcrPurchase is not null && Billing.OcrPurchase.State != InAppBilling.PurchaseState.Purchased;
     public string? OcrLicenseId => Billing.OcrPurchase?.Id;
     public string BaseAddress => App.WsUriDefined ? CallWs.BaseAddress?.ToString() ?? "" : "";

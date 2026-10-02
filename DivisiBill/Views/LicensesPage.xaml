@@ -95,14 +95,13 @@
                             HorizontalOptions="Center" IsEnabled="{Binding Path=IsOcrPurchaseAllowed}"/>
             <Label Text="Unverified OCR Order Detected" FontAttributes="Bold" IsVisible="{Binding InvalidOcrLicense}" HorizontalOptions="Center"/>
             <!--#endregion-->
-
-            <!-- Cancel Button (just exits page) -->
+            <!--#region Cancel Button (just exits page) -->
             <Button 
             Text="Cancel"
             Command="{Binding CancelCommand}"
             HorizontalOptions="Center"
             Margin="0,5,0,0"/>
-
+            <!--#endregion-->
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

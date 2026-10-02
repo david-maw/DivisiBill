@@ -58,17 +58,13 @@ Tap this button to clear the password used to encrypt data stored in the cloud a
 
 Tap here to open up the [licensing help](licensing.html) and learn more about Pro and OCR licenses.
 
-## Status
-
-This shows you your Pro Subscription order number if you have one.
-
 ## Scans
 
-All versions of DivisiBill allow you to purchase "scans" to extract information from a picture of a printed bill, using cloud-based OCR scanning from the [Image](imagepage.html) page. Each OCR operation costs one scan; when the number of scans remaining reaches zero, you must buy more before another OCR operation will be allowed. (For more details see [this](licensing.html) page.) If you have scans remaining, this area will show you how many are left and the purchasing order number. Use the "Change Licenses" button to order additional scans or purchase a Professional Edition subscription.
+All versions of DivisiBill allow you to purchase "scans" to extract information from a picture of a printed bill using cloud-based OCR scanning from the [Image](imagepage.html) page. Each OCR operation consumes one scan; when the number of scans remaining reaches zero, you must buy more before another OCR operation will be allowed. (For more details see [this](licensing.html) page.) This area will show you how many scans you have remaining. Use the "Change Licenses" button to purchase additional scans.
 
 ## Change Licenses
 
-This takes you to the [Optional Licenses](licensespage.html) page, where you can purchase OCR scans or a Professional Edition subscription to enable cloud operations in DivisiBill; without a subscription, you should use manual archive/restore instead. For more details, see [this](licensing.html) page.
+This takes you to the [Optional Licenses](licensespage.html) page, where you can purchase OCR scans, or a Professional Edition license to enable cloud operations in DivisiBill. Without a Pro license, you could use manual archive/restore instead, or rely on Android automatic backup. For more details, see [this](licensing.html) page.
 
 ## Send Crash Data
 
@@ -77,4 +73,3 @@ If the app faults this determines whether crash data is sent to support.
 ## Ask After Restart
 
 Specifies whether to ask the "send crash data" question after the next app restart.
-
