@@ -1,3 +1,9 @@
+# Version 6.3.38
+
+## Track Selection in Meal Summary Groups
+
+When grouping bills by venue and allowing multiple selection, if any bills in a group are selected, the number selected is now shown in the group header. The selected count is shown as "N of" before the existing count of bills in the group, for example "(5 of 9)".
+
 # Version 6.3.37
 
 ## Do Not Delete OCR License Prematurely
