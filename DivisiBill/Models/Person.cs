@@ -762,7 +762,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
 
     private string? nickname;
     /// <summary>
-    /// This is a simplified version of Nickname used so as not to waste storage space on 
+    /// This is a simplified version of Nickname used so as not to store anything if no nickname has been set. 
     /// </summary>
     [DataMember(EmitDefaultValue = false, Name = "Nickname")]
     [XmlElement("Nickname")]
@@ -788,7 +788,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
                 if (s.Equals(firstName, StringComparison.OrdinalIgnoreCase))
                     s = null;
             }
-            if (nickname is null || string.IsNullOrWhiteSpace(nickname) && s is null)
+            if (string.IsNullOrWhiteSpace(nickname) && s is null)
                 return;
             if (StringHasChanged(ref nickname, s))
             {
