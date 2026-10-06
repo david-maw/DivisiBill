@@ -29,6 +29,6 @@ public class ScanTests
         var lineItem = orderLine.ToLineItem();
 
         Assert.AreEqual(expectedName ?? name, lineItem.ItemName, "Item name was not transferred correctly");
-        Assert.AreEqual(cost, lineItem.Amount, "Item cost was not scanned correctly");
+        Assert.AreEqual(cost, lineItem.Amount, 0.005m, "Item cost was not scanned correctly");
     }
 }

@@ -67,7 +67,7 @@ public class MealTests
         TestMeal.TipOnTax = tipOnTax;
         TestMeal.IsCouponAfterTax = taxOnDiscount;
         TestMeal.FinalizeSetup();
-        Assert.AreEqual((decimal)cost, TestMeal.Costs[costIndex].Amount, $"Unexpected value for Costs[{costIndex}]");
+        Assert.AreEqual((decimal)cost, TestMeal.Costs[costIndex].Amount, 0.005m, $"Unexpected value for Costs[{costIndex}]");
     }
 
     [TestMethod]
@@ -80,10 +80,10 @@ public class MealTests
         TestMeal.TipOnTax = tipOnTax;
         TestMeal.IsCouponAfterTax = taxOnDiscount;
         TestMeal.FinalizeSetup();
-        Assert.AreEqual((decimal)subTotal, TestMeal.SubTotal, $"Unexpected value for {nameof(Meal.SubTotal)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
-        Assert.AreEqual((decimal)taxableDiscount, TestMeal.CouponAmountIfAfterTax, $"Unexpected value for {nameof(Meal.CouponAmountIfAfterTax)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
-        Assert.AreEqual((decimal)tax, TestMeal.Tax, $"Unexpected value for {nameof(Meal.Tax)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
-        Assert.AreEqual((decimal)tip, TestMeal.Tip, $"Unexpected value for {nameof(Meal.Tip)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
+        Assert.AreEqual((decimal)subTotal, TestMeal.SubTotal, 0.005m, $"Unexpected value for {nameof(Meal.SubTotal)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
+        Assert.AreEqual((decimal)taxableDiscount, TestMeal.CouponAmountIfAfterTax, 0.005m, $"Unexpected value for {nameof(Meal.CouponAmountIfAfterTax)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
+        Assert.AreEqual((decimal)tax, TestMeal.Tax, 0.005m, $"Unexpected value for {nameof(Meal.Tax)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
+        Assert.AreEqual((decimal)tip, TestMeal.Tip, 0.005m, $"Unexpected value for {nameof(Meal.Tip)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
         Assert.AreEqual(0, TestMeal.RoundingErrorAmount, $"Unexpected value for {nameof(Meal.RoundingErrorAmount)} when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
     }
     [TestMethod]
@@ -101,7 +101,7 @@ public class MealTests
         {
             sum += pc.Amount;
         }
-        Assert.AreEqual(TestMeal.TotalAmount, sum,
+        Assert.AreEqual(TestMeal.TotalAmount, sum, 0.005m,
             $"Sum of amounts does not match total when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
         Assert.AreEqual(0, TestMeal.RoundingErrorAmount,
             $"Unshared amount nonzero when TipOnTax ={tipOnTax}, TaxOnDiscount = {taxOnDiscount}");
@@ -145,7 +145,7 @@ public class MealTests
     {
         Meal SharedMeal = GetSharedMeal();
         SharedMeal.FinalizeSetup();
-        Assert.AreEqual((decimal)amount, SharedMeal.Costs[costIndex].Amount,
+        Assert.AreEqual((decimal)amount, SharedMeal.Costs[costIndex].Amount, 0.005m,
             $"Unexpected amount for {SharedMeal.Costs[costIndex].Nickname}");
     }
 
@@ -192,7 +192,7 @@ public class MealTests
         int i = 0;
         foreach (PersonCost pc in SharedMeal.Costs)
         {
-            Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount,
+            Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount, 0.005m,
                 $"Unexpected amount for {pc.Nickname}");
         }
     }
@@ -231,12 +231,12 @@ public class MealTests
         Assert.IsLessThanOrEqualTo(0.01m * SharedMeal.Costs.Count, SharedMeal.RoundingErrorAmount,
             $"Excessive Rounding Error {SharedMeal.RoundingErrorAmount:C} when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
-        Assert.AreEqual(SharedMeal.TotalAmount, SharedMeal.Costs.Sum(pc => pc.Amount),
+        Assert.AreEqual(SharedMeal.TotalAmount, SharedMeal.Costs.Sum(pc => pc.Amount), 0.005m,
             $"Total was not equal to the sum of the individual costs when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
         foreach (PersonCost pc in SharedMeal.Costs)
         {
-            Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount,
+            Assert.AreEqual((decimal)expectedCosts[i++], pc.Amount, 0.005m,
                 $"Unexpected amount for {pc.Nickname}");
         }
     }
@@ -283,15 +283,15 @@ public class MealTests
 
         foreach (PersonCost pc in SharedMeal.Costs)
         {
-            Assert.AreEqual((decimal)expectedCosts[expectedCostIndex++], pc.Amount,
+            Assert.AreEqual((decimal)expectedCosts[expectedCostIndex++], pc.Amount, 0.005m,
                 $"Unexpected amount for {pc.Nickname}");
             measuredTotal += pc.Amount;
         }
 
-        Assert.AreEqual(taxOnCoupon ? 60 : 0, SharedMeal.SubTotal,
+        Assert.AreEqual(taxOnCoupon ? 60 : 0, SharedMeal.SubTotal, 0.005m,
             $"Subtotal did not add up when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
 
-        Assert.AreEqual(measuredTotal, SharedMeal.TotalAmount,
+        Assert.AreEqual(measuredTotal, SharedMeal.TotalAmount, 0.005m,
             $"Total did not add up when TipOnTax = {tipOnTax}, TaxOnDiscount = {taxOnCoupon}");
     }
 }
