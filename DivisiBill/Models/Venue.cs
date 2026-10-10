@@ -344,7 +344,7 @@ public partial class Venue : ObservableObject, IComparable<Venue>
                 high = mid - 1;
             else
                 low = mid + 1;
-    }
+        }
         return (null, ~low); // Not found, return bitwise complement of the insertion point
     }
 
@@ -539,27 +539,33 @@ public partial class Venue : ObservableObject, IComparable<Venue>
     [XmlIgnore]
     public int SimplifiedDistance => Distances.Simplified(Distance);
 
-    [ObservableProperty]
     [XmlAttribute]
-    public partial string Name { get; set; }
-
-    partial void OnNameChanged(string oldValue, string newValue)
+    public string Name
     {
-        Name = string.IsNullOrEmpty(newValue) ? "" : newValue.Trim();
-        if (allVenues.Contains(this))
-            MoveToCorrectPlace();
-        UpdateTime = DateTime.Now;
-    }
+        get;
+        set
+        {
+            string normalized = string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim();
+            if (SetProperty(ref field, normalized))
+            {
+                if (allVenues.Contains(this))
+                    MoveToCorrectPlace();
+                UpdateTime = DateTime.Now;
+            }
+        }
+    } = string.Empty;
 
-    [ObservableProperty]
     [XmlAttribute]
-    public partial string Notes { get; set; }
-
-    partial void OnNotesChanged(string oldValue, string newValue)
+    public string Notes
     {
-        Notes = string.IsNullOrEmpty(newValue) ? "" : newValue.Trim();
-        UpdateTime = DateTime.Now;
-    }
+        get;
+        set
+        {
+            string normalized = string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim();
+            if (SetProperty(ref field, normalized))
+                UpdateTime = DateTime.Now;
+        }
+    } = string.Empty;
 
     [ObservableProperty]
     [XmlIgnore]
