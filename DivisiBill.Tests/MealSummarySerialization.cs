@@ -72,4 +72,21 @@ public class MealSummarySerialization
         Assert.AreEqual("00010101000000", ms.DefaultId);
         Assert.IsTrue(ms.IsDefault);
     }
+
+    [TestMethod]
+    public void LocationChanged_WithNulls_IsNoOp()
+    {
+        MealSummary ms = new()
+        {
+            VenueName = "No Change",
+            IsLocal = true,
+            IsRemote = false,
+        };
+
+        ms.LocationChanged();
+
+        Assert.IsTrue(ms.IsLocal);
+        Assert.IsFalse(ms.IsRemote);
+        Assert.AreEqual("No Change", ms.VenueName);
+    }
 }

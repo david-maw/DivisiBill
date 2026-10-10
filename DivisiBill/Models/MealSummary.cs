@@ -443,7 +443,7 @@ public partial class MealSummary : ObservableObjectPlus, IComparable<MealSummary
     public void LocationChanged(bool? isLocal = null, bool? isRemote = null)
     {
         if (isLocal is null && isRemote is null)
-            throw new Exception("Program fault");
+            return; // No state change requested; keep existing values and lists unchanged.
         if (isLocal is not null) // Then it changed
         {
             IsLocal = isLocal == true;
