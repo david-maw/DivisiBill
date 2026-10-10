@@ -174,10 +174,11 @@ public partial class PersonCost : ObservableObject
         set => DinerID = (LineItem.DinerID)value;
     }
 
-    // Diner ID values start at 1, this starts at 0 and is used as an array index usually
+    // Diner ID values start at 1, this starts at 0 and is used as an array index usually.
+    // A default/unassigned diner should not underflow when converted to an index.
     [XmlIgnore]
-    public byte DinerIndex => (byte)((int)DinerID - 1);
+    public byte DinerIndex => DinerID <= LineItem.DinerID.none ? (byte)0 : (byte)((int)DinerID - 1);
 
     [XmlIgnore]
-    public string DinerIDText => ((char)('①' + DinerIndex)).ToString();
+    public string DinerIDText => DinerID == LineItem.DinerID.none ? string.Empty : ((char)('①' + DinerIndex)).ToString();
 }
