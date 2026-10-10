@@ -853,6 +853,31 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
     }
 
     [RelayCommand]
+    private void ChangeGroupSelection(MealSummaryGroup group)
+    {
+        if (group is null)
+            return;
+        if (group.AllSelected == false)
+        {
+            foreach (MealSummary ms in group.MealSummaries.Where(ms => !ms.FileSelected))
+            {
+                ms.FileSelected = true;
+                SelectedMealSummariesCount++;
+            }
+            group.SelectedCount = group.MealSummaries.Count;
+        }
+        else
+        {
+            foreach (MealSummary ms in group.MealSummaries.Where(ms => ms.FileSelected))
+            {
+                ms.FileSelected = false;
+                SelectedMealSummariesCount--;
+            }
+            group.SelectedCount = 0;
+        }
+    }
+
+    [RelayCommand]
     private void SelectNone()
     {
         IsSelectableList = true;

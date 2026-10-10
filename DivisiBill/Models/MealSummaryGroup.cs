@@ -76,11 +76,16 @@ public partial class MealSummaryGroup : ObservableObject
     public partial int Count { get; set; } = 0;
 
     public bool CountLarge => Count > maxMeals;
+
+    // If any meals are selected, indicate how many, for example show "1 of 3" instead of just "3".
     public string CountText => SelectedCount > 0 ? $"{SelectedCount} of {Count}" : $"{Count}";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CountText))]
+    [NotifyPropertyChangedFor(nameof(AllSelected))]
     public partial int SelectedCount { get; set; } = 0;
+
+    public bool? AllSelected => SelectedCount == 0 ? false : SelectedCount == Count ? true : (bool?)null;
 
     [ObservableProperty]
     public partial bool IsForCurrentMeal { get; set; } = false;

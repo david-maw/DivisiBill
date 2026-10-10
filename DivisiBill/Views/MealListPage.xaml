@@ -380,9 +380,16 @@
                         CommandParameter="{Binding}"
                         IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                         <toolkit:Expander.Header>
-                            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*,Auto">
+                            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*,Auto" Margin="5,0">
                                 <Grid ColumnDefinitions="*, auto">
                                     <HorizontalStackLayout Spacing="10">
+                                        <Image IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                            Source="{Binding AllSelected, Converter={StaticResource BoolToGlyphConverter}}">
+                                            <Image.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding ChangeGroupSelectionCommand, Source={RelativeSource AncestorType={x:Type vm:MealListViewModel}}, x:DataType=vm:MealListViewModel}"
+                                                    CommandParameter="{Binding}" />
+                                            </Image.GestureRecognizers>
+                                        </Image>
                                         <Label FontSize="{StaticResource FontSizeLarge}" Text="{Binding VenueName}" />
                                         <Label FontSize="{StaticResource FontSizeLarge}" Text="{Binding CountText, StringFormat='({0})'}" />
                                     </HorizontalStackLayout>

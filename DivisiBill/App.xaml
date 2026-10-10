@@ -30,7 +30,7 @@
             <services:IsPositiveConverter x:Key="IsPositive" />
             <services:LocationIsValidConverter x:Key="IsLocationValid" />
             <services:AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" />
-            <services:BoolToOpacityConverter x:Key="BoolToOpacityConverter" /> 
+            <services:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
 
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All"/>
             <toolkit:VariableMultiValueConverter x:Key="Any" ConditionType="Any" />
@@ -71,6 +71,9 @@
 
             <FontImageSource x:Key="ListGlyphUnselected"        Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0130;" FontFamily="mdicons"/> <!--checkbox-blank-circle-outline-->
             <FontImageSource x:Key="ListGlyphSelected"          Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0134;" FontFamily="mdicons"/> <!--checkbox-marked-circle-outline-->
+            <FontImageSource x:Key="ListGlyphSomeSelected"      Color="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray400}}"  Glyph="&#xF0133;" FontFamily="mdicons"/> <!--checkbox-marked-circle-->
+            <services:BoolToFontImageSourceConverter x:Key="BoolToGlyphConverter" TrueValue="{StaticResource ListGlyphSelected}" FalseValue="{StaticResource ListGlyphUnselected}" NullValue="{StaticResource ListGlyphSomeSelected}"/>
+
             <FontImageSource x:Key="ListGlyphCurrentMeal"       Color="{AppThemeBinding Light={StaticResource ImageGlyphDark}, Dark={StaticResource ImageGlyphLight}}"  Glyph="&#xF1A7D;" FontFamily="mdicons"/> <!--text-box-edit-outline-->
 
             <!--The following icons are used in ToolbarItem objects in various pages, always against a background of TitleBarColor.-->
