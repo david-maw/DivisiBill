@@ -35,18 +35,18 @@ public partial class MealSummaryGroup : ObservableObject
         {
             case NotifyCollectionChangedAction.Add:
                 Count += e.NewItems?.Count ?? 0;
-                SelectedCount += (e.NewItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0;
+                SelectedCount += e.NewItems?.Cast<MealSummary>().Count(ms => ms.FileSelected) ?? 0;
                 break;
 
             case NotifyCollectionChangedAction.Remove:
                 Count -= e.OldItems?.Count ?? 0;
-                SelectedCount -= (e.OldItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0;
+                SelectedCount -= e.OldItems?.Cast<MealSummary>().Count(ms => ms.FileSelected) ?? 0;
                 break;
 
             case NotifyCollectionChangedAction.Replace:
                 Count += (e.NewItems?.Count ?? 0) - (e.OldItems?.Count ?? 0);
-                SelectedCount += (e.NewItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0
-                               - (e.OldItems as IList<MealSummary>)?.Count(ms => ms.FileSelected) ?? 0;
+                SelectedCount += (e.NewItems?.Cast<MealSummary>().Count(ms => ms.FileSelected) ?? 0)
+                               - (e.OldItems?.Cast<MealSummary>().Count(ms => ms.FileSelected) ?? 0);
                 break;
 
             case NotifyCollectionChangedAction.Reset:
