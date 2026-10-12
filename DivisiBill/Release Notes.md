@@ -4,6 +4,9 @@
 
 A bill list clustered by venue can now show a "group selection" icon indicating whether any bills are selected for that venue. The group selection icon shows whenever the "selection mode" is in use and tapping on it  either selects or deselects every bill for that venue.
 
+## Correctly Select Help Topics
+
+Although the correct help topic was always highlighted, sometimes it was not shown automatically. Links within the same page did not always work. These issues have been corrected.
 
 # Version 6.3.38
 
