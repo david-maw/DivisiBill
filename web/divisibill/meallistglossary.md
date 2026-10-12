@@ -54,9 +54,9 @@ This tells you whether "Show Bills" or "Show Venues" are currently selected, cha
 
 This column is only visible if the selection mode has been used to choose multiple selection. It indicates whether a given item has been selected.
 
-## Current
+## Current (<u>&#xF1A7D;</u>)
 
-This icon (<u>&#xF1A7D;</u>) shows on the current bill, or the current venue if bills are being shown by venue, (see [Filter Indicator](#filter-indicator)). The current bill can be changed by swiping right on a bill.
+This icon shows on the current bill, or the current venue if bills are being shown by venue, (see [Filter Indicator](#filter-indicator)). The current bill can be changed by swiping right on a bill.
 
 ## Scroll View Up (<u>&#xF0CE2;</u>)
 
@@ -76,9 +76,11 @@ For a remote (cloud) only bill, tapping on this area will download it, use the [
 
 ## Bill
 
-Each entry in this list represents a single bill. You can swipe it left to delete a copy of the bill (if both local and remote ones are shown it will delete the local one), or swipe right to make it the current bill (which may save the bill you were using previously if it has been changed). The current bill never shows in this list.
+Each entry in this list represents either a single bill or a group of bills with individual bills below it. You can swipe a single bill left to delete it (if both local and remote ones are shown it will delete the local one), or swipe right to make it the current bill (the one you were using is saved). When you are showing bills grouped by venue, the primary entry will be a venue but you can tap on it to show bills for that venue.
 
-Tapping on the center of a bill will select or deselect it, double tapping will show a quick summary of it.
+Tapping on the center of a bill will select or deselect it, double tapping on a bill will show a quick summary of it.
+
+Tapping on the center of a venue will show or hide the bills for that venue.
 
 ## Scroll View Down (<u>&#xF0CDC;</u>)
 

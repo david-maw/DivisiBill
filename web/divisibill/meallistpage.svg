@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="285.75mm"
-   height="207.96249mm"
-   viewBox="0 0 285.75001 207.96249"
+   width="1080pt"
+   height="1124pt"
+   viewBox="0 0 381.00001 396.52222"
    version="1.1"
    id="svg5"
    inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
@@ -24,9 +24,9 @@
      inkscape:pagecheckerboard="1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.26"
-     inkscape:cx="640.87302"
-     inkscape:cy="515.47619"
+     inkscape:zoom="1.35"
+     inkscape:cx="1127.4074"
+     inkscape:cy="1240.3704"
      inkscape:window-width="2560"
      inkscape:window-height="1577"
      inkscape:window-x="1192"
@@ -47,8 +47,8 @@
      id="layer1"
      transform="translate(41.311256,0.05096821)">
     <image
-       width="285.75"
-       height="297.39167"
+       width="381.08398"
+       height="396.22543"
        preserveAspectRatio="none"
        style="image-rendering:optimizeQuality"
        xlink:href="meallistpage.png"
@@ -61,7 +61,7 @@
        xlink:href="meallistglossary.html#flyout"
        target="_parent"
        xlink:title="Open/Close Flyout"
-       transform="matrix(0.26829332,0,0,0.26080057,-41.335458,-0.05987191)">
+       transform="matrix(0.35780329,0,0,0.34661446,-41.385213,-0.19258241)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect936"
@@ -75,7 +75,7 @@
        xlink:href="meallistglossary.html#filter-indicator"
        target="_parent"
        xlink:title="bills or venues"
-       transform="matrix(0.26829332,0,0,0.21297002,74.960399,34.374792)">
+       transform="matrix(0.35780329,0,0,0.28304574,113.71011,45.572473)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect936-8"
@@ -89,7 +89,7 @@
        xlink:href="meallistglossary.html#selected-count"
        target="_parent"
        xlink:title="number of bills selected"
-       transform="matrix(0.13106413,0,0,0.21297002,-5.0604197,34.363738)">
+       transform="matrix(0.1747907,0,0,0.28304574,6.9921678,45.557782)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect936-8-3"
@@ -103,10 +103,10 @@
        xlink:href="meallistglossary.html#scroll-view-up"
        target="_parent"
        xlink:title="Scroll View Up"
-       transform="matrix(0.60915293,0,0,0.5416941,56.600865,65.658999)"
-       style="stroke-width:0.99924428;stroke-dasharray:none">
+       transform="matrix(0.81238296,0,0,0.71993328,89.225339,87.150444)"
+       style="stroke-width:0.999244;stroke-dasharray:none">
       <rect
-         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:0.99924428;stroke-linecap:round;stroke-dasharray:none"
+         style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:0.999244;stroke-linecap:round;stroke-dasharray:none"
          id="rect936-8-3-40"
          width="94.871796"
          height="90.708664"
@@ -118,10 +118,10 @@
        xlink:href="meallistglossary.html#scroll-view-down"
        target="_parent"
        xlink:title="Scroll View Down"
-       transform="matrix(0.60915293,0,0,0.5416941,54.589195,191.22269)"
+       transform="matrix(0.81238296,0,0,0.71993328,86.542521,254.02965)"
        style="stroke-width:0.999244;stroke-dasharray:none"
-       inkscape:transform-center-x="-22.048612"
-       inkscape:transform-center-y="-100.37368">
+       inkscape:transform-center-x="-29.40463"
+       inkscape:transform-center-y="-133.40066">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:0.999244;stroke-linecap:round;stroke-dasharray:none"
          id="rect936-8-3-40-9"
@@ -135,7 +135,7 @@
        xlink:href="meallistglossary.html#total-count"
        target="_parent"
        xlink:title="total number of bills in the list"
-       transform="matrix(0.23730609,0,0,0.21297002,20.25062,34.506531)">
+       transform="matrix(0.31647787,0,0,0.28304574,40.747661,45.747559)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:22.6772;stroke-linecap:round"
          id="rect936-8-3-4"
@@ -149,7 +149,7 @@
        xlink:href="meallistglossary.html#delete"
        target="_parent"
        xlink:title="Delete Items"
-       transform="matrix(0.26454484,0,0,0.28688996,31.000278,-0.84309858)">
+       transform="matrix(0.35280421,0,0,0.38128831,55.083698,-1.2335222)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
          id="rect938"
@@ -163,7 +163,7 @@
        xlink:href="meallistglossary.html#selection-mode"
        target="_parent"
        xlink:title="Select Items"
-       transform="matrix(0.26454484,0,0,0.28688996,-6.468077,-1.0871736)">
+       transform="matrix(0.35280421,0,0,0.38128831,5.1148776,-1.5579077)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
          id="rect938-1"
@@ -177,7 +177,7 @@
        xlink:href="meallistglossary.html#ellipsis"
        target="_parent"
        xlink:title="More Choices"
-       transform="matrix(0.19204342,0,0,0.28688996,108.63577,-0.43307391)">
+       transform="matrix(0.25611434,0,0,0.38128831,158.62051,-0.6885829)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:24.5441;stroke-linecap:round"
          id="rect938-2"
@@ -191,7 +191,7 @@
        xlink:href="meallistglossary.html#bill"
        target="_parent"
        xlink:title="Individual Bill"
-       transform="matrix(0.84534951,0,0,0.83168317,20.738343,110.87875)">
+       transform="matrix(1.1273812,0,0,1.1053404,41.398101,147.24931)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect884"
@@ -205,7 +205,7 @@
        xlink:href="meallistglossary.html#location"
        target="_parent"
        xlink:title="Bill Location"
-       transform="matrix(0.77018118,0,0,2.185157,56.404397,-81.176475)">
+       transform="matrix(1.0271346,0,0,2.9041617,88.963324,-107.99982)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect886"
@@ -219,7 +219,7 @@
        xlink:href="meallistglossary.html#image"
        target="_parent"
        xlink:title="Bill Has Image"
-       transform="matrix(0.71558573,0,0,2.1652752,50.682825,-78.338085)">
+       transform="matrix(0.95432465,0,0,2.877738,81.332879,-104.22748)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect886-2"
@@ -233,7 +233,7 @@
        xlink:href="meallistglossary.html#current"
        target="_parent"
        xlink:title="Bill is current"
-       transform="matrix(0.71558573,0,0,0.21023052,32.532919,63.183763)">
+       transform="matrix(0.95432465,0,0,0.27940483,57.12767,83.860756)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect886-2-7"
@@ -247,7 +247,7 @@
        xlink:href="meallistglossary.html#selected"
        target="_parent"
        xlink:title="Selection Indicator"
-       transform="matrix(1,0,0,2.1478126,-259.24873,-78.630182)">
+       transform="matrix(1.3336273,0,0,2.8545295,-332.0003,-104.61569)">
       <rect
          style="fill:#00ff00;fill-opacity:0.25;fill-rule:evenodd;stroke-width:6.00001;stroke-linecap:round"
          id="rect886-4"
