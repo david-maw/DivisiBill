@@ -2,7 +2,7 @@
 
 ## Allow Bill Group Selection
 
-A bill list clustered by venue can now show a "group selection" icon indicating whether any bills are selected for that venue. The group selection icon shows whenever the "selection mode" is in use and tapping on it  either selects or deselects every bill for that venue.
+A bill list clustered by venue can now show a "group selection" icon indicating whether any bills are selected for that venue. The group selection icon shows whenever the "selection mode" is in use and tapping on it either selects or deselects every bill for that venue.
 
 ## Correctly Select Help Topics
 
