@@ -94,7 +94,7 @@
             <FontImageSource x:Key="GlyphDecrement"             Color="White" Glyph="&#xF0377;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--minus-circle-outline-->
             <FontImageSource x:Key="GlyphDel"                   Color="White" Glyph="&#xF0A7A;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--trash-can-->
             <FontImageSource x:Key="GlyphEdit"                  Color="White" Glyph="&#xF1A7D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--text-box-edit-outline-->
-            <FontImageSource x:Key="GlyphExit"                  Color="White" Glyph="&#xF0206;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--exit-to-app-->
+            <FontImageSource x:Key="GlyphExit"                  Color="White" Glyph="&#xF006D;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--backburger-->
             <FontImageSource x:Key="GlyphFile"                  Color="White" Glyph="&#xF0224;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--file-outline-->
             <FontImageSource x:Key="GlyphFileEdit"              Color="White" Glyph="&#xF11E8;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--file-edit-outline-->
             <FontImageSource x:Key="GlyphFilterOff"             Color="White" Glyph="&#xF14F0;" FontFamily="mdicons" controls:IconState.AutoGrayOut="True"/> <!--filter-off-outline-->

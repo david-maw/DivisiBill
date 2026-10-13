@@ -10,7 +10,7 @@
              Title="Help">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <FontImageSource x:Key="GlyphExit" Color="white" Glyph="&#xF0206;" FontFamily="mdicons"/> <!--exit-to-app-->
+            <FontImageSource x:Key="GlyphExit" Color="white" Glyph="&#xF006D;" FontFamily="mdicons"/> <!--backburger-->
             <FontImageSource x:Key="GlyphToc"  Color="White" Glyph="&#xF0836;" FontFamily="mdicons"/> <!--table-of-contents-->
         </ResourceDictionary>
     </ContentPage.Resources>
