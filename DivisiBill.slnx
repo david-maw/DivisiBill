@@ -18,6 +18,7 @@
     <File Path="md-styles.css" />
     <File Path="md-template.html" />
     <File Path="README.md" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="DivisiBill.Tests/DivisiBill.Tests.csproj">
     <BuildType Solution="Alternate|*" Project="Debug" />
