@@ -148,7 +148,7 @@
                 <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 350, 0, 0" />
                 <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}" Text="Debug"/>
                 <!--#region Show Base Folder Path -->
-                <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{x:Static DivisiBill:App.BaseFolderPath}"/>
+                <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{x:Static App.BaseFolderPath}"/>
                 <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" Text="{Binding BaseAddress}"/>
                 <!--#endregion-->
                 <!--#region Show UserKey (license ObfuscatedAccountId) -->
