@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     Title="Tutorial"
-    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:TutorialPage}"
-    x:DataType="views:TutorialPage"
+    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=TutorialPage}"
+    x:DataType="TutorialPage"
     x:Class="DivisiBill.Views.TutorialPage"
     Shell.FlyoutBehavior="Disabled">
     <ScrollView>

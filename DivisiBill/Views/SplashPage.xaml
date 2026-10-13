@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage 
              xmlns:appmodel ="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:SplashPage}"
-             x:DataType="views:SplashPage"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=SplashPage}"
+             x:DataType="SplashPage"
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False"

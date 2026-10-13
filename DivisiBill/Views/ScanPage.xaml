@@ -1,5 +1,5 @@
 <ContentPage
-    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:ScanPage}"
+    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=ScanPage}"
     Shell.FlyoutBehavior="Disabled"
     x:Class="DivisiBill.Views.ScanPage"
     Title="ScanPage">
@@ -8,7 +8,7 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Clicked="OnAddItemList"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <controls:ColumnLayout Margin="10" x:DataType="views:ScanPage">
+        <controls:ColumnLayout Margin="10" x:DataType="ScanPage">
             <VerticalStackLayout x:Name="loading" IsVisible="False">
                 <ActivityIndicator IsRunning="True" HeightRequest="50"/>
                 <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}"/>
