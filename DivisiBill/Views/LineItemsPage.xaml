@@ -144,12 +144,12 @@
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>
-    <controls:ColumnLayout>
+    <ColumnLayout>
         <!--#region Page Switch Shortcut-->
-        <controls:ColumnLayout.GestureRecognizers>
+        <ColumnLayout.GestureRecognizers>
             <!--  Swipes are intercepted by the CollectionView below, so these take effect only outside that view  -->
             <SwipeGestureRecognizer Command="{Binding GoToTotalsCommand}" Direction="Left" />
-        </controls:ColumnLayout.GestureRecognizers>
+        </ColumnLayout.GestureRecognizers>
         <!--#endregion-->
         <!--#region Venue Name Heading-->
         <Border
@@ -219,17 +219,17 @@
             <!--#endregion-->
         </CollectionView>
         <!--#region Scroll Up/Down-->
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsLineItemSwipeDownAllowed}">
-        </controls:ScrollButton>
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        </ScrollButton>
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsLineItemSwipeUpAllowed}"
             VerticalOptions="End">
-        </controls:ScrollButton>
+        </ScrollButton>
         <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint-->
@@ -465,7 +465,7 @@
                     <UserStoppedTypingBehavior Command="{Binding UnloadLineItemNameStringCommand}" StoppedTypingTimeThreshold="{Static PropertiesViewModel.StoppedTypingTimeThreshold}" />
                 </Entry.Behaviors>
             </Entry>
-            <controls:AmountEntry
+            <AmountEntry
                 x:Name="SelectedAmountEntry"
                 Grid.Column="1"
                 Placeholder="Value"
@@ -481,9 +481,9 @@
                 MinimumValue="-999999.99" 
                 ReturnType="Done"
                 Amount="{Binding LineItemAmount}">
-            </controls:AmountEntry>
+            </AmountEntry>
         </Grid>
         <!--#endregion-->
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

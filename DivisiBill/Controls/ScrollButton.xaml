@@ -3,7 +3,7 @@
     HorizontalOptions="Center"
     VerticalOptions="Start"
     x:Name="scrollButton"
-    x:DataType="controls:ScrollButton"
+    x:DataType="ScrollButton"
     x:Class="DivisiBill.Controls.ScrollButton">
     <ContentView.Resources>
         <ResourceDictionary>

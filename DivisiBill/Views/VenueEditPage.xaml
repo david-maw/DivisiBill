@@ -12,7 +12,7 @@
         <ToolbarItem Command="{Binding DeleteCommand}" IconImageSource="{StaticResource GlyphDel}"/>
     </ContentPage.ToolbarItems>
     <!--This is a column layout (a single column grid), rather than a VerticalStackLayout, in order to allow the Notes field to occupy all the available space-->
-    <controls:ColumnLayout Margin="10,0,10,10">
+    <ColumnLayout Margin="10,0,10,10">
         <Label Text="{Binding Path=Name}"
                HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
         <Label Text="(in use)" IsVisible="{Binding IsForCurrentMeal}" HorizontalOptions="Center"/>
@@ -38,7 +38,7 @@
         </Grid>
         <Label Text="Nearby Venue Names" HorizontalOptions="Center" FontAttributes="Bold" IsVisible="{Binding PossiblesShowing}"/>
         <Border Padding="10" IsVisible="{Binding PossiblesShowing}">
-            <CollectionView controls:ColumnLayout.Fill="false"
+            <CollectionView ColumnLayout.Fill="false"
                 MaximumHeightRequest="200"
                 ItemsSource="{Binding Possibles}" 
                 SelectionMode="Single" 
@@ -58,8 +58,8 @@
         </Border>
         <Label Text="{Binding VenueNameError}" HorizontalOptions="Center" IsVisible="{Binding VenueNameError, Converter={StaticResource IsStringNotNullOrWhiteSpace}}" TextColor="Red"/>
         <Label Text="Notes" FontAttributes="Bold" HorizontalOptions="Center"/>
-        <Border controls:ColumnLayout.Fill="True">
+        <Border ColumnLayout.Fill="True">
             <Editor Text="{Binding Notes}"/>
         </Border>
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

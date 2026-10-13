@@ -6,7 +6,7 @@
     x:Class="DivisiBill.Views.SettingsPage">
 
     <ContentPage.Resources>
-        <Style TargetType="controls:AmountEntry">
+        <Style TargetType="AmountEntry">
             <Setter Property="HorizontalOptions" Value="End" />
             <Setter Property="VerticalOptions" Value="Center" />
             <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
@@ -14,11 +14,11 @@
             <Setter Property="InvalidStyle" Value="{StaticResource InvalidEntryStyle}" />
             <Setter Property="UnequalStyle" Value="{StaticResource UnequalEntryStyle}" />
             <Style.Triggers>
-                <Trigger TargetType="controls:AmountEntry" Property="IsFocused" Value="True">
+                <Trigger TargetType="AmountEntry" Property="IsFocused" Value="True">
                     <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
                     <Setter Property="FontAttributes" Value="Bold" />
                 </Trigger>
-                <Trigger TargetType="controls:AmountEntry" Property="IsFocused" Value="False">
+                <Trigger TargetType="AmountEntry" Property="IsFocused" Value="False">
                     <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
                     <Setter Property="FontAttributes" Value="None" />
                 </Trigger>
@@ -41,13 +41,13 @@
                     <Label Text="Tip on Tax" VerticalOptions="Center"/>
                     <CheckBox IsChecked="{Binding DefaultTipOnTax}"/>
                 </HorizontalStackLayout>
-                <controls:AmountEntry Grid.Row="0" Grid.Column="1" Placeholder="Tip %" WidthRequest="90" Amount="{Binding DefaultTipRatePercentage}"
+                <AmountEntry Grid.Row="0" Grid.Column="1" Placeholder="Tip %" WidthRequest="90" Amount="{Binding DefaultTipRatePercentage}"
                                       MaxLength="2" MinimumValue="0" MaximumValue="99" HorizontalOptions="Center" />
                 <HorizontalStackLayout Grid.Row="1" Grid.Column="0" HorizontalOptions="Center">
                     <Label Text="Coupon After Tax" VerticalOptions="Center"/>
                     <CheckBox IsChecked="{Binding DefaultTaxOnCoupon}"/>
                 </HorizontalStackLayout>
-                <controls:AmountEntry Grid.Row="0" Grid.Column="0" Placeholder="Tax %" Amount="{Binding DefaultTaxRatePercentage}"
+                <AmountEntry Grid.Row="0" Grid.Column="0" Placeholder="Tax %" Amount="{Binding DefaultTaxRatePercentage}"
                                       WidthRequest="90" MinimumValue="0" MaximumValue="99.99" HorizontalOptions="Center"/>
                 <!--#endregion-->
                 <!--#region Hint, CheckBoxes and Dark Mode-->

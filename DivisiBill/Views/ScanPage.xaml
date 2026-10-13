@@ -8,7 +8,7 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Clicked="OnAddItemList"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <controls:ColumnLayout Margin="10" x:DataType="ScanPage">
+        <ColumnLayout Margin="10" x:DataType="ScanPage">
             <VerticalStackLayout x:Name="loading" IsVisible="False">
                 <ActivityIndicator IsRunning="True" HeightRequest="50"/>
                 <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}"/>
@@ -35,6 +35,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </controls:ColumnLayout>
+        </ColumnLayout>
     </ContentPage.Content>
 </ContentPage>

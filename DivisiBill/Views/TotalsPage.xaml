@@ -102,12 +102,12 @@
         </DataTemplate>
     </ContentPage.Resources>
 
-    <controls:ColumnLayout Margin="10">
-        <controls:ColumnLayout.GestureRecognizers>
+    <ColumnLayout Margin="10">
+        <ColumnLayout.GestureRecognizers>
             <!--Swipes are intercepted by the CollectionView below, so these take effect only outside that view-->
             <!--In practice swipes pass through to this on Windows but not on Android-->
             <SwipeGestureRecognizer Direction="Right" Command="{Binding GoToItemsCommand}"/>
-        </controls:ColumnLayout.GestureRecognizers>
+        </ColumnLayout.GestureRecognizers>
         <!--#region Heading -->
         <!--This is the heading for the page-->
         <Border Margin="5" Padding="5"
@@ -275,5 +275,5 @@
             </Grid>
         </Border>
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

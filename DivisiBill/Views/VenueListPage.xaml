@@ -92,7 +92,7 @@
         <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"                                      Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}"                               Order="Secondary"/>
     </ContentPage.ToolbarItems>
-    <controls:ColumnLayout>
+    <ColumnLayout>
         <!--#region List of Venues -->
         <CollectionView x:Name="CurrentCollectionView"
                         x:DataType="VenueListViewModel"
@@ -121,12 +121,12 @@
         </CollectionView>
         <!--#endregion-->
         <!--#region Scroll Up/Down-->
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeDownAllowed}"/>
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"
             VerticalOptions="End"/>
@@ -150,5 +150,5 @@
             <Button Text="UnDelete All" Command="{Binding UndeleteAllVenuesCommand}" IsVisible="{Binding IsManyDeletedVenues}"/>
         </HorizontalStackLayout>
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

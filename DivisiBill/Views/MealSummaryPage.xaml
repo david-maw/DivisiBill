@@ -10,7 +10,7 @@
         <ToolbarItem IconImageSource="{StaticResource GlyphDel}" Command="{Binding DeleteMealCommand}"/>
     </ContentPage.ToolbarItems>
 
-    <controls:ColumnLayout Spacing="2" Padding="5">
+    <ColumnLayout Spacing="2" Padding="5">
         <Label Text="This bill is a fake one created by the system" IsVisible="{Binding Path=IsFake}" HorizontalTextAlignment="Center"/>
         <!--#region Venue -->
         <Label Text="{Binding VenueName}" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold" HorizontalTextAlignment="Center">
@@ -91,5 +91,5 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

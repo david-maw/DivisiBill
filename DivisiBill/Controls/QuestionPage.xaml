@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <toolkit:Popup
     x:Class="DivisiBill.Controls.QuestionPage"
-    x:DataType="controls:QuestionPage"
-    x:TypeArguments="controls:QuestionResponse"
-    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=controls:QuestionPage}"
+    x:DataType="QuestionPage"
+    x:TypeArguments="QuestionResponse"
+    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=QuestionPage}"
     BackgroundColor="Transparent"
     Padding="0"
     Margin="0">

@@ -278,7 +278,7 @@
         <ToolbarItem Text="{Binding ShowRemoteMeals, Converter={StaticResource ShowRemoteText}}"     Command="{Binding ChangeShowRemoteMealsCommand}"  Order="Secondary" />
         <ToolbarItem Text="Scroll To Current"                                                        Command="{Binding ShowCurrentCommand}"            Order="Secondary" />
     </ContentPage.ToolbarItems>
-    <controls:ColumnLayout Margin="0,0,0,10">
+    <ColumnLayout Margin="0,0,0,10">
         <!--#region Page Heading-->
         <Label
             FontSize="{StaticResource FontSizeMedium}"
@@ -331,7 +331,7 @@
         <!--#region Simple List of Meals-->
         <CollectionView
             x:Name="CurrentCollectionView"
-            controls:ColumnLayout.Fill="True"
+            ColumnLayout.Fill="True"
             EmptyView="No bills found"
             ItemSizingStrategy="MeasureAllItems"
             ItemTemplate="{StaticResource WithSwipe}"
@@ -351,8 +351,8 @@
         <!--#region List of Meals Grouped by Venue-->
         <CollectionView
             x:Name="CurrentGroupView"
-            controls:ColumnLayout.Fill="True"
-            controls:ColumnLayout.SameRow="True"
+            ColumnLayout.Fill="True"
+            ColumnLayout.SameRow="True"
             EmptyView="No bill groups found"
             SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
             ItemSizingStrategy="MeasureAllItems"
@@ -451,29 +451,29 @@
         </CollectionView>
         <!--#endregion-->
         <!--#region Scroll Up/Down-->
-        <controls:ScrollButton controls:ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}">
-            <controls:ScrollButton.IsVisible>
+        <ScrollButton ColumnLayout.SameRow="True" Command="{Binding ScrollItemsCommand}">
+            <ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeDownAllowed" />
                     <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
-            </controls:ScrollButton.IsVisible>
-        </controls:ScrollButton>
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+            </ScrollButton.IsVisible>
+        </ScrollButton>
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             VerticalOptions="End">
-            <controls:ScrollButton.IsVisible>
+            <ScrollButton.IsVisible>
                 <MultiBinding Converter="{StaticResource All}">
                     <Binding Path="IsSwipeUpAllowed" />
                     <Binding Converter="{StaticResource Not}" Path="IsMealListLoading" />
                 </MultiBinding>
-            </controls:ScrollButton.IsVisible>
-        </controls:ScrollButton>
+            </ScrollButton.IsVisible>
+        </ScrollButton>
         <!--#endregion-->
         <!--#region Busy Indicator when Meals are Loading or Scrolling-->
         <Label
-            controls:ColumnLayout.SameRow="True"
+            ColumnLayout.SameRow="True"
             Padding="2,10"
             FontSize="{StaticResource FontSizeTitle}"
             HorizontalOptions="Center"
@@ -481,7 +481,7 @@
             IsVisible="{Binding IsMealListLoading}"
             VerticalOptions="Center" />
         <ActivityIndicator
-            controls:ColumnLayout.SameRow="True"
+            ColumnLayout.SameRow="True"
             Margin="-1"
             WidthRequest="240"
             HeightRequest="240"
@@ -509,5 +509,5 @@
                 Text="Undo All Deletions" />
         </HorizontalStackLayout>
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

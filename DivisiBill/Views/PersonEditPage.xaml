@@ -12,7 +12,7 @@
         <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>
         <ToolbarItem Command="{Binding DeleteCommand}" IconImageSource="{StaticResource GlyphDel}"/>
     </ContentPage.ToolbarItems>
-    <controls:ColumnLayout>
+    <ColumnLayout>
         <Label Text="{Binding Path=CurrentPerson.DisplayName}" LineBreakMode="MiddleTruncation"
                 HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
         <Label Text= "(used in current bill)" IsVisible="{Binding IsInUse}" HorizontalOptions="Center"/>
@@ -26,5 +26,5 @@
         <Entry Grid.Column="1" x:Name="nicknameEntry" Text="{Binding CurrentPerson.Nickname}" Placeholder="{Binding CurrentPerson.FirstName}" ReturnType="Next" Completed="OnCompleted" Keyboard="Text"/>
         <Label Text="email" FontAttributes="Bold" Margin="0,15,0,0"/>
         <Entry Grid.Column="1" Text="{Binding CurrentPerson.Email}" ReturnType="Done" Completed="OnCompleted" Keyboard="Email"/>
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

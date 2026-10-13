@@ -14,7 +14,7 @@
     <ContentPage.Resources>
         <maps:Circle x:Name="nativeAccuracyCircle" x:Key="nativeAccuracyCircle" FillColor="{StaticResource TransparentRed}" StrokeWidth="0"/>
     </ContentPage.Resources>
-    <controls:ColumnLayout x:Name="rootLayout">
+    <ColumnLayout x:Name="rootLayout">
         <Label
             Text="{Binding VenueName, Mode=OneWay}"
             VerticalOptions="Center"
@@ -30,16 +30,16 @@
             </Label.FormattedText>
         </Label>
 
-        <WebView x:Name="googleMapsWebView" controls:ColumnLayout.Fill="True"
+        <WebView x:Name="googleMapsWebView" ColumnLayout.Fill="True"
                  Source="{Binding GoogleMapSource}"
                  IsEnabled="{OnPlatform false, WinUI=true}"
                  IsVisible="{OnPlatform false, WinUI=true}"/>
 
-        <maps:Map x:Name="nativeMap" controls:ColumnLayout.Fill="True" controls:ColumnLayout.SameRow="True"
+        <maps:Map x:Name="nativeMap" ColumnLayout.Fill="True" ColumnLayout.SameRow="True"
                   IsEnabled="{OnPlatform true, WinUI=false}"
                   IsVisible="{OnPlatform true, WinUI=false}"
                   MapClicked="OnNativeMapClicked"
                   IsShowingUser="{Binding MapIsShowingUser}"
                   MapType="{Binding CurrentMapType}"/>
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>
