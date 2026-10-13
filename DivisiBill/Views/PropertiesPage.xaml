@@ -1,13 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="DivisiBill.Views.PropertiesPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:DivisiBill="clr-namespace:DivisiBill"
-    xmlns:services="clr-namespace:DivisiBill.Services"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-    xmlns:controls="clr-namespace:DivisiBill.Controls"
     Title="Properties of the bill"
     Padding="5"
     x:DataType="vm:PropertiesViewModel"

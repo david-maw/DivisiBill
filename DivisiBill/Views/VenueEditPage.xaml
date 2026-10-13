@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:DivisiBill.ViewModels"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             Shell.FlyoutBehavior="Disabled"
-             Title="Venue Details"
-             x:DataType="viewmodels:VenueEditViewModel"
-             x:Class="DivisiBill.Views.VenueEditPage">
+<ContentPage
+    Shell.FlyoutBehavior="Disabled"
+    Title="Venue Details"
+    x:DataType="vm:VenueEditViewModel"
+    x:Class="DivisiBill.Views.VenueEditPage">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding ExitPageCommand}"/>
     </Shell.BackButtonBehavior>

@@ -1,15 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DivisiBill.Views.HelpPage"
-             xmlns:views="clr-namespace:DivisiBill.Views"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:HelpPage}"
-             x:DataType="views:HelpPage"
-             Shell.FlyoutBehavior="Disabled"
-             Shell.NavBarIsVisible="true"
-             Shell.TabBarIsVisible="False"
-             Title="Help">
+<ContentPage 
+    x:Class="DivisiBill.Views.HelpPage"
+    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:HelpPage}"
+    x:DataType="views:HelpPage"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="true"
+    Shell.TabBarIsVisible="False"
+    Title="Help">
     <!--We might be called from a page with a TabBar, so we turn it off above, just in case-->
     <ContentPage.ToolbarItems>
         <ToolbarItem Clicked="OnIndexIconClicked" IconImageSource="{StaticResource GlyphToc}"/>

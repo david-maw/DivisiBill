@@ -1,12 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-       xmlns:view="clr-namespace:DivisiBill.Views"
-       xmlns:local="clr-namespace:DivisiBill"
-       xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-       Title="DivisiBill"
-       x:Class="DivisiBill.AppShell">
+<Shell
+    Title="DivisiBill"
+    x:Class="DivisiBill.AppShell">
 
     <Shell.FlyoutHeaderTemplate>
         <DataTemplate>
@@ -40,30 +34,30 @@
     </Shell.MenuItemTemplate>
     <TabBar>
         <!--This is the initial page, used to decide what to show the user first, it is normally never visible -->
-        <ShellContent ContentTemplate="{DataTemplate view:GettingStartedPage}" Route="{x:Static local:Routes.GettingStartedPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate views:GettingStartedPage}" Route="{x:Static local:Routes.GettingStartedPage}"/>
         <!--This is the initialization page the user normally sees, ShellContent items with routes are navigated to in code-->
-        <ShellContent ContentTemplate="{DataTemplate view:SplashPage}" Route="{x:Static local:Routes.SplashPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate views:SplashPage}" Route="{x:Static local:Routes.SplashPage}"/>
     </TabBar>
-    <ShellContent Title="Items" ContentTemplate="{DataTemplate view:LineItemsPage}" Route="{x:Static local:Routes.LineItemsPage}"/>
-    <ShellContent Title="Totals" ContentTemplate="{DataTemplate view:TotalsPage}" Route="{x:Static local:Routes.TotalsPage}"/>
+    <ShellContent Title="Items" ContentTemplate="{DataTemplate views:LineItemsPage}" Route="{x:Static local:Routes.LineItemsPage}"/>
+    <ShellContent Title="Totals" ContentTemplate="{DataTemplate views:TotalsPage}" Route="{x:Static local:Routes.TotalsPage}"/>
     <MenuItem      Text="Camera" Clicked="GoToImagePageWithCamera"/>
-    <ShellContent Title="Image" ContentTemplate="{DataTemplate view:ImagePage}" Route="{x:Static local:Routes.ImagePage}"/>
-    <ShellContent Title="Properties" ContentTemplate="{DataTemplate view:PropertiesPage}" Route="{x:Static local:Routes.PropertiesPage}"/>
-    <ShellContent Title="List Saved Bills by Age" ContentTemplate="{DataTemplate view:MealListByAgePage}" Route="{x:Static local:Routes.MealListByAgePage}"/>
-    <ShellContent Title="List Saved Bills by Name" ContentTemplate="{DataTemplate view:MealListByNamePage}"/>
-    <ShellContent Title="List Saved Bills by Distance" ContentTemplate="{DataTemplate view:MealListByDistancePage}"/>
-    <ShellContent Title="Manage Data" ContentTemplate="{DataTemplate view:DataManagementPage}"/>
-    <ShellContent Title="List Venues by Name" ContentTemplate="{DataTemplate view:VenueListByNamePage}"/>
-    <ShellContent Title="List Venues by Distance" ContentTemplate="{DataTemplate view:VenueListByDistancePage}"/>
-    <ShellContent Title="List People" ContentTemplate="{DataTemplate view:PeopleListPage}"/>
-    <ShellContent Title="Program Settings" ContentTemplate="{DataTemplate view:SettingsPage}"/>
+    <ShellContent Title="Image" ContentTemplate="{DataTemplate views:ImagePage}" Route="{x:Static local:Routes.ImagePage}"/>
+    <ShellContent Title="Properties" ContentTemplate="{DataTemplate views:PropertiesPage}" Route="{x:Static local:Routes.PropertiesPage}"/>
+    <ShellContent Title="List Saved Bills by Age" ContentTemplate="{DataTemplate views:MealListByAgePage}" Route="{x:Static local:Routes.MealListByAgePage}"/>
+    <ShellContent Title="List Saved Bills by Name" ContentTemplate="{DataTemplate views:MealListByNamePage}"/>
+    <ShellContent Title="List Saved Bills by Distance" ContentTemplate="{DataTemplate views:MealListByDistancePage}"/>
+    <ShellContent Title="Manage Data" ContentTemplate="{DataTemplate views:DataManagementPage}"/>
+    <ShellContent Title="List Venues by Name" ContentTemplate="{DataTemplate views:VenueListByNamePage}"/>
+    <ShellContent Title="List Venues by Distance" ContentTemplate="{DataTemplate views:VenueListByDistancePage}"/>
+    <ShellContent Title="List People" ContentTemplate="{DataTemplate views:PeopleListPage}"/>
+    <ShellContent Title="Program Settings" ContentTemplate="{DataTemplate views:SettingsPage}"/>
     <FlyoutItem Title="Information and Problems" Route="Information" FlyoutDisplayOptions="AsSingleItem">
-        <ShellContent Title="About" ContentTemplate="{DataTemplate view:AboutPage}" Shell.TabBarIsVisible="True"/>
-        <ShellContent Title="Release Notes" ContentTemplate="{DataTemplate view:ReleaseNotesPage}" Shell.TabBarIsVisible="True" Route="{x:Static local:Routes.ReleaseNotesPage}"/>
-        <ShellContent Title="Report a problem" ContentTemplate="{DataTemplate view:ProblemReportPage}" Shell.TabBarIsVisible="True"/>
+        <ShellContent Title="About" ContentTemplate="{DataTemplate views:AboutPage}" Shell.TabBarIsVisible="True"/>
+        <ShellContent Title="Release Notes" ContentTemplate="{DataTemplate views:ReleaseNotesPage}" Shell.TabBarIsVisible="True" Route="{x:Static local:Routes.ReleaseNotesPage}"/>
+        <ShellContent Title="Report a problem" ContentTemplate="{DataTemplate views:ProblemReportPage}" Shell.TabBarIsVisible="True"/>
     </FlyoutItem>
     <MenuItem     Text="Help Index" Clicked="OnHelpIndexClicked"/>
     <MenuItem     Text="Help" Clicked="OnHelpClicked"/>
-    <ShellContent Title="Tutorial" ContentTemplate="{DataTemplate view:TutorialPage}" Route="{x:Static local:Routes.TutorialPage}"/>
+    <ShellContent Title="Tutorial" ContentTemplate="{DataTemplate views:TutorialPage}" Route="{x:Static local:Routes.TutorialPage}"/>
     <MenuItem     Text ="Exit" Clicked="OnExitClicked"/>
 </Shell>

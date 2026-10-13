@@ -1,12 +1,5 @@
 <toolkit:Popup
     x:Class="DivisiBill.Controls.AdjustPopup"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:DivisiBill"
-    xmlns:services="clr-namespace:DivisiBill.Services"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:controls="clr-namespace:DivisiBill.Controls"
-    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     Padding="0"
     x:DataType="vm:AdjustViewModel"
     x:TypeArguments="x:Decimal"

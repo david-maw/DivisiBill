@@ -1,13 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             Shell.FlyoutBehavior="Disabled"
-             x:DataType="vm:PersonEditViewModel"
-             x:Class="DivisiBill.Views.PersonEditPage"
-             Padding="10,0"
-             Title="Person Details">
+<ContentPage
+    Shell.FlyoutBehavior="Disabled"
+    x:DataType="vm:PersonEditViewModel"
+    x:Class="DivisiBill.Views.PersonEditPage"
+    Padding="10,0"
+    Title="Person Details">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding SaveCommand}"/>
     </Shell.BackButtonBehavior>

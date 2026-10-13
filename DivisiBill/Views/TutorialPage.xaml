@@ -1,13 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             Title="Tutorial"
-             xmlns:views="clr-namespace:DivisiBill.Views"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:TutorialPage}"
-             x:DataType="views:TutorialPage"
-             x:Class="DivisiBill.Views.TutorialPage"
-             Shell.FlyoutBehavior="Disabled">
+<ContentPage
+    Title="Tutorial"
+    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:TutorialPage}"
+    x:DataType="views:TutorialPage"
+    x:Class="DivisiBill.Views.TutorialPage"
+    Shell.FlyoutBehavior="Disabled">
     <ScrollView>
         <VerticalStackLayout Margin="20,0">
 
