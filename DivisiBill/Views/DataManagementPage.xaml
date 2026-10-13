@@ -2,8 +2,8 @@
 <ContentPage
     x:Class="DivisiBill.Views.DataManagementPage"
     Title="Manage Data"
-    x:DataType="vm:DataManagementViewModel"
-    BindingContext="{vm:DataManagementViewModel}"
+    x:DataType="DataManagementViewModel"
+    BindingContext="{DataManagementViewModel}"
     Shell.FlyoutBehavior="Flyout">
     <Grid>
         <!--#region Page Actions and Information-->

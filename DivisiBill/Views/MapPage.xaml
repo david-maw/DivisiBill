@@ -3,7 +3,7 @@
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              Shell.FlyoutBehavior="Disabled"
-             x:DataType="vm:MapViewModel"
+             x:DataType="MapViewModel"
              x:Class="DivisiBill.Views.MapPage"
              Title="MapPage">
     <ContentPage.ToolbarItems>

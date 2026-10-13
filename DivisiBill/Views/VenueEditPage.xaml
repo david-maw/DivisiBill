@@ -2,7 +2,7 @@
 <ContentPage
     Shell.FlyoutBehavior="Disabled"
     Title="Venue Details"
-    x:DataType="vm:VenueEditViewModel"
+    x:DataType="VenueEditViewModel"
     x:Class="DivisiBill.Views.VenueEditPage">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding ExitPageCommand}"/>

@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Class="DivisiBill.Views.AboutPage"
-             BindingContext="{vm:SettingsViewModel}"
-             x:DataType="vm:SettingsViewModel"
+             BindingContext="{SettingsViewModel}"
+             x:DataType="SettingsViewModel"
              Title="About"
              Shell.FlyoutBehavior="Flyout">
 
-    <Grid x:DataType="vm:SettingsViewModel" RowDefinitions="*, Auto,*, Auto">
+    <Grid x:DataType="SettingsViewModel" RowDefinitions="*, Auto,*, Auto">
         <ContentView Padding="10" BackgroundColor="Red">
             <Image Source="divisibillfg.png"/>
         </ContentView>

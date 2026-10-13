@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
-    BindingContext="{vm:ProblemReportViewModel}"
-    x:DataType="vm:ProblemReportViewModel"
+    BindingContext="{ProblemReportViewModel}"
+    x:DataType="ProblemReportViewModel"
     Title="Problem Report"
     Shell.FlyoutBehavior="Flyout"
     x:Class="DivisiBill.Views.ProblemReportPage">

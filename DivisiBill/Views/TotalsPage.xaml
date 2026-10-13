@@ -2,7 +2,7 @@
 <ContentPage
     Title="Totals"
     x:Class="DivisiBill.Views.TotalsPage"
-    x:DataType="vm:MealViewModel"
+    x:DataType="MealViewModel"
     BindingContext="{DynamicResource MealViewModel}"
     Shell.FlyoutBehavior="Flyout">
     <ContentPage.ToolbarItems>
@@ -39,14 +39,14 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphFilterOn}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"/>
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=FilterItemsCommand, x:DataType=MealViewModel}"/>
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DeleteCostCommand, x:DataType=MealViewModel}"/>
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <!--#region PersonCost display with Drag gesture on Nickname-->
@@ -55,12 +55,12 @@
                             <Label.GestureRecognizers>
                             <TapGestureRecognizer
                                 CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}" />
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=MealViewModel}" />
                             <DragGestureRecognizer 
-                                DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 DragStartingCommandParameter="{Binding}" />
                             <DropGestureRecognizer 
-                                DropCommand="{Binding DropPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DropCommand="{Binding DropPersonCostCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 DropCommandParameter="{Binding}"
                                 Drop="OnPersonDrop"/>
                             </Label.GestureRecognizers>
@@ -76,11 +76,11 @@
                     <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=SelectCostCommand, x:DataType=MealViewModel}"/>
                         <!-- Also must handle double tap because it masks the control below it -->
                         <TapGestureRecognizer NumberOfTapsRequired="2"
                                               CommandParameter="{Binding}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=ShowPersonCommand, x:DataType=MealViewModel}"/>
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--#endregion-->
@@ -90,11 +90,11 @@
                         <MenuFlyoutItem
                             Text="Filter"
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=FilterItemsCommand, x:DataType=MealViewModel}"/>
                         <MenuFlyoutItem
                             Text="Delete"
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DeleteCostCommand, x:DataType=MealViewModel}"/>
                     </MenuFlyout>
                 </FlyoutBase.ContextFlyout>
                 <!--#endregion-->
@@ -126,7 +126,7 @@
                FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="Center">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=GoToItemsCommand}"/>
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=GoToItemsCommand}"/>
             </Label.GestureRecognizers>
         </Label>
         <!--#endregion-->
@@ -181,7 +181,7 @@
                Text="{Binding Path=UnallocatedAmount, StringFormat='Unallocated Amount {0:C}'}"
                FontSize="{StaticResource FontSizeTitle}" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowUnallocatedCommand}"/>
+                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=ShowUnallocatedCommand}"/>
             </Label.GestureRecognizers>
         </Label>
         <!--#endregion-->
@@ -190,7 +190,7 @@
                Text="{Binding RoundedAmount,StringFormat='Total of Rounded~{0:C0}'}"
                FontAttributes="Bold" HorizontalOptions="Center" IsVisible="{Binding Path=IsAnyUnallocated,Converter={StaticResource Not}}">
             <Label.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand}"/>
+                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DisplayPaymentsCommand}"/>
             </Label.GestureRecognizers>
         </Label>
         <!--#endregion-->

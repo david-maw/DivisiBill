@@ -1,7 +1,7 @@
 <toolkit:Popup
     x:Class="DivisiBill.Controls.AdjustPopup"
     Padding="0"
-    x:DataType="vm:AdjustViewModel"
+    x:DataType="AdjustViewModel"
     x:TypeArguments="x:Decimal"
     Margin="0,0,0,300"
     Opened="OnOpened"

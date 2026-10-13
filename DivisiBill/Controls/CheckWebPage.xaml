@@ -3,7 +3,7 @@
     x:Class="DivisiBill.Controls.CheckWebPage"
     xmlns:http="clr-namespace:System.Net.Http;assembly=netstandard"
     x:TypeArguments="http:HttpResponseMessage"
-    x:DataType="vm:CheckWebPageViewModel"
+    x:DataType="CheckWebPageViewModel"
     CanBeDismissedByTappingOutsideOfPopup="False"
     Margin="0,0,0,5"
     Padding="0"

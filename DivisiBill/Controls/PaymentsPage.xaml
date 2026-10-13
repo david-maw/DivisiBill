@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <toolkit:Popup
-    x:DataType="vm:PaymentsViewModel"
+    x:DataType="PaymentsViewModel"
     BackgroundColor="Transparent"
     Padding="0"
     Margin="0"

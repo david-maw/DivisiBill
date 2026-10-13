@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Class="DivisiBill.Views.CameraPage"
-             x:DataType="vm:CameraViewModel"
-             BindingContext="{vm:CameraViewModel}"
+             x:DataType="CameraViewModel"
+             BindingContext="{CameraViewModel}"
              Shell.FlyoutBehavior="Disabled"
              Title="Camera">
     <ContentPage.Resources>

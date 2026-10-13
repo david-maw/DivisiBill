@@ -2,7 +2,7 @@
 <ContentPage
     x:Name="Page"
     x:Class="DivisiBill.Views.PeopleListPage"
-    x:DataType="vm:PeopleListViewModel"
+    x:DataType="PeopleListViewModel"
     Title="People List">
 
     <ContentPage.ToolbarItems>
@@ -13,7 +13,7 @@
         <ToolbarItem Text="Download" Command="{Binding GetRemotePeopleListCommand}" Order="Secondary"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Resources>
-        <DataTemplate x:Key="WithSwipe" x:DataType="vm:PeopleListViewModel">
+        <DataTemplate x:Key="WithSwipe" x:DataType="PeopleListViewModel">
             <Grid ColumnDefinitions="2*,*,2*">
                 <!--TODO MAUI BUG SwipeView bug means Add and scroll will fail here until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed-->
                 <SwipeView Grid.Column="0" Grid.ColumnSpan="3">
@@ -21,14 +21,14 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
                                        CommandParameter="{Binding x:DataType=models:Person}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"/>
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type PeopleListViewModel}}, Path=UseCommand}"/>
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                        CommandParameter="{Binding x:DataType=models:Person}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"/>
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type PeopleListViewModel}}, Path=DeleteCommand}"/>
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <VerticalStackLayout Grid.ColumnSpan="3" x:DataType="models:Person">
@@ -40,24 +40,24 @@
                 <!--A semi-transparent button covering the left of each item on Windows so there's no need to swipe-->
                 <ImageButton Grid.Column="0" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="{StaticResource TransparentGreen}"
                              MinimumHeightRequest="10"
-                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=UseCommand}"
+                             Command="{Binding Source={RelativeSource AncestorType={x:Type PeopleListViewModel}}, Path=UseCommand}"
                              CommandParameter="{Binding x:DataType=models:Person}"
                              IsVisible="{OnPlatform false,WinUI=true}"/>
                 <!--A transparent button covering the middle of each item mainly to avoid accidentally triggering a swipe-->
                 <ImageButton Grid.Column="1" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="Transparent" MinimumHeightRequest="10">
                     <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer NumberOfTapsRequired="1"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=SelectPersonCommand}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type PeopleListViewModel}}, Path=SelectPersonCommand}"
                                               CommandParameter="{Binding x:DataType=models:Person}" />
                         <TapGestureRecognizer NumberOfTapsRequired="2"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=ShowDetailsCommand}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type PeopleListViewModel}}, Path=ShowDetailsCommand}"
                                               CommandParameter="{Binding x:DataType=models:Person}" />
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--A semi-transparent button covering the right of the item on Windows so there's no need to swipe-->
                 <ImageButton Grid.Column="2" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="{StaticResource TransparentRed}"
                              MinimumHeightRequest="10"
-                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PeopleListViewModel}}, Path=DeleteCommand}"
+                             Command="{Binding Source={RelativeSource AncestorType={x:Type PeopleListViewModel}}, Path=DeleteCommand}"
                              CommandParameter="{Binding x:DataType=models:Person}"
                              IsVisible="{OnPlatform false,WinUI=true}"/>
             </Grid>

@@ -3,8 +3,8 @@
     x:Class="DivisiBill.Views.PropertiesPage"
     Title="Properties of the bill"
     Padding="5"
-    x:DataType="vm:PropertiesViewModel"
-    BindingContext="{vm:PropertiesViewModel}">
+    x:DataType="PropertiesViewModel"
+    BindingContext="{PropertiesViewModel}">
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding MarkCurrentMealAsNewCommand}" IconImageSource="{StaticResource GlyphFile}"/>
         <ToolbarItem Command="{Binding SaveCurrentMealCommand}" IconImageSource="{StaticResource GlyphSave}"/>

@@ -4,7 +4,7 @@
     xmlns:views="clr-namespace:DivisiBill.Views"
     xmlns:controls="clr-namespace:DivisiBill.Controls"
     Title="{Binding ItemTypePlural, StringFormat='Backed Up {0}'}"
-    x:DataType="vm:FileListViewModel"
+    x:DataType="FileListViewModel"
     x:Name="Page"
     Shell.FlyoutBehavior="Disabled">
     <ContentPage.ToolbarItems>
@@ -40,7 +40,7 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem
                                 BackgroundColor="PaleGreen"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=UseCommand, x:DataType=vm:FileListViewModel}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type FileListViewModel}}, Path=UseCommand, x:DataType=FileListViewModel}"
                                 CommandParameter="{Binding}"
                                 IconImageSource="{StaticResource GlyphLoad}" />
                         </SwipeItems>
@@ -49,7 +49,7 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem
                                 BackgroundColor="Red"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=vm:FileListViewModel}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=FileListViewModel}"
                                 CommandParameter="{Binding}"
                                 IconImageSource="{StaticResource GlyphDel}" />
                         </SwipeItems>
@@ -83,14 +83,14 @@
                 <ImageButton
                     Grid.Column="0"
                     BackgroundColor="{StaticResource TransparentGreen}"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=UseCommand, x:DataType=vm:FileListViewModel}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type FileListViewModel}}, Path=UseCommand, x:DataType=FileListViewModel}"
                     CommandParameter="{Binding}"
                     IsVisible="{OnPlatform false, WinUI=true}" />
                 <!--  Click to toggle item select without triggering swipe action  -->
                 <!--We use a rectangle on Android because a button takes up too much space-->
                 <Rectangle Grid.Column="1" IsVisible="{OnPlatform true, WinUI=false}">
                     <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}" CommandParameter="{Binding}" />
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type FileListViewModel}}, Path=SelectCommand, x:DataType=FileListViewModel}" CommandParameter="{Binding}" />
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--We use a button on windows because a rectangle does not work, see https://github.com/dotnet/maui/issues/5446-->
@@ -98,13 +98,13 @@
                     IsVisible="{OnPlatform false, WinUI=true}"
                     Grid.Column="1"
                     BackgroundColor="Transparent"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type FileListViewModel}}, Path=SelectCommand, x:DataType=FileListViewModel}"
                     CommandParameter="{Binding}" />
                 <!--  Click to Use (Windows only because swipe requires a touch screen) -->
                 <ImageButton
                     Grid.Column="2"
                     BackgroundColor="{StaticResource TransparentRed}"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=vm:FileListViewModel}"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type FileListViewModel}}, Path=DeleteThisItemCommand, x:DataType=FileListViewModel}"
                     CommandParameter="{Binding}"
                     IsVisible="{OnPlatform false, WinUI=true}" />
             </Grid>
@@ -115,7 +115,7 @@
             <VerticalStackLayout Padding="10,0">
                 <Grid ColumnDefinitions="40, *, auto" RowDefinitions="auto, auto">
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:FileListViewModel}}, Path=SelectCommand, x:DataType=vm:FileListViewModel}" CommandParameter="{Binding}" />
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type FileListViewModel}}, Path=SelectCommand, x:DataType=FileListViewModel}" CommandParameter="{Binding}" />
                     </Grid.GestureRecognizers>
                     <Image
                         Grid.RowSpan="2"
@@ -161,14 +161,14 @@
         <Style TargetType="CollectionView">
             <Style.Triggers>
                 <DataTrigger
-                    Binding="{Binding ShowAsSelectableList, x:DataType=vm:FileListViewModel}"
+                    Binding="{Binding ShowAsSelectableList, x:DataType=FileListViewModel}"
                     TargetType="CollectionView"
                     Value="false">
                     <Setter Property="ItemTemplate" Value="{StaticResource WithSwipe}" />
                     <Setter Property="SelectionMode" Value="Single" />
                 </DataTrigger>
                 <DataTrigger
-                    Binding="{Binding ShowAsSelectableList, x:DataType=vm:FileListViewModel}"
+                    Binding="{Binding ShowAsSelectableList, x:DataType=FileListViewModel}"
                     TargetType="CollectionView"
                     Value="true">
                     <Setter Property="ItemTemplate" Value="{StaticResource SelectableListView}" />

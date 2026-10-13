@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage 
-    x:DataType="vm:LicensesViewModel"
-    BindingContext="{vm:LicensesViewModel}"
+    x:DataType="LicensesViewModel"
+    BindingContext="{LicensesViewModel}"
     x:Class="DivisiBill.Views.LicensesPage"
     Shell.FlyoutBehavior="Disabled"
     Title="Optional Licenses">

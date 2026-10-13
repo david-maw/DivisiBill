@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage 
-    BindingContext="{vm:ImageViewModel}"
+    BindingContext="{ImageViewModel}"
     x:Class="DivisiBill.Views.ImagePage"
     Title="Image"
-    x:DataType="vm:ImageViewModel">
+    x:DataType="ImageViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:BoolToObjectConverter

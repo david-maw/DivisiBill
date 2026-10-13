@@ -1,7 +1,7 @@
 <ContentPage
     x:Class="DivisiBill.Views.RestorePage"
     Title="Intent Page"
-    x:DataType="vm:RestoreViewModel">
+    x:DataType="RestoreViewModel">
     <VerticalStackLayout Padding="10,0" Spacing="10" VerticalOptions="Center">
         <Label
             Margin="0,0,0,0"
