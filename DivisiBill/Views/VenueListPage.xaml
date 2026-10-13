@@ -8,7 +8,7 @@
     <ContentPage.Resources>
         <DataTemplate x:Key="WithSwipe">
             <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*">
-                <SwipeView Grid.ColumnSpan="3" x:DataType="models:Venue">
+                <SwipeView Grid.ColumnSpan="3" x:DataType="Venue">
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
@@ -23,7 +23,7 @@
                                        Command="{Binding Source={RelativeSource AncestorType={x:Type VenueListViewModel}}, Path=DeleteCommand, x:DataType=VenueListViewModel}" />
                         </SwipeItems>
                     </SwipeView.RightItems>
-                    <VerticalStackLayout x:DataType="models:Venue">
+                    <VerticalStackLayout x:DataType="Venue">
                         <Grid ColumnDefinitions="*, auto, auto">
                             <!--#region Context Menu to Replace Swipe -->
                             <FlyoutBase.ContextFlyout>
@@ -55,7 +55,7 @@
                     <!--#endregion-->
                 </SwipeView>
                 <!--#region Select/Deselect/Details button -->
-                <Rectangle Grid.Column="1" x:DataType="models:Venue">
+                <Rectangle Grid.Column="1" x:DataType="Venue">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"

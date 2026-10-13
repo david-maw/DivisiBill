@@ -77,7 +77,7 @@
             ItemsSource="{Binding Costs}"
             VerticalOptions="Start">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:PersonCost">
+                <DataTemplate x:DataType="PersonCost">
                     <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions="*,Auto">
                         <Label x:Name="NicknameLabel" Text="{Binding Nickname} " Grid.Column="0"
                                LineBreakMode="NoWrap"

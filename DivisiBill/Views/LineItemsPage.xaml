@@ -45,7 +45,7 @@
             </Style>
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All" />
         </ResourceDictionary>
-        <DataTemplate x:Key="NoSwipe" x:DataType="models:LineItem">
+        <DataTemplate x:Key="NoSwipe" x:DataType="LineItem">
             <Grid ColumnDefinitions="35,*,30">
                 <Grid.Resources>
                     <Style x:Key="SignedLabelStyle" TargetType="Label">

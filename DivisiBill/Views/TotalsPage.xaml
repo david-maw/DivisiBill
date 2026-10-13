@@ -31,7 +31,7 @@
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
         </ResourceDictionary>
-        <DataTemplate x:Key="WithSwipe" x:DataType="models:PersonCost">
+        <DataTemplate x:Key="WithSwipe" x:DataType="PersonCost">
             <!--TODO MAUI BUG SwipeView bug means Add and scroll will fail here on Windows until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed-->
             <Grid ColumnDefinitions="*,80,*">
                 <SwipeView Grid.ColumnSpan="3">

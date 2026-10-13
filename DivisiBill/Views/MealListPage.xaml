@@ -16,7 +16,7 @@
             x:Key="LocalIconConverter"
                                        FalseObject="{StaticResource FileGlyphLocalOutline}"
                                        TrueObject="{StaticResource FileGlyphLocal}" />
-        <DataTemplate x:Key="WithSwipe" x:DataType="models:MealSummary">
+        <DataTemplate x:Key="WithSwipe" x:DataType="MealSummary">
             <!--#region Bill Summary Info Surrounded by SwipeView which is surrounded by a Grid-->
             <Grid>
                 <!--#region Bill Summary Info Surrounded by SwipeView-->
@@ -174,7 +174,7 @@
                             Grid.Column="0"
                             BackgroundColor="Transparent"
                             Command="{Binding SelectMealCommand, Source={RelativeSource AncestorType={x:Type MealListViewModel}}, x:DataType=MealListViewModel}"
-                            CommandParameter="{Binding x:DataType=models:MealSummary}"
+                            CommandParameter="{Binding x:DataType=MealSummary}"
                             IsVisible="{Binding IsSelectableList, Source={RelativeSource AncestorType={x:Type MealListViewModel}}, x:DataType=MealListViewModel}" />
                         <!--  This button simulates swipe right (Use)  -->
                         <ImageButton
@@ -182,7 +182,7 @@
                             Grid.Column="1"
                             BackgroundColor="{StaticResource TransparentGreen}"
                             Command="{Binding UseMealCommand, Source={RelativeSource AncestorType={x:Type MealListViewModel}}, x:DataType=MealListViewModel}"
-                            CommandParameter="{Binding x:DataType=models:MealSummary}"
+                            CommandParameter="{Binding x:DataType=MealSummary}"
                             IsVisible="{OnPlatform Default=false,
                             WinUI=true}" />
                         <!--  This button simulates swipe left (Delete)  -->
@@ -367,7 +367,7 @@
                 </MultiBinding>
             </CollectionView.IsVisible>
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:MealSummaryGroup">
+                <DataTemplate x:DataType="MealSummaryGroup">
                     <toolkit:Expander
                         Command="{Binding ShowGroupCommand, Source={RelativeSource AncestorType={x:Type MealListViewModel}}, x:DataType=MealListViewModel}"
                         CommandParameter="{Binding}"

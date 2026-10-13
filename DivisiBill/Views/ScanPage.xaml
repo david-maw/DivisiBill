@@ -23,7 +23,7 @@
                             EmptyView="No items defined">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid x:DataType="models:LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
+                        <Grid x:DataType="LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
                             <Label Text="{Binding Path = ItemName }" Grid.Column="0"
                                    LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"
                                    FontFamily="monospace" FontSize="{StaticResource FontSizeMedium}" />
