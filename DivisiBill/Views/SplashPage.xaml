@@ -32,7 +32,7 @@
                 <FormattedString>
                     <FormattedString.Spans>
                         <Span Text="DivisiBill " FontSize="{StaticResource FontSizeLarge}" />
-                        <Span Text="{x:Static services:Utilities.VersionName}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" />
+                        <Span Text="{x:Static Utilities.VersionName}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" />
                         <Span x:Name="editionSpan" FontSize="{StaticResource FontSizeLarge}" />
                     </FormattedString.Spans>
                 </FormattedString>
@@ -44,9 +44,9 @@
             <Label.FormattedText>
                 <FormattedString>
                     <FormattedString.Spans>
-                        <Span Text="{x:Static services:Utilities.DebugString}"/>
+                        <Span Text="{x:Static Utilities.DebugString}"/>
                         <Span Text="{Binding Source={x:Static appmodel:AppInfo.BuildString}, x:DataType=x:String, StringFormat=' Build {0}'}"/>
-                        <Span Text="{Binding Source={x:Static services:Utilities.BuildTime}, x:DataType=x:String, StringFormat=' at {0}'}"/>
+                        <Span Text="{Binding Source={x:Static Utilities.BuildTime}, x:DataType=x:String, StringFormat=' at {0}'}"/>
                     </FormattedString.Spans>
                 </FormattedString>
             </Label.FormattedText>

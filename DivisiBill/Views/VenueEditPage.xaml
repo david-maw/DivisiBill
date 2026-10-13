@@ -45,7 +45,7 @@
                 SelectedItem="{Binding SelectedPossible}"
                 EmptyView="No nearby venues found">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="services:PlaceResult">
+                    <DataTemplate x:DataType="PlaceResult">
                         <Border Margin="0,3" StrokeThickness="0" Padding="5,2,5,4" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}">
                             <Grid ColumnDefinitions="*,auto">
                                 <Label Text="{Binding Name}" FontSize="{StaticResource FontSizeMedium}" LineBreakMode="TailTruncation" VerticalOptions="Center"/>

@@ -34,7 +34,7 @@
                Text="This is the current bill"/>
         <!--#endregion-->
         <!--#region Meal ID (debug only) -->
-        <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{x:Static services:Utilities.IsDebug}"
+        <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeSmall}" IsVisible="{x:Static Utilities.IsDebug}"
                Text="{Binding Id, StringFormat='Id: {0}'}"/>
         <!--#endregion-->
         <!--#region Amounts -->

@@ -10,20 +10,20 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <services:TrueToStringConverter x:Key="TrueToString" />
-            <services:CurrencyConverter x:Key="Currency" />
-            <services:PercentConverter x:Key="Percent" />
-            <services:InvertBoolConverter x:Key="Not" />
-            <services:DistanceConverter x:Key="Distance" />
-            <services:ApproximateDateTimeConverter x:Key="ApproximateDateTime"/>
-            <services:LocationConverter x:Key="LocationToText" />
-            <services:IsNonZeroConverter x:Key="IsNonZero" />
-            <services:IsZeroConverter x:Key="IsZero" />
-            <services:IsNegativeConverter x:Key="IsNegative" />
-            <services:IsPositiveConverter x:Key="IsPositive" />
-            <services:LocationIsValidConverter x:Key="IsLocationValid" />
-            <services:AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" />
-            <services:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
+            <TrueToStringConverter x:Key="TrueToString" />
+            <CurrencyConverter x:Key="Currency" />
+            <PercentConverter x:Key="Percent" />
+            <InvertBoolConverter x:Key="Not" />
+            <DistanceConverter x:Key="Distance" />
+            <ApproximateDateTimeConverter x:Key="ApproximateDateTime"/>
+            <LocationConverter x:Key="LocationToText" />
+            <IsNonZeroConverter x:Key="IsNonZero" />
+            <IsZeroConverter x:Key="IsZero" />
+            <IsNegativeConverter x:Key="IsNegative" />
+            <IsPositiveConverter x:Key="IsPositive" />
+            <LocationIsValidConverter x:Key="IsLocationValid" />
+            <AbsoluteCurrencyConverter x:Key="AbsoluteCurrency" />
+            <BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
 
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All"/>
             <toolkit:VariableMultiValueConverter x:Key="Any" ConditionType="Any" />
@@ -65,7 +65,7 @@
             <FontImageSource x:Key="ListGlyphUnselected"        Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0130;" FontFamily="mdicons"/> <!--checkbox-blank-circle-outline-->
             <FontImageSource x:Key="ListGlyphSelected"          Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"  Glyph="&#xF0134;" FontFamily="mdicons"/> <!--checkbox-marked-circle-outline-->
             <FontImageSource x:Key="ListGlyphSomeSelected"      Color="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray400}}"  Glyph="&#xF0133;" FontFamily="mdicons"/> <!--checkbox-marked-circle-->
-            <services:BoolToFontImageSourceConverter x:Key="BoolToGlyphConverter" TrueValue="{StaticResource ListGlyphSelected}" FalseValue="{StaticResource ListGlyphUnselected}" NullValue="{StaticResource ListGlyphSomeSelected}"/>
+            <BoolToFontImageSourceConverter x:Key="BoolToGlyphConverter" TrueValue="{StaticResource ListGlyphSelected}" FalseValue="{StaticResource ListGlyphUnselected}" NullValue="{StaticResource ListGlyphSomeSelected}"/>
 
             <FontImageSource x:Key="ListGlyphCurrentMeal"       Color="{AppThemeBinding Light={StaticResource ImageGlyphDark}, Dark={StaticResource ImageGlyphLight}}"  Glyph="&#xF1A7D;" FontFamily="mdicons"/> <!--text-box-edit-outline-->
 

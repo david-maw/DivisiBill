@@ -42,7 +42,7 @@
                 VerticalOptions="Start"
                 IsVisible="{Binding IsMsgVisible, Mode=TwoWay}"> <!--Two way to trigger fadeBehavior-->
             <Border.Behaviors>
-                <services:FadeBehavior/>
+                <FadeBehavior/>
             </Border.Behaviors>
             <Label Text="{Binding CameraInfo}"
                    FontSize="{StaticResource FontSizeBody}"

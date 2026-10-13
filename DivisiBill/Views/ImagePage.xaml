@@ -37,15 +37,15 @@
         </VerticalStackLayout>
         <!--#endregion-->
         <!--#region Image Container -->
-        <services:PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasPreviewImage}">
-            <services:PinchToZoomContainer.Content>
+        <PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasPreviewImage}">
+            <PinchToZoomContainer.Content>
                 <Image x:Name="previewImage"
                        Source="{Binding PreviewImageSource,Mode=OneWay}"
                        Scale="{Binding ImageScale}"
                        TranslationX="{Binding ImageTranslationX}"
                        TranslationY="{Binding ImageTranslationY}"/>
-            </services:PinchToZoomContainer.Content>
-        </services:PinchToZoomContainer>
+            </PinchToZoomContainer.Content>
+        </PinchToZoomContainer>
         <!--#endregion-->
     </Grid>
 </ContentPage>

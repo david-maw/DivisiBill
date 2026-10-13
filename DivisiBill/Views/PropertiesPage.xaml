@@ -77,12 +77,12 @@
             <Label
                 FontSize="{StaticResource FontSizeSmall}"
                 HorizontalOptions="Center"
-                IsVisible="{x:Static services:Utilities.IsDebug}"
+                IsVisible="{x:Static Utilities.IsDebug}"
                 Text="{Binding Id, StringFormat='ID: {0}'}"/>
             <Label
                 FontSize="{StaticResource FontSizeSmall}"
                 HorizontalOptions="Center"
-                IsVisible="{x:Static services:Utilities.IsDebug}"
+                IsVisible="{x:Static Utilities.IsDebug}"
                 HeightRequest="34"
                 Text="{Binding DiagnosticInfo}"/>
             <!--#endregion-->

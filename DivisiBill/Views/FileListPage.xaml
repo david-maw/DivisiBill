@@ -14,7 +14,7 @@
 
     <ContentPage.Resources>
         <!-- #region UI for Single Select -->
-        <DataTemplate x:Key="WithSwipe" x:DataType="services:RemoteItemInfo">
+        <DataTemplate x:Key="WithSwipe" x:DataType="RemoteItemInfo">
             <Grid ColumnDefinitions="*,*,*">
                 <!--Android colors the selected item anyway, but Windows uses a rather insipid gray that's difficult to see-->
                 <!--The usual trick of applying this via the CollectionView at run time does not work because there are multiple
@@ -111,7 +111,7 @@
         </DataTemplate>
         <!--#endregion-->
         <!--#region UI for multi-select -->
-        <DataTemplate x:Key="SelectableListView" x:DataType="services:RemoteItemInfo">
+        <DataTemplate x:Key="SelectableListView" x:DataType="RemoteItemInfo">
             <VerticalStackLayout Padding="10,0">
                 <Grid ColumnDefinitions="40, *, auto" RowDefinitions="auto, auto">
                     <Grid.GestureRecognizers>

@@ -143,7 +143,7 @@
             <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
             <!--#endregion-->
             <!--#region Diagnostic and Developer stuff (Debug Builds Only)-->
-            <VerticalStackLayout IsVisible="{x:Static services:Utilities.IsDebug}">
+            <VerticalStackLayout IsVisible="{x:Static Utilities.IsDebug}">
                 <!--Large blank space before-->
                 <BoxView HeightRequest="2" HorizontalOptions="Fill" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" Margin="0, 350, 0, 0" />
                 <Label HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}" Text="Debug"/>

@@ -11,7 +11,7 @@
         </ContentView>
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="16,10,16,20">
-                <Label FontSize="{StaticResource FontSizeLarge}" Text="{Binding Source={x:Static services:Utilities.VersionName}, x:DataType=x:String, StringFormat='DivisiBill {0}'}" HorizontalOptions="Center"/>
+                <Label FontSize="{StaticResource FontSizeLarge}" Text="{Binding Source={x:Static Utilities.VersionName}, x:DataType=x:String, StringFormat='DivisiBill {0}'}" HorizontalOptions="Center"/>
                 <Label FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" Text="by Autoplus Software"/>
                 <!--Note that only one of the next two lines is visible-->
                 <Label FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center" Text="Basic Edition" IsVisible="{Binding Path=IsLimited}"/>
@@ -20,11 +20,11 @@
                     <Label.FormattedText>
                         <FormattedString>
                             <FormattedString.Spans>
-                                <Span Text="{x:Static services:Utilities.DebugString}"/>
+                                <Span Text="{x:Static Utilities.DebugString}"/>
                                 <Span Text=" Build "/>
-                                <Span Text="{x:Static services:Utilities.Revision}"/>
+                                <Span Text="{x:Static Utilities.Revision}"/>
                                 <Span Text=" at "/>
-                                <Span Text="{x:Static services:Utilities.BuildTime}"/>
+                                <Span Text="{x:Static Utilities.BuildTime}"/>
                             </FormattedString.Spans>
                         </FormattedString>
                     </Label.FormattedText>
@@ -38,7 +38,7 @@
                     <CheckBox x:Name="ShowWsInfo"/>
                 </HorizontalStackLayout>
                 <Label Text="{Binding BaseAddress, StringFormat='URL Base = {0}'}" TextDecorations="Underline" HorizontalOptions="Center" IsVisible="{Binding Source={x:Reference ShowWsInfo}, Path=IsChecked, x:DataType=CheckBox}"/>
-                <Label Text="{x:Static services:CallWs.MostRecentVersionInfo}" IsVisible="{Binding Source={x:Reference ShowWsInfo}, Path=IsChecked, x:DataType=CheckBox}"/>
+                <Label Text="{x:Static CallWs.MostRecentVersionInfo}" IsVisible="{Binding Source={x:Reference ShowWsInfo}, Path=IsChecked, x:DataType=CheckBox}"/>
             </VerticalStackLayout>
         </ScrollView>
         <ContentView Grid.Row="2" Padding="10" BackgroundColor="Blue">

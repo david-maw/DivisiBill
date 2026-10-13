@@ -134,7 +134,7 @@
         <CollectionView x:Name="CostsListView"
                         ItemsSource="{Binding Costs}"
                         ItemTemplate="{StaticResource WithSwipe}"
-                        services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
+                        SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
                         SelectionMode="Single"
                         SelectedItem="{Binding SelectedCost}"
                         ItemSizingStrategy="MeasureAllItems"
@@ -213,7 +213,7 @@
                 <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="{StaticResource FontSizeTitle}" LineBreakMode="TailTruncation" Text="Bill Subtotal"/>
                 <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubTotal, StringFormat='{0:C}'}" Style="{StaticResource labelStyle}">
                     <Label.Behaviors>
-                        <services:CurrencyLabelBehavior
+                        <CurrencyLabelBehavior
                             ValidStyle="{StaticResource ValidLabelStyle}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
                             EqualValue="{Binding ScannedSubTotal}"
@@ -237,7 +237,7 @@
                 <Label Grid.Row="1" Grid.Column="3"
                        Text="{Binding Tax, StringFormat='{0:C}'}">
                     <Label.Behaviors>
-                        <services:CurrencyLabelBehavior
+                        <CurrencyLabelBehavior
                             ValidStyle="{StaticResource ValidLabelStyle}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
                             EqualValue="{Binding ScannedTax}"

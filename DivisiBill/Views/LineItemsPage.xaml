@@ -193,7 +193,7 @@
             EmptyView="No items defined"
             ItemSizingStrategy="MeasureAllItems"
             ItemTemplate="{StaticResource NoSwipe}"
-            services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
+            SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
             ItemsSource="{Binding LineItems}"
             Scrolled="OnCollectionViewScrolled"
             SelectedItem="{Binding SelectedLineItem, Mode=TwoWay}"
@@ -302,7 +302,7 @@
                     IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
                     Text="{Binding SubTotal, StringFormat='{0:C}'}">
                     <Label.Behaviors>
-                        <services:CurrencyLabelBehavior
+                        <CurrencyLabelBehavior
                             EqualValue="{Binding ScannedSubTotal}"
                             TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
@@ -462,7 +462,7 @@
                 Text="{Binding LineItemNameString}"
                 VerticalOptions="Center">
                 <Entry.Behaviors>
-                    <services:UserStoppedTypingBehavior Command="{Binding UnloadLineItemNameStringCommand}" StoppedTypingTimeThreshold="{Static PropertiesViewModel.StoppedTypingTimeThreshold}" />
+                    <UserStoppedTypingBehavior Command="{Binding UnloadLineItemNameStringCommand}" StoppedTypingTimeThreshold="{Static PropertiesViewModel.StoppedTypingTimeThreshold}" />
                 </Entry.Behaviors>
             </Entry>
             <controls:AmountEntry
