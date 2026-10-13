@@ -1,14 +1,8 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:views="clr-namespace:DivisiBill.Views"
-             xmlns:models="clr-namespace:DivisiBill.Models"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:ScanPage}"
-             Shell.FlyoutBehavior="Disabled"
-             x:Class="DivisiBill.Views.ScanPage"
-             Title="ScanPage">
+<ContentPage
+    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:ScanPage}"
+    Shell.FlyoutBehavior="Disabled"
+    x:Class="DivisiBill.Views.ScanPage"
+    Title="ScanPage">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphReplace}" Clicked="OnReplaceItemList"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Clicked="OnAddItemList"/>

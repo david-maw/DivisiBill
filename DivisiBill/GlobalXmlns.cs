@@ -5,4 +5,5 @@
 [assembly: XmlnsPrefix("clr-namespace:DivisiBill.Services", "services")]
 [assembly: XmlnsPrefix("clr-namespace:DivisiBill.ViewModels", "vm")]
 [assembly: XmlnsPrefix("clr-namespace:DivisiBill.Views", "views")]
+[assembly: XmlnsPrefix("clr-namespace:DivisiBill.Models", "models")]
 [assembly: XmlnsPrefix("clr-namespace:DivisiBill.Controls", "controls")]

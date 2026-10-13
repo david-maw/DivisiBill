@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             xmlns:model="clr-namespace:DivisiBill.Models"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             BindingContext="{vm:VenueListViewModel}"
-             x:Name="Page"
-             x:DataType="vm:VenueListViewModel"
-             x:Class="DivisiBill.Views.VenueListPage"
-             Title="Venue List">
+<ContentPage
+    BindingContext="{vm:VenueListViewModel}"
+    x:Name="Page"
+    x:DataType="vm:VenueListViewModel"
+    x:Class="DivisiBill.Views.VenueListPage"
+    Title="Venue List">
     <ContentPage.Resources>
         <DataTemplate x:Key="WithSwipe">
             <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*">
-                <SwipeView Grid.ColumnSpan="3" x:DataType="model:Venue">
+                <SwipeView Grid.ColumnSpan="3" x:DataType="models:Venue">
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
@@ -31,7 +23,7 @@
                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}" />
                         </SwipeItems>
                     </SwipeView.RightItems>
-                    <VerticalStackLayout x:DataType="model:Venue">
+                    <VerticalStackLayout x:DataType="models:Venue">
                         <Grid ColumnDefinitions="*, auto, auto">
                             <!--#region Context Menu to Replace Swipe -->
                             <FlyoutBase.ContextFlyout>
@@ -63,7 +55,7 @@
                     <!--#endregion-->
                 </SwipeView>
                 <!--#region Select/Deselect/Details button -->
-                <Rectangle Grid.Column="1" x:DataType="model:Venue">
+                <Rectangle Grid.Column="1" x:DataType="models:Venue">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"

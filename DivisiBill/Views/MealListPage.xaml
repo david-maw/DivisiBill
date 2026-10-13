@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="DivisiBill.Views.MealListPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:models="clr-namespace:DivisiBill.Models"
-    xmlns:services="clr-namespace:DivisiBill.Services"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:controls="clr-namespace:DivisiBill.Controls"
-    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
     x:Name="BrowseItemsPage"
     Title="Bills"
     x:DataType="vm:MealListViewModel"

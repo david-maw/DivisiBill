@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             xmlns:models="clr-namespace:DivisiBill.Models"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             Title="Totals"
-             x:Class="DivisiBill.Views.TotalsPage"
-             x:DataType="vm:MealViewModel"
-             BindingContext="{DynamicResource MealViewModel}"
-             Shell.FlyoutBehavior="Flyout">
+<ContentPage
+    Title="Totals"
+    x:Class="DivisiBill.Views.TotalsPage"
+    x:DataType="vm:MealViewModel"
+    BindingContext="{DynamicResource MealViewModel}"
+    Shell.FlyoutBehavior="Flyout">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphFilterOn}" Command="{Binding FilterItemsCommand}"     CommandParameter="{Binding SelectedCost}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}"      Clicked="OnAddItem"/>
