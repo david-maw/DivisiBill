@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="web.HelpPage"
              xmlns:local="clr-namespace:web"
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=local:HelpPage}"
-             x:DataType="local:HelpPage"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=HelpPage}"
+             x:DataType="HelpPage"
              Shell.TabBarIsVisible="False"
              Shell.FlyoutBehavior="Disabled"
              Title="Help">

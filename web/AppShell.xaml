@@ -10,7 +10,7 @@
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
+        ContentTemplate="{DataTemplate MainPage}"
         Route="MainPage" />
 
     <MenuItem     Text="Help Index" Clicked="OnHelpIndexClicked"/>
