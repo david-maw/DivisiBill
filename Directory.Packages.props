@@ -9,20 +9,20 @@
     <PackageVersion Include="CommunityToolkit.Maui.Camera" Version="6.1.0" />
     <PackageVersion Include="CommunityToolkit.Maui.Maps" Version="4.0.0" />
     <PackageVersion Include="epj.RouteGenerator" Version="1.0.5" />
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.110" />
-    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="10.0.110" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="11.0.0-rc.2.26505.5" />
+    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="11.0.0-preview.5.26304.4" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="11.0.0-rc.3.26522.148" />
     <PackageVersion Include="CommunityToolkit.Common" Version="8.4.2" />
     <PackageVersion Include="CommunityToolkit.Maui" Version="15.0.1" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageVersion Include="Microsoft.Maui.Controls.Maps" Version="10.0.110" />
-    <PackageVersion Include="Sentry.Maui" Version="6.12.0" />
-    <PackageVersion Include="Sentry.Profiling" Version="6.12.0" />
-    <PackageVersion Include="SkiaSharp" Version="4.153.1" />
-    <PackageVersion Include="System.IO.Hashing" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Maui.Controls.Maps" Version="11.0.0-rc.2.26505.5" />
+    <PackageVersion Include="Sentry.Maui" Version="7.0.0-rc.2" />
+    <PackageVersion Include="Sentry.Profiling" Version="7.0.0-rc.2" />
+    <PackageVersion Include="SkiaSharp" Version="4.156.0-preview.1.26512.10" />
+    <PackageVersion Include="System.IO.Hashing" Version="11.0.0-rc.3.26522.148" />
     <!-- Beware, version 9.1.102 of BillingClient is not compatible with .NET 10.0 -->
     <PackageVersion Include="Xamarin.Android.Google.BillingClient" Version="9.1.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="MSTest.TestAdapter" Version="4.5.1" />
     <PackageVersion Include="MSTest.TestFramework" Version="4.5.1" />
     <PackageVersion Include="coverlet.collector" Version="10.1.0" />
