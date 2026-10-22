@@ -1200,7 +1200,8 @@ public class SentryEventProcessor : ISentryEventProcessor
     private static int skipBreaks = 0; // Just set this to skip the next however many breaks
     public SentryEvent? Process(SentryEvent? sentryEvent)
     {
-        Utilities.DebugMsg($"In SentryEventProcessor.Process, Event:\"{sentryEvent?.Message?.Formatted}\", EventId: {sentryEvent?.EventId}");
+        string? sentryMessage = sentryEvent?.Message?.Formatted ?? sentryEvent?.Message?.Message;
+        Utilities.DebugMsg($"In SentryEventProcessor.Process, Message:\"{sentryMessage}\", EventId: {sentryEvent?.EventId}");
         if (Utilities.IsDebug)
         {
             // Never report anything on a debug build but you can put a breakpoint here to look at them
@@ -1212,9 +1213,9 @@ public class SentryEventProcessor : ISentryEventProcessor
             return null;
         }
         // Some messages get reported regardless of general telemetry settings
-        bool mustSendMessage = !string.IsNullOrWhiteSpace(sentryEvent?.Message?.Message)
-            && (sentryEvent.Message.Message.Equals(UserFeedbackTitle)
-                || sentryEvent.Message.Message.Equals(PrematureNavigationTitle));
+        bool mustSendMessage = !string.IsNullOrWhiteSpace(sentryMessage)
+            && (sentryMessage.Equals(UserFeedbackTitle)
+                || sentryMessage.Equals(PrematureNavigationTitle));
         if (mustSendMessage || (App.Settings is not null && App.Settings.SendCrashYes))
             return sentryEvent; // this is on a separate line so it's easy to use in debugger "set next" command 
         return null;
