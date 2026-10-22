@@ -21,6 +21,7 @@
         <Style TargetType="controls:AmountEntry">
             <Setter Property="HorizontalOptions" Value="End"/>
             <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
             <Setter Property="ValidStyle" Value="{StaticResource ValidEntryStyle}"/>
             <Setter Property="InvalidStyle" Value="{StaticResource InvalidEntryStyle}"/>
             <Setter Property="UnequalStyle" Value="{StaticResource UnequalEntryStyle}"/>
