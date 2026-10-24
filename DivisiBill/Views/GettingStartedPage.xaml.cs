@@ -14,28 +14,28 @@ public partial class GettingStartedPage : ContentPage
     {
         InitializeComponent();
         Shell.Current.Navigating += PreventPrematureNavigation;
-        Loaded += async (s, e) =>
+        NavigatedTo += async (_, _) =>
         {
             // Called on first use only, after OnAppearing and OnNavigatedTo have been called
-            DebugMsg($"Enter GettingStartedPage_Loaded");
+            DebugMsg($"Enter GettingStartedPage.NavigatedTo");
 
             if (App.Settings.FirstUse)
             {
                 // This is the first use of the app, so we show the help page and then rely on PreventPrematureNavigation to redirect the return to the splash page
-                DebugMsg("In GettingStartedPage_Loaded, about to invoke getting started Help Page");
+                DebugMsg("In GettingStartedPage.NavigatedTo, about to invoke getting started Help Page");
                 await App.PushAsync(Routes.HelpPage + "?page=GettingStarted"); // The "Page" value is case-insensitive, we used mixed case here just to satisfy the spell checker
                 App.SetStatusBar(); // Set the status bar to match the theme before switching to the help page
             }
             else
             {
                 // This is the normal case where we simply jump to the startup code on the Splash page
-                DebugMsg("In GettingStartedPage_Loaded, about to call GotoAsync to \"//SplashPage\"");
+                DebugMsg("In GettingStartedPage.NavigatedTo, about to call GotoAsync to \"//SplashPage\"");
                 Shell.Current.Navigating -= PreventPrematureNavigation; // We don't need to care anymore, from now on the app never returns to this page
                 // No need to change the StatusBar, by design it should be identical to the one we're already using
                 await App.GoToAsync(Routes.SplashPage);
             }
 
-            DebugMsg($"Leave GettingStartedPage_Loaded");
+            DebugMsg($"Leave GettingStartedPage.NavigatedTo");
         };
     }
 
@@ -74,7 +74,9 @@ public partial class GettingStartedPage : ContentPage
                 {
                     // This is the normal path after the initial help page has been shown, because it only happens once, record it
                     RecordMsg($"In PreventPrematureNavigation, returning from help, redirect to \"//SplashPage\"");
-                    // If we are navigating back to this page from the help page, we want to go directly to the splash page instead
+                    // If we are navigating back to this page from the help page, we want to go directly to the splash page instead to avoid
+                    // unnecessary flicker and to avoid the user having to press back again to get to the splash page.
+                    // This is the normal path after the initial help page has been shown, but because it only happens once, record it
                     Shell.Current.Navigating -= PreventPrematureNavigation; // We don't need to care anymore, from now on the app never returns to this page
                     e.Cancel(); // Cancel the navigation back to this page
                     await App.GoToAsync(Routes.SplashPage); // go to the splash page instead, just as if this were not the first use

@@ -14,7 +14,7 @@ public partial class SplashPage : ContentPage
     {
         InitializeComponent();
         StatusMsgInvoked += LocalStatusMsg;
-        Loaded += SplashPage_Loaded;
+        NavigatedTo += SplashPage_NavigatedTo;
         App.ProEditionVerified += (s, e) => editionSpan.Text = App.IsLimited ? " Basic Edition" : " Pro Edition";
     }
     ~SplashPage()
@@ -31,9 +31,8 @@ public partial class SplashPage : ContentPage
     /// redo it all. Of course it is possible external state (like the bills stored locally or remotely, or cloud
     /// accessibility) might have changed, so we check the ones we display.
     /// </summary>
-    private async void SplashPage_Loaded(object? sender, EventArgs e)
+    private async void SplashPage_NavigatedTo(object? sender, EventArgs e)
     {
-        base.OnAppearing();
         // reevaluate some values that may have changed
         App.Current.Initialize_Connectivity();
 
@@ -43,30 +42,30 @@ public partial class SplashPage : ContentPage
         if (initializationStarted)
         {
             // Once it has started initialization this page has nothing else to do except act as a place to show progress
-            DebugMsg("In SplashPage_Loaded, initialization already started, nothing else to do.");
+            DebugMsg("In SplashPage_NavigatedTo, initialization already started, nothing else to do.");
         }
         else
         {
             initializationStarted = true;
-            DebugMsg("In SplashPage_Loaded, initialization not started, starting it now.");
+            DebugMsg("In SplashPage_NavigatedTo, initialization not started, starting it now.");
             await Task.Delay(50); // Let Navigation settle down or Popup V2 will wait forever
             await InitializeApp();
             App.SetStatusBar(); // Set the status bar to match the theme before switching to "normal" pages
-            RecordMsg("In SplashPage_Loaded, navigating away from Initialization");
+            RecordMsg("In SplashPage_NavigatedTo, navigating away from Initialization");
             if (VersionTracking.IsFirstLaunchForCurrentVersion && !VersionTracking.IsFirstLaunchEver)
             {
                 // This is the first use of this version, so show the release notes
-                DebugMsg($"In SplashPage_Loaded, first use of version {VersionTracking.CurrentVersion}, going to release notes page");
+                DebugMsg($"In SplashPage_NavigatedTo, first use of version {VersionTracking.CurrentVersion}, going to release notes page");
                 await App.GoToAsync(Routes.ReleaseNotesPage);
             }
             else
             {
                 // Otherwise we go to the home page
-                DebugMsg("In SplashPage_Loaded, going to Home Page");
+                DebugMsg("In SplashPage_NavigatedTo, going to Home Page");
                 await App.GoToHomeAsync();
             }
         }
-        DebugMsg("Exit SplashPage_Loaded");
+        DebugMsg("Exit SplashPage_NavigatedTo");
     }
 
     public static async Task InitializeApp()
@@ -182,19 +181,16 @@ public partial class SplashPage : ContentPage
     private static void PreventPrematureNavigation(object? sender, ShellNavigatingEventArgs e)
     {
         if (e.CanCancel)
-        {// If we can cancel the navigation, do so if it is not for a popup
-            if (e.Source == ShellNavigationSource.Push && e.Target.Location.OriginalString.Contains("Popup"))
+        {
+            // If we can cancel the navigation, do so if it is not for a popup
+            if (e.Target.Location.OriginalString.Contains("Popup") || e.Current.Location.OriginalString.Contains("Popup"))
             {
-                // Don't cancel if the navigation is to a popup
-                RecordMsg("Splash Page: Allowed Navigation to " + e.Target.Location.OriginalString);
-            }
-            else if (e.Source == ShellNavigationSource.PopToRoot && e.Current.Location.OriginalString.Contains("Popup"))
-            {
-                // Don't cancel if the navigation is from a popup
-                RecordMsg("Splash Page: Allowed Navigation from " + e.Current.Location.OriginalString);
+                // Don't cancel if the navigation is to or from a popup
+                RecordMsg("Splash Page: Allowed Navigation to or from " + e.Target.Location.OriginalString);
             }
             else
             {
+                // Don't just record the message and forget it, report it to Sentry and cancel the navigation
                 string errorMessage = $"""
                     Splash Page: Navigation canceled because it was not for a popup
                     Current: {e.Current.Location.OriginalString}
