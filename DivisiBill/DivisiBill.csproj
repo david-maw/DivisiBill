@@ -50,11 +50,6 @@
     <Configurations>Debug;Release;ReleaseTest;Alternate</Configurations>
   </PropertyGroup>
 
-  <!--Key for SixLabors licensing, set via environment variable on the build machine since it is needed at compile time for source generators and should not be checked into source control-->
-  <PropertyGroup>
-    <SixLaborsLicenseKey>$(SIXLABORS_LICENSE_KEY)</SixLaborsLicenseKey>
-  </PropertyGroup>
-
   <!--Set EmitCompilerGeneratedFiles to true and CompilerGeneratedFilesOutputPath to an existing path to enable source-generated files to be visible in the IDE-->
   <PropertyGroup>
     <EmitCompilerGeneratedFiles Condition="$(Configuration) == Debug">true</EmitCompilerGeneratedFiles>
