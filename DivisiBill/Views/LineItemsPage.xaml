@@ -2,7 +2,6 @@
 <ContentPage
     x:Class="DivisiBill.Views.LineItemsPage"
     x:DataType="MealViewModel"
-    x:Name="Page"
     BindingContext="{DynamicResource MealViewModel}"
     Shell.FlyoutBehavior="Flyout">
     <!--#region ToolBar-->

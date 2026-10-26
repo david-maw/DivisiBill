@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
-    Title="Totals"
     x:Class="DivisiBill.Views.TotalsPage"
     x:DataType="MealViewModel"
     BindingContext="{DynamicResource MealViewModel}"
