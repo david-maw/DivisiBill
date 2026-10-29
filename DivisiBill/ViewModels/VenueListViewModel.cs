@@ -54,21 +54,44 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
             {
                 try
                 {
-                    // This sometimes seems to mess up Android scrolling if you scroll to an index so scroll to an item instead
+                    // This sometimes seems to mess up Android scrolling if you scroll to an index, so scroll to an item instead
+                    await Task.Delay(100); // Give the UI a chance to update before scrolling
                     ScrollItemsTo(CurrentItem, ScrollToPosition.Center);
                 }
                 catch (Exception) { } // Don't care if the scroll fails  
             }
         }
+        else if (AddedVenue is not null)
+        {
+            if (VenueList.Contains(AddedVenue))
+            {
+                // We are returning from the venue edit page after adding a new venue, so select it and scroll it into view
+                CurrentItem = AddedVenue;
+                if (ScrollItemsTo is not null)
+                {
+                    try
+                    {
+                        // This sometimes seems to mess up Android scrolling if you scroll to an index, so scroll to an item instead
+                        await Task.Delay(100); // Give the UI a chance to update before scrolling
+                    ScrollItemsTo(CurrentItem, ScrollToPosition.Center);
+                }
+                catch (Exception) { } // Don't care if the scroll fails  
+            }
+        }
+            AddedVenue = null; // Don't do this again unless we add another venue
+    }
     }
     #endregion
     #region General Commands
+
+    private Venue? AddedVenue = null;
+
     [RelayCommand]
     private void Add()
     {
-        CurrentItem = Venue.SelectOrAddVenue();
-        if (CurrentItem is not null)
-            NavigateToDetails(CurrentItem);
+        AddedVenue = Venue.SelectOrAddVenue();
+        if (AddedVenue is not null)
+            NavigateToDetails(AddedVenue);
     }
 
     [RelayCommand]
@@ -115,6 +138,7 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
     #region Properties
     /// <summary>
     /// The currently selected Venue (bound to CurrentCollectionView.SelectedItem on VenueListPage).
+    /// Not to be confused with Venue.Current which is the venue corresponding to the current meal.
     /// </summary>
     [ObservableProperty]
     public partial Venue? CurrentItem { get; set; }

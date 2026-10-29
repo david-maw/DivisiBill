@@ -355,12 +355,12 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
     /// <param name="newStream">The stream to put the new (reduced size, gray scale) data in</param>
     private void SkiaConvert(Stream stream, FileStream newStream)
     {
-        var v = SKImage.FromEncodedData(stream);
-        var bitmap = SKBitmap.FromImage(v);
+        using var sourceImage = SKImage.FromEncodedData(stream);
+        using var bitmap = SKBitmap.FromImage(sourceImage);
 
-        double scale = 1000.0 / Math.Max(bitmap.Width, bitmap.Height);
+        double scale = Math.Min(1.0, 1000.0 / Math.Max(bitmap.Width, bitmap.Height));
 
-        SKBitmap newBitmap = new((int)(bitmap.Width * scale), (int)(bitmap.Height * scale), SKColorType.Gray8, SKAlphaType.Opaque);
+        using SKBitmap newBitmap = new((int)(bitmap.Width * scale), (int)(bitmap.Height * scale), SKColorType.Gray8, SKAlphaType.Opaque);
 
         bitmap.ScalePixels(newBitmap, new SKSamplingOptions(SKFilterMode.Linear));
 
@@ -369,8 +369,7 @@ public partial class ImageViewModel : ObservableObjectPlus, IQueryAttributable
         data.SaveTo(newStream);
 #if WINDOWS
         // Save the bytes to a file for testing
-        byte[] bytes = data.ToArray();
-        File.WriteAllBytes(@"c:\temp\divisibilltest.jpg", bytes);
+        File.WriteAllBytes(@"c:\temp\divisibilltest.jpg", data.ToArray());
 #endif
     }
     #endregion
