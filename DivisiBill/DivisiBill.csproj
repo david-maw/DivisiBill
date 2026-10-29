@@ -76,9 +76,13 @@
     <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
 
-  <!--Turn on Android AOT compilation to Speed Up initialization-->
-  <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)|$(Platform)'=='Release|android|AnyCPU'">
+  <!--Turn on Android Optimizations in release builds to Speed Up initialization and compress the code-->
+  <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)|$(Platform)'=='Release|Android|AnyCPU'">
     <RunAOTCompilation>True</RunAOTCompilation>
+    <AndroidLinkMode>Full</AndroidLinkMode>
+    <!-- .NET trimming -->
+    <PublishTrimmed>True</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
