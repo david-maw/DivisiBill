@@ -231,7 +231,7 @@ public partial class Meal : ObservableObjectPlus
         Utilities.DebugMsg($"In Meal.PeriodicSaveAsync InitializationComplete happened");
         while (true)
         {
-            if (CurrentMeal?.SavedToApp == true)
+            if (CurrentMeal?.SavedToApp == false)
                 CurrentMeal?.SaveToApp();
             SnapshotNeeded.IsPaused = true;
             // Wait for delayTime seconds or until a request to check immediately is received

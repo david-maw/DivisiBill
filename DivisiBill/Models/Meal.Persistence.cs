@@ -303,11 +303,12 @@ public partial class Meal : ObservableObjectPlus
     public bool OldEnoughToBeNewFile => IdleTime > App.MinimumIdleTime;
     internal void SaveToApp()
     {
-        byte[] buf = new byte[10000];
-        MemoryStream s = new(buf);
+        MemoryStream s = new();
         SaveToStream(s);
-        string myString = Encoding.UTF8.GetString(buf, 0, (int)s.Position);
-        if (Utilities.IsWinUI && myString.Length > 4096) // too large to store on Windows
+        s.Position = 0;
+        using var reader = new StreamReader(s, Encoding.UTF8, leaveOpen: true);
+        string myString = reader.ReadToEnd();
+        if (Utilities.IsWinUI && myString.Length > 10000) // too large to store on Windows
         {
             Utilities.DisplayAlertAsync("Error", $"Bill is too large ({myString.Length * 2} bytes) to store in App on Windows");
             myString = string.Empty;

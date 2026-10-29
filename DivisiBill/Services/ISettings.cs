@@ -3,7 +3,7 @@
 public interface ISettings
 {
     /// <summary>
-    /// The name on disk of the meal that is stored to the app.
+    /// The data for the current meal, updated at least every 10s, so little is ever lost due to failures.
     /// </summary>
     string StoredMeal { get; set; }
 
