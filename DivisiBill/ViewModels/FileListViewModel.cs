@@ -197,10 +197,10 @@ public partial class FileListViewModel : ObservableObjectPlus
                         ScrollItemsTo(FirstVisibleItemIndex, true); break;
                 case "End":
                     if (LastVisibleItemIndex < lastItemIndex)
-                        ScrollItemsTo(lastItemIndex, false); break;
+                        ScrollItemsTo(lastItemIndex, true); break;
                 case "Start":
                     if (FirstVisibleItemIndex > 0)
-                        ScrollItemsTo(0, true); break;
+                        ScrollItemsTo(0, false); break;
                 default: break;
             }
         }

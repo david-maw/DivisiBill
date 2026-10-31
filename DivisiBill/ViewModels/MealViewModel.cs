@@ -817,10 +817,10 @@ public partial class MealViewModel : ObservableObjectPlus
                         ScrollLineItemsTo(FirstVisibleItemIndex, true); break;
                 case "End":
                     if (LastVisibleItemIndex < lastItemIndex)
-                        ScrollLineItemsTo(lastItemIndex, false); break;
+                        ScrollLineItemsTo(lastItemIndex, true); break;
                 case "Start":
                     if (FirstVisibleItemIndex > 0)
-                        ScrollLineItemsTo(0, true); break;
+                        ScrollLineItemsTo(0, false); break;
                 default: break;
             }
         }

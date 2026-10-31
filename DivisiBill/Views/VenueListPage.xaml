@@ -33,20 +33,6 @@
                     </SwipeView.RightItems>
                     <VerticalStackLayout x:DataType="model:Venue">
                         <Grid ColumnDefinitions="*, auto, auto">
-                            <!--#region Context Menu to Replace Swipe -->
-                            <FlyoutBase.ContextFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem
-                                        Text="Use"
-                                        CommandParameter="{Binding}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
-                                    <MenuFlyoutItem
-                                        Text="Delete"
-                                        CommandParameter="{Binding}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
-                                </MenuFlyout>
-                            </FlyoutBase.ContextFlyout>
-                            <!--#endregion-->
                             <Label Text="{Binding Path=Name}" FontSize="{StaticResource FontSizeLarge}" LineBreakMode="TailTruncation"/>
                             <!--#region Icon indicating current Meal-->
                             <Image
@@ -72,21 +58,21 @@
                                               CommandParameter="{Binding}"
                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
                     </Rectangle.GestureRecognizers>
-                    <!--#region Context Menu to Replace Swipe (repeated so it works in center of line) -->
-                    <FlyoutBase.ContextFlyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem
-                                        Text="Use"
-                                        CommandParameter="{Binding}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"/>
-                            <MenuFlyoutItem
-                                        Text="Delete"
-                                        CommandParameter="{Binding}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"/>
-                        </MenuFlyout>
-                    </FlyoutBase.ContextFlyout>
-                    <!--#endregion-->
                 </Rectangle>
+                <!--  This button simulates swipe right (Use)  -->
+                <ImageButton
+                        Grid.Column="0"
+                        BackgroundColor="{StaticResource TransparentGreen}"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"
+                        CommandParameter="{Binding}"
+                        IsVisible="{OnPlatform Default=false, WinUI=true}" />
+                <!--  This button simulates swipe left (Delete)  -->
+                <ImageButton
+                        Grid.Column="2"
+                        BackgroundColor="{StaticResource TransparentRed}"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"
+                        CommandParameter="{Binding}"
+                        IsVisible="{OnPlatform Default=false, WinUI=true}" />
                 <BoxView Grid.Row="1" Grid.ColumnSpan="3" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
                 <!--#endregion-->
             </Grid>

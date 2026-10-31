@@ -73,13 +73,13 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
                     {
                         // This sometimes seems to mess up Android scrolling if you scroll to an index, so scroll to an item instead
                         await Task.Delay(100); // Give the UI a chance to update before scrolling
-                    ScrollItemsTo(CurrentItem, ScrollToPosition.Center);
+                        ScrollItemsTo(CurrentItem, ScrollToPosition.Center);
+                    }
+                    catch (Exception) { } // Don't care if the scroll fails  
                 }
-                catch (Exception) { } // Don't care if the scroll fails  
             }
-        }
             AddedVenue = null; // Don't do this again unless we add another venue
-    }
+        }
     }
     #endregion
     #region General Commands
@@ -331,10 +331,10 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
             {
                 case "Up":
                     if (LastVisibleItemIndex < lastItemIndex)
-                        ScrollItemsTo(LastVisibleItemIndex, ScrollToPosition.End); break;
+                        ScrollItemsTo(LastVisibleItemIndex, ScrollToPosition.Start); break;
                 case "Down":
                     if (FirstVisibleItemIndex > 0)
-                        ScrollItemsTo(FirstVisibleItemIndex, ScrollToPosition.Start); break;
+                        ScrollItemsTo(FirstVisibleItemIndex, ScrollToPosition.End); break;
                 case "End":
                     if (LastVisibleItemIndex < lastItemIndex)
                         ScrollItemsTo(lastItemIndex, ScrollToPosition.End); break;

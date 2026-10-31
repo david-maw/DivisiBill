@@ -1383,16 +1383,10 @@ public partial class MealListViewModel : ObservableObjectPlus, IQueryAttributabl
                         await ScrollItemsImpl(FirstVisibleItemIndex, ScrollToPosition.End); break;
                 case "End":
                     if (LastVisibleItemIndex < LastItemIndex)
-                    {
-                        await ScrollItemsImpl(LastItemIndex, ScrollToPosition.End);
-                    }
-                    break;
+                        await ScrollItemsImpl(LastItemIndex, ScrollToPosition.End); break;
                 case "Start":
                     if (FirstVisibleItemIndex > 0)
-                    {
-                        await ScrollItemsImpl(0, ScrollToPosition.Start);
-                    }
-                    break;
+                        await ScrollItemsImpl(0, ScrollToPosition.Start); break;
                 default: break;
             }
         }
