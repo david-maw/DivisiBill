@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
 namespace DivisiBill.ViewModels;
 
@@ -16,19 +15,10 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
     #endregion
     public VenueListViewModel()
     {
-        ((INotifyCollectionChanged)Venue.AllVenues).CollectionChanged += AllVenues_CollectionChanged;
-        App.MyLocationChanged += App_MyLocationChanged;
-        Meal.CurrentMealSummaryChanged += Meal_CurrentMealSummaryChanged;
+        Venue.AllVenues.CollectionChanged += (_, _) => OnPropertyChanged(nameof(VenueCount));
+        App.MyLocationChanged += async (_, _) => await Venue.UpdateAllDistances();
+        Meal.CurrentMealSummaryChanged += (_, newSummary) => Venue.SetCurrentByName(newSummary?.VenueName);
     }
-
-    private void Meal_CurrentMealSummaryChanged(MealSummary? oldSummary, MealSummary? newSummary) => Venue.SetCurrentByName(newSummary?.VenueName);
-
-    ~VenueListViewModel()
-    {
-        ((INotifyCollectionChanged)Venue.AllVenues).CollectionChanged -= AllVenues_CollectionChanged;
-        App.MyLocationChanged -= App_MyLocationChanged;
-    }
-    private void AllVenues_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => OnPropertyChanged(nameof(VenueCount));
     private MapSettings? mapSettings = null;
 
     private bool firstAppearance = true;
@@ -252,8 +242,7 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
         Venue? v = venueParam ?? CurrentItem;
         if (v is not null)
         {
-            if (v == CurrentItem)
-                CurrentItem = VenueList.Alternate(CurrentItem);
+            CurrentItem = VenueList.Alternate(v);
             deletedVenues.Push(v);
             IsAnyDeletedVenue = true;
             v.Forget();
@@ -264,25 +253,21 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
                 foreach (MealSummary sum in mealsForVenue.OrderBy((ms) => ms.CreationTime))
                     await sum.DeleteAsync(doLocal: true, doRemote: false);
             }
+            await Task.Delay(300); // Let the CollectionView display settle down
+            if (CurrentItem is not null && ScrollItemsTo is not null)
+                ScrollItemsTo(CurrentItem, ScrollToPosition.Center);
         }
     }
     #endregion
-    public int VenueCount => Venue.AllVenues.Count;
-    private async void App_MyLocationChanged(object? sender, EventArgs e) => await Venue.UpdateAllDistances();
-    public ObservableCollection<Venue> VenueList => (VenueSortOrder == VenueSortOrderType.byName) ? Venue.AllVenues : Venue.AllVenuesByDistance;
+    public int VenueCount => VenueList.Count;
+
+    [ObservableProperty]
+    public partial ObservableCollection<Venue> VenueList { get; private set; } = Venue.AllVenues;
     #endregion
     #region Sorting
     public string VenueSortOrderName => VenueSortOrder == VenueSortOrderType.byName ? "Name" : VenueSortOrder == VenueSortOrderType.byDistance ? "Distance" : "Unknown";
 
     public enum VenueSortOrderType { byDistance, byName };
-    private void NextSortOrder()
-    {
-        if (VenueSortOrder == Enum.GetValues<VenueSortOrderType>().Max())
-            VenueSortOrder = Enum.GetValues<VenueSortOrderType>().Min();
-        else
-            VenueSortOrder++;
-    }
-
     public VenueSortOrderType VenueSortOrder
     {
         get;
@@ -291,8 +276,8 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
             if (field != value)
             {
                 field = value;
+                VenueList = (field == VenueSortOrderType.byName) ? Venue.AllVenues : Venue.AllVenuesByDistance;
                 OnPropertyChanged(nameof(VenueSortOrderName));
-                OnPropertyChanged(nameof(VenueList));
             }
         }
     } = VenueSortOrderType.byName;
@@ -314,8 +299,12 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
 
     partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < VenueList.Count - 1;
 
-    public readonly union ScrollableObject(Venue, int);
-    public Action<ScrollableObject, ScrollToPosition>? ScrollItemsTo = null;
+    public readonly union ScrollToTarget(Venue, int);
+    public delegate void ScrollItemsToDelegate(
+        ScrollToTarget scrollableObject,
+        ScrollToPosition position);
+
+    public ScrollItemsToDelegate? ScrollItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)

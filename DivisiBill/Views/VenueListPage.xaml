@@ -14,9 +14,9 @@
              x:Class="DivisiBill.Views.VenueListPage"
              Title="Venue List">
     <ContentPage.Resources>
-        <DataTemplate x:Key="WithSwipe">
+        <DataTemplate x:Key="WithSwipe" x:DataType="model:Venue">
             <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*">
-                <SwipeView Grid.ColumnSpan="3" x:DataType="model:Venue">
+                <SwipeView Grid.ColumnSpan="3">
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
@@ -31,7 +31,7 @@
                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}" />
                         </SwipeItems>
                     </SwipeView.RightItems>
-                    <VerticalStackLayout x:DataType="model:Venue">
+                    <VerticalStackLayout>
                         <Grid ColumnDefinitions="*, auto, auto">
                             <Label Text="{Binding Path=Name}" FontSize="{StaticResource FontSizeLarge}" LineBreakMode="TailTruncation"/>
                             <!--#region Icon indicating current Meal-->
@@ -49,7 +49,7 @@
                     <!--#endregion-->
                 </SwipeView>
                 <!--#region Select/Deselect/Details button -->
-                <Rectangle Grid.Column="1" x:DataType="model:Venue">
+                <Rectangle Grid.Column="1">
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"

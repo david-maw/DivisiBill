@@ -1,7 +1,7 @@
 using DivisiBill.Models;
 using DivisiBill.Services;
 
-using ScrollableObject = DivisiBill.ViewModels.VenueListViewModel.ScrollableObject;
+using ScrollToTarget = DivisiBill.ViewModels.VenueListViewModel.ScrollToTarget;
 
 namespace DivisiBill.Views;
 
@@ -42,7 +42,7 @@ public partial class VenueListPage : ContentPage
     }
     #endregion
     #region Collection Scrolling
-    private void ScrollItemsTo(ScrollableObject obj, ScrollToPosition position)
+    private void ScrollItemsTo(ScrollToTarget obj, ScrollToPosition position)
     {
         switch (obj)
         {

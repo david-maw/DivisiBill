@@ -1,5 +1,9 @@
 # Version 6.3.39
 
+## Change Venue Deletion
+
+When you delete a venue the next one in the list will be selected and centered on the page.
+
 ## Select a Newly Added Venue
 
 When a venue is added (from one of the venue list pages) the newly added venue will now be selected. Also, the 'scroll up/down one page' buttons were not working - this has been corrected.
