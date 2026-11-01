@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using DivisiBill.Services;
 using Microsoft.Maui.Maps;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace DivisiBill.ViewModels;
@@ -187,9 +188,10 @@ public partial class MapViewModel : ObservableObject
     /// level.
     /// </summary>
     /// <remarks>The generated HTML includes embedded JavaScript to support marker placement, accuracy
-    /// visualization, and current location display. The map allows users to select locations and interact with the map,
-    /// and is intended for use in a web view or browser control. A valid Google Maps API key is required for the map to
-    /// function.</remarks>
+    /// visualization, and current location display. The current location name has to be quoted correctly in JavaScript 
+    /// because it may contain single or double quotes or backslashes, we use JSON serialization for that. The map allows users 
+    /// to select locations and interact with the map, and is intended for use in a web view or browser control. A valid Google 
+    /// Maps API key is required for the map to function.</remarks>
     /// <param name="centerLatitude">The latitude, in decimal degrees, at which to center the map.</param>
     /// <param name="centerLongitude">The longitude, in decimal degrees, at which to center the map.</param>
     /// <param name="zoom">The initial zoom level for the map. Valid values typically range from 0 (world view) 
@@ -289,7 +291,7 @@ public partial class MapViewModel : ObservableObject
                     marker = new google.maps.marker.AdvancedMarkerElement({
                             position: { lat: lat, lng: lng },
                             map: map,
-                            title: '{{VenueName}}'
+                            title: {{JsonSerializer.Serialize(VenueName)}}
                         });
 
                     // Add semi-transparent circle to visualize location accuracy radius
