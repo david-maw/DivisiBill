@@ -175,7 +175,10 @@ public partial class FileListViewModel : ObservableObjectPlus
 
     partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value + 1 < FileList?.Count;
 
-    public Action<int, bool>? ScrollItemsTo = null;
+    public delegate void ScrollItemsToDelegate(
+        int scrollTargetIndex,
+        bool toEnd);
+    public ScrollItemsToDelegate? ScrollItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)

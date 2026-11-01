@@ -219,7 +219,10 @@ internal partial class PeopleListViewModel : Services.ObservableObjectPlus
 
     partial void OnLastVisibleItemIndexChanged(int value) => IsSwipeUpAllowed = value > 0 && value < AllPeople.Count - 1;
 
-    public Action<int, bool>? ScrollItemsTo = null;
+    public delegate void ScrollItemsToDelegate(
+        int scrollTargetIndex,
+        bool toEnd);
+    public ScrollItemsToDelegate? ScrollItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)

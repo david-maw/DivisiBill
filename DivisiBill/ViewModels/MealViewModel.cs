@@ -795,7 +795,10 @@ public partial class MealViewModel : ObservableObjectPlus
         IsLineItemSwipeUpAllowed = value > 0 && value < LineItems.Count - 1;
     }
 
-    public Action<int, bool>? ScrollLineItemsTo = null;
+    public delegate void ScrollItemsToDelegate(
+        int scrollTargetIndex,
+        bool toEnd);
+    public ScrollItemsToDelegate? ScrollLineItemsTo = null;
 
     [RelayCommand]
     private void ScrollItems(string whereTo)
