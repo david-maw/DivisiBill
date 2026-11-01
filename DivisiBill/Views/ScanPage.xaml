@@ -1,20 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:views="clr-namespace:DivisiBill.Views"
-             xmlns:models="clr-namespace:DivisiBill.Models"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:ScanPage}"
-             Shell.FlyoutBehavior="Disabled"
-             x:Class="DivisiBill.Views.ScanPage"
-             Title="ScanPage">
+<ContentPage
+    BindingContext="{Binding Source={RelativeSource Self}, x:DataType=ScanPage}"
+    Shell.FlyoutBehavior="Disabled"
+    x:Class="DivisiBill.Views.ScanPage"
+    Title="ScanPage">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphReplace}" Clicked="OnReplaceItemList"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}" Clicked="OnAddItemList"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <controls:ColumnLayout Margin="10" x:DataType="views:ScanPage">
+        <ColumnLayout Margin="10" x:DataType="ScanPage">
             <VerticalStackLayout x:Name="loading" IsVisible="False">
                 <ActivityIndicator IsRunning="True" HeightRequest="50"/>
                 <Label Text="Analyzing image" HorizontalOptions="Center" FontSize="{StaticResource FontSizeLarge}"/>
@@ -29,7 +23,7 @@
                             EmptyView="No items defined">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid x:DataType="models:LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
+                        <Grid x:DataType="LineItem" RowDefinitions="Auto" ColumnDefinitions="*, 80" >
                             <Label Text="{Binding Path = ItemName }" Grid.Column="0"
                                    LineBreakMode="TailTruncation" HorizontalTextAlignment="Start"
                                    FontFamily="monospace" FontSize="{StaticResource FontSizeMedium}" />
@@ -41,6 +35,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </controls:ColumnLayout>
+        </ColumnLayout>
     </ContentPage.Content>
 </ContentPage>

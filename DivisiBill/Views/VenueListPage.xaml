@@ -1,34 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             xmlns:model="clr-namespace:DivisiBill.Models"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             BindingContext="{vm:VenueListViewModel}"
-             x:Name="Page"
-             x:DataType="vm:VenueListViewModel"
-             x:Class="DivisiBill.Views.VenueListPage"
-             Title="Venue List">
+<ContentPage
+    BindingContext="{VenueListViewModel}"
+    x:Name="Page"
+    x:DataType="VenueListViewModel"
+    x:Class="DivisiBill.Views.VenueListPage"
+    Title="Venue List">
     <ContentPage.Resources>
-        <DataTemplate x:Key="WithSwipe" x:DataType="model:Venue">
+        <DataTemplate x:Key="WithSwipe" x:DataType="Venue">
             <Grid ColumnDefinitions="*,*,*" RowDefinitions="*,*">
                 <SwipeView Grid.ColumnSpan="3">
                     <SwipeView.LeftItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphLoad}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}" />
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type VenueListViewModel}}, Path=AssignCommand, x:DataType=VenueListViewModel}" />
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}" />
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type VenueListViewModel}}, Path=DeleteCommand, x:DataType=VenueListViewModel}" />
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <VerticalStackLayout>
@@ -53,24 +45,24 @@
                     <Rectangle.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=SelectVenueCommand, x:DataType=vm:VenueListViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type VenueListViewModel}}, Path=SelectVenueCommand, x:DataType=VenueListViewModel}"/>
                         <TapGestureRecognizer NumberOfTapsRequired="2"
                                               CommandParameter="{Binding}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=vm:VenueListViewModel}"/>
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type VenueListViewModel}}, Path=ShowDetailsCommand, x:DataType=VenueListViewModel}"/>
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--  This button simulates swipe right (Use)  -->
                 <ImageButton
                         Grid.Column="0"
                         BackgroundColor="{StaticResource TransparentGreen}"
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=AssignCommand, x:DataType=vm:VenueListViewModel}"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type VenueListViewModel}}, Path=AssignCommand, x:DataType=VenueListViewModel}"
                         CommandParameter="{Binding}"
                         IsVisible="{OnPlatform Default=false, WinUI=true}" />
                 <!--  This button simulates swipe left (Delete)  -->
                 <ImageButton
                         Grid.Column="2"
                         BackgroundColor="{StaticResource TransparentRed}"
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VenueListViewModel}}, Path=DeleteCommand, x:DataType=vm:VenueListViewModel}"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type VenueListViewModel}}, Path=DeleteCommand, x:DataType=VenueListViewModel}"
                         CommandParameter="{Binding}"
                         IsVisible="{OnPlatform Default=false, WinUI=true}" />
                 <BoxView Grid.Row="1" Grid.ColumnSpan="3" Color="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" HeightRequest="1"/>
@@ -86,13 +78,13 @@
         <ToolbarItem Text="Details"   Command="{Binding ShowDetailsCommand}"                                      Order="Secondary" IsEnabled="{Binding CurrentItem,Converter={StaticResource IsNotNull}}"/>
         <ToolbarItem Text="Download"  Command="{Binding GetRemoteVenueListCommand}"                               Order="Secondary"/>
     </ContentPage.ToolbarItems>
-    <controls:ColumnLayout>
+    <ColumnLayout>
         <!--#region List of Venues -->
         <CollectionView x:Name="CurrentCollectionView"
-                        x:DataType="vm:VenueListViewModel"
+                        x:DataType="VenueListViewModel"
                         Scrolled="OnCollectionViewScrolled"
                         ItemTemplate="{StaticResource WithSwipe}"
-                        services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
+                        SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
                         SelectionMode="Single"
                         SelectedItem="{Binding CurrentItem}"
                         Margin="10,0"
@@ -115,12 +107,12 @@
         </CollectionView>
         <!--#endregion-->
         <!--#region Scroll Up/Down-->
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeDownAllowed}"/>
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsSwipeUpAllowed}"
             VerticalOptions="End"/>
@@ -144,5 +136,5 @@
             <Button Text="UnDelete All" Command="{Binding UndeleteAllVenuesCommand}" IsVisible="{Binding IsManyDeletedVenues}"/>
         </HorizontalStackLayout>
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

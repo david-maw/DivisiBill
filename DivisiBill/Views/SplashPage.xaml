@@ -1,11 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:services="clr-namespace:DivisiBill.Services"
+<ContentPage 
              xmlns:appmodel ="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
-             xmlns:views="clr-namespace:DivisiBill.Views"
-             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=views:SplashPage}"
-             x:DataType="views:SplashPage"
+             BindingContext="{Binding Source={RelativeSource Self}, x:DataType=SplashPage}"
+             x:DataType="SplashPage"
              Shell.FlyoutBehavior="Disabled"
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False"
@@ -35,7 +32,7 @@
                 <FormattedString>
                     <FormattedString.Spans>
                         <Span Text="DivisiBill " FontSize="{StaticResource FontSizeLarge}" />
-                        <Span Text="{x:Static services:Utilities.VersionName}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" />
+                        <Span Text="{x:Static Utilities.VersionName}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" />
                         <Span x:Name="editionSpan" FontSize="{StaticResource FontSizeLarge}" />
                     </FormattedString.Spans>
                 </FormattedString>
@@ -47,9 +44,9 @@
             <Label.FormattedText>
                 <FormattedString>
                     <FormattedString.Spans>
-                        <Span Text="{x:Static services:Utilities.DebugString}"/>
+                        <Span Text="{x:Static Utilities.DebugString}"/>
                         <Span Text="{Binding Source={x:Static appmodel:AppInfo.BuildString}, x:DataType=x:String, StringFormat=' Build {0}'}"/>
-                        <Span Text="{Binding Source={x:Static services:Utilities.BuildTime}, x:DataType=x:String, StringFormat=' at {0}'}"/>
+                        <Span Text="{Binding Source={x:Static Utilities.BuildTime}, x:DataType=x:String, StringFormat=' at {0}'}"/>
                     </FormattedString.Spans>
                 </FormattedString>
             </Label.FormattedText>

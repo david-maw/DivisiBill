@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="DivisiBill.Views.LineItemsPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:model="clr-namespace:DivisiBill.Models"
-    xmlns:services="clr-namespace:DivisiBill.Services"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:views="clr-namespace:DivisiBill.Views"
-    xmlns:controls="clr-namespace:DivisiBill.Controls"
-    xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-    Title="Items"
-    x:DataType="vm:MealViewModel"
-    x:Name="Page"
+    x:DataType="MealViewModel"
     BindingContext="{DynamicResource MealViewModel}"
     Shell.FlyoutBehavior="Flyout">
     <!--#region ToolBar-->
@@ -54,7 +44,7 @@
             </Style>
             <toolkit:VariableMultiValueConverter x:Key="All" ConditionType="All" />
         </ResourceDictionary>
-        <DataTemplate x:Key="NoSwipe" x:DataType="model:LineItem">
+        <DataTemplate x:Key="NoSwipe" x:DataType="LineItem">
             <Grid ColumnDefinitions="35,*,30">
                 <Grid.Resources>
                     <Style x:Key="SignedLabelStyle" TargetType="Label">
@@ -103,17 +93,17 @@
                         Text="{Binding ItemName}" >
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer 
-                                Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                Command="{Binding ToggleSelectLineItemCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 CommandParameter="{Binding}" />
                             <TapGestureRecognizer
-                                Command="{Binding DisplayPaymentsForLineItemCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                Command="{Binding DisplayPaymentsForLineItemCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 CommandParameter="{Binding}" 
                                 NumberOfTapsRequired="2" />
                             <DragGestureRecognizer 
-                                DragStartingCommand="{Binding DragStartingCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DragStartingCommand="{Binding DragStartingCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 DragStartingCommandParameter="{Binding}" />
                             <DropGestureRecognizer 
-                                DropCommand="{Binding DropCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DropCommand="{Binding DropCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 DropCommandParameter="{Binding}"
                                 Drop="OnDrop"/>
                         </Label.GestureRecognizers>
@@ -139,26 +129,26 @@
                 <!--  Tap to toggle sharing, spans the margin and does not cause an item to be selected  -->
                 <Rectangle Grid.Column="0">
                     <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ChangeSharingGestureCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
+                        <TapGestureRecognizer Command="{Binding ChangeSharingGestureCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}" CommandParameter="{Binding}" />
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!-- Gap in the middle (column 1) allows tap to fall through to the item below -->
                 <!--  Tap to toggle Comped value, spans the margin and does not cause an item to be selected  -->
                 <Rectangle Grid.Column="2">
                     <Rectangle.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ChangeCompCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}" CommandParameter="{Binding}" />
+                        <TapGestureRecognizer Command="{Binding ChangeCompCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}" CommandParameter="{Binding}" />
                     </Rectangle.GestureRecognizers>
                 </Rectangle>
                 <!--#endregion-->
             </Grid>
         </DataTemplate>
     </ContentPage.Resources>
-    <controls:ColumnLayout>
+    <ColumnLayout>
         <!--#region Page Switch Shortcut-->
-        <controls:ColumnLayout.GestureRecognizers>
+        <ColumnLayout.GestureRecognizers>
             <!--  Swipes are intercepted by the CollectionView below, so these take effect only outside that view  -->
             <SwipeGestureRecognizer Command="{Binding GoToTotalsCommand}" Direction="Left" />
-        </controls:ColumnLayout.GestureRecognizers>
+        </ColumnLayout.GestureRecognizers>
         <!--#endregion-->
         <!--#region Venue Name Heading-->
         <Border
@@ -202,7 +192,7 @@
             EmptyView="No items defined"
             ItemSizingStrategy="MeasureAllItems"
             ItemTemplate="{StaticResource NoSwipe}"
-            services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
+            SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
             ItemsSource="{Binding LineItems}"
             Scrolled="OnCollectionViewScrolled"
             SelectedItem="{Binding SelectedLineItem, Mode=TwoWay}"
@@ -228,17 +218,17 @@
             <!--#endregion-->
         </CollectionView>
         <!--#region Scroll Up/Down-->
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsLineItemSwipeDownAllowed}">
-        </controls:ScrollButton>
-        <controls:ScrollButton
-            controls:ColumnLayout.SameRow="True"
+        </ScrollButton>
+        <ScrollButton
+            ColumnLayout.SameRow="True"
             Command="{Binding ScrollItemsCommand}"
             IsVisible="{Binding IsLineItemSwipeUpAllowed}"
             VerticalOptions="End">
-        </controls:ScrollButton>
+        </ScrollButton>
         <!--#endregion-->
         <!--#endregion-->
         <!--#region Hint-->
@@ -273,7 +263,7 @@
                 IsVisible="{Binding IsAnyDeletedLineItem}"
                 Text="UnDelete" />
             <Button
-                Command="{Binding UndeleteAllLineItemsCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                Command="{Binding UndeleteAllLineItemsCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                 IsVisible="{Binding IsManyDeletedLineItems}"
                 Text="UnDelete All" />
         </HorizontalStackLayout>
@@ -287,7 +277,7 @@
             Stroke="{AppThemeBinding Light={StaticResource Gray900},
             Dark={StaticResource White}}">
             <Grid
-                x:DataType="vm:MealViewModel"
+                x:DataType="MealViewModel"
                 ColumnDefinitions="*,Auto"
                 ColumnSpacing="0"
                 RowDefinitions="Auto, Auto"
@@ -311,7 +301,7 @@
                     IsVisible="{Binding IsFiltered, Converter={StaticResource Not}}"
                     Text="{Binding SubTotal, StringFormat='{0:C}'}">
                     <Label.Behaviors>
-                        <services:CurrencyLabelBehavior
+                        <CurrencyLabelBehavior
                             EqualValue="{Binding ScannedSubTotal}"
                             TestEquality="{Binding ScannedSubTotal, Converter={StaticResource IsNonZero}}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
@@ -471,10 +461,10 @@
                 Text="{Binding LineItemNameString}"
                 VerticalOptions="Center">
                 <Entry.Behaviors>
-                    <services:UserStoppedTypingBehavior Command="{Binding UnloadLineItemNameStringCommand}" StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}" />
+                    <UserStoppedTypingBehavior Command="{Binding UnloadLineItemNameStringCommand}" StoppedTypingTimeThreshold="{Static PropertiesViewModel.StoppedTypingTimeThreshold}" />
                 </Entry.Behaviors>
             </Entry>
-            <controls:AmountEntry
+            <AmountEntry
                 x:Name="SelectedAmountEntry"
                 Grid.Column="1"
                 Placeholder="Value"
@@ -483,16 +473,16 @@
                 ValidStyle="{StaticResource ValidEntryStyle}"
                 InvalidStyle="{StaticResource InvalidEntryStyle}"
                 StoppedTypingCommand="{Binding UnloadLineItemAmountCommand}"
-                StoppedTypingTimeThreshold="{Static vm:PropertiesViewModel.StoppedTypingTimeThreshold}"
+                StoppedTypingTimeThreshold="{Static PropertiesViewModel.StoppedTypingTimeThreshold}"
                 ReturnCommand="{Binding CompletedLineItemAmountCommand}"
                 IsValid="{Binding IsValidLineItemAmount}"
                 MaximumValue="999999.99"
                 MinimumValue="-999999.99" 
                 ReturnType="Done"
                 Amount="{Binding LineItemAmount}">
-            </controls:AmountEntry>
+            </AmountEntry>
         </Grid>
         <!--#endregion-->
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

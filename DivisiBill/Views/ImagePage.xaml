@@ -1,16 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             BindingContext="{vm:ImageViewModel}"
-             mc:Ignorable="d"
-             x:Class="DivisiBill.Views.ImagePage"
-             Title="Image"
-             x:DataType="vm:ImageViewModel">
+<ContentPage 
+    BindingContext="{ImageViewModel}"
+    x:Class="DivisiBill.Views.ImagePage"
+    Title="Image"
+    x:DataType="ImageViewModel">
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:BoolToObjectConverter
@@ -44,15 +37,15 @@
         </VerticalStackLayout>
         <!--#endregion-->
         <!--#region Image Container -->
-        <services:PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasPreviewImage}">
-            <services:PinchToZoomContainer.Content>
+        <PinchToZoomContainer Grid.Row="2" IsVisible="{Binding HasPreviewImage}">
+            <PinchToZoomContainer.Content>
                 <Image x:Name="previewImage"
                        Source="{Binding PreviewImageSource,Mode=OneWay}"
                        Scale="{Binding ImageScale}"
                        TranslationX="{Binding ImageTranslationX}"
                        TranslationY="{Binding ImageTranslationY}"/>
-            </services:PinchToZoomContainer.Content>
-        </services:PinchToZoomContainer>
+            </PinchToZoomContainer.Content>
+        </PinchToZoomContainer>
         <!--#endregion-->
     </Grid>
 </ContentPage>

@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:DivisiBill.ViewModels"
-             xmlns:models="clr-namespace:DivisiBill.Models"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             Title="Totals"
-             x:Class="DivisiBill.Views.TotalsPage"
-             x:DataType="vm:MealViewModel"
-             BindingContext="{DynamicResource MealViewModel}"
-             Shell.FlyoutBehavior="Flyout">
+<ContentPage
+    x:Class="DivisiBill.Views.TotalsPage"
+    x:DataType="MealViewModel"
+    BindingContext="{DynamicResource MealViewModel}"
+    Shell.FlyoutBehavior="Flyout">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphFilterOn}" Command="{Binding FilterItemsCommand}"     CommandParameter="{Binding SelectedCost}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}"      Clicked="OnAddItem"/>
@@ -36,7 +30,7 @@
                 <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
         </ResourceDictionary>
-        <DataTemplate x:Key="WithSwipe" x:DataType="models:PersonCost">
+        <DataTemplate x:Key="WithSwipe" x:DataType="PersonCost">
             <!--TODO MAUI BUG SwipeView bug means Add and scroll will fail here on Windows until https://github.com/dotnet/maui/issues/18530 and 8870 are fixed-->
             <Grid ColumnDefinitions="*,80,*">
                 <SwipeView Grid.ColumnSpan="3">
@@ -44,14 +38,14 @@
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="PaleGreen" IconImageSource="{StaticResource GlyphFilterOn}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"/>
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=FilterItemsCommand, x:DataType=MealViewModel}"/>
                         </SwipeItems>
                     </SwipeView.LeftItems>
                     <SwipeView.RightItems>
                         <SwipeItems Mode="Execute">
                             <SwipeItem BackgroundColor="Red" IconImageSource="{StaticResource GlyphDel}"
                                        CommandParameter="{Binding}"
-                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DeleteCostCommand, x:DataType=MealViewModel}"/>
                         </SwipeItems>
                     </SwipeView.RightItems>
                     <!--#region PersonCost display with Drag gesture on Nickname-->
@@ -60,12 +54,12 @@
                             <Label.GestureRecognizers>
                             <TapGestureRecognizer
                                 CommandParameter="{Binding}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=vm:MealViewModel}" />
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DisplayPaymentsCommand, x:DataType=MealViewModel}" />
                             <DragGestureRecognizer 
-                                DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DragStartingCommand="{Binding DragStartingPersonCostCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 DragStartingCommandParameter="{Binding}" />
                             <DropGestureRecognizer 
-                                DropCommand="{Binding DropPersonCostCommand, Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, x:DataType=vm:MealViewModel}"
+                                DropCommand="{Binding DropPersonCostCommand, Source={RelativeSource AncestorType={x:Type MealViewModel}}, x:DataType=MealViewModel}"
                                 DropCommandParameter="{Binding}"
                                 Drop="OnPersonDrop"/>
                             </Label.GestureRecognizers>
@@ -81,11 +75,11 @@
                     <ImageButton.GestureRecognizers>
                         <TapGestureRecognizer
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=SelectCostCommand, x:DataType=vm:MealViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=SelectCostCommand, x:DataType=MealViewModel}"/>
                         <!-- Also must handle double tap because it masks the control below it -->
                         <TapGestureRecognizer NumberOfTapsRequired="2"
                                               CommandParameter="{Binding}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowPersonCommand, x:DataType=vm:MealViewModel}"/>
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=ShowPersonCommand, x:DataType=MealViewModel}"/>
                     </ImageButton.GestureRecognizers>
                 </ImageButton>
                 <!--#endregion-->
@@ -95,11 +89,11 @@
                         <MenuFlyoutItem
                             Text="Filter"
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=FilterItemsCommand, x:DataType=vm:MealViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=FilterItemsCommand, x:DataType=MealViewModel}"/>
                         <MenuFlyoutItem
                             Text="Delete"
                             CommandParameter="{Binding}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DeleteCostCommand, x:DataType=vm:MealViewModel}"/>
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DeleteCostCommand, x:DataType=MealViewModel}"/>
                     </MenuFlyout>
                 </FlyoutBase.ContextFlyout>
                 <!--#endregion-->
@@ -107,12 +101,12 @@
         </DataTemplate>
     </ContentPage.Resources>
 
-    <controls:ColumnLayout Margin="10">
-        <controls:ColumnLayout.GestureRecognizers>
+    <ColumnLayout Margin="10">
+        <ColumnLayout.GestureRecognizers>
             <!--Swipes are intercepted by the CollectionView below, so these take effect only outside that view-->
             <!--In practice swipes pass through to this on Windows but not on Android-->
             <SwipeGestureRecognizer Direction="Right" Command="{Binding GoToItemsCommand}"/>
-        </controls:ColumnLayout.GestureRecognizers>
+        </ColumnLayout.GestureRecognizers>
         <!--#region Heading -->
         <!--This is the heading for the page-->
         <Border Margin="5" Padding="5"
@@ -131,7 +125,7 @@
                FontSize="{StaticResource FontSizeTitle}" HorizontalOptions="Center">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=GoToItemsCommand}"/>
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=GoToItemsCommand}"/>
             </Label.GestureRecognizers>
         </Label>
         <!--#endregion-->
@@ -139,7 +133,7 @@
         <CollectionView x:Name="CostsListView"
                         ItemsSource="{Binding Costs}"
                         ItemTemplate="{StaticResource WithSwipe}"
-                        services:SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
+                        SelectableItemBehavior.Enable="{OnPlatform false, WinUI=true}"
                         SelectionMode="Single"
                         SelectedItem="{Binding SelectedCost}"
                         ItemSizingStrategy="MeasureAllItems"
@@ -186,7 +180,7 @@
                Text="{Binding Path=UnallocatedAmount, StringFormat='Unallocated Amount {0:C}'}"
                FontSize="{StaticResource FontSizeTitle}" HorizontalTextAlignment="Center">
             <Label.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=ShowUnallocatedCommand}"/>
+                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=ShowUnallocatedCommand}"/>
             </Label.GestureRecognizers>
         </Label>
         <!--#endregion-->
@@ -195,7 +189,7 @@
                Text="{Binding RoundedAmount,StringFormat='Total of Rounded~{0:C0}'}"
                FontAttributes="Bold" HorizontalOptions="Center" IsVisible="{Binding Path=IsAnyUnallocated,Converter={StaticResource Not}}">
             <Label.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MealViewModel}}, Path=DisplayPaymentsCommand}"/>
+                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type MealViewModel}}, Path=DisplayPaymentsCommand}"/>
             </Label.GestureRecognizers>
         </Label>
         <!--#endregion-->
@@ -218,7 +212,7 @@
                 <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="{StaticResource FontSizeTitle}" LineBreakMode="TailTruncation" Text="Bill Subtotal"/>
                 <Label Grid.Row="0" Grid.Column="3" Text="{Binding SubTotal, StringFormat='{0:C}'}" Style="{StaticResource labelStyle}">
                     <Label.Behaviors>
-                        <services:CurrencyLabelBehavior
+                        <CurrencyLabelBehavior
                             ValidStyle="{StaticResource ValidLabelStyle}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
                             EqualValue="{Binding ScannedSubTotal}"
@@ -242,7 +236,7 @@
                 <Label Grid.Row="1" Grid.Column="3"
                        Text="{Binding Tax, StringFormat='{0:C}'}">
                     <Label.Behaviors>
-                        <services:CurrencyLabelBehavior
+                        <CurrencyLabelBehavior
                             ValidStyle="{StaticResource ValidLabelStyle}"
                             UnequalStyle="{StaticResource UnequalLabelStyle}"
                             EqualValue="{Binding ScannedTax}"
@@ -280,5 +274,5 @@
             </Grid>
         </Border>
         <!--#endregion-->
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>

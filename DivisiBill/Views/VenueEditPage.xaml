@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:DivisiBill.ViewModels"
-             xmlns:services="clr-namespace:DivisiBill.Services"
-             xmlns:controls="clr-namespace:DivisiBill.Controls"
-             Shell.FlyoutBehavior="Disabled"
-             Title="Venue Details"
-             x:DataType="viewmodels:VenueEditViewModel"
-             x:Class="DivisiBill.Views.VenueEditPage">
+<ContentPage
+    Shell.FlyoutBehavior="Disabled"
+    Title="Venue Details"
+    x:DataType="VenueEditViewModel"
+    x:Class="DivisiBill.Views.VenueEditPage">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding ExitPageCommand}"/>
     </Shell.BackButtonBehavior>
@@ -16,7 +12,7 @@
         <ToolbarItem Command="{Binding DeleteCommand}" IconImageSource="{StaticResource GlyphDel}"/>
     </ContentPage.ToolbarItems>
     <!--This is a column layout (a single column grid), rather than a VerticalStackLayout, in order to allow the Notes field to occupy all the available space-->
-    <controls:ColumnLayout Margin="10,0,10,10">
+    <ColumnLayout Margin="10,0,10,10">
         <Label Text="{Binding Path=Name}"
                HorizontalOptions="Center" FontSize="{StaticResource FontSizeTitle}" FontAttributes="Bold"/>
         <Label Text="(in use)" IsVisible="{Binding IsForCurrentMeal}" HorizontalOptions="Center"/>
@@ -42,14 +38,14 @@
         </Grid>
         <Label Text="Nearby Venue Names" HorizontalOptions="Center" FontAttributes="Bold" IsVisible="{Binding PossiblesShowing}"/>
         <Border Padding="10" IsVisible="{Binding PossiblesShowing}">
-            <CollectionView controls:ColumnLayout.Fill="false"
+            <CollectionView ColumnLayout.Fill="false"
                 MaximumHeightRequest="200"
                 ItemsSource="{Binding Possibles}" 
                 SelectionMode="Single" 
                 SelectedItem="{Binding SelectedPossible}"
                 EmptyView="No nearby venues found">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="services:PlaceResult">
+                    <DataTemplate x:DataType="PlaceResult">
                         <Border Margin="0,3" StrokeThickness="0" Padding="5,2,5,4" BackgroundColor="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}">
                             <Grid ColumnDefinitions="*,auto">
                                 <Label Text="{Binding Name}" FontSize="{StaticResource FontSizeMedium}" LineBreakMode="TailTruncation" VerticalOptions="Center"/>
@@ -62,8 +58,8 @@
         </Border>
         <Label Text="{Binding VenueNameError}" HorizontalOptions="Center" IsVisible="{Binding VenueNameError, Converter={StaticResource IsStringNotNullOrWhiteSpace}}" TextColor="Red"/>
         <Label Text="Notes" FontAttributes="Bold" HorizontalOptions="Center"/>
-        <Border controls:ColumnLayout.Fill="True">
+        <Border ColumnLayout.Fill="True">
             <Editor Text="{Binding Notes}"/>
         </Border>
-    </controls:ColumnLayout>
+    </ColumnLayout>
 </ContentPage>
