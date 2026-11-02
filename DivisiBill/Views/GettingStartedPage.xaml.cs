@@ -14,10 +14,10 @@ public partial class GettingStartedPage : ContentPage
     {
         InitializeComponent();
         Shell.Current.Navigating += PreventPrematureNavigation;
-        NavigatedTo += async (_, _) =>
+        NavigatedTo += async (_, e) =>
         {
             // Called on first use only, after OnAppearing and OnNavigatedTo have been called
-            DebugMsg($"Enter GettingStartedPage.NavigatedTo");
+            DebugMsg($"Enter GettingStartedPage.NavigatedTo, using {e.NavigationType} from '{e.PreviousPage?.GetType()}'");
 
             if (App.Settings.FirstUse)
             {
