@@ -263,7 +263,6 @@ public partial class App : Application, INotifyPropertyChanged
 
         window.Created += (s, e) =>
         {
-            InitializationComplete = new(); // Flag initialization as incomplete until we finish it
             if (!IsRepeated("Created"))
                 HandleActivityChanges(false);
         };

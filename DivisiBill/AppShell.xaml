@@ -1,5 +1,6 @@
 <Shell
     Title="DivisiBill"
+    FlyoutBehavior="Disabled"
     x:Class="DivisiBill.AppShell">
 
     <Shell.FlyoutHeaderTemplate>
