@@ -10,6 +10,7 @@ namespace DivisiBill.Views;
 /// </summary>
 public partial class GettingStartedPage : ContentPage
 {
+    private bool GettingStartedPageCompleted = false; // Set to true when the first use of the app has been completed, so as to work around https://github.com/dotnet/maui/issues/39859
     public GettingStartedPage()
     {
         InitializeComponent();
@@ -17,9 +18,10 @@ public partial class GettingStartedPage : ContentPage
         NavigatedTo += async (_, e) =>
         {
             // Called on first use only, after OnAppearing and OnNavigatedTo have been called
-            DebugMsg($"Enter GettingStartedPage.NavigatedTo, using {e.NavigationType} from '{e.PreviousPage?.GetType()}'");
-
-            if (App.Settings.FirstUse)
+            DebugMsg($"Enter GettingStartedPage.NavigatedTo, using {e.NavigationType} operation from '{e.PreviousPage?.GetType()}' (GettingStartedPageCompleted = {GettingStartedPageCompleted})");
+            if (GettingStartedPageCompleted)
+                return; // This should never happen, but it will on Windows until https://github.com/dotnet/maui/issues/39859 is fixed
+            if (App.Settings.FirstUse) // Make testing easier
             {
                 // This is the first use of the app, so we show the help page and then rely on PreventPrematureNavigation to redirect the return to the splash page
                 DebugMsg("In GettingStartedPage.NavigatedTo, about to invoke getting started Help Page");
@@ -30,6 +32,7 @@ public partial class GettingStartedPage : ContentPage
             {
                 // This is the normal case where we simply jump to the startup code on the Splash page
                 DebugMsg("In GettingStartedPage.NavigatedTo, about to call GotoAsync to \"//SplashPage\"");
+                GettingStartedPageCompleted = true; // Record that the use of this page is over, needed until https://github.com/dotnet/maui/issues/39859 is fixed
                 Shell.Current.Navigating -= PreventPrematureNavigation; // We don't need to care anymore, from now on the app never returns to this page
                 // No need to change the StatusBar, by design it should be identical to the one we're already using
                 await App.GoToAsync(Routes.SplashPage);
