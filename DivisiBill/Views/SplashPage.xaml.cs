@@ -3,7 +3,6 @@ using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Controls;
 using DivisiBill.Models;
 using DivisiBill.Services;
-using Sentry;
 using static DivisiBill.Services.Utilities;
 
 namespace DivisiBill.Views;
@@ -79,7 +78,6 @@ public partial class SplashPage : ContentPage
             InitializeLocationTask = App.InitializeLocationAsync(); // Fire-and-forget, it will set App.Location when it is done
         else
             await StatusMsgAsync("Location permission denied, location will not be used");
-        Shell.Current.Navigating += PreventPrematureNavigation;
         Meal.InitializeFolders();
         if (App.SentryAllowed && App.Settings.SendCrashAsk)
         {
@@ -166,53 +164,8 @@ public partial class SplashPage : ContentPage
         PauseBeforeMessage = false; // Just to be sure it wasn't set at the last possible second
         App.Settings.FirstUse = false;
         App.isTutorialMode = App.Settings.ShowTutorial; // This is set to true to make the home page be the tutorial, the user can change it as desired
-        Shell.Current.Navigating -= PreventPrematureNavigation;
         App.InitializationComplete.SetResult(true);
         await StatusMsgAsync(string.Empty); // Clear it in case we reuse the page
-    }
-
-    /// <summary>
-    /// This is used during initialization to prevent Play Store automated testing from switching to another page prematurely.
-    /// It's not clear how it triggers that, but it manages. The same switch has never been observed "in the wild". Unfortunately
-    /// ShowPopupAsync uses navigation so we have to allow it when that is called.
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private static void PreventPrematureNavigation(object? sender, ShellNavigatingEventArgs e)
-    {
-        if (e.CanCancel)
-        {
-            // If we can cancel the navigation, do so if it is not for a popup
-            if (e.Target.Location.OriginalString.Contains("Popup") || e.Current.Location.OriginalString.Contains("Popup"))
-            {
-                // Don't cancel if the navigation is to or from a popup
-                RecordMsg("Splash Page: Allowed Navigation to or from " + e.Target.Location.OriginalString);
-            }
-            else
-            {
-                // Don't just record the message and forget it, report it to Sentry and cancel the navigation
-                string errorMessage = $"""
-                    Splash Page: Navigation canceled because it was not for a popup
-                    Current: {e.Current.Location.OriginalString}
-                    Target: {e.Target.Location.OriginalString}
-                    Source: {e.Source}
-
-                    {Utilities.GetAppInformation()}
-                    """;
-                // Report this so we can figure out how often it happens
-                SentrySdk.CaptureMessage(SentryEventProcessor.PrematureNavigationTitle, scope =>
-                {
-                    // Attach app information and comments
-                    scope.AddAttachment(System.Text.Encoding.Latin1.GetBytes(errorMessage), "ErrorMsg.txt", AttachmentType.Default, "text/plain");
-                });
-                e.Cancel(); // Cancel the navigation
-            }
-        }
-        else
-        {
-            // If we can't cancel the navigation, just log it in case there's a fault later
-            RecordMsg("Splash Page: Navigation not canceled because CanCancel was false");
-        }
     }
 
     public void LocalStatusMsg(string msg) => Dispatcher.Dispatch(() =>
