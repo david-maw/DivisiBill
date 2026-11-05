@@ -397,5 +397,9 @@
         <Setter Property="UnselectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
+    
+    <Style TargetType="ContentPage">
+        <Setter Property="Shell.FlyoutBehavior" Value="Flyout" />
+    </Style>
 
 </ResourceDictionary>

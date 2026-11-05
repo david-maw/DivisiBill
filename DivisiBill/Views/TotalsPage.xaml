@@ -2,8 +2,7 @@
 <ContentPage
     x:Class="DivisiBill.Views.TotalsPage"
     x:DataType="MealViewModel"
-    BindingContext="{DynamicResource MealViewModel}"
-    Shell.FlyoutBehavior="Flyout">
+    BindingContext="{DynamicResource MealViewModel}">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="{StaticResource GlyphFilterOn}" Command="{Binding FilterItemsCommand}"     CommandParameter="{Binding SelectedCost}"/>
         <ToolbarItem IconImageSource="{StaticResource GlyphAdd}"      Clicked="OnAddItem"/>

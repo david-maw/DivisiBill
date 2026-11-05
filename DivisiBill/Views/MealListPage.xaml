@@ -4,8 +4,7 @@
     x:Name="BrowseItemsPage"
     Title="Bills"
     x:DataType="MealListViewModel"
-    BindingContext="{MealListViewModel}"
-    Shell.FlyoutBehavior="Flyout">
+    BindingContext="{MealListViewModel}">
 
     <ContentPage.Resources>
         <toolkit:BoolToObjectConverter

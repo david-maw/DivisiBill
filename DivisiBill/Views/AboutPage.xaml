@@ -2,8 +2,7 @@
 <ContentPage x:Class="DivisiBill.Views.AboutPage"
              BindingContext="{SettingsViewModel}"
              x:DataType="SettingsViewModel"
-             Title="About"
-             Shell.FlyoutBehavior="Flyout">
+             Title="About">
 
     <Grid x:DataType="SettingsViewModel" RowDefinitions="*, Auto,*, Auto">
         <ContentView Padding="10" BackgroundColor="Red">

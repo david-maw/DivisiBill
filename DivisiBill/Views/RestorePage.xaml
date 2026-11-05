@@ -1,6 +1,7 @@
 <ContentPage
     x:Class="DivisiBill.Views.RestorePage"
     Title="Intent Page"
+    Shell.FlyoutBehavior="Disabled"
     x:DataType="RestoreViewModel">
     <VerticalStackLayout Padding="10,0" Spacing="10" VerticalOptions="Center">
         <Label

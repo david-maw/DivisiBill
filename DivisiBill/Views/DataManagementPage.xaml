@@ -3,8 +3,7 @@
     x:Class="DivisiBill.Views.DataManagementPage"
     Title="Manage Data"
     x:DataType="DataManagementViewModel"
-    BindingContext="{DataManagementViewModel}"
-    Shell.FlyoutBehavior="Flyout">
+    BindingContext="{DataManagementViewModel}">
     <Grid>
         <!--#region Page Actions and Information-->
         <ScrollView>

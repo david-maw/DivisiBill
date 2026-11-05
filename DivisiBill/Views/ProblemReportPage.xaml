@@ -3,7 +3,6 @@
     BindingContext="{ProblemReportViewModel}"
     x:DataType="ProblemReportViewModel"
     Title="Problem Report"
-    Shell.FlyoutBehavior="Flyout"
     x:Class="DivisiBill.Views.ProblemReportPage">
     <ContentPage.Content>
         <Grid RowDefinitions="auto, auto, auto, *">
