@@ -1,3 +1,9 @@
+# Version 6.3.40
+
+## Improved Bill Summary
+
+A bill summary shows when you double-tap a bill in a list of bills. It already contained a  list of participants, it now also contains a scrollable list of items on the bill.
+
 # Version 6.3.39
 
 ## Change Venue Deletion
