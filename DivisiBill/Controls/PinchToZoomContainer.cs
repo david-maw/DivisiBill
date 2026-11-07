@@ -1,4 +1,4 @@
-﻿namespace DivisiBill.Services;
+﻿namespace DivisiBill.Controls;
 
 internal class PinchToZoomContainer : ContentView
 {
