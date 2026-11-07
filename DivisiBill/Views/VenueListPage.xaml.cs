@@ -8,6 +8,8 @@ namespace DivisiBill.Views;
 public partial class VenueListPage : ContentPage
 {
     protected ViewModels.VenueListViewModel context;
+    private bool isFlyoutBehaviorOverridden;
+
     #region Page LifeCycle
     public VenueListPage()
     {
@@ -25,11 +27,26 @@ public partial class VenueListPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        Shell.Current.FlyoutBehavior = Shell.Current.Navigation.NavigationStack.Count > 1 // we got here by navigation
-            ? FlyoutBehavior.Disabled
-            : FlyoutBehavior.Flyout;
+        isFlyoutBehaviorOverridden = false;
+        if (Shell.Current.Navigation.NavigationStack.Count > 1
+            && Shell.Current.FlyoutBehavior is not FlyoutBehavior.Disabled) // we got here by push navigation
+        {
+            Shell.Current.FlyoutBehavior = FlyoutBehavior.Disabled;
+            isFlyoutBehaviorOverridden = true;
+        }
         await context.OnNavigatedTo();
     }
+
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        base.OnNavigatedFrom(args);
+        if (isFlyoutBehaviorOverridden)
+        {
+            Shell.Current.ClearValue(Shell.FlyoutBehaviorProperty); // so undo the fact we set it explicitly
+            isFlyoutBehaviorOverridden = false;
+        }
+    }
+
     protected override async void OnDisappearing()
     {
         Utilities.DebugMsg($"Enter VenueListPage.OnDisappearing, stack depth = {Shell.Current.Navigation.NavigationStack.Count}");
