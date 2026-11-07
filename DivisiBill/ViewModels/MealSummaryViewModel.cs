@@ -41,6 +41,7 @@ public partial class MealSummaryViewModel : ObservableObject
     public string Id => ms.Id;
     public decimal RoundedAmount => HasMealInfo ? CurrentMeal.RoundedAmount : 0;
     public ObservableCollection<PersonCost> Costs => CurrentMeal.Costs;
+    public ObservableCollection<LineItem> LineItems => CurrentMeal.LineItems;
     public int LineItemCount => HasMealInfo ? CurrentMeal.LineItems.Count : 0;
     public bool HasImage => ms.HasImage;
     public bool HasDeletedImage => ms.HasDeletedImage;

@@ -68,28 +68,53 @@
             </Label.FormattedText>
         </Label>
         <!--#endregion-->
-        <!--#region Item Count -->
-        <Label Text="{Binding LineItemCount,StringFormat='Items = {0}'}" IsVisible="{Binding HasMealInfo}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+        <!--#region Costs (Participant List) - permitted to consume a little more than half the remaining space, enough for 10 participants-->
+        <Border IsVisible="{Binding HasMealInfo}" StrokeShape="RoundRectangle 10" MaximumHeightRequest="400" Margin="5" Padding="5">
+            <ColumnLayout>
+                <Label Text="{Binding Costs.Count,StringFormat='Participants ({0})'}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                <CollectionView
+                    ColumnLayout.Fill="True"
+                    ItemsSource="{Binding Costs}"
+                    VerticalOptions="Start">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="PersonCost">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="{Binding Nickname} " Grid.Column="0"
+                                       LineBreakMode="TailTruncation"
+                                       FontSize="{StaticResource FontSizeLarge}" />
+                                <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}"
+                                       LineBreakMode="NoWrap"
+                                       FontSize="{StaticResource FontSizeLarge}" HorizontalTextAlignment="End" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ColumnLayout>
+        </Border>
         <!--#endregion-->
-        <!--#region Costs (Participant List) -->
-        <Label Text="Participants" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
-        <CollectionView
-            ItemsSource="{Binding Costs}"
-            VerticalOptions="Start">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="PersonCost">
-                    <Grid Margin="20,0,20,0" RowDefinitions="Auto" ColumnDefinitions="*,Auto">
-                        <Label x:Name="NicknameLabel" Text="{Binding Nickname} " Grid.Column="0"
-                               LineBreakMode="NoWrap"
-                               FontSize="{StaticResource FontSizeLarge}" />
-
-                        <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}" Margin="0,0,10,0"
-                               LineBreakMode="NoWrap"
-                               FontSize="{StaticResource FontSizeLarge}" IsEnabled="True" HorizontalTextAlignment="End" />
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <!--#region Items - uses all the space left at the bottom of the page-->
+        <Border IsVisible="{Binding HasMealInfo}" StrokeShape="RoundRectangle 10" ColumnLayout.Fill="True" Margin="5" Padding="5">
+            <ColumnLayout>
+                <Label Text="{Binding LineItemCount,StringFormat='Items ({0})'}" FontSize="{StaticResource FontSizeLarge}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                <CollectionView
+                    ColumnLayout.Fill="True"
+                    ItemsSource="{Binding LineItems}"
+                    VerticalOptions="Start">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="LineItem">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="{Binding ItemName} " Grid.Column="0"
+                                       LineBreakMode="TailTruncation"
+                                       FontSize="{StaticResource FontSizeMedium}" />
+                                <Label Grid.Column="1" Text="{Binding Amount, StringFormat='{0:C}'}"
+                                       LineBreakMode="NoWrap"
+                                       FontSize="{StaticResource FontSizeSmall}" HorizontalTextAlignment="End" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ColumnLayout>
+        </Border>
         <!--#endregion-->
     </ColumnLayout>
 </ContentPage>
