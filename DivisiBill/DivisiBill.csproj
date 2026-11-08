@@ -56,12 +56,6 @@
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
   
-  <!-- Allow Implicit XML Namespace Declaration -->
-  <PropertyGroup>
-    <DefineConstants>$(DefineConstants);MauiAllowImplicitXmlnsDeclaration</DefineConstants>
-    <EnablePreviewFeatures>true</EnablePreviewFeatures>
-  </PropertyGroup>
-
   <!-- Handy Diagnostic Messages -->
   <Target Name="ShowMessages" BeforeTargets="BeforeBuild;CoreCompile">
     <Message Text="TargetOsPlatform = $(TargetOsPlatform) and GetTargetPlatformIdentifier = $([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))" Importance="low" />
