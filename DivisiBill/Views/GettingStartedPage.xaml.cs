@@ -24,7 +24,6 @@ public partial class GettingStartedPage : ContentPage
                 // This is the first use of the app, so we show the help page and then rely on PreventPrematureNavigation to redirect the return to the splash page
                 DebugMsg("In GettingStartedPage.NavigatedTo, about to invoke getting started Help Page");
                 await App.PushAsync(Routes.HelpPage + "?page=GettingStarted"); // The "Page" value is case-insensitive, we used mixed case here just to satisfy the spell checker
-                App.SetStatusBar(); // Set the status bar to match the theme before switching to the help page
             }
             else
             {
@@ -32,7 +31,6 @@ public partial class GettingStartedPage : ContentPage
                 DebugMsg("In GettingStartedPage.NavigatedTo, about to call GotoAsync to \"//SplashPage\"");
                 GettingStartedPageCompleted = true; // Record that the use of this page is over, needed until https://github.com/dotnet/maui/issues/39859 is fixed
                 Shell.Current.Navigating -= PreventFlicker; // We don't need to care anymore, from now on the app never returns to this page
-                // No need to change the StatusBar, by design it should be identical to the one we're already using
                 await App.GoToAsync(Routes.SplashPage);
             }
 

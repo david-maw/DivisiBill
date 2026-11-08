@@ -254,10 +254,7 @@ public partial class SettingsViewModel : ObservableObjectPlus
         set
         {
             if (value != Dark)
-            {
                 currentApp.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
-                App.SetStatusBar();
-            }
         }
         get => currentApp.UserAppTheme == AppTheme.Dark || currentApp.RequestedTheme == AppTheme.Dark;
     }
