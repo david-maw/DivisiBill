@@ -1,10 +1,14 @@
-# Version 6.3.40
+# Version 6.4.1
+
+## Upgrade to .NET 11
+
+The application infrastructure has been upgraded to .NET 11. This should make no functional difference except that a few actions will be slightly faster.
 
 ## Improved Bill Summary
 
 A bill summary shows when you double-tap a bill in a list of bills. It already contained a  list of participants, it now also contains a scrollable list of items on the bill.
 
-# Version 6.3.39
+# Version 6.3.40
 
 ## Change Venue Deletion
 
