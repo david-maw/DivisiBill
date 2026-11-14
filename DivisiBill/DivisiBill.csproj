@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net10.0-android</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>net11.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net11.0-windows10.0.19041.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <RootNamespace>DivisiBill</RootNamespace>
     <UseMaui>true</UseMaui>
@@ -36,7 +36,7 @@
     <TargetOsPlatform>$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))</TargetOsPlatform>
 
     <!-- Versions -->
-    <ApplicationDisplayVersion>6.3.40</ApplicationDisplayVersion>
+    <ApplicationDisplayVersion>6.4.1</ApplicationDisplayVersion>
     <ApplicationVersion>300</ApplicationVersion>
 
     <ApplicationVersion Condition="'$(DIVISIBILL_VERSION_INCREMENT)' != ''">$([MSBuild]::Add($(ApplicationVersion), $(DIVISIBILL_VERSION_INCREMENT)))</ApplicationVersion>
@@ -56,12 +56,6 @@
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
   
-  <!-- Allow Implicit XML Namespace Declaration -->
-  <PropertyGroup>
-    <DefineConstants>$(DefineConstants);MauiAllowImplicitXmlnsDeclaration</DefineConstants>
-    <EnablePreviewFeatures>true</EnablePreviewFeatures>
-  </PropertyGroup>
-
   <!-- Handy Diagnostic Messages -->
   <Target Name="ShowMessages" BeforeTargets="BeforeBuild;CoreCompile">
     <Message Text="TargetOsPlatform = $(TargetOsPlatform) and GetTargetPlatformIdentifier = $([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))" Importance="low" />
@@ -79,7 +73,6 @@
 
   <!--Turn on Android Optimizations in release builds to Speed Up initialization and compress the code-->
   <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)|$(Platform)'=='Release|Android|AnyCPU'">
-    <RunAOTCompilation>True</RunAOTCompilation>
     <AndroidLinkMode>Full</AndroidLinkMode>
     <!-- .NET trimming -->
     <PublishTrimmed>True</PublishTrimmed>
@@ -127,7 +120,6 @@
     <PackageReference Include="BouncyCastle.Cryptography" />
     <PackageReference Include="CommunityToolkit.Diagnostics" />
     <PackageReference Include="CommunityToolkit.Maui.Camera" />
-    <PackageReference Include="CommunityToolkit.Maui.Maps" />
     <PackageReference Include="epj.RouteGenerator" />
     <PackageReference Include="Microsoft.Maui.Controls" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" />
@@ -139,14 +131,14 @@
     <!--Sentry.Profiling is not supported on Android-->
     <PackageReference Condition="'$(TargetOsPlatform)' != 'android'" Include="Sentry.Profiling" />
     <PackageReference Include="SkiaSharp" />
-    <!--Force hashing level to fix build warning in .NET 11 RC1-->
-    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
   <!--Add In-App Billing package, but only for Android-->
   <ItemGroup Condition="'$(TargetOsPlatform)' == 'android'">
-    <!-- Updating this past 9.1.0.1 causes build errors as of Sept 2026 -->
+    <!-- Beware, version 9.1.102 of BillingClient requires pinned versions of Xamarin.AndroidX.Fragment...  -->
     <PackageReference Include="Xamarin.Android.Google.BillingClient" />
+    <PackageReference Include="Xamarin.AndroidX.Fragment" />
+    <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" />
   </ItemGroup>
 
   <!-- Sentry setup for PDB Upload -->
