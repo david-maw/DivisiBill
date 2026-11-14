@@ -73,7 +73,6 @@
 
   <!--Turn on Android Optimizations in release builds to Speed Up initialization and compress the code-->
   <PropertyGroup Condition="'$(Configuration)|$(TargetOsPlatform)|$(Platform)'=='Release|Android|AnyCPU'">
-    <RunAOTCompilation>True</RunAOTCompilation>
     <AndroidLinkMode>Full</AndroidLinkMode>
     <!-- .NET trimming -->
     <PublishTrimmed>True</PublishTrimmed>
