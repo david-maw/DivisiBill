@@ -23,8 +23,7 @@ public partial class GettingStartedPage : ContentPage
             {
                 // This is the first use of the app, so we show the help page and then rely on PreventPrematureNavigation to redirect the return to the splash page
                 DebugMsg("In GettingStartedPage.NavigatedTo, about to invoke getting started Help Page");
-                await App.PushAsync(Routes.HelpPage + "?page=GettingStarted"); // The "Page" value is case-insensitive, we used mixed case here just to satisfy the spell checker
-                App.SetStatusBar(); // Set the status bar to match the theme before switching to the help page
+                await App.PushAsync(Routes.HelpPage + $"?page=GettingStarted&returnto={Routes.SplashPage}"); // The "Page" value is case-insensitive, we used mixed case here just to satisfy the spell checker
             }
             else
             {

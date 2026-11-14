@@ -12,6 +12,11 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        // In .NET11 opt-in to having Maui set the system bar colors on Android to match
+        AppContext.SetSwitch(
+            "MauiAndroidSystemBarsUseMauiChrome",
+            true);
+
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
