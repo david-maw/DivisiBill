@@ -10,6 +10,8 @@ namespace DivisiBill.Views;
 public partial class PeopleListPage : ContentPage
 {
     private readonly ViewModels.PeopleListViewModel context;
+    private bool isFlyoutBehaviorOverridden;
+
     public PeopleListPage() : this(null)
     {
     }
@@ -25,10 +27,24 @@ public partial class PeopleListPage : ContentPage
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        Shell.Current.FlyoutBehavior = Shell.Current.Navigation.NavigationStack.Count > 1 // we got here by navigation
-            ? FlyoutBehavior.Disabled
-            : FlyoutBehavior.Flyout;
+        isFlyoutBehaviorOverridden = false;
+        if (Shell.Current.Navigation.NavigationStack.Count > 1
+            && Shell.Current.FlyoutBehavior is not FlyoutBehavior.Disabled) // we got here by push navigation
+        {
+            Shell.Current.FlyoutBehavior = FlyoutBehavior.Disabled;
+            isFlyoutBehaviorOverridden = true;
+        }
         context.ShowPeopleHint = App.Settings.ShowPeopleHint;
+    }
+
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        base.OnNavigatedFrom(args);
+        if (isFlyoutBehaviorOverridden)
+        {
+            Shell.Current.ClearValue(Shell.FlyoutBehaviorProperty); // so undo the fact we set it explicitly
+            isFlyoutBehaviorOverridden = false;
+        }
     }
 
     public delegate void SelectPersonDelegate(Person person, PersonCost? personCost);
