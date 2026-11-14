@@ -5,6 +5,7 @@ namespace DivisiBill.Views;
 
 [QueryProperty(nameof(PageName), "page")]
 [QueryProperty(nameof(Fragment), "fragment")]
+[QueryProperty(nameof(ReturnTo), "returnto")]
 public partial class HelpPage : ContentPage
 {
     public HelpPage()
@@ -97,11 +98,17 @@ public partial class HelpPage : ContentPage
 
     public string PageName { get; set; } = string.Empty;
     public string Fragment { get; set; } = string.Empty;
+    public string ReturnTo { get; set; } = string.Empty;
 
     public ICommand BackCommand { get; }
 
     private async void OnIndexIconClicked(object? sender, System.EventArgs e) => await webView.EvaluateJavaScriptAsync("gotopage('index.html#pages')");
     private void OnExitIconClicked(object? sender, EventArgs e) => ReturnToApp();
-
-    private void ReturnToApp() => Shell.Current.Navigation.PopAsync();
+    private async void ReturnToApp()
+    {
+        if (string.IsNullOrEmpty(ReturnTo))
+            await Shell.Current.Navigation.PopAsync();
+        else
+            await App.GoToAsync(ReturnTo);
+    }
 }
