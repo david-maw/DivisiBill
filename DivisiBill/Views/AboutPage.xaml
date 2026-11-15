@@ -44,13 +44,15 @@
             <Image Source="dotnet.png"/>
         </ContentView>
         <VerticalStackLayout Grid.Row="3" Padding="16,10,16,10">
-            <Label>
+            <Label Text="This app is written in C# and native APIs" HorizontalOptions="Center" />
+            <Label HorizontalOptions="Center">
                 <Label.FormattedText>
                     <FormattedString>
                         <FormattedString.Spans>
-                            <Span Text="This app is written in C# and native APIs using the " />
+                            <Span Text="using the " />
                             <Span Text=".NET MAUI" FontAttributes="Bold" />
-                            <Span Text=" Platform." />
+                            <Span Text=" platform version " />
+                            <Span Text="{x:Static Utilities.MauiVersion}" />
                         </FormattedString.Spans>
                     </FormattedString>
                 </Label.FormattedText>

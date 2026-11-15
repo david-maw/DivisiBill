@@ -1004,6 +1004,7 @@ public static partial class Utilities // Partial for regex generator
     internal static string DebugString { get; } = IsDebug ? "DEBUG" : "";
     internal static string Revision { get; } = assemblyVersion?.Revision.ToString() ?? string.Empty;
     internal static string BuildTime { get; } = DateTime.Parse(BuildEnvironment.BuildTimeString, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind).ToLocalTime().ToString();
+    internal static string MauiVersion { get; } = DivisiBill.Generated.BuildInfo.MauiVersion;
     public static async Task<string> CopyStreamToTempFileAsync(Stream input)
     {
         // Create a unique temp file path
