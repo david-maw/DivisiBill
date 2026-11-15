@@ -467,7 +467,7 @@ public static partial class Utilities // Partial for regex generator
     /// <summary>
     /// Send a status message to subscribers of StatusMsgInvoked (used to report progress during initialization)
     /// </summary>
-    public delegate void SendMsg(string msg);
+    public delegate void SendMsg(string msg, int lineCount);
 
     public static event SendMsg? StatusMsgInvoked;
 
@@ -494,14 +494,29 @@ public static partial class Utilities // Partial for regex generator
         [CallerFilePath] string sourceFilePath = "",
         [CallerLineNumber] int sourceLineNumber = 0)
     {
+        await StatusMsgCoreAsync(msg, 1, sourceFilePath, sourceLineNumber);
+    }
+
+    /// <summary>
+    /// Send a status message that replaces the last displayed line.
+    /// </summary>
+    public static async Task StatusMsgOverwriteAsync(string msg,
+        [CallerFilePath] string sourceFilePath = "",
+        [CallerLineNumber] int sourceLineNumber = 0)
+    {
+        await StatusMsgCoreAsync(msg, 0, sourceFilePath, sourceLineNumber);
+    }
+
+    private static async Task StatusMsgCoreAsync(string msg, int lineCount, string sourceFilePath, int sourceLineNumber)
+    {
         await PauseBeforeMessageSource.WaitWhilePausedAsync();
-        StatusMsgInvoked?.Invoke(msg);
+        StatusMsgInvoked?.Invoke(msg, lineCount);
         // Extract just the file name - has to be done manually because this may be an Android build compiled on Windows
         string sourceFileName = sourceFilePath[(sourceFilePath.LastIndexOf('\\') + 1)..];
         SentrySdk.AddBreadcrumb(
             type: "debug",
             category: "Utilities.StatusMsg",
-            message: sourceFileName + "@" + sourceLineNumber + ": " + msg);
+            message: sourceFileName + "@" + sourceLineNumber + " (" + lineCount + "): " + msg);
         DebugMsg(msg);
     }
 

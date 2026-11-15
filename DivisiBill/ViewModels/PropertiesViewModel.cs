@@ -154,7 +154,7 @@ internal partial class PropertiesViewModel : ObservableObjectPlus
     private async Task MarkCurrentMealAsNew()
     {
         if (Meal.CurrentMeal.IsDefault)
-            await Utilities.DisplayAlertAsync("Default Bill", "Marking the default meal as new does nothing.", "ok");
+            await Utilities.DisplayAlertAsync("Default Bill", "Marking the default bill as new does nothing.", "ok");
         else
             await Meal.CurrentMeal.MarkAsNewAsync("User", unconditional: true);
     }

@@ -43,9 +43,9 @@ public partial class Meal : ObservableObjectPlus
 
     /// <summary>
     /// Initializes the local meal list by retrieving stored meals from local storage. If no meals are found 
-    /// and the application is in debug mode, a set of fake meals is created for testing purposes.
+    /// and the application is in debug mode, a set of fake meals is created for testing purposes. Note that
+    /// Meals are referred to as bills on user visible messages.
     /// </summary>
-    /// <returns></returns>
     public static async Task InitializeLocalMealList()
     {
         try
@@ -265,7 +265,7 @@ public partial class Meal : ObservableObjectPlus
     /// <returns></returns>
     public static async Task GetLocalMealListAsync()
     {
-        await StatusMsgAsync("Start analyzing local meal list");
+        DebugMsg("Start analyzing local bill list");
         // Get the list of files by going through the Meal folder and remembering all the files called ...xml
         if (Directory.Exists(MealFolderPath))
         {
@@ -274,7 +274,7 @@ public partial class Meal : ObservableObjectPlus
                                  .Select(fp => Path.GetFileName(fp))
                                  .Where(fn => FourteenDigitsRegex().IsMatch(fn)) // 14 digits dot xml (yyyymmddhhmmss.xml)
                                  .OrderByDescending(fn => fn)];
-            await StatusMsgAsync($"Found {files.Count} candidate meal files");
+            await StatusMsgAsync($"Found {files.Count} candidate files");
             List<string> oldFiles = [.. LocalMealList.Select(ms => ms.FileName)]; // The order will have been determined the line above in a previous call 
             if (!Enumerable.SequenceEqual(files, oldFiles))
             {
@@ -325,7 +325,7 @@ public partial class Meal : ObservableObjectPlus
         }
         else // There's no folder for meals
             LocalMealList.Clear();
-        await StatusMsgAsync("Established local meal list");
+        DebugMsg("Established local bill list");
     }
 
     /// <summary>

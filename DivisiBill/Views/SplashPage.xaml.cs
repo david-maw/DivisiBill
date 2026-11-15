@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Extensions;
 using DivisiBill.Controls;
 using DivisiBill.Models;
 using DivisiBill.Services;
+using System.Collections.ObjectModel;
 using static DivisiBill.Services.Utilities;
 
 namespace DivisiBill.Views;
@@ -12,14 +13,14 @@ public partial class SplashPage : ContentPage
     public SplashPage()
     {
         InitializeComponent();
-        StatusMsgInvoked += LocalStatusMsg;
+        StatusMsgInvoked += OnStatusMsg;
         NavigatedTo += SplashPage_NavigatedTo;
         App.ProEditionVerified += (s, e) => editionSpan.Text = App.IsLimited ? " Basic Edition" : " Pro Edition";
     }
     ~SplashPage()
     {
         // Unsubscribe from the event to prevent memory leaks
-        StatusMsgInvoked -= LocalStatusMsg;
+        StatusMsgInvoked -= OnStatusMsg;
     }
 
     private bool initializationStarted = false;
@@ -66,15 +67,18 @@ public partial class SplashPage : ContentPage
         DebugMsg("Exit SplashPage_NavigatedTo");
     }
 
-    public static async Task InitializeApp()
+    public async Task InitializeApp()
     {
-        await StatusMsgAsync("Commencing initialization, tap the icon above to pause");
+        PauseAllowed = true;
+        await StatusMsgAsync("Commencing initialization");
         // Start location evaluation in parallel since it can take several seconds.
-        Utilities.DebugMsg("Starting location detection process asynchronously");
         Task InitializeLocationTask = Task.CompletedTask;
         App.UseLocation = await HasLocationPermissionAsync();
         if (App.UseLocation)
+        {
+            Utilities.DebugMsg("Starting location detection process");
             InitializeLocationTask = App.InitializeLocationAsync(); // Fire-and-forget, it will set App.Location when it is done
+        }
         else
             await StatusMsgAsync("Location permission denied, location will not be used");
         Meal.InitializeFolders();
@@ -95,7 +99,7 @@ public partial class SplashPage : ContentPage
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
             bool licenseCheckWorked = await App.CheckLicenses();
             if (licenseCheckWorked)
-                await StatusMsgAsync("License check completed without errors");
+                await StatusMsgAsync($"Pro License {(Billing.ProPurchase is not null ? "Found" : "Not Found")}, OCR license = {(Billing.OcrPurchase is not null ? "Found" : "Not Found")}");
             else
                 await StatusMsgAsync("License check failed, cloud access may not work");
             if (!App.IsLimited)
@@ -108,8 +112,8 @@ public partial class SplashPage : ContentPage
         DebugMsg("BaseFolderPath = " + App.BaseFolderPath);
         CryptManager.PasswordSalt = App.Settings.UserKey; // may be empty
         if (CryptManager.HasStoredPassword && !CryptManager.HasStoredRsa)
-        {   // We have a stored password but can't access the corresponding RSA key pair, probably the secure storage has gone away
-            await StatusMsgAsync("Unable to access stored certificate");
+        {   // We have a stored password but can't access the corresponding RSA key pair, perhaps the secure storage has been corrupted
+            await StatusMsgAsync("There is a stored password but we cannot read all of it");
             await Utilities.DisplayAlertAsync("Error", "Unable to access keys for stored password.\nYou will need to enter a password to enable remote backup.", "OK");
         }
         else
@@ -131,35 +135,34 @@ public partial class SplashPage : ContentPage
             if (Connectivity.NetworkAccess != NetworkAccess.Internet)
                 await StatusMsgAsync("Cloud access is allowed but the Internet is not available");
             else
-                await StatusMsgAsync("Cloud access is allowed");
+                await StatusMsgAsync("Cloud access is available");
         }
         else
-            await StatusMsgAsync("Cloud access not allowed");
+            await StatusMsgAsync("Cloud access is not allowed");
         // At this point we have all the cloud access we are likely to get, so subsequent code can use remote services if they are available
-        await StatusMsgAsync("Awaiting People Initialization");
+        await StatusMsgAsync("Awaiting person list Initialization");
         await Person.InitializeAsync();
-        await StatusMsgAsync("Awaiting Venue Initialization");
+        await StatusMsgAsync("Awaiting venue list Initialization");
         await Venue.InitializeAsync();
-        await StatusMsgAsync("Awaiting Bill list Initialization");
+        await StatusMsgAsync("Awaiting local bill list Initialization");
         await Meal.InitializeLocalMealList();
-        await StatusMsgAsync($"Meal lists initialized, local meal count = {Meal.LocalMealList.Count}");
+        await StatusMsgAsync($"Local bill list initialized, bill count = {Meal.LocalMealList.Count}");
+        await StatusMsgAsync(" ");
         // Give the interested user enough time to pause and read the messages
-        for (int i = 2; i > 0; i--)
+        for (int i = 3; i > 0; i--)
         {
-            await StatusMsgAsync("Initialization completing " + i);
+            await StatusMsgOverwriteAsync("Initialization completing " + i);
             await Task.Delay(1000);
         }
-        // If we are using location, wait for discovery to complete.
+        await StatusMsgOverwriteAsync("Finishing Initialization");
+        // If we are using location, wait for discovery to complete so we can figure out the closest meal.
         // This can take several seconds, so we started it at the beginning of initialization.
         if (App.UseLocation)
-        {
-            await StatusMsgAsync("Awaiting location discovery");
             await InitializeLocationTask;
-            await StatusMsgAsync("Location discovery complete");
-        }
         await Meal.SelectDefaultMeal();
+        PauseAllowed = false;
         await StatusMsgAsync("Initialization complete");
-        await Task.Delay(1000);
+        await Task.Delay(500);
         PauseBeforeMessage = false; // Just to be sure it wasn't set at the last possible second
         App.Settings.FirstUse = false;
         App.isTutorialMode = App.Settings.ShowTutorial; // This is set to true to make the home page be the tutorial, the user can change it as desired
@@ -167,25 +170,53 @@ public partial class SplashPage : ContentPage
         await StatusMsgAsync(string.Empty); // Clear it in case we reuse the page
     }
 
-    public void LocalStatusMsg(string msg) => Dispatcher.Dispatch(() =>
+    public ObservableCollection<string> StatusMsgList { get; } = ["Starting DivisiBill"];
+
+    private void OnStatusMsg(string msg, int lineCount) => Dispatcher.Dispatch(() =>
     {
         if (string.IsNullOrEmpty(msg))
         {
-            statusLabel.Text = string.Empty; // clear it
+            StatusMsgList.Clear();
+            return;
         }
-        else
+        if (lineCount <= 0)
         {
-            statusLabel.Text += "\n" + msg;
-            statusScrollView.ScrollToAsync(statusLabel, ScrollToPosition.End, true);
+            if (StatusMsgList.Count == 0)
+                StatusMsgList.Add(msg);
+            else
+                StatusMsgList[^1] = msg;
+            return;
         }
+
+        StatusMsgList.Add(msg);
+
+        for (int i = 1; i < lineCount; i++)
+            StatusMsgList.Add(string.Empty);
+
+        statusCollectionView.ScrollTo(StatusMsgList.Count - 1, position: ScrollToPosition.End, animate: true);
     });
-    private async void OnStatusTapped(object? sender, EventArgs e)
+
+    private async void OnStatusTapped(object? sender, TappedEventArgs e)
     {
+        if (!PauseAllowed)
+            return;
         if (!Utilities.PauseBeforeMessage)
-            await Utilities.StatusMsgAsync("*** Pausing Messages ***");
+            await Utilities.StatusMsgAsync("*** Pausing ***");
         IsPaused = !IsPaused;
     }
 
+    public bool PauseAllowed
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                OnPropertyChanged();
+            }
+        }
+    }
     public bool IsPaused
     {
         get;

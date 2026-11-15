@@ -13,18 +13,21 @@
         Margin="0,50,0,0"
         RowDefinitions="auto, 0.3*,1.1*,auto,auto,3*"
         SafeAreaEdges="none">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnStatusTapped"/>
+        </Grid.GestureRecognizers>
         <!--Headline-->
         <Label Text="Starting DivisiBill, please wait..." FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
         <!--#region Busy/Paused Indicator-->
-        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsPaused, Converter={StaticResource Not}}" Color="Black" MaximumHeightRequest="100"  WidthRequest="{Binding HeightRequest, Source={RelativeSource Self}, x:DataType=ActivityIndicator}"/>
-        <Label Grid.Row="1" Text="Paused - click icon to continue" IsVisible="{Binding IsPaused}" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+        <VerticalStackLayout Grid.Row="1" IsVisible="{Binding PauseAllowed}">
+            <ActivityIndicator IsRunning="{Binding IsPaused, Converter={StaticResource Not}}" Color="Black"
+                               MaximumHeightRequest="100"  WidthRequest="{Binding HeightRequest, Source={RelativeSource Self}, x:DataType=ActivityIndicator}"/>
+            <Label Text="Tap to pause" IsVisible="{Binding IsPaused,Converter={StaticResource Not}}" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
+            <Label Text="Paused - tap to continue" IsVisible="{Binding IsPaused}" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
         <!--#endregion-->
         <!--#region DivisiBill Icon -->
-        <Image Grid.Row="2" Source="divisibillfg.png" Margin="10">
-            <Image.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnStatusTapped"/>
-            </Image.GestureRecognizers>
-        </Image>
+        <Image Grid.Row="2" Source="divisibillfg.png" Margin="10"/>
         <!--#endregion-->
         <!--#region App name and version information -->
         <Label Grid.Row="3" FontSize="{StaticResource FontSizeLarge}" HorizontalOptions="Center">
@@ -53,9 +56,13 @@
         </Label>
         <!--#endregion-->
         <!--#region Scrolling initialization progress -->
-        <ScrollView Grid.Row="5" x:Name="statusScrollView" VerticalOptions="Start" Margin="10">
-            <Label x:Name="statusLabel" Text="Starting DivisiBill" HorizontalOptions="Start" VerticalOptions="Start" VerticalTextAlignment="Start"/>
-        </ScrollView>
+        <CollectionView Grid.Row="5" x:Name="statusCollectionView" ItemsSource="{Binding StatusMsgList}" Margin="10">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <Label Text="{Binding .}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
         <!--#endregion-->
     </Grid>
 </ContentPage>
