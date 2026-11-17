@@ -16,6 +16,7 @@
     <LangVersion>preview</LangVersion> <!--In order to use partial properties via Community Toolkit-->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseMaterial3>true</UseMaterial3>
+    <MauiAndroidSystemBarsUseMauiChrome>true</MauiAndroidSystemBarsUseMauiChrome>
     <Nullable>enable</Nullable>
     <!--Suppress NU1608 warnings for AndroidX package version mismatches - these are resolved correctly by NuGet-->
     <!--Suppress NU1105 since this is a non-packable project-->
