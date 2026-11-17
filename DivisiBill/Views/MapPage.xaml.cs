@@ -29,7 +29,12 @@ public partial class MapPage : ContentPage
 {
     private readonly Pin nativePin = new() { Type = PinType.Place }; // No location or name yet
     private readonly MapViewModel viewModel; // Our ViewModel, which is the BindingContext of the page
-    private readonly bool useGoogleMaps = Utilities.IsWinUI; // Centralize the logic here so we don't have to check it repeatedly
+    private static readonly bool useGoogleMaps =
+#if UseGoogleMaps
+        true;
+#else
+        false;
+#endif
     public MapPage()
     {
         InitializeComponent();
@@ -110,9 +115,7 @@ public partial class MapPage : ContentPage
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        // We cannot do anything useful unless we have a MapSettings object
-        ArgumentNullException.ThrowIfNull(viewModel?.MapSettings);
-
+        viewModel.OnNavigatedTo(); // Notify the ViewModel that we are navigating to this page
         // On Windows we have to wait until the WebView is fully initialized before we can do anything with it,
         // but on other platforms we can initialize the map immediately. Where possible use a runtime check of the platform
         // rather than compile-time directives so code is always checked for syntax. We still have to use compile-time
@@ -146,9 +149,9 @@ public partial class MapPage : ContentPage
     /// that we are done.
     /// </summary>
     /// <param name="args">The event data that contains information about the navigation request.</param>
-    protected override void OnNavigatingFrom(NavigatingFromEventArgs args)
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
-        base.OnNavigatingFrom(args);
+        base.OnNavigatedFrom(args);
         viewModel.OnNavigatedFrom();
     }
     #endregion

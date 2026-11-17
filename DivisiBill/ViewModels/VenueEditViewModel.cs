@@ -5,8 +5,7 @@ using DivisiBill.Services;
 
 namespace DivisiBill.ViewModels;
 
-[QueryProperty(nameof(ActiveVenue), "Venue")]
-internal partial class VenueEditViewModel : ObservableObjectPlus
+internal partial class VenueEditViewModel : ObservableObjectPlus, IQueryAttributable
 {
     private MapSettings? mapSettings;
 
@@ -31,6 +30,12 @@ internal partial class VenueEditViewModel : ObservableObjectPlus
 
     [ObservableProperty]
     public partial Venue ActiveVenue { get; set; } = new();
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("Venue", out object? venueValue) && venueValue is Venue venue)
+            ActiveVenue = venue;
+    }
 
     /// <summary>
     /// Initializes the Name, Notes, and Location properties based on the current ActiveVenue.

@@ -6,10 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace DivisiBill.ViewModels;
 
-[QueryProperty(nameof(Summary), "Summary")]
-[QueryProperty(nameof(CurrentMeal), "Meal")]
-[QueryProperty(nameof(ShowStorage), "ShowStorage")]
-public partial class MealSummaryViewModel : ObservableObject
+public partial class MealSummaryViewModel : ObservableObject, IQueryAttributable
 {
     public MealSummaryViewModel() { }
 
@@ -58,6 +55,23 @@ public partial class MealSummaryViewModel : ObservableObject
     public bool IsForCurrentMeal => ms.IsForCurrentMeal;
     public bool IsEncrypted => ms.IsEncrypted;
     public bool HasMealInfo => CurrentMeal is not null;
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        static bool BoolValue(object value) => value is string s && bool.TryParse(s, out bool parsedBool)
+            ? parsedBool
+            : value is bool b && b;
+
+        if (query.TryGetValue("Meal", out object? mealValue) && mealValue is Meal meal)
+            CurrentMeal = meal;
+        else if (query.TryGetValue("Summary", out object? summaryValue) && summaryValue is MealSummary summary)
+            Summary = summary;
+        else
+            throw new ArgumentException("MealSummaryViewModel requires either a Meal or a MealSummary to be passed in the query parameters.");
+        if (query.TryGetValue("ShowStorage", out object? showStorageValue))
+            ShowStorage = BoolValue(showStorageValue);
+    }
+
     /// <summary>
     /// Delete a local or remote stored meal but never both 
     /// </summary>

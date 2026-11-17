@@ -6,8 +6,7 @@ using System.Diagnostics;
 
 namespace DivisiBill.Views;
 
-[QueryProperty(nameof(Command), "command")]
-public partial class LineItemsPage : ContentPage
+public partial class LineItemsPage : ContentPage, IQueryAttributable
 {
     private MealViewModel mealViewModel = new(); // Dummy value to avoid null reference warnings
     private readonly Button[] ShareButtons;
@@ -22,6 +21,12 @@ public partial class LineItemsPage : ContentPage
     private PersonCost? CurrentPersonCost = null;
 
     public string Command { get; set; } = string.Empty;
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("command", out object? commandValue))
+            Command = Uri.UnescapeDataString(commandValue?.ToString() ?? string.Empty);
+    }
 
     /// <summary>
     /// Redraw the button only after it is released in order not to create a flash on the fake long press
@@ -99,7 +104,10 @@ public partial class LineItemsPage : ContentPage
         mealViewModel.LineItemAddCompletedInUi = LineItemAddCompletedInUi;
         ArrangeSharesButtons(); // In case the sharer list changed
         if (Command is not null && Command.Equals("SelectFirstUnallocatedLineItem"))
+        {
             SelectFirstUnallocatedLineItem();
+            Command = string.Empty; // Clear the command so we don't do it again if the page is reloaded
+        }
         var li = (LineItem)LineItemsListView.SelectedItem;
         if (li is not null)
             DrawAllSharesButtons(li);

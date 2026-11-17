@@ -3,8 +3,7 @@ using DivisiBill.ViewModels;
 
 namespace DivisiBill.Views;
 
-[QueryProperty(nameof(TargetPerson), "TargetPerson")]
-public partial class PersonEditPage : ContentPage
+public partial class PersonEditPage : ContentPage, IQueryAttributable
 {
     private PersonEditViewModel? personEditViewModel;
 
@@ -22,6 +21,13 @@ public partial class PersonEditPage : ContentPage
             }
         }
     }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("TargetPerson", out object? targetPersonValue) && targetPersonValue is Person person)
+            TargetPerson = person;
+    }
+
     protected override async void OnAppearing()
     {
         base.OnAppearing();

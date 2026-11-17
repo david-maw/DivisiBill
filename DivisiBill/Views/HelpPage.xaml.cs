@@ -3,10 +3,7 @@ using System.Windows.Input;
 
 namespace DivisiBill.Views;
 
-[QueryProperty(nameof(PageName), "page")]
-[QueryProperty(nameof(Fragment), "fragment")]
-[QueryProperty(nameof(ReturnTo), "returnto")]
-public partial class HelpPage : ContentPage
+public partial class HelpPage : ContentPage, IQueryAttributable
 {
     public HelpPage()
     {
@@ -99,6 +96,18 @@ public partial class HelpPage : ContentPage
     public string PageName { get; set; } = string.Empty;
     public string Fragment { get; set; } = string.Empty;
     public string ReturnTo { get; set; } = string.Empty;
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        static string DecodeValue(object? value) => Uri.UnescapeDataString(value?.ToString() ?? string.Empty);
+
+        if (query.TryGetValue("page", out object? pageValue))
+            PageName = DecodeValue(pageValue);
+        if (query.TryGetValue("fragment", out object? fragmentValue))
+            Fragment = DecodeValue(fragmentValue);
+        if (query.TryGetValue("returnto", out object? returnToValue))
+            ReturnTo = DecodeValue(returnToValue);
+    }
 
     public ICommand BackCommand { get; }
 

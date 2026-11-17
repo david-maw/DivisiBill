@@ -3,9 +3,7 @@ using System.Windows.Input;
 
 namespace web;
 
-[QueryProperty(nameof(PageName), "page")]
-[QueryProperty(nameof(Fragment), "fragment")]
-public partial class HelpPage : ContentPage
+public partial class HelpPage : ContentPage, IQueryAttributable
 {
     public HelpPage()
     {
@@ -107,6 +105,16 @@ public partial class HelpPage : ContentPage
 
     public string PageName { get; set; } = string.Empty;
     public string Fragment { get; set; } = string.Empty;
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        static string DecodeValue(object? value) => Uri.UnescapeDataString(value?.ToString() ?? string.Empty);
+
+        if (query.TryGetValue("page", out object? pageValue))
+            PageName = DecodeValue(pageValue);
+        if (query.TryGetValue("fragment", out object? fragmentValue))
+            Fragment = DecodeValue(fragmentValue);
+    }
 
     public ICommand BackCommand { get; }
 

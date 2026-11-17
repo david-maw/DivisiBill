@@ -7,8 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace DivisiBill.ViewModels;
 
-[QueryProperty(nameof(MapSettings), "MapSettings")]
-public partial class MapViewModel : ObservableObject
+public partial class MapViewModel : ObservableObject, IQueryAttributable
 {
     // Used to store the original venue location so we can restore it if the user clicks the "Restore" button   
     private Location? originalVenueLocation;
@@ -32,7 +31,7 @@ public partial class MapViewModel : ObservableObject
     /// messaging system or shared state. We update the ViewModel properties directly from the MapSettings
     /// when it is set, so that the UI is initialized with the correct values.
     /// </summary>
-    public MapSettings? MapSettings
+    public MapSettings MapSettings
     {
         get;
         set
@@ -46,7 +45,19 @@ public partial class MapViewModel : ObservableObject
                 field = value;
             }
         }
-    } = null;
+    } = new("", null); // Should always be replaced by a parameter
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("MapSettings", out object? mapSettingsValue) && mapSettingsValue is MapSettings settings)
+            MapSettings = settings;
+    }
+
+    public void OnNavigatedTo()
+    {
+        // We cannot do anything useful at all unless we have a MapSettings object
+        ArgumentException.ThrowIfNullOrEmpty(MapSettings.VenueName, nameof(MapSettings.VenueName));
+    }
 
     /// <summary>
     /// We are exiting the map page, so if the venue location has changed, we need to update the MapSettings
@@ -54,7 +65,7 @@ public partial class MapViewModel : ObservableObject
     /// </summary>
     public void OnNavigatedFrom()
     {
-        if (VenueLocationHasChanged && MapSettings != null)
+        if (VenueLocationHasChanged)
         {
             MapSettings.VenueLocationHasChanged = true;
             MapSettings.VenueLocation = VenueLocation;
@@ -170,7 +181,7 @@ public partial class MapViewModel : ObservableObject
     // zoom, and marker based on the venue location.
     public void InitializeGoogleMap()
     {
-        if (Utilities.IsWinUI && MapSettings != null)
+        if (Utilities.IsWinUI)
         {
             double zoom = 15; // Default zoom level for accurate location
             Location? mapCenter = VenueLocation?.IsAccurate() == true ? VenueLocation : App.MyLocation;
