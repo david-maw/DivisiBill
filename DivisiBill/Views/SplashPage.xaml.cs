@@ -99,7 +99,7 @@ public partial class SplashPage : ContentPage
             await StatusMsgAsync("Checking for Subscriptions and Licenses");
             bool licenseCheckWorked = await App.CheckLicenses();
             if (licenseCheckWorked)
-                await StatusMsgAsync($"Pro License {(Billing.ProPurchase is not null ? "Found" : "Not Found")}, OCR license = {(Billing.OcrPurchase is not null ? "Found" : "Not Found")}");
+                await StatusMsgAsync($"Pro License {(Billing.ProPurchase is not null ? "Found" : "Not Found")}, OCR license {(Billing.OcrPurchase is not null ? "Found" : "Not Found")}");
             else
                 await StatusMsgAsync("License check failed, cloud access may not work");
             if (!App.IsLimited)
@@ -154,7 +154,7 @@ public partial class SplashPage : ContentPage
             await StatusMsgOverwriteAsync("Initialization completing " + i);
             await Task.Delay(1000);
         }
-        await StatusMsgOverwriteAsync("Finishing Initialization");
+        await StatusMsgOverwriteAsync("Finishing Initialization...");
         // If we are using location, wait for discovery to complete so we can figure out the closest meal.
         // This can take several seconds, so we started it at the beginning of initialization.
         if (App.UseLocation)
