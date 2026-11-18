@@ -901,6 +901,7 @@ public partial class MealViewModel : ObservableObjectPlus
         draggedLineItem = null;
     }
     #endregion
+    #region Sharing Commands and Support Functions
     public void ChangeShares(LineItem li)
     {
         if (li.TotalSharers == 0)
@@ -910,6 +911,92 @@ public partial class MealViewModel : ObservableObjectPlus
         if (IsFiltered)
             DistributeCostsIfNeeded();
     }
+
+    [ObservableProperty]
+    public partial bool IsSharesCountVisible { get; set; }
+
+    [ObservableProperty]
+    public partial string SharesCountHeaderText { get; private set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial PersonCost? CurrentSharesPersonCost { get; private set; }
+
+    [ObservableProperty]
+    public partial byte CurrentSharesCount { get; private set; }
+
+    private LineItem.DinerID suppressedSharesClickDinerId = LineItem.DinerID.none;
+    private DateTime suppressedSharesClickTime = DateTime.MinValue;
+
+    private void SelectCurrentSharesPerson(LineItem lineItem, PersonCost personCost)
+    {
+        CurrentSharesPersonCost = personCost;
+        SetCurrentSharesCount(lineItem.GetShares(personCost.DinerID));
+    }
+
+    private void SetCurrentSharesCount(byte shares)
+    {
+        CurrentSharesCount = shares;
+        SharesCountHeaderText = CurrentSharesPersonCost?.Nickname + ": " + shares + " share";
+        if (shares != 1)
+            SharesCountHeaderText += "s";
+    }
+
+    [RelayCommand]
+    public void SharesButtonClicked(PersonCost? personCost)
+    {
+        if (personCost is null || SelectedLineItem is null)
+            return;
+
+        if (suppressedSharesClickDinerId == personCost.DinerID
+            && DateTime.UtcNow - suppressedSharesClickTime < TimeSpan.FromSeconds(1))
+        {
+            suppressedSharesClickDinerId = LineItem.DinerID.none;
+            return;
+        }
+
+        suppressedSharesClickDinerId = LineItem.DinerID.none;
+
+        SelectCurrentSharesPerson(SelectedLineItem, personCost);
+
+        if (!IsSharesCountVisible)
+        {
+            byte newShares = CurrentSharesCount == 0 ? (byte)1 : (byte)0;
+            SelectedLineItem.SetShares(personCost.DinerID, newShares);
+            SetCurrentSharesCount(newShares);
+            if (IsFiltered)
+                DistributeCostsIfNeeded();
+        }
+
+        SharesButtonsChanged?.Invoke(personCost.DinerID);
+    }
+
+    [RelayCommand]
+    public void SharesButtonLongPressed(PersonCost? personCost)
+    {
+        if (personCost is null || SelectedLineItem is null)
+            return;
+
+        SelectCurrentSharesPerson(SelectedLineItem, personCost);
+        IsSharesCountVisible = true;
+        suppressedSharesClickDinerId = personCost.DinerID;
+        suppressedSharesClickTime = DateTime.UtcNow;
+        SharesButtonsChanged?.Invoke(personCost.DinerID);
+    }
+
+    [RelayCommand]
+    public void SharesCountButtonClicked(string? sharesText)
+    {
+        if (SelectedLineItem is null || CurrentSharesPersonCost is null || !byte.TryParse(sharesText, out byte shares))
+            return;
+
+        SetCurrentSharesCount(shares);
+        SelectedLineItem.SetShares(CurrentSharesPersonCost.DinerID, shares);
+        if (IsFiltered)
+            DistributeCostsIfNeeded();
+
+        SharesButtonsChanged?.Invoke(CurrentSharesPersonCost.DinerID);
+    }
+
     public enum ChangeType
     {
         Even,
@@ -949,18 +1036,6 @@ public partial class MealViewModel : ObservableObjectPlus
         }
     }
 
-    [RelayCommand]
-    public void ChangeComp(object param)
-    {
-        if (param is LineItem li)
-        {
-            if (li.Amount >= 0 || li.Comped)
-                li.Comped = !li.Comped;
-            else
-                Utilities.DisplayAlertAsync("Error", "You cannot comp a coupon (negative item)");
-        }
-    }
-
     bool SelectedLineItemIsNotNull() => SelectedLineItem is not null;
 
     [RelayCommand(CanExecute = nameof(SelectedLineItemIsNotNull))]
@@ -980,6 +1055,7 @@ public partial class MealViewModel : ObservableObjectPlus
         ChangeSharing(li, ChangeType.Cycle);
     }
     public event Action<LineItem>? SharingChanged;
+    public event Action<LineItem.DinerID>? SharesButtonsChanged;
 
     [RelayCommand]
     public async Task GoToTotals() => await App.GoToAsync(Routes.TotalsPage);
@@ -999,7 +1075,21 @@ public partial class MealViewModel : ObservableObjectPlus
             DistributeCostsIfNeeded(); // to account for the adjustment amount
         }
     }
-
+    #endregion
+    #region Comping Item
+    [RelayCommand]
+    public void ChangeComp(object param)
+    {
+        if (param is LineItem li)
+        {
+            if (li.Amount >= 0 || li.Comped)
+                li.Comped = !li.Comped;
+            else
+                Utilities.DisplayAlertAsync("Error", "You cannot comp a coupon (negative item)");
+        }
+    }
+    #endregion
+    #region Costs Change Subscription
     public bool IsAnyCosts => Costs is not null && Costs.Count > 0;
 
     private ObservableCollection<PersonCost>? subscribedCosts;
@@ -1030,6 +1120,7 @@ public partial class MealViewModel : ObservableObjectPlus
         FilterItemsCommand.NotifyCanExecuteChanged();
         AdjustCommand.NotifyCanExecuteChanged();
     }
+    #endregion
     #endregion
     #endregion
     #region Totals, meal amounts and properties

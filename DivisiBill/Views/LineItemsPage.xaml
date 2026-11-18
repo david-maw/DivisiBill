@@ -384,11 +384,12 @@
         <VerticalStackLayout
             x:Name="SharesCountContainer"
             Margin="0,0,0,10"
-            IsVisible="False">
+            IsVisible="{Binding IsSharesCountVisible}">
             <Label
                 x:Name="SharesCountHeader"
                 FontSize="{StaticResource FontSizeTitle}"
-                HorizontalOptions="Center" />
+                HorizontalOptions="Center"
+                Text="{Binding SharesCountHeaderText}" />
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="6">
                 <HorizontalStackLayout.Resources>
                     <Style TargetType="Button">
@@ -398,18 +399,19 @@
                         <Setter Property="Padding" Value="1" />
                         <Setter Property="BackgroundColor" Value="Transparent" />
                         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                        <Setter Property="Command" Value="{Binding SharesCountButtonClickedCommand}" />
                     </Style>
                 </HorizontalStackLayout.Resources>
-                <Button Clicked="OnSharesCountButtonClicked" Text="0" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="1" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="2" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="3" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="4" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="5" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="6" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="7" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="8" />
-                <Button Clicked="OnSharesCountButtonClicked" Text="9" />
+                <Button CommandParameter="0" Text="0" />
+                <Button CommandParameter="1" Text="1" />
+                <Button CommandParameter="2" Text="2" />
+                <Button CommandParameter="3" Text="3" />
+                <Button CommandParameter="4" Text="4" />
+                <Button CommandParameter="5" Text="5" />
+                <Button CommandParameter="6" Text="6" />
+                <Button CommandParameter="7" Text="7" />
+                <Button CommandParameter="8" Text="8" />
+                <Button CommandParameter="9" Text="9" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
         <!--#endregion-->
@@ -418,30 +420,32 @@
         <HorizontalStackLayout
             x:Name="SharesContainer"
             Margin="5,0,5,0"
-            HeightRequest="40"
+            HeightRequest="30"
             IsVisible="false"
             Spacing="2">
             <HorizontalStackLayout.Resources>
-                <Style TargetType="Button">
-                    <Setter Property="WidthRequest" Value="30" />
-                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Contrast}, Dark={StaticResource DarkPrimary}}" />
-                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                <Style TargetType="SharerButton">
+                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                    <Setter Property="TextColor" Value="{StaticResource White}" />
                     <Setter Property="BorderColor" Value="Red" />
-                    <Setter Property="BorderWidth" Value="1" />
                     <Setter Property="IsVisible" Value="False" />
+                    <Setter Property="Command" Value="{Binding SharesButtonClickedCommand}" />
+                    <Setter Property="LongPressCommand" Value="{Binding SharesButtonLongPressedCommand}" />
+                    <Setter Property="BorderWidth" Value="1" />
+                    <Setter Property="WidthRequest" Value="30" />
                     <Setter Property="Text" Value="b" />
                 </Style>
             </HorizontalStackLayout.Resources>
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
-            <Button Pressed="OnSharesBtnPressed" Released="OnSharesBtnReleased" />
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
+            <SharerButton/>
         </HorizontalStackLayout>
         <!--#endregion-->
         <!--#region Data entry area-->

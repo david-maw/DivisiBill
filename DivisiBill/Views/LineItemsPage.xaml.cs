@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Core.Platform;
+using DivisiBill.Controls;
 using DivisiBill.Models;
 using DivisiBill.Services;
 using DivisiBill.ViewModels;
@@ -9,16 +10,14 @@ namespace DivisiBill.Views;
 public partial class LineItemsPage : ContentPage, IQueryAttributable
 {
     private MealViewModel mealViewModel = new(); // Dummy value to avoid null reference warnings
-    private readonly Button[] ShareButtons;
+    private readonly SharerButton[] ShareButtons;
     public LineItemsPage()
     {
         InitializeComponent();
         SizeChanged += LineItemsPage_SizeChanged;
         // Initialize the shares buttons
-        ShareButtons = [.. SharesContainer.Children.Select(v => (Button)v)];
+        ShareButtons = [.. SharesContainer.Children.Select(v => (SharerButton)v)];
     }
-
-    private PersonCost? CurrentPersonCost = null;
 
     public string Command { get; set; } = string.Empty;
 
@@ -28,48 +27,6 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
             Command = Uri.UnescapeDataString(commandValue?.ToString() ?? string.Empty);
     }
 
-    /// <summary>
-    /// Redraw the button only after it is released in order not to create a flash on the fake long press
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void OnSharesBtnReleased(object? sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.CommandParameter is PersonCost pc && LineItemsListView.SelectedItem is LineItem li)
-        {
-            byte shares = li.GetShares(pc.DinerID);
-            DrawSharesButton(btn, shares);
-        }
-    }
-
-    /// <summary>
-    /// This contains a crude but effective 'press and hold' implementation, it's subject to some problems
-    /// but good enough for practical use.
-    /// </summary>
-    private async void OnSharesBtnPressed(object? sender, EventArgs e)
-    {
-        if (sender is Button btn && LineItemsListView.SelectedItem is LineItem li)
-        {
-            CurrentPersonCost = (PersonCost)btn.CommandParameter;
-            LineItem.DinerID sharer = ((PersonCost)btn.CommandParameter).DinerID;
-            byte shares = CurrentShares = li.GetShares(sharer);
-            if (!SharesCountContainer.IsVisible)
-            {
-                shares = shares == 0 ? (byte)1 : (byte)0;
-                li.SetShares(sharer, shares);
-            }
-            UpdateSharesInfoHeaderText(CurrentShares);
-            // Now simulate long press
-            CurrentSharesButton = btn;
-            await Task.Delay(500);
-            if (btn == CurrentSharesButton && btn.IsPressed) // is the same button currently pressed
-            {
-                li.SetShares(sharerID: CurrentPersonCost.DinerID, CurrentShares);
-                DrawSharesButton(CurrentSharesButton, CurrentShares);
-                SharesCountContainer.IsVisible = true;
-            }
-        }
-    }
     private void LineItemsPage_SizeChanged(object? sender, EventArgs e)
     {
         if (mealViewModel is not null)
@@ -94,9 +51,9 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
                 // Do nothing in a release build, the layout might be wrong, but that's all
             }
     }
-    protected override void OnAppearing()
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
-        base.OnAppearing();
+        base.OnNavigatedTo(args);
         if (BindingContext is not MealViewModel vm)
             throw new InvalidOperationException("The BindingContext of LineItemsPage must be set to a MealViewModel before the page appears");
         mealViewModel = vm;
@@ -112,23 +69,31 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
         if (li is not null)
             DrawAllSharesButtons(li);
         mealViewModel.SharingChanged += MealViewModel_SharingChanged;
+        mealViewModel.SharesButtonsChanged += MealViewModel_SharesButtonsChanged;
         mealViewModel.ScrollLineItemsTo = ScrollLineItemsTo;
     }
-    protected override void OnDisappearing()
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         mealViewModel.SharingChanged -= MealViewModel_SharingChanged;
+        base.OnNavigatedFrom(args);
+        mealViewModel.SharesButtonsChanged -= MealViewModel_SharesButtonsChanged;
         Meal.RequestSnapshot();
         mealViewModel.ForgetDeletedItems();
-        base.OnDisappearing();
         mealViewModel.ScrollLineItemsTo = (_, _) => { };
     }
     private void MealViewModel_SharingChanged(LineItem li)
     {
         if (li == (LineItem)LineItemsListView.SelectedItem)
         {
-            SharesCountContainer.IsVisible = false;
+            mealViewModel.IsSharesCountVisible = false;
             DrawAllSharesButtons(li);
         }
+    }
+
+    private void MealViewModel_SharesButtonsChanged(LineItem.DinerID _)
+    {
+        if (mealViewModel.SelectedLineItem is not null)
+            DrawAllSharesButtons(mealViewModel.SelectedLineItem);
     }
 
     /// <summary>
@@ -146,19 +111,17 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
             double totalAvailableForButtons = Width - SharesContainer.Margin.Left - SharesContainer.Spacing * (buttons - 1) - SharesContainer.Margin.Right;
             double buttonWidth = totalAvailableForButtons / buttons; // this will be integer arithmetic so there could be a bit left over
             // First hide all of them
-            foreach (Button button in ShareButtons)
+            foreach (var button in ShareButtons)
                 button.IsVisible = false;
             // Now set up and show a button for each PersonCost
-            int buttonNumber = 0; // numbered from the left 0, 1, 2...
-            foreach (PersonCost c in mealViewModel.Costs)
+            foreach (PersonCost personCost in mealViewModel.Costs)
             {
-                Button button = ShareButtons[c.DinerIndex];
-                button.BorderWidth = 0;
+                var button = ShareButtons[personCost.DinerIndex];
                 button.IsVisible = true;
-                button.CommandParameter = c;
-                button.Text = c.Nickname;
+                button.CommandParameter = personCost;
+                button.LongPressCommandParameter = personCost;
+                button.Text = personCost.Nickname;
                 button.WidthRequest = buttonWidth;
-                buttonNumber++;
             }
         }
         catch (Exception ex)
@@ -167,7 +130,7 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
             return; // The button layout may be messed up, but the program will run just fine
         }
     }
-    private static void DrawSharesButton(Button btn, byte? shares)
+    private static void DrawSharesButton(SharerButton btn, byte? shares)
     {
         btn.BorderWidth = shares > 0 ? 2 : 0;
         btn.CornerRadius = shares > 1 ? 20 : 0;
@@ -177,7 +140,7 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
     {
         if (li is null || ShareButtons is null)
             return;
-        foreach (Button btn in ShareButtons)
+        foreach (var btn in ShareButtons)
         {
             if (btn.IsVisible && btn.CommandParameter is PersonCost pc)
                 DrawSharesButton(btn, li.GetShares(pc.DinerID));
@@ -211,8 +174,7 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
         LineItem? li = e.CurrentSelection.Count == 0 ? null : (LineItem)e.CurrentSelection[0];
         ItemEntryContainer.IsVisible = li is not null;
         totalsContainer.IsVisible = li is null;
-        SharesCountContainer.IsVisible = false;
-        CurrentSharesButton = null;
+        mealViewModel.IsSharesCountVisible = false;
         SharesContainer.IsVisible = li is not null;
         if (li is null)
             await SelectedNameEntry.HideKeyboardAsync(); // This is for the case where the user does not use the enter key but just deselects the current item
@@ -228,26 +190,6 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
         }
     }
 
-    private Button? CurrentSharesButton = null;
-    private byte CurrentShares = 0;
-    private void OnSharesCountButtonClicked(object? sender, EventArgs e)
-    {
-        var li = (LineItem)LineItemsListView.SelectedItem;
-        var btn = sender as Button;
-        if (li is not null && CurrentPersonCost is not null && btn is not null && CurrentSharesButton is not null)
-        {
-            CurrentShares = byte.Parse(btn.Text);
-            li.SetShares(sharerID: CurrentPersonCost.DinerID, CurrentShares);
-            UpdateSharesInfoHeaderText(CurrentShares);
-            DrawSharesButton(CurrentSharesButton, CurrentShares);
-        }
-    }
-    private void UpdateSharesInfoHeaderText(byte shares)
-    {
-        SharesCountHeader.Text = CurrentPersonCost?.Nickname + ": " + shares + " share";
-        if (shares != 1)
-            SharesCountHeader.Text += "s";
-    }
     public void SelectFirstUnallocatedLineItem()
     {
         mealViewModel.ClearFiltering();
@@ -259,7 +201,7 @@ public partial class LineItemsPage : ContentPage, IQueryAttributable
 
     #region Collection Scrolling
     private void ScrollLineItemsTo(int index, bool toEnd) // Passed in to viewModel
-=> LineItemsListView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
+    => LineItemsListView.ScrollTo(index, position: toEnd ? ScrollToPosition.End : ScrollToPosition.Start);
     private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
         mealViewModel.FirstVisibleItemIndex = e.FirstVisibleItemIndex;
