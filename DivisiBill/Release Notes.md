@@ -1,3 +1,21 @@
+# Version 6.4.2
+
+## Improved Sharer Buttons on Items Page
+
+The participant name text can now use more of each participant button on the Items page, so when there are many participants in a bill more of each individual name is visible.
+
+## Android Status Bar Matches Title Bar
+
+The app now shows what looks like an extra tall title bar with the Android status icons at the top.
+
+## The Initialization User Experience has Improved
+
+Messages now all refer to bills not meals and tapping anywhere on the page will pause or resume initialization. Individual messages are clearer and more concise and the licensing check now indicates what licenses it did, or did not, find.
+
+## Show MAUI Version in About Page
+
+The MAUI version used to build the application (currently 11.0.0) is now shown on the "About" page.
+
 # Version 6.4.1
 
 ## Upgrade to .NET 11
