@@ -20,14 +20,10 @@ public partial class PersonCost : ObservableObject
     /// diner's nickname takes precedence. If the nickname is null or consists only of whitespace, the property returns
     /// "Unknown" by default.</remarks>
     [XmlAttribute]
-    public string? Nickname
+    public string Nickname
     {
-        set
-        {
-            if (SetProperty(ref field, value) && Diner is not null)
-                Debugger.Break(); // It is useless to set a Nickname if a diner is set because it will be ignored  
-        }
-        get => Diner is not null ? Diner.Nickname : field.NullIfWhiteSpace() ?? "Unknown";
+        set => SetProperty(ref field, value);
+        get => !string.IsNullOrWhiteSpace(Diner?.Nickname) ? Diner.Nickname : field.NullIfWhiteSpace() ?? "Unknown";
     }
 
     /// <summary>
@@ -55,7 +51,7 @@ public partial class PersonCost : ObservableObject
     partial void OnDinerChanged(Person? value)
     {
         if (value is null) // we must be resetting the diner value
-            Nickname = null; // make sure no old value has been left lying around
+            Nickname = ""; // make sure no old value has been left lying around
         else
             PersonGUID = value.PersonGUID;
     }

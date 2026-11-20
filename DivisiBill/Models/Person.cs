@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
-using System.Xml.Serialization;
 
 namespace DivisiBill.Models;
 
@@ -630,28 +629,13 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
 
-    private static bool StringHasChanged(ref string? oldString, string? newString)
-    {
-        if (string.IsNullOrWhiteSpace(oldString) && string.IsNullOrWhiteSpace(newString))
-            return false;
-        else if (string.Compare(oldString, newString) != 0)
-        {
-            oldString = newString;
-            return true;
-        }
-        else
-            return false;
-    }
-    // Move a person to its correct place in the sorted list of all people
-    private void MoveToCorrectPlace() => AllPeople.Upsert(this);
-
     protected virtual void OnPropertyChanged([CallerMemberName] string? propChanged = null)
     {
         // Verify that it is in the list before moving it around 
         if (AllPeople is not null && AllPeople.Contains(this) && propChanged is not null)
         {
             if (propChanged.Equals(nameof(DisplayName)))
-                MoveToCorrectPlace(); // The place in the list will have changed
+                AllPeople.Upsert(this); // The place in the list will have changed
             UpdateTime = DateTime.Now; // Note that the list has been updated
         }
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propChanged));
@@ -675,7 +659,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
     public bool IsInUse => Meal.CurrentMeal is not null && Meal.CurrentMeal.Costs.Any(pc => pc.Diner == this);
-    public string? DisplayName
+    public string DisplayName
     {
         get
         {
@@ -691,7 +675,7 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
     }
 
-    public string? FullName
+    public string FullName
     {
         get
         {
@@ -760,38 +744,30 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         get => lastName;
     }
 
-    private string? nickname;
+    private string nickname = "";
     /// <summary>
     /// This is a simplified version of Nickname used so as not to store anything if no nickname has been set. 
     /// </summary>
     [DataMember(EmitDefaultValue = false, Name = "Nickname")]
-    [XmlElement("Nickname")]
     public string? NicknameForPersistence
     {
-        set => nickname = value;
-        get => nickname;
+        get => string.IsNullOrWhiteSpace(nickname) || nickname.Equals(FirstName, StringComparison.OrdinalIgnoreCase) ? null : nickname;
+        set => Nickname = value ?? "";
     }
     /// <summary>
     /// The actual property, used a run time
     /// </summary>
-    [XmlIgnore]
-    public string? Nickname
+    [IgnoreDataMember]
+    public string Nickname
     {
         set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                value = null;
-            string? s = value;
-            if (s is not null)
+            string s = value?.Trim() ?? "";
+            if (s.Equals(firstName, StringComparison.OrdinalIgnoreCase))
+                s = "";
+            if (!string.Equals(nickname, s, StringComparison.OrdinalIgnoreCase))
             {
-                s = s.Trim();
-                if (s.Equals(firstName, StringComparison.OrdinalIgnoreCase))
-                    s = null;
-            }
-            if (string.IsNullOrWhiteSpace(nickname) && s is null)
-                return;
-            if (StringHasChanged(ref nickname, s))
-            {
+                nickname = s;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(FullName));
                 OnPropertyChanged(nameof(DisplayName));
@@ -799,6 +775,8 @@ public class Person : INotifyPropertyChanged, IComparable<Person>
         }
         get => string.IsNullOrWhiteSpace(nickname) ? string.IsNullOrWhiteSpace(firstName) ? "" : firstName : nickname;
     }
+    public bool ShouldSerializeNickname => false; // && !string.IsNullOrEmpty(Nickname) || !Nickname.Equals(FirstName, StringComparison.OrdinalIgnoreCase);
+
     [DataMember(EmitDefaultValue = false)]
     public string? Email
     {
