@@ -45,6 +45,12 @@ public class MainActivity : MauiAppCompatActivity
     // Indicates that the process was started via a file intent
     public static bool IsIntentLaunch { get; private set; }
 
+    /// <summary>
+    /// Gets the Google Geo API key. This key is retrieved from the application's metadata in the Android manifest
+    /// and is actually the same value as Generated.BuildInfo.DivisiBillMapsKey.
+    /// </summary>
+    public static string? GoogleGeoApiKey { get; private set; }
+
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         if (!System.Diagnostics.Debugger.IsAttached) // log the messages only if there's no debugger listening
@@ -62,6 +68,12 @@ public class MainActivity : MauiAppCompatActivity
             // As long as we're forced to show an inset area in .NET10 as of 11/19/25, use it to display status
             // Window.AddFlags(WindowManagerFlags.Fullscreen); 
             Window?.SetSoftInputMode(SoftInput.AdjustPan);
+            var appInfo = global::Android.App.Application.Context.PackageManager!
+                .GetApplicationInfo(
+                    global::Android.App.Application.Context.PackageName!,
+                    PackageInfoFlags.MetaData);
+
+            GoogleGeoApiKey = appInfo.MetaData?.GetString("com.google.android.geo.API_KEY");
         }
         else if (Intent is not null)
             HandleIntent(Intent);

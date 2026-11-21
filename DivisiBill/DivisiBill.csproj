@@ -59,7 +59,15 @@
     <EmitCompilerGeneratedFiles Condition="$(Configuration) == Debug">true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GenDump</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
-  
+
+  <!--Put the Google Maps API key into the AndroidManifest.xml file so it can be used by the Google Maps SDK for Android.
+  The key is stored in an environment variable DIVISIBILL_MAPS_KEY and passed to the android build via a placeholder.-->
+  <PropertyGroup>
+    <AndroidManifestPlaceholders>
+      GoogleGeoApiKey=$(DIVISIBILL_MAPS_KEY)
+    </AndroidManifestPlaceholders>
+  </PropertyGroup>
+
   <!-- Handy Diagnostic Messages -->
   <Target Name="ShowMessages" BeforeTargets="BeforeBuild;CoreCompile">
     <Message Text="TargetOsPlatform = $(TargetOsPlatform) and GetTargetPlatformIdentifier = $([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))" Importance="low" />
