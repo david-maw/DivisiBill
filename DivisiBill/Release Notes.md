@@ -1,3 +1,9 @@
+# Version 6.4.3
+
+## Security Problem
+
+A security problem has been corrected.
+
 # Version 6.4.2
 
 ## Improved Sharer Buttons on Items Page
