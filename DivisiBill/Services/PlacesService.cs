@@ -4,6 +4,8 @@ using System.Text.Json.Serialization;
 
 namespace DivisiBill.Services;
 
+public readonly union PlacesOrError(IEnumerable<PlaceResult>, string);
+
 public class PlacesService
 {
     private HttpClient httpClient;
@@ -13,7 +15,7 @@ public class PlacesService
         httpClient = new HttpClient();
     }
 
-    public async Task<IEnumerable<PlaceResult>> GetNearestRestaurantsAsync(double lat, double lon, string apiKey, int maxResults = 20)
+    public async Task<PlacesOrError> GetNearestRestaurantsAsync(double lat, double lon, string apiKey, int maxResults = 20)
     {
         maxResults = Math.Clamp(maxResults, 1, 20); // API has limits on max results, adjust as needed
         Location venueLocation = new(lat, lon) { Accuracy = 1.0 };
@@ -43,50 +45,74 @@ public class PlacesService
             httpClient.Dispose();
             httpClient = new HttpClient();
 
-
             if (response is not null && response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
                 // Detect the weird failure which just returns an OK result but no data
                 if (string.IsNullOrEmpty(json))
-                { // This is a failure, return a NotFound status
-                    Utilities.DebugMsg("GetNearestRestaurantsAsync returned OK but no data, returning empty list");
-                    return [];
-                }
-                else
                 {
-                    var data = JsonSerializer.Deserialize<PlacesResult>(json);
-                    
-                    if (data is null)
-                    {
-                        Utilities.RecordMsg("No data returned fetching places");
-                        return [];
-                    }
-                    if (data.Places is null)
-                    {
-                        Utilities.RecordMsg($"No results returned fetching places");
-                        return [];
-                    }
+                    Utilities.DebugMsg("GetNearestRestaurantsAsync returned OK but no data, returning empty list");
+                    return "Unknown error (no data)";
+                }
 
-                    var placeList = data.Places.Where(r => !string.IsNullOrEmpty(r.Name));
-                    foreach (var place in placeList)
-                    {
-                        if (place.GoogleLocation is not null)
-                            place.Distance = venueLocation.GetDistanceTo(new Location(place.GoogleLocation.Latitude, place.GoogleLocation.Longitude) { Accuracy = 1.0 });
-                    }
-                    return placeList;
+                var data = JsonSerializer.Deserialize<PlacesResult>(json);
+
+                if (data is null)
+                {
+                    Utilities.RecordMsg("No data returned fetching places");
+                    return "Unknown error (no deserialized data)";
+                }
+                if (data.Places is null)
+                {
+                    Utilities.RecordMsg("No results returned fetching places");
+                    return Array.Empty<PlaceResult>();
+                }
+
+                var placeList = data.Places.Where(r => !string.IsNullOrEmpty(r.Name));
+                foreach (var place in placeList)
+                {
+                    if (place.GoogleLocation is not null)
+                        place.Distance = venueLocation.GetDistanceTo(new Location(place.GoogleLocation.Latitude, place.GoogleLocation.Longitude) { Accuracy = 1.0 });
+                }
+
+                return placeList.ToList();
+            }
+
+            if (response is null)
+            {
+                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, no task returned");
+                return "Unknown error (no task returned)";
+            }
+
+            var errorJson = await response.Content.ReadAsStringAsync();
+            string? message = null;
+            string? status = null;
+            if (!string.IsNullOrWhiteSpace(errorJson))
+            {
+                using var doc = JsonDocument.Parse(errorJson);
+                if (doc.RootElement.TryGetProperty("error", out JsonElement error))
+                {
+                    if (error.TryGetProperty("message", out JsonElement errorMessage))
+                        message = errorMessage.GetString();
+                    if (error.TryGetProperty("status", out JsonElement errorStatus))
+                        status = errorStatus.GetString();
                 }
             }
-            else if (response is null)
-                Utilities.DebugMsg("GetNearestRestaurantsAsync failed, no task returned");
+
+            message ??= "Unknown error";
+
+            if (!string.IsNullOrEmpty(status) && !string.IsNullOrEmpty(message))
+                Utilities.DebugMsg($"GetNearestRestaurantsAsync failed, status = {status}, message = {message}");
             else
                 Utilities.DebugMsg("GetNearestRestaurantsAsync failed, status code = " + response.StatusCode);
+
+            return message;
         }
         catch (Exception ex)
         {
             Utilities.DebugMsg("GetNearestRestaurantsAsync failed, exception = " + ex);
+            return "Unknown error (exception)";
         }
-        return [];
     }
 }
 
@@ -109,8 +135,8 @@ public class PlaceResult
     /// <summary>
     /// Distance in meters, calculated on the client side based on the location of the place and the user's current location
     /// </summary>
-    public int Distance { get; set; } = Distances.Inaccurate; 
- 
+    public int Distance { get; set; } = Distances.Inaccurate;
+
 }
 
 public class GoogleLocation

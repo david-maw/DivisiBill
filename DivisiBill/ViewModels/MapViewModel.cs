@@ -391,7 +391,7 @@ public partial class MapViewModel : ObservableObject, IQueryAttributable
                     currentLocationCircle = null;
                 }
                 </script>
-            <script src='https://maps.googleapis.com/maps/api/js?key={{Generated.BuildInfo.DivisiBillMapsKey}}&callback=initMap&libraries=marker&v=beta' async defer></script>
+            <script src='https://maps.googleapis.com/maps/api/js?key={{Generated.BuildInfo.DivisiBillMapsKey}}&callback=initMap&libraries=marker&v=beta&loading=async' async defer></script>
         </body>
         </html>
         """;

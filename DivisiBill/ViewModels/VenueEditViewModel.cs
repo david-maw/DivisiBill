@@ -17,14 +17,17 @@ internal partial class VenueEditViewModel : ObservableObjectPlus, IQueryAttribut
         App.MyLocationChanged += App_MyLocationChanged;
     }
 
-    public async Task<IEnumerable<PlaceResult>> FindRestaurantsAsync(Location? location)
+    public async Task<PlacesOrError> FindRestaurantsAsync(Location? location)
     {
-        if (string.IsNullOrEmpty(Generated.BuildInfo.DivisiBillMapsKey) || location == null)
-            return []; // Don't try to call the API if we don't have a maps key configured or location is null    
+        const string key = Generated.BuildInfo.DivisiBillMapsKey;
+
+        if (string.IsNullOrEmpty(key) || location is null)
+            return Array.Empty<PlaceResult>(); // Don't try to call the API if we don't have a maps key configured or location is null
+
         return await places.GetNearestRestaurantsAsync(
             location.Latitude,
             location.Longitude,
-            Generated.BuildInfo.DivisiBillMapsKey,
+            key,
             20);
     }
 
@@ -88,6 +91,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus, IQueryAttribut
 
     [ObservableProperty]
     public partial List<PlaceResult> Possibles { get; set; } = [];
+
+    [ObservableProperty]
+    public partial string PossiblesEmptyViewText { get; set; } = "No nearby venues found";
 
     [ObservableProperty]
     public partial PlaceResult? SelectedPossible { get; set; } = null;
@@ -155,7 +161,19 @@ internal partial class VenueEditViewModel : ObservableObjectPlus, IQueryAttribut
     {
         if (Location is null || !Location.IsValid())
             return;
-        Possibles = [.. (await FindRestaurantsAsync(Location))];
+
+        var result = await FindRestaurantsAsync(Location);
+        if (result is IEnumerable<PlaceResult> placesResult)
+        {
+            Possibles = [.. placesResult];
+            PossiblesEmptyViewText = "No nearby venues found";
+        }
+        else if (result is string errorMessage)
+        {
+            Possibles = [];
+            PossiblesEmptyViewText = !string.IsNullOrWhiteSpace(errorMessage) ? errorMessage : "Unknown error";
+        }
+
         PossiblesShowing = true;
     }
 
