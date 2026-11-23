@@ -4,7 +4,7 @@
              Shell.FlyoutBehavior="Disabled"
              x:DataType="MapViewModel"
              x:Class="DivisiBill.Views.MapPage"
-             Title="MapPage">
+             Title="Map Page">
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding ChangeMapTypeCommand}" IconImageSource="{StaticResource GlyphMap}"/>
         <ToolbarItem Command="{Binding RestoreCommand}" IconImageSource="{StaticResource GlyphRestore}"/>
