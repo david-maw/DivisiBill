@@ -115,7 +115,7 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
     [RelayCommand]
     private async Task UnDeleteAllVenues() => await UndeleteAllVenuesAsync();
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsMapKeyPresent))]
     private async Task ShowMapAsync(Venue? v)
     {
         if (v is not null)
@@ -124,6 +124,7 @@ public partial class VenueListViewModel : ObservableObjectPlus, IQueryAttributab
             await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings);
         }
     }
+    private bool IsMapKeyPresent { get; } = Utilities.IsMapKeyPresent();
     #endregion
     #region Properties
     /// <summary>

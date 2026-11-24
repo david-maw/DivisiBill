@@ -64,7 +64,7 @@
   The key is stored in an environment variable DIVISIBILL_MAPS_KEY and passed to the android build via a placeholder.-->
   <PropertyGroup>
     <AndroidManifestPlaceholders>
-      GoogleGeoApiKey=$(DIVISIBILL_MAPS_KEY)
+      GoogleGeoApiKey=$(DIVISIBILL_APP_MAPS_KEY)
     </AndroidManifestPlaceholders>
   </PropertyGroup>
 

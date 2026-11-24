@@ -242,7 +242,9 @@ internal partial class VenueEditViewModel : ObservableObjectPlus, IQueryAttribut
     [RelayCommand]
     private void ClearLocation() => Location = null;
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsMapKeyPresent))]
     private async Task ShowMap() => await App.PushAsync(Routes.MapPage, "MapSettings", mapSettings = new(Name, Location));
+
+    private bool IsMapKeyPresent { get; } = Utilities.IsMapKeyPresent();
     #endregion
 }

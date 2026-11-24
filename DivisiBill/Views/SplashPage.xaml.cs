@@ -161,6 +161,7 @@ public partial class SplashPage : ContentPage
             await InitializeLocationTask;
         await Meal.SelectDefaultMeal();
         PauseAllowed = false;
+        PauseBeforeMessage = false;
         await StatusMsgAsync("Initialization complete");
         await Task.Delay(500);
         PauseBeforeMessage = false; // Just to be sure it wasn't set at the last possible second

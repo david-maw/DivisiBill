@@ -261,12 +261,14 @@ public partial class SettingsViewModel : ObservableObjectPlus
     public bool UseLocation => App.UseLocation;
     public Location? AppLocation => App.MyLocation;
     #region Fake Location Management (Debug Only)
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsMapKeyPresent))]
     private async Task SetFakeLocation()
     {
         FakeLocationMapSettings.VenueLocation = FakeLocation ?? App.MyLocation;
         await App.PushAsync(Routes.MapPage, "MapSettings", FakeLocationMapSettings);
     }
+
+    private bool IsMapKeyPresent { get; } = Utilities.IsMapKeyPresent();
 
     [RelayCommand]
     private void ClearFakeLocation() => FakeLocation = null;
